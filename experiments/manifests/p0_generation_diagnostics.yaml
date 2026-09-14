@@ -1,0 +1,42 @@
+schema_version: 1
+status: generation_only_not_verified
+purpose: >-
+  Matched CUDA generation comparison on the first 32 rows of the Kimina-compatible
+  MiniF2F test artifact; no candidate is counted as a proved theorem.
+dataset:
+  source: AI-MO/minif2f_test@5def318348521dfc34875045a9ecddf729a2b49f
+  local_path: data/raw/minif2f_hf/data/train-00000-of-00001.parquet
+  theorems: 32
+  samples_per_theorem: 4
+  split_policy: evaluation_only
+generation:
+  device: cuda:0
+  max_new_tokens: 2048
+  batch_size: 2
+  temperature: 0.6
+  top_p: 0.95
+  script: scripts/minif2f_generation.py
+runs:
+  distill:
+    model: AI-MO/Kimina-Prover-Distill-0.6B@332e8a5259d1bdfda19d7c7f339f30804813cd3a
+    artifact: experiments/results/minif2f_distill_generation_cuda_2048.json
+    generated_candidates: 128
+    generation_seconds: 2139.156
+    likely_lean_candidates: 37
+    explicit_lean4_blocks: 37
+    complete_think_blocks: 41
+    markdown_contaminated: 91
+  rl:
+    model: AI-MO/Kimina-Prover-RL-0.6B@43bb4da0e81cc9660057ced0025056eb031c6039
+    artifact: experiments/results/minif2f_rl_generation_cuda_2048.json
+    generated_candidates: 128
+    generation_seconds: 2104.614
+    likely_lean_candidates: 47
+    explicit_lean4_blocks: 47
+    complete_think_blocks: 52
+    markdown_contaminated: 106
+verification:
+  verifier: Kimina Lean Server
+  status: blocked_no_local_server
+  verified_candidates: unknown
+  pass_at_k: not_reported
