@@ -1,0 +1,4 @@
+[submodule "third_party/kimina-prover-rl"]
+	path = third_party/kimina-prover-rl
+	url = https://github.com/project-numina/kimina-prover-rl.git
+

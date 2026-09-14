@@ -1,0 +1,32 @@
+schema_version: 1
+datasets:
+  kimina_promptset:
+    source_type: huggingface
+    repo_id: AI-MO/Kimina-Prover-Promptset
+    revision: 3009c548d90160d0f5e963d72238610c6732f812
+    status: required
+    purpose: P3 RL pilot only
+    local_dir: data/raw/kimina_promptset
+  minif2f_test:
+    source_type: git
+    repo_id: https://github.com/openai/miniF2F.git
+    revision: 4e433ff5cadff23f9911a2bb5bbab2d351ce5554
+    status: evaluation_only
+    purpose: immutable primary benchmark; never use for training or difficulty fitting
+    local_dir: data/raw/minif2f
+    expected_test_size: 244
+  minif2f_test_hf:
+    source_type: huggingface
+    repo_id: AI-MO/minif2f_test
+    revision: 5def318348521dfc34875045a9ecddf729a2b49f
+    status: evaluation_only
+    purpose: Kimina recipe-compatible evaluation artifact; never use for training
+    local_dir: data/raw/minif2f_hf
+    expected_test_size: 244
+  numinamath_lean:
+    source_type: huggingface
+    repo_id: AI-MO/NuminaMath-LEAN
+    revision: main
+    status: metadata_only
+    purpose: later verified SFT subset construction; do not materialize in P0
+    local_dir: data/raw/numinamath_lean

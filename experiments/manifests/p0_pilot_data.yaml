@@ -1,0 +1,20 @@
+schema_version: 1
+status: prepared_not_formal_result
+purpose: Kimina-compatible 64-row data smoke/pilot package; not a final benchmark split
+source_revisions:
+  train: AI-MO/Kimina-Prover-Promptset@3009c548d90160d0f5e963d72238610c6732f812
+  test: AI-MO/minif2f_test@5def318348521dfc34875045a9ecddf729a2b49f
+materialized:
+  train_path: data/processed/prompt_sets/AI-MO/Kimina-Prover-Promptset-first-64/train.parquet
+  train_rows: 64
+  test_path: data/processed/prompt_sets/AI-MO/Kimina-Prover-Promptset-first-64/test.parquet
+  test_rows: 64
+transform:
+  implementation: third_party/kimina-prover-rl/recipe/kimina_prover_rl/prepare_data.py
+  command: >-
+    python prepare_data.py --train-dataset AI-MO/Kimina-Prover-Promptset
+    --test-dataset AI-MO/minif2f_test --sample-first-n 64
+policy:
+  minif2f_test: evaluation_only
+  use_for_formal_training: false
+

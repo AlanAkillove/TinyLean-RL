@@ -1,0 +1,50 @@
+phase: P3
+status: planned_after_p2_gate
+reference_recipe: third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_0.6B.sh
+
+model:
+  repo_id: AI-MO/Kimina-Prover-Distill-0.6B
+  local_key: kimina_distill_0_6b
+
+data:
+  train_repo_id: AI-MO/Kimina-Prover-Promptset
+  benchmark: AI-MO/minif2f_test
+  benchmark_policy: evaluation_only
+
+# Initial 24 GB single-GPU pilot hypotheses. P2 measurements must be used to
+# revise these values before any formal run.
+hardware:
+  target: single_rtx_3090_24gb
+  gpu_count: 1
+
+rollout:
+  max_prompt_length: 4096
+  max_response_length: 3072
+  group_size: 4
+  temperature: 1.0
+  top_p: 0.95
+  gpu_memory_utilization: 0.60
+
+training:
+  algorithm: grpo
+  learning_rate: 0.000002
+  use_kl_in_reward: false
+  gradient_checkpointing: true
+  reference_param_offload: true
+  effective_batch_size: 8
+  max_rollout_tokens: 5000000
+  seeds: [0]
+
+gate:
+  required_before_run:
+    - local_model_to_lean_smoke_test
+    - kimina_distill_vs_rl_evaluation
+    - observed_proof_length_distribution
+    - observed_lean_verification_throughput
+  success_signals:
+    - finite_loss
+    - finite_gradients
+    - nonzero_reward_groups
+    - checkpoint_save_and_resume
+    - no sustained formatting_collapse
+

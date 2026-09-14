@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.pyright/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Project-local environments and caches
+.venv/
+.cache/
+.uv/
+.env
+.env.*
+!.env.example
+
+# Models, datasets and generated artifacts
+models/weights/
+models/downloads/
+data/raw/
+data/processed/
+data/cache/
+runs/
+experiments/results/
+logs/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.parquet
+*.arrow
+*.sqlite
+*.db
+
+# Generated local manifests/reports
+models/manifests/*.local.json
+data/manifests/*.local.json
+experiments/manifests/*.local.json
+doctor.local.txt
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Docker overrides
+docker-compose.override.yml
+compose.override.yaml

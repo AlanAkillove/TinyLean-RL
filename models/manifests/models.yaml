@@ -1,0 +1,20 @@
+schema_version: 1
+models:
+  kimina_distill_0_6b:
+    repo_id: AI-MO/Kimina-Prover-Distill-0.6B
+    revision: 332e8a5259d1bdfda19d7c7f339f30804813cd3a
+    status: required
+    purpose: RL starting checkpoint and primary P0 model-to-Lean smoke test
+    local_dir: models/weights/kimina_distill_0_6b
+  kimina_rl_0_6b:
+    repo_id: AI-MO/Kimina-Prover-RL-0.6B
+    revision: 43bb4da0e81cc9660057ced0025056eb031c6039
+    status: required
+    purpose: P2 evaluation reference; do not train in P0
+    local_dir: models/weights/kimina_rl_0_6b
+  qwen3_base_0_6b:
+    repo_id: Qwen/Qwen3-0.6B-Base
+    revision: main
+    status: reserved
+    purpose: later cold-start comparison; not required for P0 smoke test
+    local_dir: models/weights/qwen3_base_0_6b
