@@ -49,6 +49,7 @@ TACTIC_PREFIXES = (
     "simp",
     "trivial",
 )
+LEAN_START_PREFIXES = ("by ", "by\n", "theorem ", "import ")
 
 
 def make_prompt(tokenizer, informal: str, formal: str) -> str:
@@ -146,6 +147,11 @@ def main() -> int:
                     extracted = ""
                     extraction_ok = False
                 first_line = extracted.splitlines()[0].strip() if extracted else ""
+                has_lean4_code_block = bool(re.search(r"```lean4\s*\n.*?```", raw, re.DOTALL))
+                likely_lean_candidate = bool(
+                    extracted
+                    and (has_lean4_code_block or first_line.startswith(LEAN_START_PREFIXES))
+                )
                 records.append(
                     {
                         "theorem_index": start + row_index,
@@ -155,9 +161,10 @@ def main() -> int:
                         "extracted": extracted,
                         "raw_tokens": len(tokenizer.encode(raw, add_special_tokens=False)),
                         "extraction_ok": extraction_ok,
+                        "likely_lean_candidate": likely_lean_candidate,
                         "tactic_like": first_line.startswith(TACTIC_PREFIXES),
                         "contains_markdown_fence": "```" in raw,
-                        "has_lean4_code_block": bool(re.search(r"```lean4\s*\n.*?```", raw, re.DOTALL)),
+                        "has_lean4_code_block": has_lean4_code_block,
                         "has_think_block": "<think>" in raw and "</think>" in raw,
                     }
                 )
@@ -174,7 +181,7 @@ def main() -> int:
         "generated_candidates": len(records),
         "max_new_tokens": args.max_new_tokens,
         "generation_seconds": round(elapsed, 3),
-        "extraction_successes": sum(record["extraction_ok"] for record in records),
+        "extraction_successes": sum(record["likely_lean_candidate"] for record in records),
         "tactic_like_candidates": sum(record["tactic_like"] for record in records),
         "markdown_contamination": sum(record["contains_markdown_fence"] for record in records),
         "lean4_code_blocks": sum(record["has_lean4_code_block"] for record in records),

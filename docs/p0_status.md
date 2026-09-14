@@ -36,13 +36,15 @@ On the first real MiniF2F theorem with the Kimina prompt format, Distill require
 
 The 8-theorem/128-candidate Distill run at a 512-token ceiling produced zero complete `lean4` blocks, so the initial `configs/rl/kimina_0.6b_pilot.yaml` response-length hypothesis must be revisited after verifier-backed P2 measurements.
 
+Long-budget MiniF2F generation-only comparison (32 theorems × 4 samples, max 2,048 new tokens, CUDA): Distill generated 128 candidates in 2,139.156 s and produced 37 likely-Lean candidates (37 explicit `lean4` blocks), 41 complete `think` blocks, and 91 Markdown-contaminated outputs. RL generated 128 candidates in 2,104.614 s and produced 47 likely-Lean candidates (47 explicit `lean4` blocks), 52 complete `think` blocks, and 106 Markdown-contaminated outputs. These figures measure output shape only; both verified counts remain unknown until the candidates pass Lean Server.
+
 The evaluator dry-run on one MiniF2F theorem and four GPU samples completed successfully, writing `experiments/results/p2_dry_run.json`; as expected, it reports zero verified candidates because `--dry-run` bypasses the unavailable Lean server.
 
 Promptset inspection: 24,418 rows, 7,620 unique `statement_id` values, 16,798 duplicate rows caused by the dataset's deliberate hard-problem reweighting, and 12 missing `natural_language` values. `formal_statement` has no missing values.
 
 The HF recipe-compatible MiniF2F artifact contains exactly 244 rows with non-null `name`, `informal_prefix` and `formal_statement` columns.
 
-The generation diagnostic is stored locally at `experiments/results/p0_generation_diagnostic.json` and is intentionally ignored by Git. It is not a verified theorem-proving score.
+The generation diagnostics are stored locally at `experiments/results/` and are intentionally ignored by Git. They are not verified theorem-proving scores. The MiniF2F harness now reports `extraction_successes` only for explicit Lean code blocks or outputs beginning with a conservative Lean prefix; non-empty reasoning text is not counted as a candidate.
 
 ## Current machine gate
 
