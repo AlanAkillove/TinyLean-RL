@@ -13,6 +13,7 @@ htmlcov/
 
 # Project-local environments and caches
 .venv/
+.tools/
 .cache/
 .uv/
 .env

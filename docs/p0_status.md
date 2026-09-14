@@ -15,6 +15,7 @@
 - Kimina RL 0.6B downloaded at HF commit `43bb4da0e81cc9660057ced0025056eb031c6039`.
 - A Kimina-format 64-row train/test pilot package was materialized under ignored `data/processed/` using the pinned upstream `prepare_data.py`.
 - Project cache redirection, download scripts, Docker Compose, verifier client, proof extractor and smoke tests are implemented.
+- Elan and Lean `4.34.0` are installed in the user tool directory; a Mathlib checkout is present under ignored `data/raw/`, but its dependency/cache bootstrap is not yet complete.
 - The P2 evaluator harness now supports batched verifier requests and computes Pass@1/8/32 (when the sample count permits), all-zero/mixed/all-one group rates, format failures, proof lengths and generation/verification wall time.
 
 ## Local checks
@@ -49,10 +50,10 @@ The generation diagnostic is stored locally at `experiments/results/p0_generatio
 - GPU: RTX 4060 Laptop, 8 GiB, driver 572.61.
 - PyTorch: `2.9.0+cu128`; `torch.cuda.is_available()` is `True` (`NVIDIA GeForce RTX 4060 Laptop GPU`).
 - Docker CLI/daemon: unavailable.
-- Lean/Elan/Lake: unavailable.
+- Elan/Lean: available (`elan 4.2.4`, Lean `4.34.0`); no usable Mathlib cache or Kimina Lean Server is available locally.
 - WSL: command exists, but no usable Linux distribution is configured.
 
-Therefore this machine can perform CUDA model generation and repository checks, but it cannot produce an honest Lean-verified reward, Pass@K, or RL training result. `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
+Therefore this machine can perform CUDA model generation and repository checks, but it cannot yet produce an honest Lean-verified reward, Pass@K, or RL training result. The native Lean smoke path is blocked on the Mathlib dependency/cache bootstrap, while `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
 
 ## Next execution gate
 
