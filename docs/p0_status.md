@@ -22,10 +22,10 @@
 | Check | Result |
 |---|---|
 | `uv sync --extra inference --extra dev` | passed |
-| `uv run pytest` | 4 passed |
+| `uv run pytest` | 8 passed |
 | `uv run ruff check src scripts tests` | passed |
 | `uv run python -m compileall -q src scripts tests` | passed |
-| Model load | passed on CPU |
+| Model load | passed on CUDA (`torch 2.9.0+cu128`) |
 | Model generation diagnostic | 16/16 candidates generated and extracted |
 | Markdown/extra-text contamination | 11/16 candidates in the diagnostic |
 
@@ -47,12 +47,12 @@ The generation diagnostic is stored locally at `experiments/results/p0_generatio
 
 - OS: Windows development environment.
 - GPU: RTX 4060 Laptop, 8 GiB, driver 572.61.
-- PyTorch: `2.14.0+cpu`; `torch.cuda.is_available()` is `False`.
+- PyTorch: `2.9.0+cu128`; `torch.cuda.is_available()` is `True` (`NVIDIA GeForce RTX 4060 Laptop GPU`).
 - Docker CLI/daemon: unavailable.
 - Lean/Elan/Lake: unavailable.
 - WSL: command exists, but no usable Linux distribution is configured.
 
-Therefore this machine can perform CPU model generation and repository checks, but it cannot produce an honest Lean-verified reward, Pass@K, or RL training result. `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
+Therefore this machine can perform CUDA model generation and repository checks, but it cannot produce an honest Lean-verified reward, Pass@K, or RL training result. `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
 
 ## Next execution gate
 
