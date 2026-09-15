@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pyarrow import parquet
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[1]
 LEAN_TOOLCHAIN = "leanprover/lean4:v4.34.0-rc2"
@@ -428,11 +429,9 @@ def main() -> int:
                 ): candidate
                 for candidate in candidates
             }
-            for index, future in enumerate(as_completed(futures), start=1):
+            for future in tqdm(as_completed(futures), total=len(futures), desc="candidates", unit="candidate"):
                 result = future.result()
                 results.append(result)
-                if index % 8 == 0 or index == len(futures):
-                    print(f"  completed {index}/{len(futures)}")
         verification_seconds = round(time.perf_counter() - started, 3)
     results.sort(key=lambda item: item["candidate_id"])
     summary = {

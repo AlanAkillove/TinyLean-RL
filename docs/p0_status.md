@@ -1,6 +1,6 @@
 # P0 status report
 
-更新时间：2026-09-15（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。
+更新时间：2026-09-15（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。
 
 ## 已完成
 
@@ -18,6 +18,11 @@
 - Elan's pinned Lean `4.34.0-rc2` toolchain is installed under the ignored `.tools/elan/` directory; Mathlib is checked out at `9cb3970b1fb61911f7e8892dffcde5aa4a0661cc` and its Lake cache bootstrap completed.
 - The native verifier now uses the exact rc2 compiler directly, batches candidates behind one Mathlib import, and terminates the full compiler process tree on timeout. It remains a fallback and is not the official Kimina evaluator.
 - The P2 evaluator harness now supports batched verifier requests and computes Pass@1/8/32 (when the sample count permits), all-zero/mixed/all-one group rates, format failures, proof lengths and generation/verification wall time.
+- Docker Desktop recovered after the Windows restart; the Linux daemon is up (CLI `29.8.0`) and the pinned `projectnumina/kimina-lean-server:2.0.0` container `tinylean-rl-lean-server` answers `/health` with 200 (image Lean `v4.15.0`).
+- `infra/lean-server/compose.yaml` no longer forwards an empty `LEAN_SERVER_API_KEY`; the image treats a present-but-empty key as a required key (an empty string is not `None` in pydantic), so the previous unconditional variable made every `/verify` request fail with 401.
+- The verifier gate passed: `scripts/verify_smoke.py` clears the positive goal set and reports `unsolved goals` for the negative case, and `scripts/smoke_test.py` completed the model → generation → extraction → Lean chain on CUDA.
+- `scripts/evaluate_model.py` now parses the actual Kimina 2.0.0 response shape (`response.error` or error-severity messages mark a failure; warning-only responses are valid), stores `raw_output` in every record for audit, retries a failed verify batch once, and falls back to per-candidate verification so a crashing candidate does not invalidate healthy batch mates.
+- Verification scripts reconfigure their console streams to UTF-8 so Lean goal symbols can be printed on GBK Windows consoles.
 
 ## Local checks
 
@@ -28,6 +33,9 @@
 | `uv run ruff check src scripts tests` | passed |
 | `uv run python -m compileall -q src scripts tests` | passed |
 | Native verifier timeout/process-tree smoke | passed |
+| Lean server positive/negative gate | passed / failed as expected |
+| Model→Lean smoke test | candidate verified, goals cleared |
+| Audit re-run (`ruff`, `pytest`, `compileall`) | passed |
 | Model load | passed on CUDA (`torch 2.9.0+cu128`) |
 | Model generation diagnostic | 16/16 candidates generated and extracted |
 | Markdown/extra-text contamination | 11/16 candidates in the diagnostic |
@@ -48,25 +56,44 @@ The HF recipe-compatible MiniF2F artifact contains exactly 244 rows with non-nul
 
 The generation diagnostics are stored locally at `experiments/results/` and are intentionally ignored by Git. They are not verified theorem-proving scores. The MiniF2F harness now reports `extraction_successes` only for explicit Lean code blocks or outputs beginning with a conservative Lean prefix; non-empty reasoning text is not counted as a candidate.
 
+## Verified P2 preview (8 theorems × 4 samples, max 2048 new tokens, CUDA)
+
+| Model | Verified | Pass@1 | all_zero | mixed | all_one |
+|---|---|---|---|---|---|
+| `kimina_distill_0_6b` | 10/32 | 0.3125 | 0.625 | 0.125 | 0.25 |
+| `kimina_rl_0_6b` | 9/32 | 0.28125 | 0.625 | 0.25 | 0.125 |
+
+These are the first verifier-backed numbers from this machine; they use the local Kimina server (Lean `v4.15.0`) rather than the official evaluation harness, so they must not be read as official absolute scores. At this sample size the qualitative relation `Kimina-RL-0.6B > Kimina-Distill-0.6B` is not reproduced; the difference of one candidate is inside noise.
+
+Observed constraints from the same runs:
+
+- Every solved candidate used fewer than 1,600 generated tokens; every unsolved theorem either consumed the full 2,048-token budget or emitted reasoning text instead of tactics. The response-length ceiling is the active bottleneck for the next run.
+- Two RL candidates proposed `native_decide` on a `Finset.range 10000` product; the REPL crashed with a `JSON decode error` and the server returned HTTP 500. Individual re-checks are recorded in `experiments/results/p2_eval_rl_8x4_recheck.json` and both count as failed.
+
 ## Current machine gate
 
 - OS: Windows development environment.
 - GPU: RTX 4060 Laptop, 8 GiB, driver 572.61.
 - PyTorch: `2.9.0+cu128`; `torch.cuda.is_available()` is `True` (`NVIDIA GeForce RTX 4060 Laptop GPU`).
-- Docker Desktop: installed (CLI `29.8.0`, Desktop `4.91.0`), but the Linux daemon is unavailable; the backend currently fails on a Windows-locked Unix socket during startup.
+- Docker Desktop: recovered after the Windows restart. The Linux daemon is up (CLI `29.8.0`), and the pinned `projectnumina/kimina-lean-server:2.0.0` container answers `/health` with 200 (image Lean `v4.15.0`).
 - Elan/Lean: available with the pinned local Lean `4.34.0-rc2` toolchain and Mathlib cache.
-- WSL: Ubuntu and Docker's `docker-desktop` distributions are registered as WSL2; Docker's internal data disk was isolated for regeneration, but the stale socket still requires a Windows restart.
+- WSL: Ubuntu and Docker's `docker-desktop` distributions are registered as WSL2; Docker's internal data disk was isolated for regeneration and the restart resolved the stale-socket startup failure.
 
-The current Docker failure matches the Windows 11 build 26200 AF_UNIX/ReparsePoint startup issue documented in Docker Desktop feedback [#460](https://github.com/docker/desktop-feedback/issues/460) and [#536](https://github.com/docker/desktop-feedback/issues/536): after an unclean exit, the parent socket directories must be renamed after a Windows restart before relaunching Desktop.
+The earlier Docker failure matched the Windows 11 build 26200 AF_UNIX/ReparsePoint startup issue documented in Docker Desktop feedback [#460](https://github.com/docker/desktop-feedback/issues/460) and [#536](https://github.com/docker/desktop-feedback/issues/536); the daemon started normally after the Windows restart.
 
-Therefore this machine can perform CUDA model generation, repository checks, and native compiler diagnostics, but it cannot yet produce an official Lean-verified reward, Pass@K, or RL training result. The native batch import is currently too memory-heavy on this Windows workstation for a useful full run, while `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
+This machine can now produce verifier-backed Pass@K measurements through the local Kimina server; both smoke gates and two 8×4 P2 evaluations completed. The first `/verify` request after a cold container start can take several minutes while a REPL loads Mathlib; later requests reuse the warm REPL pool and return in milliseconds. The native compiler fallback remains a diagnostic path only.
 
 ## Next execution gate
 
-On the Linux 3090 host:
+On this Windows machine (the Docker gate is now open):
+
+1. Re-run the P2 comparison with a larger `--max-new-tokens` (at least 3,072) because unsolved theorems truncated at the 2,048-token ceiling.
+2. Scale the comparison to more MiniF2F theorems (32 or more) before drawing any ranking conclusion between Distill and RL.
+3. Only then revise `configs/rl/kimina_0.6b_pilot.yaml` using measured proof lengths and verifier throughput.
+
+On the Linux 3090 host (unchanged plan):
 
 1. Clone with submodules and run `source scripts/env.sh && uv sync`.
 2. Start `infra/lean-server/compose.yaml` with Docker image `projectnumina/kimina-lean-server:2.0.0`.
-3. Run `uv run python scripts/verify_smoke.py`; the positive case must pass and the negative case must fail.
-4. Run the model→Lean smoke test, then evaluate Distill 0.6B versus RL 0.6B before any training.
-5. Only if those gates pass, revise `configs/rl/kimina_0.6b_pilot.yaml` using measured proof lengths and verifier throughput.
+3. Reproduce the same gates; record the server image's Lean version (`v4.15.0` here) as part of the environment record.
+4. Treat the local Kimina-server numbers as the working baseline and the official published scores only as a qualitative reference.

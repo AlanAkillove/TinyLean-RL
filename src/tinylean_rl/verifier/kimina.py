@@ -29,11 +29,15 @@ def verify_code(
         "codes": [{"custom_id": custom_id, "proof": proof}],
         "infotree_type": "original",
     }
+    # The Lean server is a local service; a system-level proxy (for example an
+    # HTTP proxy registered on a Windows development machine) must never
+    # intercept these requests.
     response = httpx.post(
         f"{url}/verify",
         json=payload,
         headers=headers,
         timeout=request_timeout,
+        trust_env=False,
     )
     response.raise_for_status()
     decoded = response.json()
@@ -65,11 +69,15 @@ def verify_codes(
         "codes": [{"custom_id": custom_id, "proof": proof} for custom_id, proof in zip(ids, proofs)],
         "infotree_type": "original",
     }
+    # The Lean server is a local service; a system-level proxy (for example an
+    # HTTP proxy registered on a Windows development machine) must never
+    # intercept these requests.
     response = httpx.post(
         f"{url}/verify",
         json=payload,
         headers=headers,
         timeout=request_timeout,
+        trust_env=False,
     )
     response.raise_for_status()
     decoded = response.json()

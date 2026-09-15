@@ -8,4 +8,7 @@ services:
     environment:
       LEAN_SERVER_PORT: "8000"
       LEAN_SERVER_LOG_LEVEL: "${LEAN_SERVER_LOG_LEVEL:-INFO}"
-      LEAN_SERVER_API_KEY: "${LEAN_SERVER_API_KEY:-}"
+      # Pass the key only when it is actually configured: the image treats a
+      # present-but-empty LEAN_SERVER_API_KEY as a required key (empty string
+      # is not None in pydantic), which makes every request fail with 401.
+      LEAN_SERVER_API_KEY:

@@ -18,14 +18,21 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import httpx
 from pyarrow import parquet
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+# Windows consoles default to GBK, which cannot print Lean goal symbols.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 from tinylean_rl.evaluation.metrics import group_rates, pass_at_k
 from tinylean_rl.inference.extract import extract_proof
-from tinylean_rl.verifier.kimina import verify_codes
+from tinylean_rl.verifier.kimina import verify_code, verify_codes
 
 SYSTEM_PROMPT = "You are an expert in mathematics and proving theorems in Lean 4."
 USER_TEMPLATE = """Think about and solve the following problems step by step in Lean 4.
@@ -101,6 +108,19 @@ def response_items(decoded: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def result_is_valid(item: dict[str, Any]) -> bool:
+    """Decide whether one Kimina response item counts as a valid proof.
+
+    The 2.0.0 server answers with ``{"custom_id", "response"}``; a candidate
+    failed when ``response.error`` is set or any message carries severity
+    ``error``.  Boolean flags from older clients are still honoured.
+    """
+
+    response = item.get("response")
+    if isinstance(response, dict):
+        if response.get("error"):
+            return False
+        messages = response.get("messages") or []
+        return not any(str(message.get("severity", "")).lower() == "error" for message in messages)
     for key in ("is_valid", "valid", "verified", "success", "isSuccess"):
         if isinstance(item.get(key), bool):
             return item[key]
@@ -162,7 +182,16 @@ def main() -> int:
     generated_records: list[dict[str, Any]] = []
     generation_seconds = 0.0
     verification_seconds = 0.0
-    for start in range(0, len(rows), args.batch_size):
+    output_path = Path(args.output)
+    if not output_path.is_absolute():
+        output_path = ROOT / output_path
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    partial_path = output_path.with_suffix(".partial.json")
+    for start in tqdm(
+        range(0, len(rows), args.batch_size),
+        desc=f"{args.model_key} [{args.split}]",
+        unit="theorem",
+    ):
         batch_rows = rows[start : start + args.batch_size]
         prompts = [build_prompt(tokenizer, row) for row in batch_rows]
         encoded = tokenizer(prompts, return_tensors="pt", padding=True)
@@ -196,11 +225,13 @@ def main() -> int:
                     "theorem_index": theorem_index,
                     "name": row.get("name", row.get("statement_id", str(theorem_index))),
                     "sample": sample,
+                    "raw_output": raw,
                     "raw_tokens": len(tokenizer.encode(raw, add_special_tokens=False)),
                     "has_lean4_code_block": bool(re.search(r"```lean4\s*\n.*?```", raw, re.DOTALL)),
                     "has_complete_think_block": "<think>" in raw and "</think>" in raw,
                     "format_ok": bool(proof),
                     "verified": False,
+                    "verify_status": "not_checked",
                 }
                 generated_records.append(record)
                 if proof and not args.dry_run:
@@ -208,19 +239,56 @@ def main() -> int:
 
         if pending:
             verify_started = time.perf_counter()
-            decoded = verify_codes(
-                [proof for _, _, proof in pending],
-                custom_ids=[custom_id for _, custom_id, _ in pending],
-            )
+            proofs = [proof for _, _, proof in pending]
+            identifiers = [custom_id for _, custom_id, _ in pending]
+            decoded: dict[str, Any] = {}
+            for attempt in range(2):
+                try:
+                    decoded = verify_codes(proofs, custom_ids=identifiers)
+                    break
+                except httpx.HTTPError as exc:
+                    if attempt == 0:
+                        # The server briefly drops requests while it rebuilds a
+                        # crashed REPL pool; wait before one more attempt.
+                        time.sleep(15)
+                    else:
+                        print(f"  [warn] batch verify failed after retry ({exc}); retrying per candidate")
+            items = response_items(decoded)
+            if items:
+                by_id = {str(item.get("custom_id")): item for item in items}
+                for result_index, (record_index, custom_id, _) in enumerate(pending):
+                    item = by_id.get(custom_id)
+                    if item is None and result_index < len(items):
+                        item = items[result_index]
+                    valid = bool(item and result_is_valid(item))
+                    generated_records[record_index]["verified"] = valid
+                    generated_records[record_index]["verify_status"] = "verified" if valid else "lean_error"
+            else:
+                # A crashing candidate (e.g. native_decide on huge values) must
+                # not invalidate its healthy batch neighbours.
+                for record_index, custom_id, proof in pending:
+                    try:
+                        single = response_items(verify_code(proof, custom_id=custom_id))
+                        valid = bool(single and result_is_valid(single[0]))
+                        generated_records[record_index]["verified"] = valid
+                        generated_records[record_index]["verify_status"] = "verified" if valid else "lean_error"
+                    except httpx.HTTPError:
+                        generated_records[record_index]["verify_status"] = "verifier_error"
+                        print(f"  [warn] candidate {custom_id} left unverified (verifier error)")
             verification_seconds += time.perf_counter() - verify_started
-            by_id = {str(item.get("custom_id")): item for item in response_items(decoded)}
-            ordered = response_items(decoded)
-            for result_index, (record_index, custom_id, _) in enumerate(pending):
-                item = by_id.get(custom_id)
-                if item is None and result_index < len(ordered):
-                    item = ordered[result_index]
-                generated_records[record_index]["verified"] = bool(item and result_is_valid(item))
-        print(f"  processed {min(start + args.batch_size, len(rows))}/{len(rows)}")
+        # Persist progress so a late crash cannot discard earlier batches.
+        partial_path.write_text(
+            json.dumps(
+                {
+                    "model_key": args.model_key,
+                    "processed_theorems": min(start + args.batch_size, len(rows)),
+                    "records": generated_records,
+                },
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
 
     counts = []
     theorem_summaries = []
@@ -261,14 +329,11 @@ def main() -> int:
         "theorem_summaries": theorem_summaries,
         "records": generated_records,
     }
-    output = Path(args.output)
-    if not output.is_absolute():
-        output = ROOT / output
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    output_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    partial_path.unlink(missing_ok=True)
     print("[4/4] Evaluation saved")
     print(json.dumps({key: value for key, value in summary.items() if key not in {"records", "theorem_summaries"}}, indent=2, ensure_ascii=False))
-    print(f"Output: {output}")
+    print(f"Output: {output_path}")
     if args.dry_run:
         return 0
     return 0

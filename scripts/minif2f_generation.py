@@ -17,9 +17,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pyarrow import parquet
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+
+# Windows consoles default to GBK, which cannot print Lean goal symbols.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 from tinylean_rl.inference.extract import extract_proof
 
@@ -120,7 +126,11 @@ def main() -> int:
 
     records = []
     started = time.perf_counter()
-    for start in range(0, len(rows), args.batch_size):
+    for start in tqdm(
+        range(0, len(rows), args.batch_size),
+        desc=args.model_key,
+        unit="theorem",
+    ):
         batch_rows = rows[start : start + args.batch_size]
         prompts = [make_prompt(tokenizer, row.get("informal_prefix") or "", row["formal_statement"]) for row in batch_rows]
         encoded = tokenizer(prompts, return_tensors="pt", padding=True)
@@ -168,7 +178,6 @@ def main() -> int:
                         "has_think_block": "<think>" in raw and "</think>" in raw,
                     }
                 )
-        print(f"  processed {min(start + args.batch_size, len(rows))}/{len(rows)}")
 
     elapsed = time.perf_counter() - started
     summary = {

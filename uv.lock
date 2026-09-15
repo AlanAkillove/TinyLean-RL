@@ -1535,6 +1535,7 @@ dependencies = [
     { name = "huggingface-hub" },
     { name = "pydantic" },
     { name = "pyyaml" },
+    { name = "tqdm" },
 ]
 
 [package.optional-dependencies]
@@ -1570,6 +1571,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6,<7" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8,<1" },
     { name = "torch", marker = "extra == 'inference'", specifier = "==2.9.0+cu128", index = "https://download.pytorch.org/whl/cu128" },
+    { name = "tqdm", specifier = ">=4.66,<5" },
     { name = "transformers", marker = "extra == 'inference'", specifier = ">=4.45,<5" },
 ]
 provides-extras = ["inference", "verifier", "data", "dev"]
