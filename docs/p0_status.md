@@ -57,6 +57,8 @@ The generation diagnostics are stored locally at `experiments/results/` and are 
 - Elan/Lean: available with the pinned local Lean `4.34.0-rc2` toolchain and Mathlib cache.
 - WSL: Ubuntu and Docker's `docker-desktop` distributions are registered as WSL2; Docker's internal data disk was isolated for regeneration, but the stale socket still requires a Windows restart.
 
+The current Docker failure matches the Windows 11 build 26200 AF_UNIX/ReparsePoint startup issue documented in Docker Desktop feedback [#460](https://github.com/docker/desktop-feedback/issues/460) and [#536](https://github.com/docker/desktop-feedback/issues/536): after an unclean exit, the parent socket directories must be renamed after a Windows restart before relaunching Desktop.
+
 Therefore this machine can perform CUDA model generation, repository checks, and native compiler diagnostics, but it cannot yet produce an official Lean-verified reward, Pass@K, or RL training result. The native batch import is currently too memory-heavy on this Windows workstation for a useful full run, while `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
 
 ## Next execution gate
