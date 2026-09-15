@@ -15,7 +15,8 @@
 - Kimina RL 0.6B downloaded at HF commit `43bb4da0e81cc9660057ced0025056eb031c6039`.
 - A Kimina-format 64-row train/test pilot package was materialized under ignored `data/processed/` using the pinned upstream `prepare_data.py`.
 - Project cache redirection, download scripts, Docker Compose, verifier client, proof extractor and smoke tests are implemented.
-- Elan and Lean `4.34.0` are installed in the user tool directory; a Mathlib checkout is present under ignored `data/raw/`, but its dependency/cache bootstrap is not yet complete.
+- Elan's pinned Lean `4.34.0-rc2` toolchain is installed under the ignored `.tools/elan/` directory; Mathlib is checked out at `9cb3970b1fb61911f7e8892dffcde5aa4a0661cc` and its Lake cache bootstrap completed.
+- The native verifier now uses the exact rc2 compiler directly, batches candidates behind one Mathlib import, and terminates the full compiler process tree on timeout. It remains a fallback and is not the official Kimina evaluator.
 - The P2 evaluator harness now supports batched verifier requests and computes Pass@1/8/32 (when the sample count permits), all-zero/mixed/all-one group rates, format failures, proof lengths and generation/verification wall time.
 
 ## Local checks
@@ -26,6 +27,7 @@
 | `uv run pytest` | 8 passed |
 | `uv run ruff check src scripts tests` | passed |
 | `uv run python -m compileall -q src scripts tests` | passed |
+| Native verifier timeout/process-tree smoke | passed |
 | Model load | passed on CUDA (`torch 2.9.0+cu128`) |
 | Model generation diagnostic | 16/16 candidates generated and extracted |
 | Markdown/extra-text contamination | 11/16 candidates in the diagnostic |
@@ -51,11 +53,11 @@ The generation diagnostics are stored locally at `experiments/results/` and are 
 - OS: Windows development environment.
 - GPU: RTX 4060 Laptop, 8 GiB, driver 572.61.
 - PyTorch: `2.9.0+cu128`; `torch.cuda.is_available()` is `True` (`NVIDIA GeForce RTX 4060 Laptop GPU`).
-- Docker CLI/daemon: unavailable.
-- Elan/Lean: available (`elan 4.2.4`, Lean `4.34.0`); no usable Mathlib cache or Kimina Lean Server is available locally.
-- WSL: command exists, but no usable Linux distribution is configured.
+- Docker Desktop: installed (CLI `29.8.0`, Desktop `4.91.0`), but the Linux daemon is unavailable; the backend currently fails on a Windows-locked Unix socket during startup.
+- Elan/Lean: available with the pinned local Lean `4.34.0-rc2` toolchain and Mathlib cache.
+- WSL: Ubuntu and Docker's `docker-desktop` distributions are registered as WSL2; Docker's internal data disk was isolated for regeneration, but the stale socket still requires a Windows restart.
 
-Therefore this machine can perform CUDA model generation and repository checks, but it cannot yet produce an honest Lean-verified reward, Pass@K, or RL training result. The native Lean smoke path is blocked on the Mathlib dependency/cache bootstrap, while `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
+Therefore this machine can perform CUDA model generation, repository checks, and native compiler diagnostics, but it cannot yet produce an official Lean-verified reward, Pass@K, or RL training result. The native batch import is currently too memory-heavy on this Windows workstation for a useful full run, while `http://127.0.0.1:8000/verify` returned HTTP 502 because no local Lean server is running.
 
 ## Next execution gate
 
