@@ -44,14 +44,19 @@ fi
 STEPS=3
 DRY=0
 SKIP_PREWARM=0
+EXTRA_ARGS=()
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/run_p3_smoke.sh [--steps N] [--skip-prewarm] [--dry]
+Usage: bash scripts/run_p3_smoke.sh [--steps N] [--skip-prewarm] [--dry] [hydra overrides...]
 
   --steps N        Optimizer steps (1 = P3-0 full-FT memory probe; 2..5 = P3-A smoke; default 3).
   --skip-prewarm   Skip the Lean server warm-up / latency ladder.
   --dry            Print the command chain without executing anything.
+
+Any other `key=value` argument is forwarded to the VERL trainer as a hydra
+override (e.g. actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2), which
+is how the P3-0 memory probe walks the OOM adjustment order.
 EOF
 }
 
@@ -61,7 +66,8 @@ while [[ $# -gt 0 ]]; do
     --skip-prewarm) SKIP_PREWARM=1; shift ;;
     --dry) DRY=1; shift ;;
     -h|--help) usage; exit 0 ;;
-    *) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
+    --*) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
+    *) EXTRA_ARGS+=("$1"); shift ;;
   esac
 done
 
@@ -189,7 +195,7 @@ if (( DRY )); then
   echo "[2/3] Lean server warm-up"
   print_cmd "${PREWARM_CMD[@]}"
   echo "[3/3] pinned VERL trainer (P3-A smoke: $STEPS steps, n=4, 1 GPU)"
-  print_cmd "${MAIN_PPO_CMD[@]}"
+  print_cmd "${MAIN_PPO_CMD[@]}" "${EXTRA_ARGS[@]}"
   exit 0
 fi
 
@@ -231,4 +237,4 @@ fi
 
 echo "[3/3] Launching pinned VERL trainer (P3-A smoke: $STEPS steps, n=4, 1 GPU)"
 echo "  overrides: docs/p3_config_audit.md, configs/rl/kimina_0.6b_pilot.yaml"
-"${MAIN_PPO_CMD[@]}" "$@"
+"${MAIN_PPO_CMD[@]}" "${EXTRA_ARGS[@]}"
