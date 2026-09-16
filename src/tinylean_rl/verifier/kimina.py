@@ -3,9 +3,68 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from typing import Any
 
 import httpx
+
+# Status vocabulary mirrors `kimina_client.models.SnippetStatus` for the
+# Kimina Lean Server 2.0.0 `/verify` response schema.
+LEAN_STATUSES = (
+    "valid",
+    "sorry",
+    "lean_error",
+    "repl_error",
+    "timeout_error",
+    "server_error",
+    "unknown",
+)
+
+
+def result_lean_status(item: Any) -> str:
+    """Classify one `/verify` result using Kimina 2.0.0 semantics.
+
+    Matches `kimina_client`: a snippet is ``valid`` only when the REPL-level
+    ``error`` is absent, the ``messages`` carry no ``error`` severity and the
+    ``sorries`` list is empty. Batch responses wrap each snippet as
+    ``{"custom_id": ..., "error": ..., "response": {...}}``.
+    """
+
+    if not isinstance(item, Mapping):
+        return "unknown"
+
+    error = item.get("error")
+    if error:
+        return "timeout_error" if "timed out" in str(error).lower() else "server_error"
+
+    response = item.get("response")
+    if response is None:
+        # Legacy/simplified shapes kept for robustness against older servers.
+        status = str(item.get("status", item.get("result", ""))).lower()
+        if status in LEAN_STATUSES:
+            return status
+        for key in ("is_valid", "valid", "verified", "success", "isSuccess"):
+            if isinstance(item.get(key), bool):
+                return "valid" if item[key] else "unknown"
+        return "unknown"
+
+    if not isinstance(response, Mapping):
+        return "unknown"
+    if "message" in response:
+        return "repl_error"
+    messages = response.get("messages") or []
+    if any(isinstance(message, Mapping) and message.get("severity") == "error" for message in messages):
+        return "lean_error"
+    sorries = response.get("sorries") or []
+    if sorries:
+        return "sorry"
+    return "valid"
+
+
+def result_is_valid(item: Any) -> bool:
+    """True only when the snippet compiles with no error and no sorry."""
+
+    return result_lean_status(item) == "valid"
 
 
 def verify_code(

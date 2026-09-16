@@ -1,3 +1,5 @@
+import pytest
+
 from tinylean_rl.verifier import kimina
 
 
@@ -22,4 +24,33 @@ def test_verify_codes_builds_kimina_payload(monkeypatch):
     assert result["results"][0]["status"] == "valid"
     assert captured["url"] == "http://server/verify"
     assert captured["json"]["codes"] == [{"custom_id": "a", "proof": "proof"}]
+
+
+@pytest.mark.parametrize(
+    ("item", "expected"),
+    [
+        ({"error": None, "response": {"messages": [], "sorries": []}}, "valid"),
+        ({"response": {}}, "valid"),
+        ({"response": {"messages": [{"severity": "error", "data": "unknown identifier"}]}}, "lean_error"),
+        ({"response": {"messages": [], "sorries": [{"pos": {"line": 1, "column": 1}}]}}, "sorry"),
+        ({"error": "Timed out while executing the snippet"}, "timeout_error"),
+        ({"error": "connection reset by peer"}, "server_error"),
+        ({"response": {"message": "REPL crashed"}}, "repl_error"),
+        ({"status": "valid"}, "valid"),
+        ({"is_valid": True}, "valid"),
+        ({"is_valid": False}, "unknown"),
+        ({"custom_id": "a"}, "unknown"),
+        (None, "unknown"),
+    ],
+)
+def test_result_lean_status(item, expected):
+    assert kimina.result_lean_status(item) == expected
+
+
+def test_result_is_valid_matches_official_semantics():
+    assert kimina.result_is_valid({"response": {"messages": [], "sorries": []}})
+    assert not kimina.result_is_valid({"response": {"messages": [], "sorries": [{"pos": {}}]}})
+    assert not kimina.result_is_valid({"response": {"messages": [{"severity": "error"}]}})
+    assert not kimina.result_is_valid({"error": "Connection error."})
+    assert not kimina.result_is_valid({})
 

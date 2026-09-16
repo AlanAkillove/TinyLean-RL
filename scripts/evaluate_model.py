@@ -32,7 +32,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 from tinylean_rl.evaluation.metrics import group_rates, pass_at_k
 from tinylean_rl.inference.extract import extract_proof
-from tinylean_rl.verifier.kimina import verify_code, verify_codes
+from tinylean_rl.verifier.kimina import result_lean_status, verify_code, verify_codes
 
 SYSTEM_PROMPT = "You are an expert in mathematics and proving theorems in Lean 4."
 USER_TEMPLATE = """Think about and solve the following problems step by step in Lean 4.
@@ -107,25 +107,25 @@ def response_items(decoded: dict[str, Any]) -> list[dict[str, Any]]:
     return []
 
 
-def result_is_valid(item: dict[str, Any]) -> bool:
-    """Decide whether one Kimina response item counts as a valid proof.
+def classify_verification(item: dict[str, Any] | None) -> tuple[bool, str]:
+    """Map one Kimina result item to ``(verified, verify_status)``.
 
-    The 2.0.0 server answers with ``{"custom_id", "response"}``; a candidate
-    failed when ``response.error`` is set or any message carries severity
-    ``error``.  Boolean flags from older clients are still honoured.
+    ``verified`` follows the official semantics: no REPL error, no ``error``
+    severity message and no ``sorry``. ``verify_status`` separates genuine
+    proof failures (``lean_error``/``sorry``) from verifier-side trouble
+    (``verifier_error``: timeout, REPL/server error, missing response).
     """
 
-    response = item.get("response")
-    if isinstance(response, dict):
-        if response.get("error"):
-            return False
-        messages = response.get("messages") or []
-        return not any(str(message.get("severity", "")).lower() == "error" for message in messages)
-    for key in ("is_valid", "valid", "verified", "success", "isSuccess"):
-        if isinstance(item.get(key), bool):
-            return item[key]
-    status = str(item.get("status", item.get("result", ""))).lower()
-    return status in {"valid", "verified", "success", "successful", "ok", "pass", "passed"}
+    if item is None:
+        return False, "verifier_error"
+    status = result_lean_status(item)
+    if status == "valid":
+        return True, "verified"
+    if status == "lean_error":
+        return False, "lean_error"
+    if status == "sorry":
+        return False, "sorry"
+    return False, "verifier_error"
 
 
 def main() -> int:
@@ -260,18 +260,18 @@ def main() -> int:
                     item = by_id.get(custom_id)
                     if item is None and result_index < len(items):
                         item = items[result_index]
-                    valid = bool(item and result_is_valid(item))
+                    valid, status = classify_verification(item)
                     generated_records[record_index]["verified"] = valid
-                    generated_records[record_index]["verify_status"] = "verified" if valid else "lean_error"
+                    generated_records[record_index]["verify_status"] = status
             else:
                 # A crashing candidate (e.g. native_decide on huge values) must
                 # not invalidate its healthy batch neighbours.
                 for record_index, custom_id, proof in pending:
                     try:
                         single = response_items(verify_code(proof, custom_id=custom_id))
-                        valid = bool(single and result_is_valid(single[0]))
+                        valid, status = classify_verification(single[0] if single else None)
                         generated_records[record_index]["verified"] = valid
-                        generated_records[record_index]["verify_status"] = "verified" if valid else "lean_error"
+                        generated_records[record_index]["verify_status"] = status
                     except httpx.HTTPError:
                         generated_records[record_index]["verify_status"] = "verifier_error"
                         print(f"  [warn] candidate {custom_id} left unverified (verifier error)")
@@ -307,6 +307,9 @@ def main() -> int:
         )
 
     rates = group_rates(counts, args.samples_per_theorem)
+    lean_statuses = sorted(
+        {record["lean_status"] for record in generated_records if record["lean_status"] is not None}
+    )
     summary: dict[str, Any] = {
         "artifact_type": "verified_evaluation" if not args.dry_run else "generation_only_dry_run",
         "warning": None if not args.dry_run else "Dry-run records are not verified proofs.",
@@ -319,6 +322,10 @@ def main() -> int:
         "verification_seconds": round(verification_seconds, 3),
         "format_failures": sum(not record["format_ok"] for record in generated_records),
         "verified_candidates": sum(record["verified"] for record in generated_records),
+        "lean_status_counts": {
+            status: sum(record["lean_status"] == status for record in generated_records)
+            for status in lean_statuses
+        },
         "group_rates": rates,
         "pass_at_k": {
             str(k): sum(pass_at_k(count, args.samples_per_theorem, k) for count in counts) / len(counts)
