@@ -84,7 +84,7 @@ The `training` extra carries the pinned VERL matrix (D004): `vllm==0.9.1`, `ray`
 
 `scripts/doctor.sh` enforces a 23 GiB GPU memory floor for the smoke host. The single-device update-step footprint measured by `scripts/lora_step_probe.py` is recorded in `experiments/results/p2_5_lora_step_probe.json`; use it (together with the audit) when sizing the Linux host. Every override and its pinned-commit justification lives in `docs/p3_config_audit.md`; read it before changing any value in the smoke script.
 
-For a longer P3-B pilot, `scripts/run_rl_pilot.sh` reuses the same P2.5 gate manifest and environment.
+For the bounded P3-B learning pilot, `scripts/run_p3_pilot.sh` reuses the same gates and the frozen configuration with explicit bounds: `--steps` (default 30, hard range 1..500, never auto-extended), `--n` (group size; `--n 8` restores the official baseline), `--save-freq` (default 10, keeps the last 3 checkpoints) and per-step rollout dumps under `runs/p3b_pilot/rollout_data` for the IGR_t / Z_t / O_t analysis. `scripts/run_rl_pilot.sh` remains the coarse gate for any longer run.
 
 ## Windows development note
 

@@ -55,8 +55,8 @@ experiments/*.log
 # Cached rollout batches (W1 P2.5; large jsonl, not for Git)
 experiments/local_rl_batch*/
 
-# P3-0 rollout calibration batch cache (large jsonl, not for Git)
-experiments/p3_0_batch*/
+# P3 rollout calibration batch caches (large jsonl, not for Git)
+experiments/p3_*_batch*/
 
 # VERL checkpoint output (trainer.default_local_dir fallback)
 checkpoints/

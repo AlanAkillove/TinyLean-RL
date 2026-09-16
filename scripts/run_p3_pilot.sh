@@ -1,27 +1,23 @@
 #!/usr/bin/env bash
-# Provisional P3-A on-policy smoke for the pinned Kimina-Prover-RL trainer (P2.5 W6).
+# P3-B short learning pilot runner (frozen P3-A config; docs/p3_config_audit.md S10).
 #
-# STATUS: provisional P3-A runner - NOT yet Linux-validated, NOT yet final
-# training-mode validated (full-parameter vs LoRA is frozen during P3-0).
-# Run it only after P3-0 (Linux migration & on-policy calibration) has frozen
-# the P3-A config; see docs/p3_linux_handoff.md.
+# Runs the pinned VERL trainer for a bounded number of optimizer steps on the
+# frozen single-GPU configuration, with periodic checkpoints and per-step
+# rollout dumps so the IGR_t / Z_t / O_t learning dynamics can be computed
+# after the run. The runner is strictly bounded by --steps and never
+# auto-scales: the protocol forbids silently extending a running experiment
+# (P3-C stays undefined until P3-B completes and is reviewed).
 #
-# Command chain (Linux, single GPU 24 GB, see docs/environment.md):
-#   source scripts/env.sh
-#   uv sync --extra inference            # plus the pinned VERL install (runbook)
-#   docker compose -f infra/lean-server/compose.yaml up -d
-#   bash scripts/doctor.sh               # environment gate
-#   (P3-0: Promptset rollout calibration at temp 1.0 + full-FT memory probe)
-#   bash scripts/run_p3_smoke.sh --steps 3
+# Frozen config (docs/p3_config_audit.md S10, validated by E014/E015):
+#   tb 4 prompts x n -> 16 (n=4) or 32 (n=8) sequences, mini 4, micro 2,
+#   max_prompt 1024, max_response 4096, vLLM util 0.40, max_num_batched_tokens
+#   5120, DrGRPO without KL, multiturn off. --n 8 restores the official
+#   baseline group size (recovery ladder #1); the default keeps the calibrated
+#   n=4.
 #
-# Gates: Linux, Docker daemon + reachable Lean server, 0.6B model directory,
-# Promptset parquet, and the P2.5 completion manifest
-# (experiments/manifests/p2_5_complete.yaml).  The audited overrides come from
-# docs/p3_config_audit.md and configs/rl/kimina_0.6b_pilot.yaml (n=4, single
-# GPU, 2-5 optimizer steps, no KL -> no reference worker).
-# Checkpoint contract (P3-A success criteria): save once at the final step
-# (save_freq = steps) so save/reload can be validated; P3_SMOKE_SAVE_FREQ
-# overrides.  `--dry` prints the full command chain without executing anything.
+# Command chain: source scripts/env.sh -> (gates) -> prepare_data (idempotent)
+# -> prewarm -> main_ppo. Checkpoints under --dir (default runs/p3b_pilot),
+# rollout dumps under <dir>/rollout_data.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -29,9 +25,7 @@ ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR/env.sh" >/dev/null
 
-# Resolve the project virtualenv explicitly: on Linux `python3` is the system
-# interpreter, which does not carry the VERL/vLLM training stack (env.sh only
-# exports paths; it does not activate the venv).
+# Resolve the project virtualenv explicitly (env.sh does not activate it).
 PYTHON="${PYTHON:-}"
 if [[ -z "$PYTHON" ]]; then
   if [[ -x "$ROOT/.venv/bin/python" ]]; then
@@ -41,28 +35,39 @@ if [[ -z "$PYTHON" ]]; then
   fi
 fi
 
-STEPS=3
+STEPS=30
+N=4
+SAVE_FREQ="${P3_PILOT_SAVE_FREQ:-10}"
+LOCAL_DIR="${P3_PILOT_DIR:-$ROOT/runs/p3b_pilot}"
 DRY=0
 SKIP_PREWARM=0
 EXTRA_ARGS=()
 
 usage() {
   cat <<'EOF'
-Usage: bash scripts/run_p3_smoke.sh [--steps N] [--skip-prewarm] [--dry] [hydra overrides...]
+Usage: bash scripts/run_p3_pilot.sh [--steps N] [--n K] [--save-freq M]
+                                    [--dir PATH] [--skip-prewarm] [--dry]
+                                    [hydra overrides...]
 
-  --steps N        Optimizer steps (1 = P3-0 full-FT memory probe; 2..5 = P3-A smoke; default 3).
+  --steps N        Optimizer steps for the pilot (1..500, default 30). The run
+                   stops at N and is never extended automatically.
+  --n K            Rollout group size (1..16, default 4). --n 8 restores the
+                   official baseline group size (tb 4 prompts -> 32 sequences).
+  --save-freq M    Checkpoint every M steps (default 10; keep the last 3).
+  --dir PATH       Checkpoint/output directory (default runs/p3b_pilot).
   --skip-prewarm   Skip the Lean server warm-up / latency ladder.
   --dry            Print the command chain without executing anything.
 
-Any other `key=value` argument is forwarded to the VERL trainer as a hydra
-override (e.g. actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2), which
-is how the P3-0 memory probe walks the OOM adjustment order.
+Any other key=value argument is forwarded to the VERL trainer as a hydra override.
 EOF
 }
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --steps) STEPS="${2:?--steps requires a value}"; shift 2 ;;
+    --n) N="${2:?--n requires a value}"; shift 2 ;;
+    --save-freq) SAVE_FREQ="${2:?--save-freq requires a value}"; shift 2 ;;
+    --dir) LOCAL_DIR="${2:?--dir requires a value}"; shift 2 ;;
     --skip-prewarm) SKIP_PREWARM=1; shift ;;
     --dry) DRY=1; shift ;;
     -h|--help) usage; exit 0 ;;
@@ -71,19 +76,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --steps 1 is reserved for the P3-0 full-FT memory probe (docs/p3_linux_handoff.md):
-# a single optimizer step answers the feasibility question, so the 2..5 P3-A gate
-# must not require running two steps before the memory question is settled.
-if ! [[ "$STEPS" =~ ^[0-9]+$ ]] || (( STEPS < 1 || STEPS > 5 )); then
-  echo "P3-A smoke: --steps must be an integer in 1..5 (1 = P3-0 memory probe; 2..5 = P3-A smoke) (got '$STEPS')." >&2
+if ! [[ "$STEPS" =~ ^[0-9]+$ ]] || (( STEPS < 1 || STEPS > 500 )); then
+  echo "P3-B pilot: --steps must be an integer in 1..500 (got '$STEPS')." >&2
+  exit 2
+fi
+if ! [[ "$N" =~ ^[0-9]+$ ]] || (( N < 1 || N > 16 )); then
+  echo "P3-B pilot: --n must be an integer in 1..16 (got '$N')." >&2
+  exit 2
+fi
+if ! [[ "$SAVE_FREQ" =~ ^[0-9]+$ ]] || (( SAVE_FREQ < 1 )); then
+  echo "P3-B pilot: --save-freq must be a positive integer (got '$SAVE_FREQ')." >&2
   exit 2
 fi
 
-# P3-A checkpoint contract: save once at the final smoke step (save_freq = steps)
-# so the save -> reload/resume path can actually be validated in one run.
-SAVE_FREQ="${P3_SMOKE_SAVE_FREQ:-$STEPS}"
-
-fail() { echo "P3-A smoke blocked: $1" >&2; exit 2; }
+fail() { echo "P3-B pilot blocked: $1" >&2; exit 2; }
 
 # --- Paths -----------------------------------------------------------------
 RECIPE_DIR="$ROOT/third_party/kimina-prover-rl/recipe/kimina_prover_rl"
@@ -92,8 +98,10 @@ PROMPT_SET_NAME="AI-MO/Kimina-Prover-Promptset"
 TRAIN_PARQUET="$PROMPT_SETS_DIR/prompt_sets/$PROMPT_SET_NAME/train.parquet"
 TEST_PARQUET="$PROMPT_SETS_DIR/prompt_sets/$PROMPT_SET_NAME/test.parquet"
 MODEL_PATH="$TINYLEAN_MODEL_ROOT/kimina_distill_0_6b"
-GATE_FILE="$ROOT/experiments/manifests/p2_5_complete.yaml"
+P25_GATE_FILE="$ROOT/experiments/manifests/p2_5_complete.yaml"
+P30_MANIFEST="$ROOT/experiments/manifests/p3_0_complete.yaml"
 WARMUP_JSON="$ROOT/experiments/results/lean_server_warmup_p3.json"
+ROLLOUT_DUMP_DIR="$LOCAL_DIR/rollout_data"
 
 # --- Commands ---------------------------------------------------------------
 PREPARE_CMD=(
@@ -111,20 +119,6 @@ PREWARM_CMD=(
   --output "$WARMUP_JSON"
 )
 
-# Frozen P3-A config (docs/p3_config_audit.md S10, configs/rl/kimina_0.6b_pilot.yaml;
-# every value below was validated on this host by the P3-0 memory probe E014):
-# - n=4 retained after the temp-1.0 calibration (IGR 0.09375, marginal band);
-#   scripts/run_p3_pilot.sh --n 8 restores the official baseline group size;
-# - train_batch_size 4 prompts -> 16 sequences; mini 4; micro 2;
-# - max_prompt_length 1024 + 4096 response (no successful proof hit the cap:
-#   verified natural max 3955);
-# - vLLM gpu_memory_utilization 0.40 (0.30 fails the KV check for
-#   max_model_len 5120); max_num_batched_tokens 5120;
-# - DrGRPO: mean-only advantage, seq-mean-token-sum-norm, asymmetric clip,
-#   no KL loss and no KL in reward -> VERL skips the reference policy worker;
-# - multiturn disabled (audit S7 records the deviation);
-# - single GPU, human-scale step count; checkpoint saved once at the final
-#   step (trainer.save_freq = steps) to validate the save/reload path.
 MAIN_PPO_CMD=(
   "$PYTHON" -m verl.trainer.main_ppo
   algorithm.adv_estimator=grpo
@@ -161,7 +155,7 @@ MAIN_PPO_CMD=(
   actor_rollout_ref.rollout.name=vllm
   actor_rollout_ref.rollout.tensor_model_parallel_size=1
   actor_rollout_ref.rollout.gpu_memory_utilization=0.40
-  actor_rollout_ref.rollout.n=4
+  actor_rollout_ref.rollout.n="$N"
   actor_rollout_ref.rollout.max_num_batched_tokens=5120
   actor_rollout_ref.rollout.max_model_len=5120
   actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu=4
@@ -176,15 +170,18 @@ MAIN_PPO_CMD=(
   # every step, so an initialized wandb run must exist (env.sh defaults
   # WANDB_MODE=offline).
   trainer.logger='["console","wandb"]'
-  trainer.project_name='kimina-prover-p3a'
-  trainer.experiment_name='p3a-smoke'
+  trainer.project_name='kimina-prover-p3b'
+  trainer.experiment_name='p3b-pilot'
   trainer.n_gpus_per_node=1
   trainer.nnodes=1
   trainer.save_freq="$SAVE_FREQ"
+  trainer.max_actor_ckpt_to_keep=3
   trainer.test_freq=-1
   trainer.val_before_train=False
   trainer.total_epochs=1
   trainer.total_training_steps="$STEPS"
+  trainer.default_local_dir="$LOCAL_DIR"
+  trainer.rollout_data_dir="$ROLLOUT_DUMP_DIR"
 )
 
 print_cmd() {
@@ -199,7 +196,7 @@ if (( DRY )); then
   print_cmd "${PREPARE_CMD[@]}"
   echo "[2/3] Lean server warm-up"
   print_cmd "${PREWARM_CMD[@]}"
-  echo "[3/3] pinned VERL trainer (P3-A smoke: $STEPS steps, n=4, 1 GPU)"
+  echo "[3/3] pinned VERL trainer (P3-B pilot: $STEPS steps, n=$N, 1 GPU)"
   print_cmd "${MAIN_PPO_CMD[@]}" "${EXTRA_ARGS[@]}"
   exit 0
 fi
@@ -212,12 +209,14 @@ fi
 [[ -d "$MODEL_PATH" ]] || fail "model missing: $MODEL_PATH"
 [[ -f "$ROOT/data/raw/kimina_promptset/data/train-00000-of-00001.parquet" ]] \
   || fail "promptset missing: data/raw/kimina_promptset/data/train-00000-of-00001.parquet"
-[[ -f "$GATE_FILE" ]] \
-  || fail "P2.5 completion manifest missing: $GATE_FILE (see docs/studies/rl_readiness.md)"
+[[ -f "$P25_GATE_FILE" ]] \
+  || fail "P2.5 completion manifest missing: $P25_GATE_FILE"
+[[ -f "$P30_MANIFEST" ]] \
+  || fail "P3-0 completion manifest missing: $P30_MANIFEST (run the P3-0 chain first)"
 [[ -f "$RECIPE_DIR/kimina_prover_0.6B.sh" ]] \
   || fail "pinned recipe missing; run: git submodule update --init --recursive"
 if ! curl --silent --show-error --fail --max-time 5 "$LEAN_SERVER_API_URL/health" >/dev/null 2>&1; then
-  fail "Lean server unreachable at $LEAN_SERVER_API_URL (docker compose -f infra/lean-server/compose.yaml up -d); the 2.0.0 image disables /openapi.json in prod mode, so readiness is probed via /health"
+  fail "Lean server unreachable at $LEAN_SERVER_API_URL (docker compose -f infra/lean-server/compose.yaml up -d)"
 fi
 if ! "$PYTHON" -c 'import verl' >/dev/null 2>&1; then
   fail "VERL is not importable with '$PYTHON'; install the pinned submodule (docs/environment.md runbook)"
@@ -225,6 +224,13 @@ fi
 
 # dataset.py / reward.py import the kimina_prover_rl package by absolute path.
 export PYTHONPATH="$RECIPE_DIR${PYTHONPATH:+:$PYTHONPATH}"
+
+mkdir -p "$LOCAL_DIR" "$ROLLOUT_DUMP_DIR"
+
+echo "[P3-B pilot] steps=$STEPS n=$N save_freq=$SAVE_FREQ dir=$LOCAL_DIR"
+echo "  sequences/step: $((4 * N)) (tb 4 prompts x n=$N)"
+echo "  watch: IGR_t / Z_t / O_t (from rollout dumps), score mean, response"
+echo "  length, clip ratio, entropy, ppo_kl, grad_norm, step time, peak VRAM."
 
 echo "[1/3] Dataset preparation (idempotent)"
 if [[ -f "$TRAIN_PARQUET" && -f "$TEST_PARQUET" ]]; then
@@ -240,6 +246,6 @@ else
   "${PREWARM_CMD[@]}"
 fi
 
-echo "[3/3] Launching pinned VERL trainer (P3-A smoke: $STEPS steps, n=4, 1 GPU)"
-echo "  overrides: docs/p3_config_audit.md, configs/rl/kimina_0.6b_pilot.yaml"
+echo "[3/3] Launching pinned VERL trainer (P3-B pilot: $STEPS steps, n=$N, 1 GPU)"
+echo "  frozen config: docs/p3_config_audit.md S10, configs/rl/kimina_0.6b_pilot.yaml"
 "${MAIN_PPO_CMD[@]}" "${EXTRA_ARGS[@]}"
