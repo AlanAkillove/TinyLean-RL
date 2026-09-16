@@ -25,6 +25,9 @@ inference = [
   "transformers>=4.45,<5",
 ]
 verifier = ["kimina-client>=0.1,<1"]
+probe = [
+  "peft>=0.13,<1",
+]
 data = [
   "datasets>=4,<5",
   "hf-xet>=1,<2",

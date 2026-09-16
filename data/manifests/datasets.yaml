@@ -26,7 +26,7 @@ datasets:
   numinamath_lean:
     source_type: huggingface
     repo_id: AI-MO/NuminaMath-LEAN
-    revision: main
-    status: metadata_only
-    purpose: later verified SFT subset construction; do not materialize in P0
+    revision: 51fa67f1f647ae1ecd81eef9f19306aa8a7b3a94
+    status: downloadable
+    purpose: P2.5 W5 cold-start verified SFT preparation; repo is ~78 MiB (checked 2026-09-16), size gate enforced by download_data.py
     local_dir: data/raw/numinamath_lean

@@ -27,6 +27,13 @@ def main() -> int:
     parser.add_argument("--dataset-key", choices=sorted(load_datasets()), required=True)
     parser.add_argument("--revision", help="Override manifest revision.")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--max-gib",
+        type=float,
+        default=2.0,
+        help="Refuse Hugging Face downloads larger than this many GiB (default 2).",
+    )
+    parser.add_argument("--allow-large", action="store_true", help="Bypass the size gate.")
     args = parser.parse_args()
     spec = load_datasets()[args.dataset_key]
     revision = args.revision or spec["revision"]
@@ -54,7 +61,18 @@ def main() -> int:
         resolved = subprocess.check_output(["git", "-C", str(target), "rev-parse", "HEAD"], text=True).strip()
     elif spec["source_type"] == "huggingface":
         api = HfApi()
-        info = api.dataset_info(spec["repo_id"], revision=revision)
+        info = api.dataset_info(spec["repo_id"], revision=revision, files_metadata=True)
+        total_bytes = sum(file.size or 0 for file in info.siblings)
+        print(f"repo size: {total_bytes / 2**20:.1f} MiB across {len(info.siblings)} files")
+        largest = sorted(info.siblings, key=lambda file: -(file.size or 0))[:3]
+        for file in largest:
+            print(f"  largest: {file.rfilename} ({(file.size or 0) / 2**20:.1f} MiB)")
+        if total_bytes > args.max_gib * 2**30 and not args.allow_large:
+            raise SystemExit(
+                f"Refusing to download {total_bytes / 2**30:.2f} GiB (> {args.max_gib} GiB). "
+                "Use a limited/streamed sampling path (see scripts/build_verified_sft.py) "
+                "or pass --allow-large."
+            )
         snapshot_download(
             repo_id=spec["repo_id"],
             repo_type="dataset",

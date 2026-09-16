@@ -52,6 +52,9 @@ experiments/*.ps1
 experiments/*.txt
 experiments/*.log
 
+# Cached rollout batches (W1 P2.5; large jsonl, not for Git)
+experiments/local_rl_batch*/
+
 # OS/editor
 .DS_Store
 Thumbs.db
