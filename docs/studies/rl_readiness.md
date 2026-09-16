@@ -1,7 +1,7 @@
 # Preliminary Study — Local RL Readiness（P2.5 阶段记录）
 
 > **定位**：TinyLean-RL 的 P2.5 阶段（本地 RL 就绪验证，2026-09-16）的完整记录与结论。主线研究计划见 [`../research_plan.md`](../research_plan.md)；逐次实验条目见 [`../experiment_log.md`](../experiment_log.md)（E009–E011）；证据清单见 `experiments/manifests/p2_5_complete.yaml`。
-> **原则**：test the Kimina logic, don't replace it —— 不引入 TRL、不自造 GRPO；实现一律以 pinned commit `e16b605e8186614c685875c9b57eb19e841b521a` 为准（GRPO 目标已移植为 `tinylean_rl.rl.grpo`，27 个参考测试锁数学）。
+> **原则**：test the Kimina logic, don't replace it —— 不引入 TRL、不自造 GRPO；实现一律以 pinned commit `e16b605e8186614c685875c9b57eb19e841b521a` 为准（GRPO 目标已移植为 `tinylean_rl.rl.grpo`，19 个参考测试锁数学）。
 > **目标**：在本机（Windows + RTX 4060 8 GiB）回答“RL 的前置条件是否全部成立”，把正式 P3 RL pilot 交给 Linux + RTX 3090 24 GB（下阶段 **P3-0 — Linux Migration & On-Policy Calibration**，见 [`../p3_linux_handoff.md`](../p3_linux_handoff.md)）。
 
 ## 一、停止条件与判定（6/6 满足）

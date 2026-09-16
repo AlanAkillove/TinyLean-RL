@@ -86,7 +86,7 @@ Observed constraints from the same runs:
 | W | 交付 | 关键数字 |
 |---|---|---|
 | W1 | Promptset 32×4 cached rollout profile | mixed 1/32、all-one 3/32（IGR 3.1%）；截断 96/128（75%）；verifier_errors 5；产物 `p2_5_promptset_profile.json` + `experiments/local_rl_batch/` |
-| W2 | GRPO 移植 + rehearsal（停止条件②） | 非零 advantage ±0.5、per-sample loss ±0.386、grad_norm 2.036（有限）；27 tests 全过 |
+| W2 | GRPO 移植 + rehearsal（停止条件②） | 非零 advantage ±0.5、per-sample loss ±0.386、grad_norm 2.036（有限）；全套件 27 tests 全过 |
 | W3 | LoRA 单步显存探针 | r16/32 × 1024/2048 四组合全过；2048 组合 reserved 8.6–8.75 GB > 物理 8.19 GB（共享显存兜底，不可依赖）；CPU 冒烟 224/224 张量有梯度 |
 | W4 | P3 config 审计 | `docs/p3_config_audit.md`；reward contract（format gating/并发/单轮/verifier_error→0/严格验证）写回 research_plan §四 |
 | W5 | cold-start SFT 数据管道 | NuminaMath-LEAN 104,155→31,634；抽样验证 190/200（95%）；train 31,002 / val 632 |
