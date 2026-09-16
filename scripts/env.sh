@@ -11,8 +11,16 @@ export HF_HOME="${HF_HOME:-$TINYLEAN_ROOT/.cache/huggingface}"
 export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-$HF_HOME/hub}"
 export HF_HUB_DOWNLOAD_TIMEOUT="${HF_HUB_DOWNLOAD_TIMEOUT:-300}"
 export HF_HUB_ETAG_TIMEOUT="${HF_HUB_ETAG_TIMEOUT:-60}"
+# This host cannot reach huggingface.co (research decision D002): default all
+# Hugging Face downloads to the working mirror. Override by exporting
+# HF_ENDPOINT / HF_HUB_DISABLE_XET before sourcing this file.
+export HF_ENDPOINT="${HF_ENDPOINT:-https://hf-mirror.com}"
+export HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$TINYLEAN_ROOT/.cache}"
 export UV_CACHE_DIR="${UV_CACHE_DIR:-$TINYLEAN_ROOT/.cache/uv}"
+# GitHub release downloads (the pinned flash-attn wheel) are slow on this host;
+# uv's default 30 s HTTP timeout is too short for metadata re-validation.
+export UV_HTTP_TIMEOUT="${UV_HTTP_TIMEOUT:-600}"
 export TORCH_HOME="${TORCH_HOME:-$TINYLEAN_ROOT/.cache/torch}"
 export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-$TINYLEAN_ROOT/.cache/triton}"
 export RAY_TMPDIR="${RAY_TMPDIR:-$TINYLEAN_ROOT/.cache/ray}"
