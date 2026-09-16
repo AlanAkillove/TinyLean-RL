@@ -1,0 +1,47 @@
+# P3-0 environment record - Linux RTX 3090 training host.
+# Compact machine/stack record (no raw system logs). Durable host notes:
+# docs/environment.md; research decisions: docs/research-decisions.md (D001-D004).
+stage: P3-0
+name: Linux Migration & On-Policy Calibration
+audited_utc: "2026-09-16T16:44:50Z"
+host:
+  machine: Dell PowerEdge T640 (lab training server)
+  os: Ubuntu 24.04.4 LTS
+  kernel: 7.0.0-31-generic
+  cpu: 2 x Intel Xeon Gold 5218 @ 2.30 GHz (64 logical CPUs)
+  ram_gib: 62
+  disk: /dev/sda2, 3.6 TiB total, ~2.8 TiB free (20% used)
+gpu:
+  model: NVIDIA GeForce RTX 3090
+  vram_mib: 24576
+  free_at_audit_mib: 24107
+  driver: 580.173.02
+  cuda_driver_max: "13.0"
+  power_limit_w: 370
+toolchain:
+  uv: 0.12.13
+  docker: 29.8.0
+  docker_compose: 5.5.1
+lean_server:
+  image: projectnumina/kimina-lean-server:2.0.0
+  container: tinylean-rl-lean-server
+  endpoint: http://127.0.0.1:8000
+  readiness_probe: "/health 200; /openapi.json 404 (prod mode)"
+  endpoint_checks:
+    verify: "POST /verify 200"
+    api_check: "POST /api/check 200 (used by the recipe reward via kimina_client)"
+project_env:
+  python: 3.12.3
+  torch: 2.7.0                    # cu126 default wheels; pinned VERL matrix (D004)
+  vllm: 0.9.1
+  ray: 2.48.0
+  flash_attn: 2.8.0.post2+cu12torch2.7cxx11abiTRUE
+  verl: e16b605e8186614c685875c9b57eb19e841b521a   # editable submodule
+  transformers: 4.53.3           # vllm 0.9.1 breaks on transformers >= 4.54 (aimv2 AutoConfig collision)
+  numpy: 1.26.4                   # verl requires numpy<2.0
+  kimina_client: 0.2.1
+network_notes:
+  - huggingface.co and registry-1.docker.io are unreachable from this host.
+  - Hugging Face downloads default to https://hf-mirror.com via scripts/env.sh (D002).
+  - The Lean server image was side-loaded with docker save / docker load (D003).
+  - The Compose network is pinned to 10.201.0.0/24 to avoid campus-LAN collisions.

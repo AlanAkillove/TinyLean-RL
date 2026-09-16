@@ -21,8 +21,11 @@ dependencies = [
 [project.optional-dependencies]
 inference = [
   "accelerate>=0.34,<2",
-  "torch==2.9.0+cu128",
-  "transformers>=4.45,<5",
+  "torch==2.7.0",
+  # vllm 0.9.1 registers an "aimv2" AutoConfig unconditionally, which
+  # collides with transformers >= 4.54.0 (AIMv2 added upstream); keep the
+  # shared inference/training environment below that version.
+  "transformers>=4.51.1,<4.54",
 ]
 verifier = ["kimina-client>=0.1,<1"]
 probe = [
@@ -37,6 +40,17 @@ dev = [
   "pytest>=8,<9",
   "ruff>=0.8,<1",
 ]
+# P3 training stack pinned to the Kimina-Prover-RL matrix (research decision
+# D004): the pinned VERL commit allows vllm<=0.9.1, which requires
+# torch==2.7.0; torch 2.7.0 default PyPI wheels are the CUDA 12.6 builds and
+# flash-attn is installed from the official wheel matching torch 2.7 / cp312 /
+# cxx11abiTRUE.
+training = [
+  "vllm==0.9.1",
+  "ray[default]>=2.43.0,<2.49",
+  "verl[vllm]",
+  "flash-attn @ https://github.com/Dao-AILab/flash-attention/releases/download/v2.8.0.post2/flash_attn-2.8.0.post2+cu12torch2.7cxx11abiTRUE-cp312-cp312-linux_x86_64.whl",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -44,13 +58,8 @@ where = ["src"]
 [tool.uv]
 package = true
 
-[[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
-explicit = true
-
 [tool.uv.sources]
-torch = { index = "pytorch-cu128" }
+verl = { path = "third_party/kimina-prover-rl", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
