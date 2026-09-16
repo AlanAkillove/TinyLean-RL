@@ -22,13 +22,14 @@ export UV_CACHE_DIR="${UV_CACHE_DIR:-$TINYLEAN_ROOT/.cache/uv}"
 # uv's default 30 s HTTP timeout is too short for metadata re-validation.
 export UV_HTTP_TIMEOUT="${UV_HTTP_TIMEOUT:-600}"
 # Triton compiles a small CUDA-utils helper with the C compiler found in PATH
-# at first use; with conda's cc shim first in PATH that build fails on this host
-# (observed while initialising the vLLM engine, 2026-09-17). The system gcc
-# builds it fine; only applied when the caller has not chosen a compiler.
-if [[ -z "${CC:-}" && -x /usr/bin/gcc ]]; then
+# at first use; conda activation pre-exports CC/CXX pointing at its cc shim,
+# which fails to build it on this host (observed while initialising the vLLM
+# engine, 2026-09-17). Prefer the system toolchain unless the caller already
+# chose a non-conda compiler explicitly.
+if [[ -x /usr/bin/gcc && ( -z "${CC:-}" || "${CC:-}" == *conda* ) ]]; then
   export CC=/usr/bin/gcc
 fi
-if [[ -z "${CXX:-}" && -x /usr/bin/g++ ]]; then
+if [[ -x /usr/bin/g++ && ( -z "${CXX:-}" || "${CXX:-}" == *conda* ) ]]; then
   export CXX=/usr/bin/g++
 fi
 export TORCH_HOME="${TORCH_HOME:-$TINYLEAN_ROOT/.cache/torch}"
