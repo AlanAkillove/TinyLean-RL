@@ -1,0 +1,50 @@
+# P3-B short learning pilot - completion manifest.
+# Compact evidence record; full artifacts stay in runs/ and experiments/results/ (ignored).
+stage: P3-B
+name: Short learning pilot
+status: complete
+completed_utc: "2026-09-16T22:36:50Z"
+host_manifest: experiments/manifests/p3_0_environment.yaml
+pinned_verl_commit: e16b605e8186614c685875c9b57eb19e841b521a
+command: bash scripts/run_p3_pilot.sh --steps 30 --n 8
+
+config:
+  n: 8                         # recovery ladder #1, backed by E016 (paired IGR 0.00 -> 0.0625)
+  train_batch_size: 4          # -> 32 sequences/step
+  ppo_mini_batch_size: 4
+  ppo_micro_batch_size_per_gpu: 2
+  vllm_gpu_memory_utilization: 0.40
+  max_num_batched_tokens: 5120
+  max_prompt_length: 1024
+  max_response_length: 4096
+  save_freq: 10
+  steps: 30
+
+dynamics:                       # IGR/Z/O computed from the per-step rollout dumps
+  steps_1_10:  {igr: 0.100, z: 0.900, o: 0.000, score_mean: 0.0594}
+  steps_11_20: {igr: 0.200, z: 0.800, o: 0.000, score_mean: 0.1000}
+  steps_21_30: {igr: 0.225, z: 0.750, o: 0.025, score_mean: 0.1750}
+  all_30:      {igr: 0.175, z: 0.817, o: 0.008, score_mean: 0.1115}
+  steps_with_nonzero_group: 17   # of 30
+  final_five_steps_grad_nonzero: true   # grad_norm 0.08-0.19
+  shape: "Z_t down, score up, IGR still rising - the early phase the research plan predicted"
+
+resources:
+  wall_seconds: 4218
+  step_time_s: {mean: 136, median: 138, min: 78, max: 245}
+  nvidia_smi_peak_mib: 23639       # 23.1 GiB, stable across 30 steps, no OOM
+  verifier_errors: 0
+  format_failures_per_step: "9-31 of 32 (tracks the 4096 truncation; no worsening trend)"
+
+checkpoints: [runs/p3b_pilot/global_step_10, runs/p3b_pilot/global_step_20, runs/p3b_pilot/global_step_30]
+
+caveat: >
+  Each step draws a different theorem batch, so single steps are dominated by
+  theorem variance; the dynamics above are aggregate trends, not per-step causal
+  evidence. The confirmatory test is a fixed-theorem-set evaluation of the saved
+  checkpoints (step 10/20/30 vs the distill baseline) - proposed as the next step.
+
+next_options:
+  - fixed-set checkpoint evaluation (step-0/10/20/30 x N candidates + Lean) to confirm the learning signal
+  - extend the pilot (e.g. 30 more steps) if the evaluation confirms the trend
+  - record P3-B as-is and fold into the M1 write-up

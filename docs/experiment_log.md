@@ -273,6 +273,31 @@
 
 ---
 
+## 2026-09-17（P3-B）
+
+### E017 P3-B short learning pilot（n=8，30 优化步）
+
+- 目的：运行数十个 update，观察 IGR_t / Z_t / O_t / response length / entropy / KL 的合理变化（P3-B 目标；n=8 为协议恢复阶梯①，经 E016 校准背书，用户明确批准启动）。
+- 设置：冻结配置（tb4/mini4/micro2/util0.40/5120），n=8 → 32 序列/步；checkpoint 至 runs/p3b_pilot（save_freq=10，保留 3）；逐步骤 rollout dump。
+- 命令：`bash scripts/run_p3_pilot.sh --steps 30 --n 8`
+- 结果（30/30 步，exit 0，总耗时 4218 s；每步 4 组 × n=8，IGR 来自 rollout dump）：
+
+| 段 | IGR | Z（全零） | O（全一） | score_mean |
+|---|---|---|---|---|
+| 1–10 | 0.100 | 0.900 | 0.000 | 0.0594 |
+| 11–20 | 0.200 | 0.800 | 0.000 | 0.1000 |
+| 21–30 | **0.225** | **0.750** | 0.025 | **0.1750** |
+| 全体 | 0.175 | 0.817 | 0.008 | 0.1115 |
+
+  - 17/30 步出现非零组；最后 10 步中 9 步含 mixed 组；**最后 5 步连续非零梯度**（grad_norm 0.08–0.19，pg_loss 非零）；
+  - 每步时长 mean 136 s（78–245）；显存 nvidia-smi 峰值 **23.1 GiB** 稳定、无 OOM；verifier errors 0；
+  - response_length mean 2773–3953，clip 0.31–0.69；entropy 15–40 无塌缩；format 失败 9–31/32（与 4096 截断相关，无恶化趋势）；
+  - checkpoint：global_step_10 / 20 / 30（model+optim+extra_state+fsdp_config+huggingface；step_30 ≈ 7.3 GB）。
+- 结论：**动力学与研究计划预测一致**（Z_t ↓、score ↑、IGR_t 仍处上升段）。注意：每步定理集不同、逐步方差大；群学习证据为聚合趋势而非单步因果——**确认性检验（同一定理集评估 step-0/10/20/30 checkpoint）列为下一步**。已按协议到点即停，未自动延长。
+- 产物：`runs/p3b_pilot/`（global_step_10/20/30 + rollout_data 1–30.jsonl）、`experiments/results/p3b_pilot_vram.csv`、`.cache/p3b_pilot.log`；摘要 `experiments/manifests/p3b_pilot.yaml`。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：
