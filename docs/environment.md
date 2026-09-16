@@ -35,6 +35,9 @@ Host-specific network workarounds (do not change pinned revisions):
   side-loaded with `docker save` / `docker load` (D003).
 - The Compose network is pinned to `10.201.0.0/24` (`infra/lean-server/compose.yaml`)
   because automatic subnet allocation collided with the campus LAN.
+- The pinned recipe's dataset hook calls `wandb.log()` after every trainer step, so
+  runs use the wandb logger; `scripts/env.sh` defaults `WANDB_MODE=offline` (no account
+  needed, run data lands under the ignored `runs/wandb/`).
 
 ## Linux setup
 

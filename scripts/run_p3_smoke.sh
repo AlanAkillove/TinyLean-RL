@@ -170,7 +170,10 @@ MAIN_PPO_CMD=(
   custom_reward_function.name=reward
   +custom_reward_function.reward_kwargs.return_dict=True
   trainer.critic_warmup=0
-  trainer.logger='["console"]'
+  # The pinned recipe's NuminaRLDataset.on_batch_end calls wandb.log() after
+  # every step, so an initialized wandb run must exist (env.sh defaults
+  # WANDB_MODE=offline).
+  trainer.logger='["console","wandb"]'
   trainer.project_name='kimina-prover-p3a'
   trainer.experiment_name='p3a-smoke'
   trainer.n_gpus_per_node=1

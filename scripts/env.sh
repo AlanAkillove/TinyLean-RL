@@ -37,6 +37,10 @@ export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-$TINYLEAN_ROOT/.cache/triton}"
 export RAY_TMPDIR="${RAY_TMPDIR:-$TINYLEAN_ROOT/.cache/ray}"
 export WANDB_DIR="${WANDB_DIR:-$TINYLEAN_ROOT/runs/wandb}"
 export WANDB_CACHE_DIR="${WANDB_CACHE_DIR:-$TINYLEAN_ROOT/.cache/wandb}"
+# The pinned recipe's dataset.on_batch_end calls wandb.log() unconditionally, so
+# the trainer needs an initialized wandb run; this host has no wandb account and
+# restricted egress, so default to offline mode (runs land in runs/wandb).
+export WANDB_MODE="${WANDB_MODE:-offline}"
 
 export TINYLEAN_MODEL_ROOT="${TINYLEAN_MODEL_ROOT:-$TINYLEAN_ROOT/models/weights}"
 export TINYLEAN_DATA_ROOT="${TINYLEAN_DATA_ROOT:-$TINYLEAN_ROOT/data/raw}"
