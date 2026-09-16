@@ -251,6 +251,26 @@
 - 结论：P3-A 成功标准全部满足（非零 advantage/loss/grad；save+resume 实测通过）。观察：IGR≈0.09 的低信号密度下 4 步中 3 步零梯度——P3-B 前需先处理信号密度（恢复顺序 n=8 → multiturn），另需评估 22.2 GiB 峰值下的长跑稳定性。
 - 产物：`.cache/p3a_smoke.log`、`.cache/p3a_resume.log`、`runs/p3a_smoke/`（global_step_3、global_step_4）、`experiments/results/p3a_smoke_vram.csv`、`experiments/results/p3a_resume_vram.csv`。
 
+### E016 n=8 mini-calibration（P3-B 的 n 决策前置测量）
+
+- 目的：按协议恢复阶梯第①项的配对测量——在相同 16 个定理上对比 n=4 vs n=8 的组信号密度（IGR），为 P3-B 的 group size 决策提供证据。
+- 设置：E013 前 16 定理（seed 0 前缀性质已验证，paired）；n=8；temp 1.0 / top_p 1.0；max 4096；HF generate。
+- 命令：`uv run python scripts/promptset_rollout_probe.py --temperature 1.0 --top-p 1.0 --limit 16 --samples-per-theorem 8 --offline --output experiments/results/p3_b_n8_calibration.json --batch-dir experiments/p3_b_n8_batch`
+- 结果（同一 16 定理配对，n=4 数据取自 E013）：
+
+| 指标 | n=4（E013 subset） | n=8（本次） |
+|---|---|---|
+| IGR | **0.000**（0 mixed / 16） | **0.0625**（1 mixed / 16） |
+| all_zero / all_one | 0.8125 / 0.1875 | 0.8125 / 0.125 |
+| verified | 12/64（18.8%） | 23/128（18.0%） |
+| truncated | 40/64（62.5%） | 84/128（65.6%） |
+| verified 自然长度 | mean 1486 / max 2210 | mean 1871 / p95 2805 / max 3729 |
+
+  - 机制：定理 7 从 n=4 的 all-one（4/4）变为 n=8 的 **mixed（7/8）**——大 n 把近饱和组的单次失败暴露出来；定理 8/13 仍 8/8；其余 13 个定理双臂全零（难度主导）。
+  - VRAM：HF 生成批次（16 序列）采样峰值 **23.5 GiB**（校准侧；训练侧受 vLLM 池上限约束）。
+- 结论：n=8 在配对子集上把 IGR 从 0.00 提升到 0.0625（方向支持协议阶梯①，幅度有限）；信号密度主要受定理难度限制，n 是次阶修正。建议 P3-B 恢复官方 n=8 并监控显存余量。
+- 产物：`experiments/results/p3_b_n8_calibration.json`、`experiments/p3_b_n8_batch/`、`experiments/results/p3_b_n8_calibration_vram.csv`。
+
 ---
 
 ## 追加记录模板
