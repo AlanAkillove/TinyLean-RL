@@ -79,7 +79,7 @@ Observed constraints from the same runs:
 - `native_decide` is the verifier-side risk (reproducible HTTP 500 crashes, all on `amc12_2001_p5`/theorem 3); at 32-theorem scale the frequency is similar for both checkpoints (Distill 12/128, RL 11/128), so the earlier “RL prefers native_decide” observation is retracted.
 - Concurrency: parallel `/verify` calls each spawn a cold REPL (multi-minute Mathlib load), so the P3 reward path must use serialised submission or a pre-warmed REPL pool.
 
-## P2.5 Local RL Readiness（2026-09-16，停止条件 6/6 满足）
+## P2.5 Local RL Readiness（2026-09-16，停止条件 6/6 满足；已冻结，tag `p2.5-win-complete`）
 
 本地 RL 前置验证完成，完整记录见 [`studies/rl_readiness.md`](studies/rl_readiness.md)，实验条目 E009–E011 见 [`experiment_log.md`](experiment_log.md)，证据清单见 `experiments/manifests/p2_5_complete.yaml`。
 
@@ -90,9 +90,9 @@ Observed constraints from the same runs:
 | W3 | LoRA 单步显存探针 | r16/32 × 1024/2048 四组合全过；2048 组合 reserved 8.6–8.75 GB > 物理 8.19 GB（共享显存兜底，不可依赖）；CPU 冒烟 224/224 张量有梯度 |
 | W4 | P3 config 审计 | `docs/p3_config_audit.md`；reward contract（format gating/并发/单轮/verifier_error→0/严格验证）写回 research_plan §四 |
 | W5 | cold-start SFT 数据管道 | NuminaMath-LEAN 104,155→31,634；抽样验证 190/200（95%）；train 31,002 / val 632 |
-| W6 | 云部署命令链 + Lean server 预热 | prewarm 阶梯 c=2 达 3.93 rps（recommended_concurrency=2）；doctor/run_p3_smoke 就绪 |
+| W6 | 部署命令链（Linux 目标）+ Lean server 预热 | prewarm 阶梯 c=2 达 3.93 rps（recommended_concurrency=2）；doctor/run_p3_smoke 就绪 |
 
-结论：本机（8 GiB）完成全部前置验证，P3 正式 RL pilot 按计划迁移云上 ≥24 GB 单卡；首个执行项为 `bash scripts/run_p3_smoke.sh --steps 3`（由 `p2_5_complete.yaml` 门控）。
+结论：本机（8 GiB）完成全部前置验证；P2.5 冻结于 tag `p2.5-win-complete`。下一阶段 = **P3-0 — Linux Migration & On-Policy Calibration**（服务器 RTX 3090 24 GB）：先跑环境 gate（`bash scripts/doctor.sh`），再做 Promptset rollout 校准（temp 1.0 / n=4 / 4096）与 full-parameter 显存可行性探针；冻结 P3-A 配置后才执行 `bash scripts/run_p3_smoke.sh`（provisional runner，见 `docs/p3_linux_handoff.md`）。
 
 ## Current machine gate
 
@@ -111,7 +111,7 @@ This machine can now produce verifier-backed Pass@K measurements through the loc
 
 On this Windows machine (the Docker gate is now open):
 
-**2026-09-16 update**: items 2–4 below are complete (E007/E008 32-theorem comparison plus the P2.5 work above); the next gate is the cloud P3-A smoke (`scripts/run_p3_smoke.sh`).
+**2026-09-16 update**: items 2–4 below are complete (E007/E008 32-theorem comparison plus the P2.5 work above); the next gate is P3-0 — Linux migration and on-policy calibration (`docs/p3_linux_handoff.md`); the provisional P3-A smoke (`scripts/run_p3_smoke.sh`) runs only after P3-0 freezes the config.
 
 1. Done: the 4,096-token rerun (E005/E006) confirmed the truncation hypothesis; four hard theorems still truncate at that ceiling.
 2. Scale the comparison to 32 MiniF2F theorems (and consider 8 or 32 samples for Pass@8/32) before drawing any ranking conclusion between Distill and RL — the official gap is only +2.45 pp.

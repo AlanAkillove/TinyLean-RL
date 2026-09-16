@@ -5,8 +5,9 @@
 所有 `file:line` 均指该 commit 下的仓库文件（根为 `third_party/kimina-prover-rl/`）。
 官方 0.6B 参考配置：`recipe/kimina_prover_rl/kimina_prover_0.6B.sh`（下称 *recipe*）。
 
-本文回答 8 组问题并给出本地/云 P3-A 的建议配置；未验证的部分集中在文末"未验证
-假设清单"。结论用于修订 `configs/rl/kimina_0.6b_pilot.yaml`。
+本文回答 8 组问题并给出 P3-0/P3-A 的候选（provisional）配置；所有尚未在 Linux
+验证的项集中在文末 §9 P3-0 validation checklist。结论用于修订
+`configs/rl/kimina_0.6b_pilot.yaml`。
 
 ---
 
@@ -19,7 +20,7 @@
   未显式设置时 actor 用 **fp32 建模型**（注释 L269："create model in fp32. Otherwise the
   optimizer is in bf16, which is incorrect"），ref 默认 bf16（L282）。
 - `AutoConfig.from_pretrained` 强制 `attn_implementation="flash_attention_2"`
-  （`fsdp_workers.py` L287-289）→ **云上必须可安装 flash-attn**（版本与 torch 匹配）。
+  （`fsdp_workers.py` L287-289）→ **P3 主机必须可安装 flash-attn**（版本与 torch 匹配）。
 - FSDP 混精：`fsdp_workers.py` L371-381，默认 `param_dtype=bf16 / reduce_dtype=fp32 /
   buffer_dtype=fp32`；L396-417 以 `sharding_strategy`（FSDP zero3）+ `MixedPrecision`
   包装。L400-402 注释明确：**ref 强制 CPUOffload，actor 不用 CPUOffload**（"causes
@@ -76,7 +77,7 @@
 
 ## 2. Rollout n=8 的依赖面
 
-官方 n=8（recipe L56）；我们计划 n=4。
+官方 n=8（recipe L56）；起始候选 n=4 —— reduced-compute 起始假设，非最终 baseline：P3-0 先在 temp 1.0 下测 IGR，若 ≲5% 则恢复官方 n=8。
 
 - **repeat 位置**：`ray_trainer.py` L1158-1160 为每条 prompt 生成 `uid`（uuid4）；
   L1185 `gen_batch.repeat(repeat_times=rollout.n, interleave=True)`（生成前）；
@@ -163,8 +164,10 @@
 {"count": 7620, "min": 102, "median": 231, "p95": 415, "p99": 572, "max": 2365, "mean": 251.32}
 ```
 
-本地 P3 建议：`max_prompt_length=1024`（覆盖 ≥99%+；仅极少数 synthetic 长题被
-`filter_overlong_prompts` 滤掉）、`max_response_length=4096`、
+P3 建议：`max_prompt_length=1024`（覆盖 ≥99%+；仅极少数 synthetic 长题被
+`filter_overlong_prompts` 滤掉）、`max_response_length=4096`（**P3-0 初始
+rollout 预算假设**：E007/E008 成功长度 P95 ≈ 3,000，但 W1@4096 在评估口径
+temp 0.6 下截断 75%；temp 1.0 下必须重测截断率与成功长度）、
 `max_model_len=5120`（或懒人值 8192）。现存不一致（`configs/rl/kimina_0.6b_pilot.yaml`
 为 8192/3072；`docs/research_plan.md` 为 4096）在本 W4 修订中统一为 1024/4096。
 
@@ -251,7 +254,7 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
   会 spawn 冷 REPL 且偶发 500（P2 结论 + `prompts` probe）。缓解：
   1. `scripts/prewarm_lean_server.py` 预热 + 串行/小并发的延时阶梯测量，固定并发策略；
   2. P3-A 起步用 `reward_kwargs` 减小 max_workers（如 4~8）或分批送检（串行小批）；
-  3. 云上按 W6 runbook 先跑 doctor 检查 server 健康与延时。
+  3. P3 主机按 W6 runbook 先跑 doctor 检查 server 健康与延时。
 - 与 `docs/research_plan.md` §四 reward 契约逐条对照：3 类 `verify_status`
   （verified / lean_error / verifier_error）与本地 probe 一致；官方额外把
   format_error 维度并入最终 score —— **本地 profile 的 `format_ok` 字段即为此对照物**
@@ -263,7 +266,7 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
 
 ---
 
-## 7. Multiturn（官方开启，我们 P3-v1 关闭）
+## 7. Multiturn（官方开启，P3-A 起步关闭）
 
 - recipe：`+data.multiturn=True`、`multiturn_sampling_rate=0.5`、
   `multiturn_n_samples_in_cache=5000`（L28-30）。
@@ -281,7 +284,7 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
 - 关键理解：**multiturn 是数据侧机制**（把上一轮失败样本 + Lean 错误反馈拼成
   第二轮 prompt，作为新训练样本进入后续 batch），**不是**在同一条回复里注入 tool
   反馈的 rollout 机制。reward 仍然是逐条 response 的 `proof_rw × format_rw`。
-- 我们 P3-v1 单轮的差异清单（最重要的隐藏变量）：
+- P3-A 起步（单轮）的差异清单（最重要的隐藏变量）：
   1. 没有 error-fixing 第二轮的训练样本（官方 50% 采样）→ 训练分布偏向"一次成
      功/一次错误"的难度谱；
   2. 长 prompt 场景缺失（第二轮 prompt = 原 prompt + 首轮 response + 反馈，token
@@ -290,8 +293,9 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
   3. reward 路径无差异（tool_feedback 不进 score）；
   4. 官方 `data_source` 在第二轮样本上变为 `"multiturn"`（dataset.py L277）→
      wandb 指标口径差异（训练监控时注意）。
-  - 结论：P3-v1 关闭 multiturn 是合理起点；若 P3-B 要复现官方曲线，需要同时放大
-    `max_prompt_length`（≥8192）并恢复采样率 —— 记为 P3-A 之后的实验变量。
+  - 结论：起步关闭 multiturn 是合理起点（reduced-compute baseline）；P3-0 校准若
+    IGR 仍 ≲5%，恢复顺序为 ① n=8（官方 baseline 组件）② multiturn=true + 0.5
+    （需同时放大 `max_prompt_length` ≥8192）—— 先恢复官方机制，再谈自定义改动。
 
 ---
 
@@ -315,38 +319,60 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
 | `actor.ppo_max_token_len_per_gpu` | dp_actor.py L392-394 | 32768（**死配置**） | 不设/注释 | §3.1 |
 | `data.train_batch_size` | ray_trainer.py L410 | 256 | 8（单卡）/16（双卡） | §4 |
 | `data.max_prompt_length` | rl_dataset.py L105 | 8192 | **1024** | W1 实测分布 |
-| `data.max_response_length` | rollout.yaml L25 派生 | 24576(=32768-8192) | **4096** | research_plan 统一 |
+| `data.max_response_length` | rollout.yaml L25 派生 | 24576(=32768-8192) | **4096** | P3-0 初始假设（temp 1.0 重测截断/长度） |
 | `data.truncation` | rl_dataset.py L108, L315-316 | 'error' | 'error' | prompt 安全网 |
 | `data.filter_overlong_prompts` | rl_dataset.py L145-177 | True | True | 过滤超长题 |
-| `data.multiturn` 系列 | dataset.py L88-98, L175-394 | True(0.5) | **False** | §7 |
-| `rollout.n` | ray_trainer.py L1185/L1221 | 8 | **4** | §2 |
+| `data.multiturn` 系列 | dataset.py L88-98, L175-394 | True(0.5) | **False** | §7（起步；恢复顺序 n=8 → multiturn） |
+| `rollout.n` | ray_trainer.py L1185/L1221 | 8 | **4**（起始假设；恢复项 n=8） | §2 |
 | `rollout.max_model_len` | vllm_rollout_spmd.py L142 | 32768(=8192+24576) | 5120(=1024+4096) | §3 |
 | `rollout.max_num_batched_tokens` | vllm_rollout_spmd.py L144-147 | 32768 | 8192 | ≥ max_model_len 保守 |
 | `rollout.gpu_memory_utilization` | vllm_rollout_spmd.py L190 | 0.6 | 0.35~0.5 | 同卡共存 |
-| `rollout.temperature/top_p` | rollout.py L83-85 | 1.0 / 1.0 | 1.0 / 1.0（P3 rollout） | 与 E007 0.6/0.95 的差记为 metadata |
+| `rollout.temperature/top_p` | rollout.py L83-85 | 1.0 / 1.0 | 1.0 / 1.0（P3 rollout） | P3-0 校准首项（W1 用 0.6/0.95） |
 | `rollout.calculate_log_probs` | rollout.py L124 | False | False | 无 TIS；old_log_prob 重算 |
 | `rollout.free_cache_engine` | vllm_rollout_spmd.py L203-204 | True(默认) | True | 省显存 |
 | `rollout.tensor_model_parallel_size` | rollout.py L102 | 1（recipe L53） | 1 | 单卡 |
 | `rollout.load_format` | rollout.py L141；fsdp_vllm.py L122 | dummy_dtensor→dummy | 同 | 每步全量同步 |
 | `ref.fsdp_config.param_offload` | main_ppo.py L190-195 | True（**无效**，ref 不存在） | 不设 | §1.4 |
 | `reward_model.reward_manager` | workers/reward_manager/batch.py | batch | batch | tool_feedback 需要 |
-| `reward_model.launch_reward_fn_async` | ray_trainer.py L1243-1246/L1284-1285 | True | True（云） | 与 rollout 重叠 |
+| `reward_model.launch_reward_fn_async` | ray_trainer.py L1243-1246/L1284-1285 | True | True（Linux） | 与 rollout 重叠 |
 | `custom_reward_function.reward_kwargs` | reward/reward.py L116-170 | return_dict=True | return_dict=True + 并发限制 | §6 |
 | `trainer.n_gpus_per_node` | recipe L75 | 8 | 1~2 | P3-A |
-| `trainer.total_epochs` / `save_freq` | recipe L77-79 | 15 / 5 | 1 微跑 / 1 | P3-A smoke |
+| `trainer.total_epochs` / `save_freq` | recipe L77-79 | 15 / 5 | 1 微跑 / 最后一步保存一次（=steps） | P3-A checkpoint 契约（run_p3_smoke.sh） |
 
 ---
 
-## 未验证假设清单（留给云上 P3-A 验证）
+## 9. P3-0 validation checklist（Linux 上逐项验证）
+
+`scripts/run_p3_smoke.sh` 当前状态：**provisional P3-A runner —— 未在 Linux 验证、训练模式（full-parameter vs LoRA）未冻结**。下列参数全部“尚未 Linux 验证”，P3-0 逐项复核后才可冻结 P3-A 配置：
+
+| # | 参数 | 当前候选值 | 验证方式（P3-0） |
+|---|---|---|---|
+| 1 | model path（`actor_rollout_ref.model.path`） | `models/weights/kimina_distill_0_6b` | doctor.sh + smoke |
+| 2 | dataset path（Promptset parquet + recipe `NuminaRLDataset`） | `data/processed/p3_promptset/...` | `prepare_data.py` 幂等重建 |
+| 3 | Lean server URL（`LEAN_SERVER_API_URL`） | `http://127.0.0.1:8000` | doctor.sh `/openapi.json` + 正/负 gate |
+| 4 | `rollout.n` | 4（起始假设） | temp 1.0 校准；IGR ≲5% → n=8 |
+| 5 | `temperature` / `top_p` | 1.0 / 1.0（官方口径） | P3-0 rollout 校准 |
+| 6 | `max_prompt_length` | 1024 | W1 分布（p99=572）复核 |
+| 7 | `max_response_length` | 4096（P3-0 初始预算假设） | 重测截断率 / 成功长度 |
+| 8 | `train_batch_size` / `ppo_mini_batch_size` | 8 / 8（→32 序列/步） | 单步墙钟与显存实测 |
+| 9 | `ppo_micro_batch_size_per_gpu` | 4（备选 2） | OOM 边界实测 |
+| 10 | `gpu_memory_utilization` | 0.40 | vLLM+FSDP 同卡实测峰值 |
+| 11 | multiturn | false（起步） | IGR 恢复阶梯第二项 |
+| 12 | KL（`use_kl_in_reward` / `use_kl_loss`） | false / false（无 ref worker） | 与本文 §1.4 一致性复核 |
+| 13 | reward function（`custom_reward_function` + 并发） | recipe `reward`；`max_workers` 4~8 起步 | prewarm 后并发阶梯 |
+| 14 | checkpoint 行为 | 最后一步保存一次（`save_freq=steps`）+ 重载/续训验证 | P3-A smoke 内验证 |
+| 15 | 训练模式 | full-parameter 首选 / LoRA fallback | 单步显存可行性探针 |
+
+其余已知未验证项（原“未验证假设清单”）：
 
 1. flash-attn 与 torch/驱动版本匹配（`fsdp_workers.py` L287-289 强制
    `flash_attention_2`）；
 2. vLLM 0.6 gpu_memory_utilization 与 FSDP actor 同卡共存的真实峰值显存（本地
    8 GB 无法验证；依据：recipe 8×A100 0.6 / 本地 W3 LoRA 探针作为下限参考）；
-3. `dummy` load_format 每步全量同步 0.6B 的耗时占比（云上度量，若过重可改
+3. `dummy` load_format 每步全量同步 0.6B 的耗时占比（Linux 上度量，若过重可改
    `load_format=safetensors` 预载 base）；
 4. Lean server 在 40 workers（官方）下的稳定性：本地镜像冷 REPL/500 行为是否在
-   云上同样出现（W6 prewarm + doctor 检查）；
+   Linux 上同样出现（W6 prewarm + doctor 检查）；
 5. n=4 与 n=8 的组方差对实际学习曲线的影响（P3-B 对照）；
 6. multiturn 关闭导致的分布偏移量级（§7）；
 7. Ray 在容器/多进程环境中的端口与共享内存要求（W6 runbook 覆盖）；

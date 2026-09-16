@@ -145,7 +145,7 @@
   4. 下一阶段：Linux 3090 上的 P2→P3 迁移 gate 与 P3-A（RL plumbing smoke）。
 - 统计方法修正（采纳外部审查）：candidate-level “sample_i 对 sample_i” 无天然配对、不成立；配对单位改为 theorem（`d_i = p̂_i^R − p̂_i^D` 的 bootstrap，或定理级 solved indicator 的 McNemar）。
 - 统计单位修正后的复核：E007/E008 的定理级 McNemar（p≈0.375）与候选级 z≈1.55 均不显著，原结论不变。
-- P3 输入冻结：`max_response=4096`（成功长度 P95≈3,000）、串行验证（验证时间占比 1.6%）、奖励契约（`verifier_error` 单独记录计 0）、IGR 基线 Distill 28.1% / RL 31.3%。
+- P3 输入（P3-0 校准后冻结；`max_response=4096` 为初始 rollout 预算假设）：成功长度 P95≈3,000、串行验证（验证时间占比 1.6%）、奖励契约（`verifier_error` 单独记录计 0）、IGR 基线 Distill 28.1% / RL 31.3%。
 
 ### E009 P2.5 W1 Promptset 32×4 cached rollout profile（停止条件①）
 
@@ -154,7 +154,7 @@
 - 命令：`python -u scripts/promptset_rollout_probe.py --batch-size 1 --limit 32 --samples-per-theorem 4 --output experiments/results/p2_5_promptset_profile.json --batch-dir experiments/local_rl_batch`（项目 `.venv` 解释器）。
 - 过程：运行 4.7 小时（生成 14,495.7 s + 验证 2,375.7 s）；batch verify 触发 21 次单候选回退（missing_item 20、redeclaration 1）。
 - 结果：verified 14/128（严格格式同数）；sorry 0、format_failures 0、`verifier_errors` 5（单独计 0）；**截断 96/128 = 75%**；组率 all_zero 87.5%（28/32）、**mixed 3.125%（1/32）**、all_one 9.375%（3/32），**IGR = 0.03125**；prompt 长度（全 promptset 7,620 unique）median 231 / p95 415 / max 2,365。
-- 结论：停止条件①满足（positive 3 组 + mixed 1 组）；all-zero 28/32 未触发计划中的 ≥29/32 风险线，但 IGR 显著低于 miniF2F 的 28–31%，与 75% 截断强相关——P3 用官方 rollout 口径（temp 1.0）时必须先复核截断率与 IGR。数据点：`<think>` 混入 Lean 代码（lean_error 主因）、REPL redeclaration、单候选回退路径被真实使用。
+- 结论：停止条件①满足（positive 3 组 + mixed 1 组）；all-zero 28/32 未触发计划中的 ≥29/32 风险线，但 IGR 显著低于 miniF2F 的 28–31%，与 75% 截断强相关——P3-0 用官方 rollout 口径（temp 1.0）时必须先复核截断率与 IGR；若仍 ≲5%，恢复顺序 = n=8 → multiturn（见 [studies/rl_readiness.md](studies/rl_readiness.md) §九）。IGR 3.1% 不等于“模型不适合 RL”。数据点：`<think>` 混入 Lean 代码（lean_error 主因）、REPL redeclaration、单候选回退路径被真实使用。
 - 产物：`experiments/results/p2_5_promptset_profile.json`；`experiments/local_rl_batch/{prompts,rollouts,rewards}.jsonl + metadata.json`（artifact 创建于 2026-09-16T12:35:31Z）。
 
 ### E010 P2.5 W2 GRPO loss rehearsal（cached rollout → advantage → backward，停止条件②）
@@ -176,8 +176,13 @@
 - 结果：
   - CPU 冒烟：status=ok；**224/224 LoRA 张量全部有梯度**；forward 39.1 s / backward 998.5 s / step 1.2 s（total 1,177.5 s）；期间修复 2 个真 bug（cached batch 的 reward 字段引用、PEFT `get_base_model()` 解包）。
   - GPU 探针：**all_combinations_ok: true**（四组合全部完成 forward+backward+step）；峰值 reserved 分别为 r16@1024 4,016 MB / r32@1024 4,126 MB / r16@2048 **8,642 MB** / r32@2048 **8,752 MB**——两个 2048 组合超出物理 8,187.5 MB（peak_headroom = −564.5 MB，靠 Windows 共享显存完成）；r16@1024 单次 forward 0.17 s / backward 1.03 s。各组合候选落在 all-zero 组，loss=0、grad_norm=0（有限）——本探针验证显存与算子路径，不验证梯度信号。
-- 结论：停止条件③满足——8 GiB 上单步可跑通但**无余量**（2048 组合已溢出物理显存、吞吐不可预测）；P3 正式训练按计划走 ≥24 GB 云卡。
+- 结论：停止条件③满足——8 GiB Windows **不适合真实 P3**（2048 组合已溢出物理显存、依赖 WDDM 共享内存、吞吐不可预测）；P3 迁移 Linux RTX 3090（P3-0）。LoRA 单步路径已证明可实现，但不等于“P3 必须 LoRA”：训练模式（full-parameter 首选 / LoRA fallback）在 P3-0 显存探针后冻结。
 - 产物：`experiments/results/p2_5_lora_step_probe.json`、`experiments/results/_lora_cpu_smoke.json`（GPU 探针创建于 2026-09-16T12:40:11Z；CPU 冒烟版 2026-09-16T09:15:21Z）。
+
+### P2.5 冻结（2026-09-16）
+
+- `win` 分支打 tag `p2.5-win-complete`；P2.5 数据、结论与 Windows 工作区冻结，本机不再新增推理 / rollout / RL 实验。
+- 下一阶段：**P3-0 — Linux Migration & On-Policy Calibration**（服务器 RTX 3090 24 GB），范围与命令序列见 [`p3_linux_handoff.md`](p3_linux_handoff.md)。
 
 ---
 

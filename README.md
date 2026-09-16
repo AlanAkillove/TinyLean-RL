@@ -2,11 +2,12 @@
 
 面向亚十亿参数 Lean4 定理证明器的可验证强化学习研究项目。
 
-当前阶段：**P2 Baseline Validation Complete → P2.5 Local RL Readiness**（本地 RL 前置验证进行中：Promptset 训练分布诊断、GRPO 参考实现与 rehearsal、LoRA 显存探针、P3 config 审计与云部署命令链；下一阶段为 Linux 3090 迁移 gate 与 P3-A RL plumbing smoke）。
+当前阶段：**P2.5 Local RL Readiness 完成（Windows 收尾，tag `p2.5-win-complete`）→ P3-0 Linux Migration & On-Policy Calibration**（服务器 RTX 3090 24 GB 已就绪；先在 Linux 完成环境 gate 与 on-policy 校准，再进入 P3-A smoke）。交接说明见 [`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)。
 
 - 研究主线（RL for sub-billion Lean provers）：[`docs/research_plan.md`](docs/research_plan.md)
 - P2 预实验结论（评估校准 / 奖励可靠性 / 奖励信息量）：[`docs/studies/evaluation_calibration.md`](docs/studies/evaluation_calibration.md)
-- 逐次实验记录（E001–E008）：[`docs/experiment_log.md`](docs/experiment_log.md)
+- 逐次实验记录（E001–E011）：[`docs/experiment_log.md`](docs/experiment_log.md)
+- P2.5 结论与 Linux 交接：[`docs/studies/rl_readiness.md`](docs/studies/rl_readiness.md) / [`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)
 
 本项目遵循“阶段门控、证据驱动”的研究路线：先建立可复现环境和最小端到端链路，再根据预实验结果决定 RL、cold-start、scaling 或 frontier sampling 的后续分支。
 
@@ -17,12 +18,13 @@
 - 第一标准 benchmark：MiniF2F test（evaluation-only）。
 - 当前只准备 Kimina 0.6B Distill、Kimina 0.6B RL 和 Qwen3 0.6B Base 的资源声明。
 - 当前不进行正式 RL 训练，不实现 curriculum/frontier sampling/self-training，不开始 500M/360M 实验。
+- Cold-start SFT 数据已备料（NuminaMath-LEAN，`data/processed/sft_cold_start/`，prepared only、尚未训练），定位为 **M2 contingency asset**，不属于当前 P3 主线。
 
 ## 仓库结构
 
 ```text
 TinyLean-RL/
-├── configs/                  # 配置（当前仅保留 P0 占位）
+├── configs/                  # 配置（P3 候选配置，provisional）
 ├── data/manifests/           # 数据源和版本声明
 ├── docs/                     # 环境、复现和实验记录规范
 ├── experiments/              # 实验清单与结果索引，不放大文件
@@ -72,8 +74,10 @@ git diff --stat
 P0 Preparation
   → P1 Infrastructure Validation
   → P2 Baseline Validation
-  → P2.5 Local RL Readiness
-  → P3 RL Pilot
+  → P2.5 Local RL Readiness          (complete; tag p2.5-win-complete)
+  → P3-0 Linux Migration & On-Policy Calibration
+  → P3-A On-Policy GRPO Smoke Test
+  → P3-B Short Learning Pilot
   → P4 Research Exploration
   → P5 Formal Study
 ```
