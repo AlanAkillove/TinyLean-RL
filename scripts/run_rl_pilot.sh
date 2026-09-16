@@ -5,7 +5,9 @@ set -u
 # P2.5 Local RL Readiness manifest exists (promptset reward evidence, GRPO loss
 # rehearsal, LoRA step probe, config audit). It also uses conservative
 # single-GPU hypotheses rather than the upstream 8-GPU recipe unchanged.
-# For the short on-policy smoke use scripts/run_p3_smoke.sh instead.
+# Provisional P3-A runner: run scripts/run_p3_smoke.sh only after P3-0 (Linux
+# migration & on-policy calibration) has frozen the P3-A config; see
+# docs/p3_linux_handoff.md.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -39,7 +41,9 @@ if [[ ! -f "$ROOT/data/raw/kimina_promptset/data/train-00000-of-00001.parquet" ]
   exit 2
 fi
 
-echo "P3 gate passed; use configs/rl/kimina_0.6b_pilot.yaml to review overrides."
-echo "Launch the short on-policy smoke with: bash scripts/run_p3_smoke.sh --steps 3"
+echo "P3 gate passed; use configs/rl/kimina_0.6b_pilot.yaml to review the provisional overrides."
+echo "P3-0 (Linux migration & on-policy calibration) comes first; see docs/p3_linux_handoff.md."
+echo "The provisional P3-A smoke runs only after P3-0 freezes the config:"
+echo "  bash scripts/run_p3_smoke.sh --steps 3   # not yet Linux-validated"
 exit 0
 

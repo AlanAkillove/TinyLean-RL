@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-# Guarded P3-A on-policy smoke for the pinned Kimina-Prover-RL trainer (P2.5 W6).
+# Provisional P3-A on-policy smoke for the pinned Kimina-Prover-RL trainer (P2.5 W6).
+#
+# STATUS: provisional P3-A runner - NOT yet Linux-validated, NOT yet final
+# training-mode validated (full-parameter vs LoRA is frozen during P3-0).
+# Run it only after P3-0 (Linux migration & on-policy calibration) has frozen
+# the P3-A config; see docs/p3_linux_handoff.md.
 #
 # Command chain (Linux, single GPU 24 GB, see docs/environment.md):
 #   source scripts/env.sh
 #   uv sync --extra inference            # plus the pinned VERL install (runbook)
 #   docker compose -f infra/lean-server/compose.yaml up -d
-#   bash scripts/doctor.sh
+#   bash scripts/doctor.sh               # environment gate
+#   (P3-0: Promptset rollout calibration at temp 1.0 + full-FT memory probe)
 #   bash scripts/run_p3_smoke.sh --steps 3
 #
 # Gates: Linux, Docker daemon + reachable Lean server, 0.6B model directory,
@@ -13,7 +19,9 @@
 # (experiments/manifests/p2_5_complete.yaml).  The audited overrides come from
 # docs/p3_config_audit.md and configs/rl/kimina_0.6b_pilot.yaml (n=4, single
 # GPU, 2-5 optimizer steps, no KL -> no reference worker).
-# `--dry` prints the full command chain without executing anything.
+# Checkpoint contract (P3-A success criteria): save once at the final step
+# (save_freq = steps) so save/reload can be validated; P3_SMOKE_SAVE_FREQ
+# overrides.  `--dry` prints the full command chain without executing anything.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -52,6 +60,10 @@ if ! [[ "$STEPS" =~ ^[0-9]+$ ]] || (( STEPS < 2 || STEPS > 5 )); then
   exit 2
 fi
 
+# P3-A checkpoint contract: save once at the final smoke step (save_freq = steps)
+# so the save -> reload/resume path can actually be validated in one run.
+SAVE_FREQ="${P3_SMOKE_SAVE_FREQ:-$STEPS}"
+
 fail() { echo "P3-A smoke blocked: $1" >&2; exit 2; }
 
 # --- Paths -----------------------------------------------------------------
@@ -81,12 +93,17 @@ PREWARM_CMD=(
 )
 
 # Audited P3-A overrides (docs/p3_config_audit.md, configs/rl/kimina_0.6b_pilot.yaml):
-# - n=4 instead of 8; train_batch_size 8 prompts -> 32 sequences;
-# - max_prompt_length 1024 (W1: p99 of 7,620 prompts = 572) + 4096 response;
+# - n=4 instead of 8 (reduced-compute starting hypothesis; n=8 is the first
+#   recovery lever if P3-0 calibration shows IGR below ~5%);
+# - train_batch_size 8 prompts -> 32 sequences;
+# - max_prompt_length 1024 (W1: p99 of 7,620 prompts = 572) + 4096 response
+#   (P3-0 initial rollout-budget hypothesis);
 # - DrGRPO: mean-only advantage, seq-mean-token-sum-norm, asymmetric clip,
 #   no KL loss and no KL in reward -> VERL skips the reference policy worker;
-# - multiturn disabled for P3-v1 (audit S7 records the deviation);
-# - single GPU, human-scale step count.
+# - multiturn disabled for the reduced-compute start (audit S7 records the
+#   deviation);
+# - single GPU, human-scale step count; checkpoint saved once at the final
+#   step (trainer.save_freq = steps) to validate the save/reload path.
 MAIN_PPO_CMD=(
   "$PYTHON" -m verl.trainer.main_ppo
   algorithm.adv_estimator=grpo
@@ -139,7 +156,7 @@ MAIN_PPO_CMD=(
   trainer.experiment_name='p3a-smoke'
   trainer.n_gpus_per_node=1
   trainer.nnodes=1
-  trainer.save_freq=-1
+  trainer.save_freq="$SAVE_FREQ"
   trainer.test_freq=-1
   trainer.val_before_train=False
   trainer.total_epochs=1

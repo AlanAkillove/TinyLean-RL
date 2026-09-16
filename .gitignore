@@ -55,6 +55,9 @@ experiments/*.log
 # Cached rollout batches (W1 P2.5; large jsonl, not for Git)
 experiments/local_rl_batch*/
 
+# Local chain completion markers (P2.5 W6 run artifact)
+experiments/*.done
+
 # OS/editor
 .DS_Store
 Thumbs.db

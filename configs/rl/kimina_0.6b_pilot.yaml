@@ -1,5 +1,5 @@
 phase: P3
-status: planned_after_p2_gate
+status: provisional_until_p3_0_freeze
 reference_recipe: third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_0.6B.sh
 config_audit: docs/p3_config_audit.md
 pinned_commit: e16b605e8186614c685875c9b57eb19e841b521a
@@ -13,11 +13,12 @@ data:
   benchmark: AI-MO/minif2f_test
   benchmark_policy: evaluation_only
 
-# 24 GB single-GPU P3-A pilot, revised from the W4 config audit
-# (docs/p3_config_audit.md). max_prompt_length=1024 covers >=99% of the 7,620
-# unique Promptset prompts measured in W1 (median 231 / p95 415 / p99 572 /
-# max 2365 tokens); max_response_length is unified to 4096 across
-# docs/research_plan.md and the recipe-derived runner.
+# Provisional single-GPU P3-A pilot (RTX 3090 24 GB), revised from the W4
+# config audit (docs/p3_config_audit.md); frozen only after P3-0 calibration.
+# max_prompt_length=1024 covers >=99% of the 7,620 unique Promptset prompts
+# measured in W1 (median 231 / p95 415 / p99 572 / max 2365 tokens);
+# max_response_length=4096 is the P3-0 initial rollout-budget hypothesis
+# (W1 saw 75% truncation at temp 0.6; re-measure at temp 1.0 before freezing).
 hardware:
   target: single_rtx_3090_24gb
   gpu_count: 1
@@ -27,7 +28,9 @@ rollout:
   max_response_length: 4096
   max_model_len: 5120            # = max_prompt_length + max_response_length
   max_num_batched_tokens: 8192   # must be >= max_model_len (chunked prefill guard)
-  group_size: 4                  # official n=8; n=4 halves per-step generation time
+  group_size: 4                  # official n=8; n=4 is a reduced-compute starting
+                                 # hypothesis -> n=8 is the first recovery lever
+                                 # if the P3-0 IGR calibration stays below ~5%
   temperature: 1.0               # official rollout default (E007 local eval used 0.6/0.95)
   top_p: 1.0                     # official default; record any deviation in run metadata
   gpu_memory_utilization: 0.40   # vLLM coexists with the FSDP actor (0.35-0.5 range)
@@ -45,12 +48,23 @@ training:
   use_kl_loss: false
   reference_policy: disabled        # no KL -> no ref worker/model (audit S1.4)
   gradient_checkpointing: true
-  multiturn: false                  # official uses multiturn sampling 0.5; see audit S7
+  multiturn: false                  # official uses multiturn sampling 0.5; P3-A starts
+                                    # single-turn (audit S7); recovery order in P3-0:
+                                    # n=8 first, then multiturn
   train_batch_size: 8               # prompts per step -> 32 sequences with group_size 4
   ppo_mini_batch_size: 8            # prompts; x n / dp_size sequences per rank
   ppo_micro_batch_size_per_gpu: 4
   max_rollout_tokens: 5000000
   seeds: [0]
+
+training_mode:                   # frozen during P3-0 (full-FT memory probe)
+  primary_hypothesis: full_parameter_update_if_3090_memory_permits
+  fallback: lora_r16_r32         # q/k/v/o, alpha=2r, dropout 0 (W3 probe)
+  final_choice: deferred_to_p3_0
+
+checkpoint:
+  save: once_at_final_smoke_step  # trainer.save_freq = steps (scripts/run_p3_smoke.sh)
+  success_criteria: [saved, reloaded_or_resumed]
 
 gate:
   required_before_run:
@@ -58,6 +72,7 @@ gate:
     - kimina_distill_vs_rl_evaluation
     - observed_proof_length_distribution
     - observed_lean_verification_throughput
+    - p3_0_on_policy_calibration   # temp 1.0 IGR/truncation + full-FT memory probe
   success_signals:
     - finite_loss
     - finite_gradients
