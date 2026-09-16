@@ -22,6 +22,9 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - Distill 0.6B：43/128 verified（32×4@4096），IGR = 28.1%；RL 0.6B：55/128，IGR = 31.3%；
   - **0.6B 起点具备充分 GRPO 学习信号**（未陷入 reward 全零状态）；
   - P3 第一版配置依据：`max_response=4096`（成功长度 P95 ≈ 3,000，余量 ~25%）、串行验证（验证时间占比 ~1.6%，非瓶颈）。
+- **P2.5 Local RL Readiness（2026-09-16 启动，Windows RTX 4060 8 GB）**：P3 之前的本地 RL 前置验证，原则为 *test the Kimina logic, don't replace it*（不引入 TRL、不做另一套 GRPO）。范围：Promptset 训练分布诊断（32×4@4096 cached rollout）、GRPO advantage/loss 参考实现（逐式移植 pinned commit `e16b6058`）与 rehearsal、0.6B LoRA 单步显存探针、P3 config 审计（[`p3_config_audit.md`](p3_config_audit.md)）与云部署命令链。
+  - **停止条件**（全部满足即 complete，不再膨胀）：① Promptset 上观察到 positive/mixed reward 组；② cached rollout → GRPO advantage/loss 算通；③ backward 显存探针给出结论（成功或 OOM 均算回答）；④ `docs/p3_config_audit.md` 完成；⑤ 云启动命令链（`env.sh → compose → doctor.sh → run_p3_smoke.sh`）写好；⑥ reward contract 写回本文档与审计文档。
+  - 结果汇总见 [`studies/rl_readiness.md`](studies/rl_readiness.md)；证据落档 `experiments/manifests/p2_5_complete.yaml`。
 - **P2 → P3 迁移 gate**（在 Linux 3090 主机上执行，不重跑完整 E003–E008）：
   1. 验证器 positive/negative gate；
   2. model→Lean smoke（Kimina Distill 0.6B）；
@@ -53,6 +56,14 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
 - 崩溃候选不得静默合并进普通失败；worker 需可恢复、不拖累同批其他候选。
 - **不做字符串禁用**（`native_decide` 多数情况正常：E007 的 12 个中含 `native_decide` 候选中 9 个通过验证）。
 - 若 RL 出现对 verifier 的利用性攻击，再单独立项 mitigation。
+
+**P2.5 W4 审计补充（依据 [`p3_config_audit.md`](p3_config_audit.md) §6/§7，2026-09-16）**：
+
+- **format gating**：官方最终 score 为 `score = proof_rw × format_rw`（`reward/reward.py` L153），格式不合法直接 0——P3-v1 沿用；本地 profile 的 `rewards.jsonl.format_ok` 即该维度对照物。
+- **并发策略**：官方 `formal_rewards` 用 `max_workers=40`（L81-85），本地实测冷 REPL 并发会超时/丢结果；P3 先预热 Lean server 并限制 `reward_kwargs` 并发（默认串行小批），以 `experiments/results/lean_server_warmup.json` 的 `recommended_concurrency` 为准（W6 prewarm + doctor 检查延时）。
+- **单轮声明**：官方 0.6B 开启 multiturn（数据侧第二轮回炉，`dataset.py` + `reward/error_fixing.py`），我们 P3-v1 **关闭**（`data.multiturn=False`），训练分布偏移记为隐藏变量（审计 §7 差异清单）。
+- `verifier_error` 候选 → reward 0 且单独统计；worker 需可恢复、不拖累同批（沿用上表）。
+- P3 起统一用严格验证口径（含 sorry 检查；`evaluate_model.py` 旧口径仅用于 E001–E008 headline 的 re-check 解释）。
 
 ## 五、关键指标定义
 

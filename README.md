@@ -2,7 +2,7 @@
 
 面向亚十亿参数 Lean4 定理证明器的可验证强化学习研究项目。
 
-当前阶段：**P2 Baseline Validation Complete → preparing P3 RL Pilot**（评估协议校准与奖励信息量预实验完成；下一阶段为 Linux 3090 迁移 gate 与 P3-A RL plumbing smoke）。
+当前阶段：**P2 Baseline Validation Complete → P2.5 Local RL Readiness**（本地 RL 前置验证进行中：Promptset 训练分布诊断、GRPO 参考实现与 rehearsal、LoRA 显存探针、P3 config 审计与云部署命令链；下一阶段为 Linux 3090 迁移 gate 与 P3-A RL plumbing smoke）。
 
 - 研究主线（RL for sub-billion Lean provers）：[`docs/research_plan.md`](docs/research_plan.md)
 - P2 预实验结论（评估校准 / 奖励可靠性 / 奖励信息量）：[`docs/studies/evaluation_calibration.md`](docs/studies/evaluation_calibration.md)
@@ -72,6 +72,7 @@ git diff --stat
 P0 Preparation
   → P1 Infrastructure Validation
   → P2 Baseline Validation
+  → P2.5 Local RL Readiness
   → P3 RL Pilot
   → P4 Research Exploration
   → P5 Formal Study

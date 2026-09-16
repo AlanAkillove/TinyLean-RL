@@ -1,6 +1,8 @@
 phase: P3
 status: planned_after_p2_gate
 reference_recipe: third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_0.6B.sh
+config_audit: docs/p3_config_audit.md
+pinned_commit: e16b605e8186614c685875c9b57eb19e841b521a
 
 model:
   repo_id: AI-MO/Kimina-Prover-Distill-0.6B
@@ -11,27 +13,42 @@ data:
   benchmark: AI-MO/minif2f_test
   benchmark_policy: evaluation_only
 
-# Initial 24 GB single-GPU pilot hypotheses. P2 measurements must be used to
-# revise these values before any formal run.
+# 24 GB single-GPU P3-A pilot, revised from the W4 config audit
+# (docs/p3_config_audit.md). max_prompt_length=1024 covers >=99% of the 7,620
+# unique Promptset prompts measured in W1 (median 231 / p95 415 / p99 572 /
+# max 2365 tokens); max_response_length is unified to 4096 across
+# docs/research_plan.md and the recipe-derived runner.
 hardware:
   target: single_rtx_3090_24gb
   gpu_count: 1
 
 rollout:
-  max_prompt_length: 4096
-  max_response_length: 3072
-  group_size: 4
-  temperature: 1.0
-  top_p: 0.95
-  gpu_memory_utilization: 0.60
+  max_prompt_length: 1024
+  max_response_length: 4096
+  max_model_len: 5120            # = max_prompt_length + max_response_length
+  max_num_batched_tokens: 8192   # must be >= max_model_len (chunked prefill guard)
+  group_size: 4                  # official n=8; n=4 halves per-step generation time
+  temperature: 1.0               # official rollout default (E007 local eval used 0.6/0.95)
+  top_p: 1.0                     # official default; record any deviation in run metadata
+  gpu_memory_utilization: 0.40   # vLLM coexists with the FSDP actor (0.35-0.5 range)
 
 training:
   algorithm: grpo
+  norm_adv_by_std_in_grpo: false           # DrGRPO mean-only centring (recipe)
+  loss_agg_mode: seq-mean-token-sum-norm   # recipe; denominator = response width
+  clip_ratio_low: 0.2
+  clip_ratio_high: 0.3
+  clip_ratio_c: 3.0                        # dual-clip lower bound (default)
+  entropy_coeff: 0
   learning_rate: 0.000002
   use_kl_in_reward: false
+  use_kl_loss: false
+  reference_policy: disabled        # no KL -> no ref worker/model (audit S1.4)
   gradient_checkpointing: true
-  reference_param_offload: true
-  effective_batch_size: 8
+  multiturn: false                  # official uses multiturn sampling 0.5; see audit S7
+  train_batch_size: 8               # prompts per step -> 32 sequences with group_size 4
+  ppo_mini_batch_size: 8            # prompts; x n / dp_size sequences per rank
+  ppo_micro_batch_size_per_gpu: 4
   max_rollout_tokens: 5000000
   seeds: [0]
 
@@ -47,4 +64,3 @@ gate:
     - nonzero_reward_groups
     - checkpoint_save_and_resume
     - no sustained formatting_collapse
-
