@@ -186,6 +186,55 @@
 
 ---
 
+## 2026-09-17
+
+### E012 P3-0 Linux 迁移 gate（环境 / 测试 / 验证器 / smoke）
+
+- 目的：确认 Windows 阶段准备的 P3 基础设施在 Linux RTX 3090 主机上真实可用（P3-0 步骤 1–3）。
+- 设置：Ubuntu 24.04.4 / RTX 3090 24 GB / driver 580.173.02 / uv 0.12.13；`p3-linux` 分支自 `win`@6ef923e（tag p2.5-win-complete，submodule e16b605e）创建。
+- 命令：`uv sync --all-extras` → `uv run pytest` → `ruff` → `compileall` → `doctor.sh` → `verify_smoke.py` → `prewarm_lean_server.py` → `smoke_test.py --offline`。
+- 结果：
+  - 环境对齐（决策 D004 及后续修复）：torch 2.9.0+cu128 → **2.7.0（cu126）** + vllm 0.9.1 + flash-attn 2.8.0.post2 + pinned VERL（editable）安装完成；transformers 上限 `<4.54`（vllm 0.9.1 的 aimv2 AutoConfig 注册冲突，实测 4.54.1 失败 / 4.53.3 成功）；conda cc shim 导致 Triton JIT 构建失败 → `CC=/usr/bin/gcc`；`from_pretrained` 改用 `torch_dtype=`（4.53 无 `dtype=` 别名）。
+  - 测试：pytest **40 passed**（27 基线 + 13 strict-verifier 新增；与 Windows 的 27+19 口径一致新增） 、GRPO reference 19 passed；ruff / compileall 干净。
+  - `doctor.sh`：**23 passed / 0 warnings / 0 failures**（含 vLLM/Ray/VERL import、Lean /health、验证延迟 0.1 s）。
+  - 验证器正/负 gate：positive → `valid`、negative → `lean_error`（严格口径）；`/openapi.json` 在本镜像 prod 模式 404，readiness 统一 `/health`。
+  - 预热（容器重启后的真实冷启动）：首请求 **3.04 s**、随后 0.07 s；c=1 13.1 rps；c=2 需新 REPL 冷启动（+3 s）→ 推荐 concurrency ≤ 2。
+  - model→Lean smoke：生成 `1+1=2 := by norm_num` → 验证通过；峰值显存 1.8 GB，全程 13 s。
+  - 官方 reward 路径实测（kimina_client 0.2.1 ↔ Lean server 2.0.0）：valid→1.0、type error→0、sorry→0、filtered→0——关闭 P2.5 交接的 open item。
+- 结论：迁移 gate 全部通过，解锁校准与显存探针。
+- 产物：`experiments/manifests/p3_0_environment.yaml`、`experiments/results/p3_0_lean_server_warmup.json`。
+
+### E013 P3-0 Promptset rollout calibration（temp=1.0，官方口径）
+
+- 目的：在真正训练 rollout 参数下重测 Promptset 的 IGR / 截断 / 长度 / 吞吐（P3-0 步骤 4–5）。
+- 设置：Kimina-Distill-0.6B；32 unique statements（seed 0，与 P2.5 W1 相同定理集）；n=4；temp=1.0 / top_p=1.0；max_response=4096；HF generate。
+- 命令：`uv run python scripts/promptset_rollout_probe.py --temperature 1.0 --top-p 1.0 --limit 32 --samples-per-theorem 4 --offline --output experiments/results/p3_0_promptset_temp1.json --batch-dir experiments/p3_0_batch`
+- 结果（128 候选）：
+  - verified **15/128**；truncated 85/128（66.4%）；format_failures 0；sorry 0；verifier_errors 0；
+  - 组率 all_zero 26/32（0.8125）/ mixed **3/32（0.09375）** / all_one 3/32 → **IGR = 0.09375**；
+  - 自然长度（剔除 pad_token_id=EOS 填充后）：verified mean 1748 / median 1525 / p95 2746 / max **3955**，**0/15 撞上限**；failed mean 3818 / median 4096（其中 85 条从未自然终止）；
+  - 生成 3035 s（HF generate ≈151 有用 tok/s）、验证 131 s（≈1.0 s/候选）。
+- 对照 P2.5 W1（temp 0.6，同定理集）：IGR 0.03125 → **0.09375（×3）**；截断 75% → 66.4%；verified 14 → 15。
+- 结论：temp 1.0 下 IGR 进入 0.05–0.10 marginal 区间（仍 ≥5%），**n=4 retain**；4096 预算未系统性截断成功轨迹（成功最大 3955），**不上调 8192**；观测差异与采样口径变化一致，不做硬件归因。
+- 产物：`experiments/results/p3_0_promptset_temp1.json`（完整记录，含 raw outputs，不入库）、`experiments/p3_0_batch/`、`experiments/results/p3_0_calibration_vram.csv`。
+
+### E014 P3-0 full-FT 单步显存可行性探针（真实 pinned VERL trainer）
+
+- 目的：实测 full-parameter GRPO 单步在单张 3090 24 GB 上的显存与分阶段墙钟（P3-0 步骤 6）。
+- 设置：`run_p3_smoke.sh --steps 1`；full-FT（无 LoRA）；n=4；max_prompt 1024 / max_response 4096；无 KL / 无 ref worker；multiturn off；tb=4 / mini=4 / micro=2 / vLLM util=0.40 / max_num_batched_tokens=5120（按 §16 顺序从 util 0.30 / 8192 调整：0.30 下 vLLM 0.9.1 报告 KV 不足，无法服务 max_model_len=5120）。
+- 命令（完整输出见 `.cache/p3_0_memprobe.log`）：`bash scripts/run_p3_smoke.sh --steps 1 data.train_batch_size=4 actor_rollout_ref.actor.ppo_mini_batch_size=4 actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2 actor_rollout_ref.rollout.gpu_memory_utilization=0.40 actor_rollout_ref.rollout.max_num_batched_tokens=5120 trainer.default_local_dir=runs/p3_0_memprobe`
+- 结果：
+  - **exit 0、无 OOM**；step 墙钟 **136.4 s**：gen 53.9 / reward（异步批次）49.4 / old_logprob 4.6 / update_actor 11.1 / save_checkpoint 17.2 / reshard 0.5；
+  - 显存：torch peak allocated **19.09 GB**、reserved **20.52 GB**；nvidia-smi 采样峰值 18,095 MiB；
+  - rollout：16 序列 / 67,727 tokens / ≈1,285 tok/s（vLLM）；防照口径 temp=1.0；
+  - 本步 batch 无 verified 候选 → score 全 0、grad_norm 0.0（零梯度 step，属预期）；response_length mean 3930 / clip 62.5%；actor/entropy 12.67；ppo_kl 8.3e-06；
+  - checkpoint：`runs/p3_0_memprobe/global_step_1/` = model 2.9 GB + optim 4.5 GB + extra_state 16 KB + fsdp_config.json + huggingface + data.pt + `latest_checkpointed_iteration.txt` → 契约四项（目录/actor/optimizer/trainer 状态/global step）齐全；
+  - 观察：teardown 时一个 Ray worker 以 SIGTERM 退出（异步 reward worker 收尾），主进程正常 exit 0，不影响本步指标。
+- 结论：**FULL-FT 在单张 3090 24 GB 可行**（tb4/mini4/micro2/util0.40/5120 batched）；训练模式冻结为 FULL-FT，不启用 LoRA fallback。
+- 产物：`runs/p3_0_memprobe/`、`experiments/results/p3_0_memprobe_vram.csv`、`.cache/p3_0_memprobe.log`。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：

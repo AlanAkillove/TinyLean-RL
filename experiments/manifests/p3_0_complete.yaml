@@ -1,0 +1,64 @@
+# P3-0 Linux Migration & On-Policy Calibration - completion manifest.
+# Compact evidence record; full artifacts stay in experiments/results/ (ignored).
+stage: P3-0
+name: Linux Migration & On-Policy Calibration
+status: complete
+completed_utc: "2026-09-16T18:44:31Z"
+host_manifest: experiments/manifests/p3_0_environment.yaml
+pinned_verl_commit: e16b605e8186614c685875c9b57eb19e841b521a
+
+migration_gate:
+  branch: p3-linux (from win @ 6ef923e, tag p2.5-win-complete)
+  pytest: "40 passed (27 win baseline + 13 strict-verifier additions)"
+  grpo_reference_tests: "19 passed"
+  ruff_compileall: passed
+  doctor_sh: "23 passed, 0 warnings, 0 failures"
+  verifier_positive_negative: {positive: valid, negative: lean_error}
+  model_to_lean_smoke: passed            # 1+1=2 by norm_num, peak VRAM 1.8 GB
+  reward_contract_live: "kimina-client 0.2.1 vs Lean server 2.0.0: valid->1.0, lean_error->0.0, sorry->0.0, filtered->0.0"
+  lean_cold_start_s: 3.04                # first request after container restart; warm 0.07 s
+  warm_concurrency_policy: "recommended <= 2 (c=2 spawns a second cold REPL, +3 s)"
+
+promptset_calibration:
+  evidence: experiments/results/p3_0_promptset_temp1.json
+  settings: {temperature: 1.0, top_p: 1.0, n: 4, max_response: 4096, theorems: 32, seed: 0}
+  summary:
+    verified: 15
+    total: 128
+    truncated: 85                       # never emitted EOS within 4096
+    format_failures: 0
+    verifier_errors: 0
+    groups_all_zero: 26
+    groups_mixed: 3
+    groups_all_one: 3
+    igr: 0.09375
+  natural_lengths: {verified_mean: 1748, verified_median: 1525, verified_p95: 2746, verified_max: 3955, verified_at_cap: 0, failed_median: 4096}
+  throughput: {generation_seconds: 3035, useful_tokens_per_s: 151, verification_s_per_candidate: 1.0}
+  p2_5_comparison: {temperature: 0.6, igr: 0.03125, truncation: 0.75, verified: 14}
+
+full_ft_memory_probe:
+  evidence: [.cache/p3_0_memprobe.log, runs/p3_0_memprobe/global_step_1]
+  exit_code: 0
+  config: {train_batch_size: 4, ppo_mini_batch_size: 4, ppo_micro_batch_size_per_gpu: 2, vllm_gpu_memory_utilization: 0.40, max_num_batched_tokens: 5120, steps: 1}
+  adjustment_history: "started at util 0.30 / batched 8192 -> vLLM KV check failed (0.41 < 0.55 GiB); batched 5120 alone insufficient; util 0.40 fixed (per handoff S16 one-variable order)"
+  step_time_s: {gen: 53.9, reward_async: 49.4, old_log_prob: 4.6, update_actor: 11.1, save_checkpoint: 17.2, reshard: 0.5, total: 136.4}
+  memory: {torch_peak_allocated_gb: 19.09, torch_peak_reserved_gb: 20.52, nvidia_smi_peak_mib: 18095}
+  rollout: {sequences: 16, tokens: 67727, tokens_per_s: 1285}
+  step_signals: {score_mean: 0.0, grad_norm: 0.0, response_length_mean: 3930, response_clip_ratio: 0.625, actor_entropy: 12.67}
+  checkpoint_contents: [model, optimizer, extra_state, fsdp_config.json, huggingface, data.pt, latest_checkpointed_iteration.txt]
+
+decisions:
+  training_mode: FULL-FT                # feasible on 24 GB with tb4/mini4/micro2/util0.40
+  lora_fallback: not_enabled
+  n: 4                                  # IGR 0.09375 >= 0.05 (marginal band); n=8 remains the first recovery lever
+  response_budget: 4096                 # no successful proof hit the cap (max 3955)
+  kl: off                               # no reference worker
+  multiturn: off                        # recorded deviation; recovery order: n=8 -> multiturn=0.5
+
+next:
+  stage: P3-A
+  command: "bash scripts/run_p3_smoke.sh --steps 3 data.train_batch_size=4 actor_rollout_ref.actor.ppo_mini_batch_size=4 actor_rollout_ref.actor.ppo_micro_batch_size_per_gpu=2 actor_rollout_ref.rollout.gpu_memory_utilization=0.40 actor_rollout_ref.rollout.max_num_batched_tokens=5120"
+  watch_items:
+    - non-zero advantages and grad_norm on a batch that contains a mixed group
+    - actor->vLLM weight sync after the first update (second rollout uses the new policy)
+    - checkpoint save at the final step; then a resume run from the checkpoint
