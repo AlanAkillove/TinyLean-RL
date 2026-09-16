@@ -155,7 +155,7 @@
 - 过程：运行 4.7 小时（生成 14,495.7 s + 验证 2,375.7 s）；batch verify 触发 21 次单候选回退（missing_item 20、redeclaration 1）。
 - 结果：verified 14/128（严格格式同数）；sorry 0、format_failures 0、`verifier_errors` 5（单独计 0）；**截断 96/128 = 75%**；组率 all_zero 87.5%（28/32）、**mixed 3.125%（1/32）**、all_one 9.375%（3/32），**IGR = 0.03125**；prompt 长度（全 promptset 7,620 unique）median 231 / p95 415 / max 2,365。
 - 结论：停止条件①满足（positive 3 组 + mixed 1 组）；all-zero 28/32 未触发计划中的 ≥29/32 风险线，但 IGR 显著低于 miniF2F 的 28–31%，与 75% 截断强相关——P3 用官方 rollout 口径（temp 1.0）时必须先复核截断率与 IGR。数据点：`<think>` 混入 Lean 代码（lean_error 主因）、REPL redeclaration、单候选回退路径被真实使用。
-- 产物：`experiments/results/p2_5_promptset_profile.json`；`experiments/local_rl_batch/{prompts,rollouts,rewards}.jsonl + metadata.json`。
+- 产物：`experiments/results/p2_5_promptset_profile.json`；`experiments/local_rl_batch/{prompts,rollouts,rewards}.jsonl + metadata.json`（artifact 创建于 2026-09-16T12:35:31Z）。
 
 ### E010 P2.5 W2 GRPO loss rehearsal（cached rollout → advantage → backward，停止条件②）
 
@@ -166,7 +166,7 @@
   - 全零子集（8 定理 / 32 候选）：advantage 全零 → loss 0、grad_norm 0（有限）；total 1,914.2 s（load 23.9 / old_logprobs 226.2 / loss_forward 517.6 / backward 1,055.2）。
   - 混合组补跑（5 定理 / 20 候选）：**advantage ∈ {−0.5, +0.5}（all_zero=false）**；per-candidate loss = [+0.386, −0.386, −0.386, +0.386]（恰为 #17 的 4 个候选）；**grad_norm = 2.036（有限）**；total 1,163.1 s（load 72.6 / old_logprobs 120.2 / loss_forward 299.2 / backward 616.0）。
 - 结论：停止条件②满足——链路在真实数据上完整成立，非均匀组产生有限非零梯度。`loss.total=0` 是 mean-only 中心化下组内 Σadv=0 的数学对称性（不是失败信号）；per-candidate 项与 grad_norm 非零证明路径有效。87.5% all-zero 组率下 8 定理子集大概率无梯度信号（链首跑即命中）——IGR 是 P3 首要观察指标。
-- 产物：`experiments/results/p2_5_grpo_rehearsal.json`、`experiments/results/p2_5_grpo_rehearsal_mixed.json`。
+- 产物：`experiments/results/p2_5_grpo_rehearsal.json`、`experiments/results/p2_5_grpo_rehearsal_mixed.json`（链版创建于 2026-09-16T13:13:25Z；混合组补跑版 2026-09-16T14:56:12Z）。
 
 ### E011 P2.5 W3 LoRA 单步显存探针（8 GiB RTX 4060，停止条件③）
 
@@ -177,7 +177,7 @@
   - CPU 冒烟：status=ok；**224/224 LoRA 张量全部有梯度**；forward 39.1 s / backward 998.5 s / step 1.2 s（total 1,177.5 s）；期间修复 2 个真 bug（cached batch 的 reward 字段引用、PEFT `get_base_model()` 解包）。
   - GPU 探针：**all_combinations_ok: true**（四组合全部完成 forward+backward+step）；峰值 reserved 分别为 r16@1024 4,016 MB / r32@1024 4,126 MB / r16@2048 **8,642 MB** / r32@2048 **8,752 MB**——两个 2048 组合超出物理 8,187.5 MB（peak_headroom = −564.5 MB，靠 Windows 共享显存完成）；r16@1024 单次 forward 0.17 s / backward 1.03 s。各组合候选落在 all-zero 组，loss=0、grad_norm=0（有限）——本探针验证显存与算子路径，不验证梯度信号。
 - 结论：停止条件③满足——8 GiB 上单步可跑通但**无余量**（2048 组合已溢出物理显存、吞吐不可预测）；P3 正式训练按计划走 ≥24 GB 云卡。
-- 产物：`experiments/results/p2_5_lora_step_probe.json`、`experiments/results/_lora_cpu_smoke.json`。
+- 产物：`experiments/results/p2_5_lora_step_probe.json`、`experiments/results/_lora_cpu_smoke.json`（GPU 探针创建于 2026-09-16T12:40:11Z；CPU 冒烟版 2026-09-16T09:15:21Z）。
 
 ---
 

@@ -23,7 +23,7 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - **0.6B 起点具备充分 GRPO 学习信号**（未陷入 reward 全零状态）；
   - P3 第一版配置依据：`max_response=4096`（成功长度 P95 ≈ 3,000，余量 ~25%）、串行验证（验证时间占比 ~1.6%，非瓶颈）。
 - **P2.5 Local RL Readiness（2026-09-16 启动，Windows RTX 4060 8 GB）**：P3 之前的本地 RL 前置验证，原则为 *test the Kimina logic, don't replace it*（不引入 TRL、不做另一套 GRPO）。范围：Promptset 训练分布诊断（32×4@4096 cached rollout）、GRPO advantage/loss 参考实现（逐式移植 pinned commit `e16b6058`）与 rehearsal、0.6B LoRA 单步显存探针、P3 config 审计（[`p3_config_audit.md`](p3_config_audit.md)）与云部署命令链。
-  - **停止条件**（全部满足即 complete，不再膨胀）：① Promptset 上观察到 positive/mixed reward 组；② cached rollout → GRPO advantage/loss 算通；③ backward 显存探针给出结论（成功或 OOM 均算回答）；④ `docs/p3_config_audit.md` 完成；⑤ 云启动命令链（`env.sh → compose → doctor.sh → run_p3_smoke.sh`）写好；⑥ reward contract 写回本文档与审计文档。
+  - **停止条件**（全部满足即 complete，不再膨胀）：① Promptset 上观察到 positive/mixed reward 组；② cached rollout → GRPO advantage/loss 算通；③ backward 显存探针给出结论（成功或 OOM 均算回答）；④ `docs/p3_config_audit.md` 完成；⑤ 云启动命令链（`env.sh → compose → doctor.sh → run_p3_smoke.sh`）写好；⑥ reward contract 写回本文档与审计文档。（**2026-09-16：六条全部满足**，证据与产物见 [`studies/rl_readiness.md`](studies/rl_readiness.md) 与 `experiments/manifests/p2_5_complete.yaml`。）
   - 结果汇总见 [`studies/rl_readiness.md`](studies/rl_readiness.md)；证据落档 `experiments/manifests/p2_5_complete.yaml`。
 - **P2 → P3 迁移 gate**（在 Linux 3090 主机上执行，不重跑完整 E003–E008）：
   1. 验证器 positive/negative gate；
