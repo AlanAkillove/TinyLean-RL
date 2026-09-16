@@ -233,6 +233,24 @@
 - 结论：**FULL-FT 在单张 3090 24 GB 可行**（tb4/mini4/micro2/util0.40/5120 batched）；训练模式冻结为 FULL-FT，不启用 LoRA fallback。
 - 产物：`runs/p3_0_memprobe/`、`experiments/results/p3_0_memprobe_vram.csv`、`.cache/p3_0_memprobe.log`。
 
+### E015 P3-A On-Policy GRPO smoke（3 steps + resume）
+
+- 目的：验证全链路 on-policy：rollout → Lean reward → GRPO advantage → optimizer → checkpoint → resume（P3-A 成功标准；按协议 P3-0 完成后执行 ≤2–5 steps）。
+- 设置：P3-0 冻结配置（tb4/mini4/micro2/util0.40/5120batched；n=4；max 4096；无 KL；multiturn off）；`run_p3_smoke.sh --steps 3`，checkpoint 至 `runs/p3a_smoke`（save_freq=steps）；随后 `--steps 4` 续训验证 resume。
+- 结果（4 个优化步）：
+
+| step | 墙钟 | score mean/max | advantages | grad_norm | pg_loss | alloc/reserved GB |
+|---|---|---|---|---|---|---|
+| 1 | 117.8 s | 0 / 0 | 0（全零组） | 0.0 | 0.0 | 19.09 / 20.52 |
+| 2 | 61.5 s | 0.25 / 1.0 | 0（all-one 组） | 0.0 | 0.0 | 23.31 / 24.84 |
+| 3 | 83.5 s（含 save 16.9） | 0 / 0 | 0（全零组） | 0.0 | 0.0 | 23.56 / 25.07 |
+| 4（resume） | 81.7 s（含 save 14.2） | **0.0625 / 1.0** | **+0.75 / −0.25（mixed 组）** | **0.180** | **0.00256** | 23.19 / 24.75 |
+
+  - resume 实证：日志“Found checkpoint / Resuming from …/global_step_3 / Setting global step to 3”，model/optimizer/rng/lr_scheduler 全部从 `global_step_3` 加载，进度从 3/4 开始；续训 run 总耗时 210 s。
+  - 显存：nvidia-smi 采样峰值 **22,755 MiB（22.2 GiB）**；响应长度稳定（mean 3500–3930，clip 0.625–0.75），无格式崩塌；verifier 全程无不可恢复错误。
+- 结论：P3-A 成功标准全部满足（非零 advantage/loss/grad；save+resume 实测通过）。观察：IGR≈0.09 的低信号密度下 4 步中 3 步零梯度——P3-B 前需先处理信号密度（恢复顺序 n=8 → multiturn），另需评估 22.2 GiB 峰值下的长跑稳定性。
+- 产物：`.cache/p3a_smoke.log`、`.cache/p3a_resume.log`、`runs/p3a_smoke/`（global_step_3、global_step_4）、`experiments/results/p3a_smoke_vram.csv`、`experiments/results/p3a_resume_vram.csv`。
+
 ---
 
 ## 追加记录模板
