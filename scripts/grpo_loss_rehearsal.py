@@ -127,6 +127,11 @@ def main() -> int:
         help="Keep only the rollouts of the first N theorems (0 = all); bounds CPU runs.",
     )
     parser.add_argument(
+        "--theorem-indices",
+        help="Comma-separated theorem_index values to keep (overrides --max-theorems), "
+        "e.g. '17' or '15,16,17,18'; use for mixed-reward group rehearsals.",
+    )
+    parser.add_argument(
         "--max-response-length",
         type=int,
         default=1024,
@@ -166,7 +171,13 @@ def main() -> int:
 
     print(f"[1/5] Loading cached rollout batch from {batch_dir}")
     prompts, rollouts, rewards, metadata = load_cached_rollout_batch(batch_dir)
-    if args.max_theorems > 0:
+    if args.theorem_indices:
+        wanted = {int(token) for token in args.theorem_indices.split(",") if token.strip()}
+        keep = [index for index, rollout in enumerate(rollouts) if rollout["theorem_index"] in wanted]
+        rollouts = [rollouts[index] for index in keep]
+        rewards = [rewards[index] for index in keep]
+        print(f"  --theorem-indices {sorted(wanted)}: kept {len(rollouts)} candidates")
+    elif args.max_theorems > 0:
         keep = [index for index, rollout in enumerate(rollouts) if rollout["theorem_index"] < args.max_theorems]
         rollouts = [rollouts[index] for index in keep]
         rewards = [rewards[index] for index in keep]
