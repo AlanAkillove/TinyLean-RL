@@ -46,6 +46,12 @@ data/manifests/*.local.json
 experiments/manifests/*.local.json
 doctor.local.txt
 
+# Local analysis helpers, bridge scripts and run logs (experiments/)
+experiments/*.py
+experiments/*.ps1
+experiments/*.txt
+experiments/*.log
+
 # OS/editor
 .DS_Store
 Thumbs.db
