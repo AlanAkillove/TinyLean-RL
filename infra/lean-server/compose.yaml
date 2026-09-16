@@ -12,3 +12,12 @@ services:
       # present-but-empty LEAN_SERVER_API_KEY as a required key (empty string
       # is not None in pydantic), which makes every request fail with 401.
       LEAN_SERVER_API_KEY:
+
+# Pin the Compose network explicitly. Relying on Docker's automatic subnet
+# allocation collided with the campus LAN (172.18.0.0/16) once; never use
+# 172.17.0.0/16, 172.18.0.0/16 or the server's own 10.3.25.0/24 here.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.201.0.0/24
