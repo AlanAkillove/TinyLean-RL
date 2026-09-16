@@ -61,7 +61,9 @@ else
 fi
 
 if command -v curl >/dev/null 2>&1; then
-  if curl --silent --show-error --fail --max-time 5 "$LEAN_SERVER_API_URL/openapi.json" >/dev/null 2>&1; then
+  # The 2.0.0 image disables /openapi.json in prod mode (404 on the Linux
+  # host, observed 2026-09-17); /health is the reliable readiness endpoint.
+  if curl --silent --show-error --fail --max-time 5 "$LEAN_SERVER_API_URL/health" >/dev/null 2>&1; then
     pass "Lean Server: $LEAN_SERVER_API_URL"
     if [[ -x "$ROOT/.venv/bin/python" ]]; then
       lean_latency="$("$ROOT/.venv/bin/python" - <<'PY' 2>/dev/null || true

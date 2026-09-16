@@ -29,7 +29,17 @@ ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR/env.sh" >/dev/null
 
-PYTHON="${PYTHON:-python3}"
+# Resolve the project virtualenv explicitly: on Linux `python3` is the system
+# interpreter, which does not carry the VERL/vLLM training stack (env.sh only
+# exports paths; it does not activate the venv).
+PYTHON="${PYTHON:-}"
+if [[ -z "$PYTHON" ]]; then
+  if [[ -x "$ROOT/.venv/bin/python" ]]; then
+    PYTHON="$ROOT/.venv/bin/python"
+  else
+    PYTHON="python3"
+  fi
+fi
 
 STEPS=3
 DRY=0
@@ -39,7 +49,7 @@ usage() {
   cat <<'EOF'
 Usage: bash scripts/run_p3_smoke.sh [--steps N] [--skip-prewarm] [--dry]
 
-  --steps N        Optimizer steps for the P3-A smoke (2..5, default 3).
+  --steps N        Optimizer steps (1 = P3-0 full-FT memory probe; 2..5 = P3-A smoke; default 3).
   --skip-prewarm   Skip the Lean server warm-up / latency ladder.
   --dry            Print the command chain without executing anything.
 EOF
@@ -55,8 +65,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if ! [[ "$STEPS" =~ ^[0-9]+$ ]] || (( STEPS < 2 || STEPS > 5 )); then
-  echo "P3-A smoke: --steps must be an integer in 2..5 (got '$STEPS')." >&2
+# --steps 1 is reserved for the P3-0 full-FT memory probe (docs/p3_linux_handoff.md):
+# a single optimizer step answers the feasibility question, so the 2..5 P3-A gate
+# must not require running two steps before the memory question is settled.
+if ! [[ "$STEPS" =~ ^[0-9]+$ ]] || (( STEPS < 1 || STEPS > 5 )); then
+  echo "P3-A smoke: --steps must be an integer in 1..5 (1 = P3-0 memory probe; 2..5 = P3-A smoke) (got '$STEPS')." >&2
   exit 2
 fi
 
@@ -192,8 +205,8 @@ fi
   || fail "P2.5 completion manifest missing: $GATE_FILE (see docs/studies/rl_readiness.md)"
 [[ -f "$RECIPE_DIR/kimina_prover_0.6B.sh" ]] \
   || fail "pinned recipe missing; run: git submodule update --init --recursive"
-if ! curl --silent --show-error --fail --max-time 5 "$LEAN_SERVER_API_URL/openapi.json" >/dev/null 2>&1; then
-  fail "Lean server unreachable at $LEAN_SERVER_API_URL (docker compose -f infra/lean-server/compose.yaml up -d)"
+if ! curl --silent --show-error --fail --max-time 5 "$LEAN_SERVER_API_URL/health" >/dev/null 2>&1; then
+  fail "Lean server unreachable at $LEAN_SERVER_API_URL (docker compose -f infra/lean-server/compose.yaml up -d); the 2.0.0 image disables /openapi.json in prod mode, so readiness is probed via /health"
 fi
 if ! "$PYTHON" -c 'import verl' >/dev/null 2>&1; then
   fail "VERL is not importable with '$PYTHON'; install the pinned submodule (docs/environment.md runbook)"
