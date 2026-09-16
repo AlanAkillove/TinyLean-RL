@@ -1,0 +1,13 @@
+{
+  "artifact_type": "synthetic_test_fixture",
+  "note": "Hand-built miniature cached batch for tests/test_grpo_reference.py; not a real rollout.",
+  "sampled_statement_ids": ["fixture-theorem-0", "fixture-theorem-1"],
+  "theorems": 2,
+  "samples_per_theorem": 2,
+  "generated_candidates": 4,
+  "batch_files": {
+    "prompts": "prompts.jsonl",
+    "rollouts": "rollouts.jsonl",
+    "rewards": "rewards.jsonl"
+  }
+}

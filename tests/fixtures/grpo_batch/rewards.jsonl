@@ -1,0 +1,4 @@
+{"candidate_id": "fixture-theorem-0-0", "statement_id": "fixture-theorem-0", "reward": 1.0, "verified": true, "format_ok": true, "has_sorry": false, "verify_status": "verified", "lean_message": "", "verification_time": 0.5}
+{"candidate_id": "fixture-theorem-0-1", "statement_id": "fixture-theorem-0", "reward": 0.0, "verified": false, "format_ok": true, "has_sorry": false, "verify_status": "lean_error", "lean_message": "unknown tactic", "verification_time": 0.5}
+{"candidate_id": "fixture-theorem-1-0", "statement_id": "fixture-theorem-1", "reward": 0.0, "verified": false, "format_ok": false, "has_sorry": false, "verify_status": "lean_error", "lean_message": "no lean4 code block", "verification_time": 0.5}
+{"candidate_id": "fixture-theorem-1-1", "statement_id": "fixture-theorem-1", "reward": 1.0, "verified": true, "format_ok": true, "has_sorry": false, "verify_status": "verified", "lean_message": "", "verification_time": 0.5}
