@@ -21,6 +21,16 @@ export UV_CACHE_DIR="${UV_CACHE_DIR:-$TINYLEAN_ROOT/.cache/uv}"
 # GitHub release downloads (the pinned flash-attn wheel) are slow on this host;
 # uv's default 30 s HTTP timeout is too short for metadata re-validation.
 export UV_HTTP_TIMEOUT="${UV_HTTP_TIMEOUT:-600}"
+# Triton compiles a small CUDA-utils helper with the C compiler found in PATH
+# at first use; with conda's cc shim first in PATH that build fails on this host
+# (observed while initialising the vLLM engine, 2026-09-17). The system gcc
+# builds it fine; only applied when the caller has not chosen a compiler.
+if [[ -z "${CC:-}" && -x /usr/bin/gcc ]]; then
+  export CC=/usr/bin/gcc
+fi
+if [[ -z "${CXX:-}" && -x /usr/bin/g++ ]]; then
+  export CXX=/usr/bin/g++
+fi
 export TORCH_HOME="${TORCH_HOME:-$TINYLEAN_ROOT/.cache/torch}"
 export TRITON_CACHE_DIR="${TRITON_CACHE_DIR:-$TINYLEAN_ROOT/.cache/triton}"
 export RAY_TMPDIR="${RAY_TMPDIR:-$TINYLEAN_ROOT/.cache/ray}"
