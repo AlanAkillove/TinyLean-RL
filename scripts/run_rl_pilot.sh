@@ -2,18 +2,20 @@
 set -u
 
 # Guarded P3 entry point. This script deliberately refuses to start until the
-# human/research log records that P2 evaluation and the Linux verifier gate have
-# passed. It also uses conservative single-GPU hypotheses rather than the
-# upstream 8-GPU recipe unchanged.
+# P2.5 Local RL Readiness manifest exists (promptset reward evidence, GRPO loss
+# rehearsal, LoRA step probe, config audit). It also uses conservative
+# single-GPU hypotheses rather than the upstream 8-GPU recipe unchanged.
+# For the short on-policy smoke use scripts/run_p3_smoke.sh instead.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # shellcheck source=/dev/null
 source "$SCRIPT_DIR/env.sh" >/dev/null
 
-GATE_FILE="${TINYLEAN_P2_GATE_FILE:-$ROOT/experiments/manifests/p2_passed}"
+GATE_FILE="${TINYLEAN_P2_5_GATE_FILE:-$ROOT/experiments/manifests/p2_5_complete.yaml}"
 if [[ ! -f "$GATE_FILE" ]]; then
-  echo "P3 blocked: create $GATE_FILE only after P2 evaluator and verifier checks pass." >&2
+  echo "P3 blocked: create $GATE_FILE only after all P2.5 stop conditions are met" >&2
+  echo "(see docs/studies/rl_readiness.md)." >&2
   exit 2
 fi
 
@@ -38,6 +40,6 @@ if [[ ! -f "$ROOT/data/raw/kimina_promptset/data/train-00000-of-00001.parquet" ]
 fi
 
 echo "P3 gate passed; use configs/rl/kimina_0.6b_pilot.yaml to review overrides."
-echo "The actual trainer invocation is intentionally not automated until the pilot configuration is reviewed."
+echo "Launch the short on-policy smoke with: bash scripts/run_p3_smoke.sh --steps 3"
 exit 0
 
