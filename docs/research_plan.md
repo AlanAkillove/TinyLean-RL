@@ -25,12 +25,13 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
 - **P2.5 Local RL Readiness（2026-09-16 启动，Windows RTX 4060 8 GB）**：P3 之前的本地 RL 前置验证，原则为 *test the Kimina logic, don't replace it*（不引入 TRL、不做另一套 GRPO）。范围：Promptset 训练分布诊断（32×4@4096 cached rollout）、GRPO advantage/loss 参考实现（逐式移植 pinned commit `e16b6058`）与 rehearsal、0.6B LoRA 单步显存探针、P3 config 审计（[`p3_config_audit.md`](p3_config_audit.md)）与部署命令链（Linux 目标）。
   - **停止条件**（全部满足即 complete，不再膨胀）：① Promptset 上观察到 positive/mixed reward 组；② cached rollout → GRPO advantage/loss 算通；③ backward 显存探针给出结论（成功或 OOM 均算回答）；④ `docs/p3_config_audit.md` 完成；⑤ Linux 部署启动命令链（`env.sh → compose → doctor.sh → run_p3_smoke.sh`）写好；⑥ reward contract 写回本文档与审计文档。（**2026-09-16：六条全部满足**，证据与产物见 [`studies/rl_readiness.md`](studies/rl_readiness.md) 与 `experiments/manifests/p2_5_complete.yaml`。）
   - 结果汇总见 [`studies/rl_readiness.md`](studies/rl_readiness.md)；证据落档 `experiments/manifests/p2_5_complete.yaml`。
-- **下一阶段：P3-0 — Linux Migration & On-Policy Calibration**（服务器 RTX 3090 24 GB；迁移后第一个阶段，不重跑完整 E003–E011）：
+- **P3-0 完成（2026-09-17，服务器 RTX 3090 24 GB）— Linux Migration & On-Policy Calibration**（不重跑完整 E003–E011）：
   1. Linux 环境 gate：`bash scripts/doctor.sh`（Linux / Docker / Lean server / VRAM ≥ 24 GB / VERL import）；
   2. 验证器 positive/negative gate + model→Lean smoke（Kimina Distill 0.6B）；
-  3. Promptset rollout calibration（temp 1.0 / top_p 1.0 / n=4 / max_response 4096）：重测 IGR / Z / O / 截断率 / tokens/s / VRAM；
+  3. Promptset rollout calibration（temp 1.0 / top_p 1.0 / n=4 / max_response 4096）；
   4. full-parameter 单步显存可行性探针（LoRA 仅当 full FT 不可行时作为 fallback）；
   5. 冻结真正的 P3-A 配置；记录环境基线（`nvidia-smi`、driver、系统、RAM、CPU）。
+  - 结果（证据 `experiments/manifests/p3_0_complete.yaml`、E012–E014）：迁移 gate 全绿（40+19 tests、doctor 23 pass、reward 契约实测）；Promptset IGR = **0.09375**（n=4 retained，marginal ≥0.05）、截断 66.4%、成功证明未撞 4096 上限；**FULL-FT 可行**（单步 136.4 s，peak reserved 20.5 GB）；下一步 P3-A smoke（≤2–5 steps，配置已冻结）。
   - 范围、未决问题与命令序列见 [`p3_linux_handoff.md`](p3_linux_handoff.md)。
 
 ## 三、P3 计划（P3-0 → P3-A → P3-B）

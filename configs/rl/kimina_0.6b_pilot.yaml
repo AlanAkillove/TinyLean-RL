@@ -1,5 +1,5 @@
 phase: P3
-status: provisional_until_p3_0_freeze
+status: frozen_for_p3a                     # P3-0 complete 2026-09-17 (manifest: experiments/manifests/p3_0_complete.yaml)
 reference_recipe: third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_0.6B.sh
 config_audit: docs/p3_config_audit.md
 pinned_commit: e16b605e8186614c685875c9b57eb19e841b521a
@@ -27,13 +27,18 @@ rollout:
   max_prompt_length: 1024
   max_response_length: 4096
   max_model_len: 5120            # = max_prompt_length + max_response_length
-  max_num_batched_tokens: 8192   # must be >= max_model_len (chunked prefill guard)
-  group_size: 4                  # official n=8; n=4 is a reduced-compute starting
-                                 # hypothesis -> n=8 is the first recovery lever
-                                 # if the P3-0 IGR calibration stays below ~5%
-  temperature: 1.0               # official rollout default (E007 local eval used 0.6/0.95)
+  max_num_batched_tokens: 5120   # lowered from 8192 in P3-0: the 8192-token profile
+                                 # activation peak left too little KV at util 0.40
+                                 # (still >= max_model_len, chunked-prefill guard holds)
+  group_size: 4                  # retained after the P3-0 temp-1.0 calibration:
+                                 # IGR 0.09375 (marginal band >= 0.05); official n=8 stays the
+                                 # first recovery lever if P3-A/P3-B signal is insufficient
+  temperature: 1.0               # official rollout default (E007 local eval used 0.6/0.95);
+                                 # P3-0 calibrated at 1.0 (E013)
   top_p: 1.0                     # official default; record any deviation in run metadata
-  gpu_memory_utilization: 0.40   # vLLM coexists with the FSDP actor (0.35-0.5 range)
+  gpu_memory_utilization: 0.40   # P3-0: 0.30 fails vLLM's KV check for max_model_len 5120;
+                                 # at 0.40 the full-FT probe peaked at 19.09 GB allocated /
+                                 # 20.52 GB reserved on the 24 GB card
 
 training:
   algorithm: grpo
@@ -51,16 +56,19 @@ training:
   multiturn: false                  # official uses multiturn sampling 0.5; P3-A starts
                                     # single-turn (audit S7); recovery order in P3-0:
                                     # n=8 first, then multiturn
-  train_batch_size: 8               # prompts per step -> 32 sequences with group_size 4
-  ppo_mini_batch_size: 8            # prompts; x n / dp_size sequences per rank
-  ppo_micro_batch_size_per_gpu: 4
+  train_batch_size: 4               # prompts per step -> 16 sequences with group_size 4;
+                                    # P3-0 memory probe validated this shape on 24 GB
+  ppo_mini_batch_size: 4            # prompts; x n / dp_size sequences per rank
+  ppo_micro_batch_size_per_gpu: 2   # P3-0 probe worked at 2 (one-variable OOM order applies
+                                    # before lowering further)
   max_rollout_tokens: 5000000
   seeds: [0]
 
-training_mode:                   # frozen during P3-0 (full-FT memory probe)
+training_mode:                   # frozen by the P3-0 full-FT memory probe (E014)
   primary_hypothesis: full_parameter_update_if_3090_memory_permits
   fallback: lora_r16_r32         # q/k/v/o, alpha=2r, dropout 0 (W3 probe)
-  final_choice: deferred_to_p3_0
+  final_choice: full_parameter_update   # feasible: exit 0 at tb4/mini4/micro2/util0.40;
+                                        # LoRA fallback not enabled
 
 checkpoint:
   save: once_at_final_smoke_step  # trainer.save_freq = steps (scripts/run_p3_smoke.sh)
@@ -72,7 +80,8 @@ gate:
     - kimina_distill_vs_rl_evaluation
     - observed_proof_length_distribution
     - observed_lean_verification_throughput
-    - p3_0_on_policy_calibration   # temp 1.0 IGR/truncation + full-FT memory probe
+    - p3_0_on_policy_calibration   # DONE 2026-09-17: IGR 0.09375, truncation 66.4%, full-FT feasible
+  evidence: experiments/manifests/p3_0_complete.yaml
   success_signals:
     - finite_loss
     - finite_gradients

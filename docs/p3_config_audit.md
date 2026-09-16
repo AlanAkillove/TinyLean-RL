@@ -379,3 +379,32 @@ actor.ppo_mini_batch_size (prompt 数, recipe 32)
 8. `max_num_batched_tokens=8192` 与长 prompt（~1k）+ 4k response 的吞吐折衷；
 9. `data.train_batch_size=8` 时 `minimal_bsz`（=n_gpus）整除关系的多卡边界
    （单卡恒成立；双卡 32 序列 %2==0 成立）。
+
+---
+
+## 10. P3-0 验证结果与 P3-A 冻结（2026-09-17）
+
+P3-0（Linux RTX 3090）关闭了 §9 的全部"尚未 Linux 验证"项。证据：
+[`../experiments/manifests/p3_0_complete.yaml`](../experiments/manifests/p3_0_complete.yaml)、
+[`experiment_log.md`](experiment_log.md) E012–E014。
+
+| # | §9 项 | 结果 |
+|---|---|---|
+| 1 | model path | `models/weights/kimina_distill_0_6b`（Qwen3 架构）在 trainer 与 smoke 中加载正常 |
+| 2 | dataset path | `prepare_data.py` 幂等重建 OK（24,418 → 过滤后 24,246 train / 244 test） |
+| 3 | Lean server URL | readiness 改用 `/health`（prod 模式 `/openapi.json` 404）；正/负 gate OK |
+| 4 | rollout.n | **n=4 retained**：temp 1.0 下 IGR = 0.09375（marginal ≥ 0.05）；n=8 仍为第一恢复杠杆 |
+| 5 | temperature / top_p | 1.0 / 1.0，E013 全量校准（128 候选） |
+| 6 | max_prompt_length | 1024（采样集 p95=334 / max=719） |
+| 7 | max_response_length | **4096 retained**：verified 自然长度 p95=2746 / max=3955（0/15 撞上限）；失败候选 85/128 生成到上限才停 |
+| 8 | train_batch_size / mini | **4 / 4**（探针配置）；step 墙钟 136.4 s |
+| 9 | ppo_micro_batch_size_per_gpu | **2** 可行；24 GB 上未触发 OOM |
+| 10 | gpu_memory_utilization | **0.40 必需**：0.30 时 vLLM 的 KV 检查失败（5120 需 0.55 GiB，仅 0.41 可用） |
+| 11 | multiturn | off（不变；恢复顺序第二项） |
+| 12 | KL | off / 无 ref worker（与 §1.4 一致） |
+| 13 | reward 并发 | 热身策略 ≤ 2；trainer 内单个 16 候选批次实测 49 s（异步 reward 桶） |
+| 14 | checkpoint | 保存已验证（model/optim/extra_state/fsdp_config/huggingface/data.pt/latest_checkpointed_iteration.txt）；resume 属 P3-A smoke |
+| 15 | 训练模式 | **FULL-FT** 可行：peak allocated 19.09 GB / reserved 20.52 GB（24 GB 卡） |
+
+配置冻结落盘：[`../configs/rl/kimina_0.6b_pilot.yaml`](../configs/rl/kimina_0.6b_pilot.yaml)
+（status=frozen_for_p3a：tb4/mini4/micro2/util0.40/batched5120）。
