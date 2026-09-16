@@ -1,6 +1,18 @@
 # P0 status report
 
-更新时间：2026-09-16（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。
+更新时间：2026-09-17（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。
+
+## Linux P3 stage（2026-09-17，服务器 RTX 3090 24 GB；P3-0 → P3-A → P3-B 完成）
+
+- 工作分支 `p3-linux`（基线 `win`@6ef923e / tag `p2.5-win-complete`；submodule e16b605e 未动）；共 20 个提交。
+- 环境对齐 pinned VERL 矩阵（决策 D004）：torch 2.7.0+cu126、vllm 0.9.1、flash-attn 2.8.0.post2、transformers 4.53.3、ray 2.48.0、VERL editable——`experiments/manifests/p3_0_environment.yaml`。
+- 迁移 gate：pytest 40 passed / GRPO reference 19 passed / ruff+compileall / doctor 23 passed / verifier 正负 gate / model→Lean smoke / reward 契约实测（kimina-client 0.2.1 ↔ server 2.0.0）全部通过（E012）。
+- Promptset 校准（temp 1.0 / top_p 1.0 / n=4 / 4096，E013）：IGR 0.09375、截断 66.4%、成功轨迹未撞上限；n=8 配对校准（E016）：同 16 定理 IGR 0.00→0.0625。
+- Full-FT 单步探针（E014）：exit 0、step 136.4 s、peak reserved 20.5 GB → 训练模式冻结为 FULL-FT。
+- P3-A smoke（E015）：含从 `global_step_3` 的 resume 测试；mixed 组步 grad_norm 0.180。
+- P3-B pilot（E017）：`run_p3_pilot.sh --steps 30 --n 8`，exit 0、4218 s；IGR 0.100→0.200→0.225、Z 0.90→0.75、score 0.059→0.175；checkpoint 10/20/30；显存峰值 23.1 GiB。
+- 摘要清单：`experiments/manifests/p3_0_complete.yaml`、`experiments/manifests/p3b_pilot.yaml`；逐次记录 E012–E017。
+- 下一步（待确认）：固定定理集评估 step-0/10/20/30 checkpoint，确认学习信号。
 
 ## 已完成
 

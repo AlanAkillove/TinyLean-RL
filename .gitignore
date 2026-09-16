@@ -74,6 +74,9 @@ Thumbs.db
 .vscode/
 *.swp
 
+# Local backup files (e.g. compose.yaml.bak from manual edits)
+*.bak
+
 # Docker overrides
 docker-compose.override.yml
 compose.override.yaml

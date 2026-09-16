@@ -31,7 +31,10 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   3. Promptset rollout calibration（temp 1.0 / top_p 1.0 / n=4 / max_response 4096）；
   4. full-parameter 单步显存可行性探针（LoRA 仅当 full FT 不可行时作为 fallback）；
   5. 冻结真正的 P3-A 配置；记录环境基线（`nvidia-smi`、driver、系统、RAM、CPU）。
-  - 结果（证据 `experiments/manifests/p3_0_complete.yaml`、E012–E014）：迁移 gate 全绿（40+19 tests、doctor 23 pass、reward 契约实测）；Promptset IGR = **0.09375**（n=4 retained，marginal ≥0.05）、截断 66.4%、成功证明未撞 4096 上限；**FULL-FT 可行**（单步 136.4 s，peak reserved 20.5 GB）；下一步 P3-A smoke（≤2–5 steps，配置已冻结）。
+  - 结果（证据 `experiments/manifests/p3_0_complete.yaml`、E012–E014）：迁移 gate 全绿（40+19 tests、doctor 23 pass、reward 契约实测）；Promptset IGR = **0.09375**（n=4 retained，marginal ≥0.05）、截断 66.4%、成功证明未撞 4096 上限；**FULL-FT 可行**（单步 136.4 s，peak reserved 20.5 GB）。
+- **P3-A 完成（2026-09-17，E015）**：on-policy GRPO smoke 全链路（rollout → Lean reward → GRPO → optimizer → checkpoint → resume）逐项达标；step 4 出现 mixed 组（advantages +0.75/−0.25、grad_norm 0.180）；从 `global_step_3` 的 resume 实测通过。
+- **P3-B 完成（2026-09-17，E017）**：n=8（经 E016 配对校准背书：同 16 定理 IGR 0.00→0.0625）、30 步短 pilot：IGR 0.100→0.200→0.225、Z 0.900→0.800→0.750、score_mean 0.059→0.175，末 5 步连续非零梯度；3 个 checkpoint；显存峰值 23.1 GiB 稳定。证据 `experiments/manifests/p3b_pilot.yaml`。
+- **当前下一步（待确认）**：固定定理集上评估 step-0/10/20/30 checkpoint（pass@k / IGR 对比），确认学习信号后再决定是否延长 pilot。
   - 范围、未决问题与命令序列见 [`p3_linux_handoff.md`](p3_linux_handoff.md)。
 
 ## 三、P3 计划（P3-0 → P3-A → P3-B）
@@ -46,11 +49,13 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
 - 配置起点（由 P3-0 冻结）：Kimina-Distill-0.6B、Kimina Promptset、`n=4`（reduced-compute 起始假设；官方 n=8 是 IGR 过低时的第一恢复项）、`max_response=4096`（P3-0 初始预算假设）、小 train batch、**2–5 optimizer steps**。
 - 成功判据：loss finite、gradient finite、存在 positive reward、存在 mixed group、**checkpoint 成功保存**、**成功重载 / 续训**。
 - **到点即停**，不追求任何 benchmark 提升。
+- **完成（2026-09-17，E015）**：4 个优化步 exit 0；step 4 mixed 组 → 非零 advantage/loss/grad（grad_norm 0.180）；`global_step_3/4` 的 save+resume 实测通过（§18 契约）；训练模式 FULL-FT 冻结。
 
 ### P3-B：Short learning pilot（短 RL 学习 pilot）
 - 前置条件：P3-A 成功。
 - 目标：运行数十个 update，观察 `IGR_t / Z_t / O_t / response length / entropy / KL` 的合理变化（预期形态：`Z_t ↓`，`O_t ↑`，`IGR_t` 先稳后降）。
 - 这是回答"小 compute 下 0.6B RL 能否稳定学习"的真正实验，也是 M2/M3 的基线。
+- **完成（2026-09-17，E017）**：`run_p3_pilot.sh --steps 30 --n 8`；IGR 0.100→0.200→0.225、Z_t 0.90→0.75、score_mean 0.059→0.175，末 5 步连续非零梯度；checkpoint 于 10/20/30；证据 `experiments/manifests/p3b_pilot.yaml`。确认性同集 checkpoint 评估 = 下一步（定理抽样方差需排除）。
 
 ## 四、奖励契约（Reward semantics，P3 前冻结）
 
