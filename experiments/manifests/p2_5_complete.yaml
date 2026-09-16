@@ -1,0 +1,74 @@
+# P2.5 Local RL Readiness — completion manifest.
+# Gate file consumed by scripts/doctor.sh and scripts/run_p3_smoke.sh:
+# P3 ships only after every stop condition below is satisfied.
+stage: P2.5
+name: Local RL Readiness
+status: complete
+completed_utc: "2026-09-16T13:15:12Z"   # 2026-09-16 21:15:12 +08:00, p2_5_chain.done
+pinned_verl_commit: e16b605e8186614c685875c9b57eb19e841b521a
+artifact_git_revisions:
+  - 9882a4ffd2028ba92aa6aa9a924f46f0c5482b1d   # chain artifacts (before the win-branch commits)
+  - 27494d71dc9f12941fbff1e334ada4d50bea27ec   # mixed-group rehearsal rerun (--theorem-indices added after this commit)
+
+stop_conditions:
+  promptset_reward_evidence:
+    satisfied: true
+    evidence: experiments/results/p2_5_promptset_profile.json
+    created_utc: "2026-09-16T12:35:31Z"
+    summary: {theorems: 32, samples_per_theorem: 4, verified: 14, truncated: 96, sorry: 0, format_failures: 0, verifier_errors: 5, groups_all_zero: 28, groups_mixed: 1, groups_all_one: 3, igr: 0.03125}
+
+  grpo_loss_rehearsal:
+    satisfied: true
+    evidence:
+      - experiments/results/p2_5_grpo_rehearsal.json        # chain, first 8 theorems (all-zero subset)
+      - experiments/results/p2_5_grpo_rehearsal_mixed.json  # theorem 15-19 incl. the only mixed group (17)
+    created_utc: "2026-09-16T14:56:12Z"
+    summary: {advantage_min: -0.5, advantage_max: 0.5, per_candidate_loss: 0.38641509, grad_norm: 2.036054, finite_grad_norm: true, pinned_objective: DrGRPO-mean-only + seq-mean-token-sum-norm + clip 0.2/0.3 + c 3.0}
+
+  lora_step_probe:
+    satisfied: true
+    evidence:
+      - experiments/results/p2_5_lora_step_probe.json
+      - experiments/results/_lora_cpu_smoke.json
+    created_utc: "2026-09-16T12:40:11Z"
+    summary: {all_combinations_ok: true, combos: "r16/r32 x seq1024/2048", max_peak_reserved_mb: 8752.0, physical_vram_mb: 8187.5, peak_headroom_mb: -564.5, cpu_smoke_tensors_with_grad: 224}
+
+  config_audit:
+    satisfied: true
+    evidence: docs/p3_config_audit.md
+
+  cloud_command_chain:
+    satisfied: true
+    evidence:
+      - scripts/run_p3_smoke.sh
+      - scripts/run_rl_pilot.sh
+      - scripts/doctor.sh
+      - scripts/prewarm_lean_server.py
+      - experiments/results/lean_server_warmup.json
+    summary: {recommended_concurrency: 2, peak_throughput_rps: 3.932, warmup_note: "measured on an already-warm server; cold containers need prewarm first"}
+
+  reward_contract_writeback:
+    satisfied: true
+    evidence:
+      - docs/research_plan.md          # section 4, P2.5 W4 audit addendum
+      - docs/studies/rl_readiness.md   # consolidated record (E009-E011)
+
+additional_artifacts:
+  sft_cold_start:
+    evidence: experiments/results/p2_5_sft_prep.json
+    outputs:
+      - data/processed/sft_cold_start/train.parquet
+      - data/processed/sft_cold_start/val.parquet
+    summary: {rows_in: 104155, rows_kept: 31634, duplicates_removed: 0, contamination_removed: 0, verify_sample: "190/200 verified", train: 31002, val: 632}
+
+provenance_notes:
+  - The mixed-group rehearsal rerun used the --theorem-indices flag, added to scripts/grpo_loss_rehearsal.py after commit 27494d7; the flag is committed in the follow-up docs commit.
+
+next:
+  stage: P3-A
+  host: cloud single GPU >= 24 GB
+  first_command: bash scripts/run_p3_smoke.sh --steps 3
+  watch_items:
+    - Recheck truncation rate and IGR under the official rollout setting (temperature 1.0)
+    - Prewarm the Lean server before any rollout (cold Mathlib load is minutes)
+    - Keep verifier_error candidates at reward 0 and counted separately

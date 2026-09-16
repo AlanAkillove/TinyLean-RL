@@ -147,6 +147,38 @@
 - 统计单位修正后的复核：E007/E008 的定理级 McNemar（p≈0.375）与候选级 z≈1.55 均不显著，原结论不变。
 - P3 输入冻结：`max_response=4096`（成功长度 P95≈3,000）、串行验证（验证时间占比 1.6%）、奖励契约（`verifier_error` 单独记录计 0）、IGR 基线 Distill 28.1% / RL 31.3%。
 
+### E009 P2.5 W1 Promptset 32×4 cached rollout profile（停止条件①）
+
+- 目的：在官方 Kimina-Prover-Promptset 子集上量化 GRPO 所需的组奖励信号（positive/mixed 组），并落盘 cached rollout batch 供 W2/W3 复用。
+- 设置：32 个 unique statement（seed 0）× 4 候选；`max_new_tokens=4096`、`temperature=0.6`、`top_p=0.95`（E007 评估设置；官方 P3 rollout 用 temp 1.0）、batch-size 1（8 GiB 显存）。验证走本地 Kimina server（batch verify → 单候选回退）。
+- 命令：`python -u scripts/promptset_rollout_probe.py --batch-size 1 --limit 32 --samples-per-theorem 4 --output experiments/results/p2_5_promptset_profile.json --batch-dir experiments/local_rl_batch`（项目 `.venv` 解释器）。
+- 过程：运行 4.7 小时（生成 14,495.7 s + 验证 2,375.7 s）；batch verify 触发 21 次单候选回退（missing_item 20、redeclaration 1）。
+- 结果：verified 14/128（严格格式同数）；sorry 0、format_failures 0、`verifier_errors` 5（单独计 0）；**截断 96/128 = 75%**；组率 all_zero 87.5%（28/32）、**mixed 3.125%（1/32）**、all_one 9.375%（3/32），**IGR = 0.03125**；prompt 长度（全 promptset 7,620 unique）median 231 / p95 415 / max 2,365。
+- 结论：停止条件①满足（positive 3 组 + mixed 1 组）；all-zero 28/32 未触发计划中的 ≥29/32 风险线，但 IGR 显著低于 miniF2F 的 28–31%，与 75% 截断强相关——P3 用官方 rollout 口径（temp 1.0）时必须先复核截断率与 IGR。数据点：`<think>` 混入 Lean 代码（lean_error 主因）、REPL redeclaration、单候选回退路径被真实使用。
+- 产物：`experiments/results/p2_5_promptset_profile.json`；`experiments/local_rl_batch/{prompts,rollouts,rewards}.jsonl + metadata.json`。
+
+### E010 P2.5 W2 GRPO loss rehearsal（cached rollout → advantage → backward，停止条件②）
+
+- 目的：以 pinned commit 的 GRPO 目标函数（DrGRPO mean-only 中心化 + seq-mean-token-sum-norm + 非对称 clip 0.2/0.3 + clip_ratio_c 3.0）在真实 cached rollout 上重演 advantage → loss → backward 全链路。
+- 设置：CPU float32（本机 RAM 约束）；response 截断 1,024（CPU 内存）；micro-batch 1。两次运行：①链自动全零子集（`--max-theorems 8`，前 8 定理恰好全为零组）；②混合组补跑（`--theorem-indices 15,16,17,18,19`，含唯一 mixed 组 #17，2/4 verified）。
+- 命令（补跑）：`.venv\Scripts\python.exe -u scripts/grpo_loss_rehearsal.py --batch-dir experiments/local_rl_batch --output experiments/results/p2_5_grpo_rehearsal_mixed.json --device cpu --theorem-indices 15,16,17,18,19 --max-response-length 1024`。
+- 结果：
+  - 全零子集（8 定理 / 32 候选）：advantage 全零 → loss 0、grad_norm 0（有限）；total 1,914.2 s（load 23.9 / old_logprobs 226.2 / loss_forward 517.6 / backward 1,055.2）。
+  - 混合组补跑（5 定理 / 20 候选）：**advantage ∈ {−0.5, +0.5}（all_zero=false）**；per-candidate loss = [+0.386, −0.386, −0.386, +0.386]（恰为 #17 的 4 个候选）；**grad_norm = 2.036（有限）**；total 1,163.1 s（load 72.6 / old_logprobs 120.2 / loss_forward 299.2 / backward 616.0）。
+- 结论：停止条件②满足——链路在真实数据上完整成立，非均匀组产生有限非零梯度。`loss.total=0` 是 mean-only 中心化下组内 Σadv=0 的数学对称性（不是失败信号）；per-candidate 项与 grad_norm 非零证明路径有效。87.5% all-zero 组率下 8 定理子集大概率无梯度信号（链首跑即命中）——IGR 是 P3 首要观察指标。
+- 产物：`experiments/results/p2_5_grpo_rehearsal.json`、`experiments/results/p2_5_grpo_rehearsal_mixed.json`。
+
+### E011 P2.5 W3 LoRA 单步显存探针（8 GiB RTX 4060，停止条件③）
+
+- 目的：回答“本地 8 GiB 卡能否完成一步 LoRA GRPO 反传”（成功或 OOM 都算回答）。
+- 设置：float16 + gradient checkpointing + micro-batch 1；LoRA target q/k/v/o、alpha=2r、dropout 0、AdamW lr 2e-6；r16/32 × seq 1024/2048 四组合。先以 CPU bf16 冒烟（r16 × 384，smoke batch）验证代码路径。
+- 命令（GPU）：链自动执行 `.venv\Scripts\python.exe -u scripts/lora_step_probe.py --batch-dir experiments/local_rl_batch --output experiments/results/p2_5_lora_step_probe.json --lora-ranks 16,32 --seq-lens 1024,2048 --device cuda`；冒烟：`--batch-dir experiments/local_rl_batch_smoke --output experiments/results/_lora_cpu_smoke.json --device cpu --dtype bfloat16 --lora-ranks 16 --seq-lens 384`。
+- 结果：
+  - CPU 冒烟：status=ok；**224/224 LoRA 张量全部有梯度**；forward 39.1 s / backward 998.5 s / step 1.2 s（total 1,177.5 s）；期间修复 2 个真 bug（cached batch 的 reward 字段引用、PEFT `get_base_model()` 解包）。
+  - GPU 探针：**all_combinations_ok: true**（四组合全部完成 forward+backward+step）；峰值 reserved 分别为 r16@1024 4,016 MB / r32@1024 4,126 MB / r16@2048 **8,642 MB** / r32@2048 **8,752 MB**——两个 2048 组合超出物理 8,187.5 MB（peak_headroom = −564.5 MB，靠 Windows 共享显存完成）；r16@1024 单次 forward 0.17 s / backward 1.03 s。各组合候选落在 all-zero 组，loss=0、grad_norm=0（有限）——本探针验证显存与算子路径，不验证梯度信号。
+- 结论：停止条件③满足——8 GiB 上单步可跑通但**无余量**（2048 组合已溢出物理显存、吞吐不可预测）；P3 正式训练按计划走 ≥24 GB 云卡。
+- 产物：`experiments/results/p2_5_lora_step_probe.json`、`experiments/results/_lora_cpu_smoke.json`。
+
 ---
 
 ## 追加记录模板
