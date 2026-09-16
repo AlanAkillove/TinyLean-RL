@@ -1,7 +1,7 @@
 # 实验日志（Experiment log）
 
 本文件按时间顺序记录每次实验运行的目的、设置、命令、结果与结论，只保留实际执行过的内容。
-当前状态快照见 [`p0_status.md`](p0_status.md)，阶段约束与决策格式见 [`experiment_protocol.md`](experiment_protocol.md)。
+当前状态快照见 [`p0_status.md`](p0_status.md)，研究主线与统计功效分析见 [`research_plan.md`](research_plan.md)，阶段约束与决策格式见 [`experiment_protocol.md`](experiment_protocol.md)。
 大体量原始产物保存在 `experiments/results/`（不进 Git），本日志保留可核对的摘要与指向。
 
 验收口径：候选只有被 Lean 验证器清除全部目标且无 `error` 级消息时才算通过（`warning` 不影响）；验证器为本地 Kimina Lean Server（Docker `projectnumina/kimina-lean-server:2.0.0`，镜像内 Lean `v4.15.0`）。本机数字是工作基线，不是官方绝对成绩。
@@ -72,11 +72,80 @@
   - 定理分成三层：简单题（0/4/5）不受预算影响；中等题（1）预算决定成败；难题（2/3/6/7）需要超过 4096 的预算（或本身就超出 Distill 0.6B 能力）。
 - 产物：`experiments/results/p2_eval_distill_8x4_4096.json`。
 
+### E006 P2 RL 8×4（max 4096 tokens）
+
+- 设置：同 E005，模型换成 `kimina_rl_0_6b`。
+- 命令：`uv run python scripts/evaluate_model.py --model-key kimina_rl_0_6b --limit 8 --samples-per-theorem 4 --max-new-tokens 4096 --offline --output experiments/results/p2_eval_rl_8x4_4096.json`
+- 过程事件：第 4 批（定理 3）验证批次触发 500（REPL 崩溃），退避重试失败后降级逐候选；3 个候选（3-0/3-1/3-2）单独验证时同样触发 500，被记为 `verifier_error`（`verify_status` 机制首次实战）。完成后逐一重验（含 15 s 退避重试）仍全部 500——**这 3 个候选均含 `native_decide`**，稳定复现验证器崩溃，按先例计为失败。
+- 结果（完成于 2026-09-15T17:38:58Z）：**13/32**，Pass@1 **0.40625**；all_zero 0.5 / mixed 0.25 / all_one 0.25；生成 5271.0 s，验证 431.9 s。
+- 通过分布：定理 0 `mathd_algebra_478` 4/4；定理 1 `numbertheory_4x3m7y3neq2003` 2/4；定理 4 `mathd_algebra_141` 4/4；定理 5 `mathd_numbertheory_3` 3/4（1 个撞上限）；定理 2/3/6/7 为 0/4。
+- 产物：`experiments/results/p2_eval_rl_8x4_4096.json`、`experiments/results/p2_eval_rl_8x4_4096_recheck.json`。
+
+### E005 vs E006 对比与结论（@4096）
+
+| 模型 | Verified | Pass@1 | all_zero | mixed | all_one |
+|---|---|---|---|---|---|
+| `kimina_distill_0_6b` | 14/32 | 0.4375 | 0.5 | 0.125 | 0.375 |
+| `kimina_rl_0_6b` | 13/32 | 0.40625 | 0.5 | 0.25 | 0.25 |
+
+- 两个预算下（2048/4096）Distill 均以 1 个候选之差略微领先于 RL（10 vs 9；14 vs 13）——差异在噪声内，官方 +2.45 pp 的定性关系仍未复现；需要更大样本（≥ 32 定理）与 Pass@8/32 口径才能判定。
+- 预算效应在两个模型上都成立：Pass@1 Distill 0.3125 → 0.4375，RL 0.28125 → 0.40625；all_zero 组率从 0.625 降到 0.5。
+- RL 在 `amc12_2001_p5` 上 4 个候选有 3 个含 `native_decide` 并稳定触发验证器崩溃（Distill 在同题为 0/4 个），RL 微调后对 `native_decide` 的倾向值得作为训练/评估侧风险点跟踪。
+
 ### 并发吞吐复测（基础设施）
 
 - 目的：测定 P3 奖励计算的并发能力；先发 4 个并发 `verify_code`（已排除代理因素）。
-- 结果：仅 1 个请求成功（2.4 s），其余 3 个在 300 s 客户端超时；而串行验证稳定（E003–E005 全程正常，32 候选验证 7–36 s）。
-- 结论：Kimina Lean Server 2.0.0 在本机不支持有效并发（行为机制待深入）。P3 的奖励计算必须串行提交或引入队列/多实例方案；此约束作为 P3 吞吐规划输入记录。
+- 结果：仅 1 个请求成功（2.4 s），其余 3 个在 300 s 客户端超时；服务器日志显示 4 个请求最终都返回 200，随后 3 个新建 REPL 被关闭——即并发请求各自取用独立 REPL，冷 REPL 初始化（Mathlib 加载）耗时超过客户端超时。串行验证稳定（E003–E005 全程正常，32 候选验证 7–36 s）。
+-- 结论：Kimina Lean Server 2.0.0 的并发容量受限于 REPL 池冷启动成本。P3 若需并发奖励计算，必须先并行预热 N 个 REPL（或提高 `LEAN_SERVER_MAX_REPLS` 并预留初始化时间）；低风险方案是串行提交 + 本地队列。
+
+## 2026-09-16
+
+### E007 P2 Distill 32×4 @4096（主实验：规模扩展）
+
+- 目的：把对比从 8 定理扩到 32 定理，为预算-分数曲线与统计可判定性分析提供主数据。
+- 设置：同 E005；`--limit 32`（miniF2F 索引 0–31，含 9 道 mathd_algebra、7 道 IMO/IMO-similar、4 道 AMC、7 道数论等）。
+- 命令：`uv run python scripts/evaluate_model.py --model-key kimina_distill_0_6b --limit 32 --samples-per-theorem 4 --max-new-tokens 4096 --offline --output experiments/results/p2_eval_distill_32x4_4096.json`
+- 过程：运行 5.1 小时（生成 18,386 s + 验证 290 s）。1 个候选（定理 3-1，含 `native_decide`）触发 `verifier_error`，重验仍稳定 500，计为失败。
+- 结果：**43/128**，Pass@1 0.3359；解出定理 **15/32**（46.9%）；all_zero 0.531 / mixed 0.281 / all_one 0.188。
+- 分布：解出定理索引 [0,4,5,8,9,10,11,13,14,15,17,20,21,23,29]；前 16 题解出 10 题、后 16 题仅 5 题；12/128 候选含 `native_decide`。
+- 长度：solved 候选平均 1748 tokens（预算的 43%）；全量平均 3231（大量截断）；max 4096。
+- 种子稳定性观察：E007 前 8 题与 E005（同题同参数、独立采样）对比为 **14 → 10**（示例：定理 1 从 2/4 到 0/4）——同一模型同一配置的两次运行相差 4/32 个候选，直接展示了 8 定理级评估的采样噪声量级，是 RQ3（可判定性）的实测证据。
+- 产物：`experiments/results/p2_eval_distill_32x4_4096.json`。
+
+### E008 P2 RL 32×4 @4096（主实验：规模扩展）
+
+- 设置：同 E007，模型为 `kimina_rl_0_6b`；由桥接脚本在 E007 完成后自动启动（07:06）。
+- 命令：`uv run python scripts/evaluate_model.py --model-key kimina_rl_0_6b --limit 32 --samples-per-theorem 4 --max-new-tokens 4096 --offline --output experiments/results/p2_eval_rl_32x4_4096.json`
+- 过程：运行约 7.5 小时。2 个候选（定理 3-0/3-1，均含 `native_decide`）触发 `verifier_error`，重验仍稳定 500，计为失败。
+- 结果：**55/128**，Pass@1 **0.4297**；解出定理 **18/32**（56.3%）；all_zero 0.4375 / mixed 0.3125 / all_one 0.25。
+- 分布：解出定理索引 [0,4,5,8,10,11,13,14,15,17,19,20,21,23,25,27,29,31]；难度分层 0/4=14、1-3/4=10、4/4=8。
+- `native_decide`：11/128（与 Distill 的 12/128 基本一致）——E004/E006 中“RL 显著更倾向 `native_decide`”的观察在 32 定理规模下**未复现**，收回该结论。
+- 产物：`experiments/results/p2_eval_rl_32x4_4096.json`、`..._recheck.json`。
+
+### E007 vs E008 对比（32 定理 @4096，论文主表）
+
+| 指标 | Distill | RL | 差 |
+|---|---|---|---|
+| 候选级 verified | 43/128 (0.3359) | 55/128 (0.4297) | +9.4 pp（z≈1.55，p≈0.12） |
+| 定理级 solved | 15/32 (46.9%) | 18/32 (56.3%) | +3 题 |
+| 配对翻转 | 仅 Distill 解出：{9} | 仅 RL 解出：{19,25,27,31} | McNemar p≈0.375 |
+| all_zero | 0.531 | 0.4375 | −0.094 |
+| 通过候选均长 | 1748 tokens | 1719 tokens | — |
+
+- **在 32 定理规模下，RL 首次在方向上领先 Distill（+9.4 pp 候选级 / +3 定理级），与官方 +2.45 pp 方向一致；但两种统计检验均未达显著**（与预分析的“小样本不可判定”一致）。
+- 子集敏感性：同一对模型在 8 定理子集上（E005/E006）几乎平手（14 vs 13，且 Distill 略高），32 定理上 RL 明显领先——**子集抽样本身能反转结论方向**，是“小样本评估不可靠”的最直接证据。
+- 定理级翻转的 4 个 RL-only 题全为中低难度（索引 19/25/27/31），Distill 唯一独有题为 imo_1983_p6（索引 9）。
+
+### P2 阶段 checkpoint 与方向决议（2026-09-16）
+
+- 事件：外部审查（GPT）指出研究主线漂移——budget-aware evaluation 的展开正在取代 TinyLean-RL 的 RL 主线。决议**采纳并执行**：
+  1. E001–E008 正式定位为 **P2 预实验**（Study A 评估校准 / B 奖励可靠性 / C 奖励信息量），收录于 [`studies/evaluation_calibration.md`](studies/evaluation_calibration.md)；
+  2. **停止扩表**：不跑 E009（8192）/16×8/244×32；budget 因果结论留给未来的 paired generation 独立课题；
+  3. 主线计划重写为 RL 方向（[`research_plan.md`](research_plan.md)），`paper_draft.md` 标记为 side-study；
+  4. 下一阶段：Linux 3090 上的 P2→P3 迁移 gate 与 P3-A（RL plumbing smoke）。
+- 统计方法修正（采纳外部审查）：candidate-level “sample_i 对 sample_i” 无天然配对、不成立；配对单位改为 theorem（`d_i = p̂_i^R − p̂_i^D` 的 bootstrap，或定理级 solved indicator 的 McNemar）。
+- 统计单位修正后的复核：E007/E008 的定理级 McNemar（p≈0.375）与候选级 z≈1.55 均不显著，原结论不变。
+- P3 输入冻结：`max_response=4096`（成功长度 P95≈3,000）、串行验证（验证时间占比 1.6%）、奖励契约（`verifier_error` 单独记录计 0）、IGR 基线 Distill 28.1% / RL 31.3%。
 
 ---
 
