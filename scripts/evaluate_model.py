@@ -170,7 +170,7 @@ def main() -> int:
         tokenizer_kwargs["local_files_only"] = True
         load_kwargs["local_files_only"] = True
     if torch.cuda.is_available():
-        load_kwargs.update({"dtype": torch.float16, "device_map": "auto"})
+        load_kwargs.update({"torch_dtype": torch.float16, "device_map": "auto"})
 
     print(f"[1/4] Loading {args.model_key} and {len(rows)} theorem rows")
     tokenizer = AutoTokenizer.from_pretrained(model_path, **tokenizer_kwargs)

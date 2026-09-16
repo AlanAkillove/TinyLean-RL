@@ -57,7 +57,7 @@ def main() -> int:
     print("[1/4] Loading model")
     load_kwargs = {"trust_remote_code": True}
     if torch.cuda.is_available():
-        load_kwargs.update({"dtype": torch.float16, "device_map": "auto"})
+        load_kwargs.update({"torch_dtype": torch.float16, "device_map": "auto"})
     elif args.offline:
         load_kwargs.update({"local_files_only": True})
     tokenizer_kwargs = {"trust_remote_code": True}
