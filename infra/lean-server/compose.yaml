@@ -3,6 +3,17 @@ services:
     image: projectnumina/kimina-lean-server:2.0.0
     container_name: tinylean-rl-lean-server
     restart: unless-stopped
+    # Cap container memory: pathological candidates (e.g. interval_cases
+    # enumeration bombs) can push a single Mathlib REPL past 20 GB and
+    # trigger a HOST-wide OOM kill (observed 2026-09-17 07:10 UTC: the kernel
+    # killed a 20.4 GB REPL python inside this container, and systemd-oomd
+    # picked off user-slice processes, including our evaluation runner).
+    # With the cap, the container's own memcg OOM only kills the runaway
+    # REPL; the kimina server reports that snippet as an error, the evaluator
+    # records it (verifier_error) and continues.  Do not remove without
+    # re-checking host memory behaviour under monster-candidate load.
+    mem_limit: 24g
+    memswap_limit: 24g
     ports:
       - "${LEAN_SERVER_PORT:-8000}:8000"
     environment:
