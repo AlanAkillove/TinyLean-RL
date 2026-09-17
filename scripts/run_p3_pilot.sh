@@ -8,6 +8,11 @@
 # auto-scales: the protocol forbids silently extending a running experiment
 # (P3-C stays undefined until P3-B completes and is reviewed).
 #
+# --steps is a TOTAL target. VERL's resume_mode=auto (the default) restores the
+# latest global_step_* checkpoint in --dir when one exists and trains only up
+# to this total: E015 resumed global_step_3 with --steps 4; E019 resumes
+# global_step_30 with --steps 60 and must end at global_step_60 (not 90).
+#
 # Frozen config (docs/p3_config_audit.md S10, validated by E014/E015):
 #   tb 4 prompts x n -> 16 (n=4) or 32 (n=8) sequences, mini 4, micro 2,
 #   max_prompt 1024, max_response 4096, vLLM util 0.40, max_num_batched_tokens
@@ -227,10 +232,13 @@ export PYTHONPATH="$RECIPE_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 mkdir -p "$LOCAL_DIR" "$ROLLOUT_DUMP_DIR"
 
-echo "[P3-B pilot] steps=$STEPS n=$N save_freq=$SAVE_FREQ dir=$LOCAL_DIR"
+echo "[P3 runner] steps=$STEPS n=$N save_freq=$SAVE_FREQ dir=$LOCAL_DIR"
 echo "  sequences/step: $((4 * N)) (tb 4 prompts x n=$N)"
-echo "  watch: IGR_t / Z_t / O_t (from rollout dumps), score mean, response"
-echo "  length, clip ratio, entropy, ppo_kl, grad_norm, step time, peak VRAM."
+echo "  watch: live 'Training Progress' bar (%, step, ETA) and IGR_t / Z_t / O_t"
+echo "  (from rollout dumps), score mean, response length, clip ratio, entropy,"
+echo "  ppo_kl, grad_norm, step time, peak VRAM. On resume the bar starts at the"
+echo "  checkpoint's global step. Pace reference: P3-B averaged ~140 s/step"
+echo "  (30 steps = 4218 s), so ~30 resumed steps project to roughly 70-120 min."
 
 echo "[1/3] Dataset preparation (idempotent)"
 if [[ -f "$TRAIN_PARQUET" && -f "$TEST_PARQUET" ]]; then
