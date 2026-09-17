@@ -298,6 +298,45 @@
 
 ---
 
+## 2026-09-17（P3-C）
+
+### E018 Fixed-set checkpoint evaluation（A smoke / B preview / C full）
+
+- 目的：在封存固定集上配对评估 θ0/θ10/θ20/θ30，检验 P3-B 的学习信号（排除定理抽样方差；P3-B 收尾时列出的确认性检验）。
+- 固定集构造：排除 E009/E013/E016/E017 已用全部 statement（150 个，`experiments/manifests/p3c_excluded_statement_ids.txt`）；可选 7470，seed 20260917 抽 64（`p3c_fixed_set.json`，生成后不得重抽）；配对单元 = 定理（严禁 candidate 级假配对）。
+- 管线：`p3c_checkpoint_eval.py`（vLLM 0.9.1，temp 1.0 / top_p 1.0 / max 4096 / n=8；seed = 20260917 + idx×8 + sample；严格 Kimina 2.0.0 验证）；checkpoint 导出为与基座键完全一致的 HF 目录（311/311 键，bitwise 一致，`p3c_checkpoint_sanity.json`）。
+- 命令：`uv run --no-sync python scripts/p3c_checkpoint_eval.py --checkpoint <ck> --limit 64 --samples-per-theorem 8 --chunk-theorems 16 --offline`；E018-C 顺序 θ0→θ30→θ10→θ20。
+- **E018-A（smoke：4 ckpt × 2 定理 × 1 样本）**：4/4 exit 0；先暴露 summary 字段 bug（completion_tokens vs generated_tokens）并修复后通过。
+- **E018-B（preview：前 16 定理 × 4 样本 × 4 ckpt）**：4/4 exit 0；verified 数 θ0 2 < θ30 5 < θ10 6 < θ20 8（/64，非确认性）。
+- **E018-C（正式：64 × 8 × 4 = 2048 候选）**：4/4 exit 0；全部产物种子 0 违例（git_revision 1fb6866 / d64c31b）。
+
+| checkpoint | verified/512 | pass@1 | pass@4 | pass@8 | IGR | all-one | trunc | verifier_error |
+|---|---|---|---|---|---|---|---|---|
+| θ0 | 65 | 0.1270 | 0.2350 | 0.2812 | 0.250 | 0.031 | 0.465 | 2.93% |
+| θ10 | 65 | 0.1270 | 0.2275 | 0.2812 | 0.266 | 0.016 | 0.512 | 2.15% |
+| θ20 | 64 | 0.1250 | 0.2435 | 0.2969 | 0.281 | 0.016 | 0.455 | 1.56% |
+| θ30 | 70 | 0.1367 | 0.2562 | 0.2969 | 0.297 | 0.000 | 0.455 | 1.76% |
+
+- 配对分析（定理级 d_i = p_i(t) − p_i(0)，bootstrap 10k / seed 20260917，`p3c_analysis.json`）：
+  - θ10−θ0：+0.0000，CI [−0.0273, +0.0293]，W/T/L = 8/47/9，McNemar p=1.0；
+  - θ20−θ0：−0.0020，CI [−0.0273, +0.0234]，W/T/L = 9/48/7，McNemar p=1.0；
+  - θ30−θ0：**+0.0098**，CI [−0.0254, +0.0430]，W/T/L = 12/46/6，McNemar p=1.0（+4 solved / −3 lost）。
+- 结论：**POSITIVE-INCONCLUSIVE**——θ30 方向为正（辅以 IGR 单调升高、all-one 组清零、pass@4/8 高于基座等次要信号），但确认性端点 95% CI 跨零、McNemar 不显著（n=64 功效有限）。措辞维持 “short-run dynamics encouraging, fixed-set confirmation inconclusive”；不称 M1 short-horizon confirmed。
+- 资源：单 checkpoint verify 1721–3766 s（怪兽候选主导，生成仅 731–748 s）；生成 ~2400 tok/s 稳定；峰值显存 21.3 GiB；verified 效率 51.9–93.9/GPU·h。
+
+**事故与修复记录（§廿四）**：
+
+1. **验证回退风暴**（E018-C 首跑 chunk 2 耗时 17.8 min）：128 候选单次 /verify 请求超过 120 s 客户端超时后，退化为 128 条串行单验。修复（`1fb6866`）：并发子批次（8×8 workers，对齐官方 reward 路径），单个慢候选只拖累自己的子批次；其后所有 chunk 的 warn 均只回退 1–5 个子批次。
+2. **主机 OOM 连锁击杀**：`interval_cases 1000..9999 <;> norm_num <;> omega` 枚举炸弹把单个 Mathlib REPL 撑到 20.4 GB RSS；07:10 UTC 内核全局 OOM 击杀容器内该 python，systemd-oomd 同期击杀用户切片进程（含评估 runner 与 tmux scope）。step20 因此中止 4 次（约 06:23 runner 被连带终止（同期 oomd 活动）/ 约 07:25 同因 / 07:34 uv-PATH 快败 / 07:35 服务端未就绪——chunk 1 全部 lean_error，产出作废）。修复（`d64c31b`）：容器 mem_limit=24 GiB；step20 运行期为与前三者可比性以 `docker update` 临时放宽到 40 GiB，跑完复原 24 GiB（均不重建容器）。
+3. **容器重建代价**：07:33 应用 cap 时 `docker compose up -d` 重建容器导致镜像重跑 Mathlib 初始化（CPU 高占用约 25 min，其间所有 /verify 返回 NoAvailableReplError）——已在 compose.yaml 顶部写入警告：改限制用 `docker update`，勿重建。
+4. **环境差异备案**：θ0/θ10/θ30 在长期运行的服务实例上评估；θ20 在 07:58 新初始化的实例上评估（verifier_error 率 1.6–2.9%，均在 E013 时期区间内）。若未来发现与服务器实例年龄相关的系统性行为差异，θ20 需复评。
+5. step20 最终以 systemd --user 单元（`e018-step20`）运行，与终端生命周期解耦；08:05:28 启动，08:56:56 exit 0。
+
+- 产物：`experiments/results/e018_{base,step10,step20,step30}.json`、`p3c_analysis.json`、`e018a_smoke_*.json`、`e018b_preview_*.json`、`p3c_checkpoint_sanity.json`；摘要 `experiments/manifests/p3c_fixed_eval.yaml`；固定集 `experiments/manifests/p3c_fixed_set.json`。
+- 提交：`e8272e2`（feat pipeline）、`1fb6866`（verify fix）、`d64c31b`（infra cap）。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：

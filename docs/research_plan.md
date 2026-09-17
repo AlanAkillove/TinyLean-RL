@@ -34,8 +34,11 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - 结果（证据 `experiments/manifests/p3_0_complete.yaml`、E012–E014）：迁移 gate 全绿（40+19 tests、doctor 23 pass、reward 契约实测）；Promptset IGR = **0.09375**（n=4 retained，marginal ≥0.05）、截断 66.4%、成功证明未撞 4096 上限；**FULL-FT 可行**（单步 136.4 s，peak reserved 20.5 GB）。
 - **P3-A 完成（2026-09-17，E015）**：on-policy GRPO smoke 全链路（rollout → Lean reward → GRPO → optimizer → checkpoint → resume）逐项达标；step 4 出现 mixed 组（advantages +0.75/−0.25、grad_norm 0.180）；从 `global_step_3` 的 resume 实测通过。
 - **P3-B 完成（2026-09-17，E017）**：n=8（经 E016 配对校准背书：同 16 定理 IGR 0.00→0.0625）、30 步短 pilot：IGR 0.100→0.200→0.225、Z 0.900→0.800→0.750、score_mean 0.059→0.175，末 5 步连续非零梯度；3 个 checkpoint；显存峰值 23.1 GiB 稳定。证据 `experiments/manifests/p3b_pilot.yaml`。
-- **当前下一步（待确认）**：固定定理集上评估 step-0/10/20/30 checkpoint（pass@k / IGR 对比），确认学习信号后再决定是否延长 pilot。
-  - 范围、未决问题与命令序列见 [`p3_linux_handoff.md`](p3_linux_handoff.md)。
+- **P3-C 完成（2026-09-17，E018）— Fixed-set checkpoint evaluation**：排除 E009/E013/E016/E017 全部已用 statement（150 个）后，seed 20260917 封存 64 定理（生成后不得重抽）；θ0/θ10/θ20/θ30 × 8 样本 × 4096 = 2048 候选，定理级配对。
+  - 结果：verified 65/65/64/70（/512）；pass@1 0.127/0.127/0.125/0.137；配对 Δ（θt−θ0）= 0.0000 / −0.0020 / **+0.0098**（θ30），95% CI 均跨零；McNemar 全部 p=1.0。
+  - 判定：**POSITIVE-INCONCLUSIVE**——短程动力学 *encouraging*（IGR 0.250→0.297、all-one 组清零、θ30 pass@4/8 高于基座），但固定集确认性端点未达显著（n=64 功效有限）；不称 M1 short-horizon confirmed。
+  - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/p3c_analysis.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`）。
+- **当前下一步（待定）**：①延长训练（>30 步）后以同一封存集复评；②或先扩大评估定理数以提升功效。**不得重抽固定集**。
 
 ## 三、P3 计划（P3-0 → P3-A → P3-B）
 
@@ -55,7 +58,7 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
 - 前置条件：P3-A 成功。
 - 目标：运行数十个 update，观察 `IGR_t / Z_t / O_t / response length / entropy / KL` 的合理变化（预期形态：`Z_t ↓`，`O_t ↑`，`IGR_t` 先稳后降）。
 - 这是回答"小 compute 下 0.6B RL 能否稳定学习"的真正实验，也是 M2/M3 的基线。
-- **完成（2026-09-17，E017）**：`run_p3_pilot.sh --steps 30 --n 8`；IGR 0.100→0.200→0.225、Z_t 0.90→0.75、score_mean 0.059→0.175，末 5 步连续非零梯度；checkpoint 于 10/20/30；证据 `experiments/manifests/p3b_pilot.yaml`。确认性同集 checkpoint 评估 = 下一步（定理抽样方差需排除）。
+- **完成（2026-09-17，E017）**：`run_p3_pilot.sh --steps 30 --n 8`；IGR 0.100→0.200→0.225、Z_t 0.90→0.75、score_mean 0.059→0.175，末 5 步连续非零梯度；checkpoint 于 10/20/30；证据 `experiments/manifests/p3b_pilot.yaml`。确认性同集 checkpoint 评估已由 P3-C/E018 执行（结果见上：POSITIVE-INCONCLUSIVE）。
 
 ## 四、奖励契约（Reward semantics，P3 前冻结）
 

@@ -1,0 +1,82 @@
+# P3-C fixed-set checkpoint evaluation (E018) - completion manifest.
+# Compact evidence record; full artifacts stay in experiments/results/ (ignored).
+stage: P3-C
+name: Fixed-set checkpoint evaluation
+status: complete
+completed_utc: "2026-09-17T08:56:56Z"
+host_manifest: experiments/manifests/p3_0_environment.yaml
+pinned_verl_commit: e16b605e8186614c685875c9b57eb19e841b521a
+pipeline_revision: 1fb6866   # evaluator + stats; step20 artifact records d64c31b (infra-fix commit)
+
+fixed_set:
+  manifest: experiments/manifests/p3c_fixed_set.json       # sealed 2026-09-17, never redrawn
+  selection_seed: 20260917
+  theorems: 64
+  excluded_ids: experiments/manifests/p3c_excluded_statement_ids.txt   # 150 ids used by E009/E013/E016/E017
+  pairing_unit: theorem        # never candidate-level pairing
+
+checkpoints:
+  step0:  models/weights/kimina_distill_0_6b              # distill baseline (theta0)
+  step10: runs/p3c_models/step_10                          # exported from runs/p3b_pilot/global_step_10
+  step20: runs/p3c_models/step_20
+  step30: runs/p3c_models/step_30
+  export: bitwise-identical HF directories (311/311 keys == base key set, audited)
+
+evaluation:
+  samples_per_theorem: 8     # 64 x 8 = 512 candidates per checkpoint
+  max_response: 4096
+  temperature: 1.0
+  top_p: 1.0
+  seed_base: 20260917
+  seed_schedule: "seed_base + theorem_index*8 + sample_index (canonical n=8; E018-B preview and E018-C share it)"
+  verify: "strict Kimina 2.0.0; concurrent sub-batches 8 x 8 workers, per-candidate timeout 120s"
+
+results:                     # verified candidates out of 512
+  step0:  {verified: 65, pass_at_1: 0.1270, pass_at_4: 0.2350, pass_at_8: 0.2812, igr: 0.250, all_one: 0.031, trunc: 0.465, verifier_error: 0.0293}
+  step10: {verified: 65, pass_at_1: 0.1270, pass_at_4: 0.2275, pass_at_8: 0.2812, igr: 0.266, all_one: 0.016, trunc: 0.512, verifier_error: 0.0215}
+  step20: {verified: 64, pass_at_1: 0.1250, pass_at_4: 0.2435, pass_at_8: 0.2969, igr: 0.281, all_one: 0.016, trunc: 0.455, verifier_error: 0.0156}
+  step30: {verified: 70, pass_at_1: 0.1367, pass_at_4: 0.2562, pass_at_8: 0.2969, igr: 0.297, all_one: 0.000, trunc: 0.455, verifier_error: 0.0176}
+
+paired_vs_step0:             # theorem-level deltas d_i = p_i(t) - p_i(0); bootstrap 10k resamples, seed 20260917
+  step10: {mean_delta: +0.0000, ci95: [-0.0273, +0.0293], win_tie_loss: [8, 47, 9],  mcnemar_p: 1.000, newly_solved: 3, newly_lost: 3}
+  step20: {mean_delta: -0.0020, ci95: [-0.0273, +0.0234], win_tie_loss: [9, 48, 7],  mcnemar_p: 1.000, newly_solved: 4, newly_lost: 3}
+  step30: {mean_delta: +0.0098, ci95: [-0.0254, +0.0430], win_tie_loss: [12, 46, 6], mcnemar_p: 1.000, newly_solved: 4, newly_lost: 3}
+
+resources:
+  total_seconds:  {step0: 4506, step10: 3841, step20: 2453, step30: 3550}
+  verify_seconds: {step0: 3766, step10: 3092, step20: 1721, step30: 2820}
+  useful_tokens_per_s: "2396-2416 (stable across checkpoints; generation is not the bottleneck)"
+  verified_per_gpu_hour: {step0: 51.9, step10: 60.9, step20: 93.9, step30: 71.0}
+  peak_vram_mib: 21343      # vLLM 0.9.1, gpu_memory_utilization 0.85, max_model_len 5120
+
+verdict:
+  classification: POSITIVE-INCONCLUSIVE
+  basis: >
+    The confirmatory endpoint (paired mean delta of theorem-level solve rates) is positive
+    only for step30 (+0.0098, CI [-0.0254, +0.0430] includes zero) and McNemar finds no
+    solved-ability change (p = 1.0). Secondary trends at step30 (IGR 0.250 -> 0.297,
+    all-one groups 0.031 -> 0.000, pass@4/pass@8 above baseline) are consistent with early
+    learning but are not statistically established at n = 64 theorems.
+
+incidents:                   # full narrative in docs/experiment_log.md E018
+  - verify fallback storm: one 128-candidate /verify request timing out degraded to 128
+    sequential single retries (17.8 min/chunk); fixed in 1fb6866 (concurrent sub-batches).
+  - host OOM chain: REPL memory explosions (interval_cases enumeration bombs, one REPL at
+    20.4 GB RSS) triggered kernel OOM + systemd-oomd user-slice kills, aborting four step20
+    attempts; fixed in d64c31b (container mem cap). step20 ran with an effective 40 GiB cap;
+    restored to 24 GiB after the run (docker update, no recreate).
+  - environment delta, recorded for honesty: step0/step10/step30 were evaluated on the
+    long-lived server instance; step20 ran on a freshly-initialized instance (container was
+    recreated at 07:33 UTC while applying the cap, which re-ran the image's Mathlib
+    initialization; ~25 min, during which every /verify fails). verifier_error rates
+    1.6-2.9% across all four stay within the E013-era range.
+
+caveat: >
+  A 30-update pilot evaluated on 64 theorems × 8 samples has limited power for the observed
+  effect size; the sealed set must not be redrawn after seeing these numbers. Extending
+  training or increasing theorem count are the only legitimate ways to sharpen the verdict.
+
+next_options:
+  - extend training past step30 (another ~30 steps) and re-evaluate the SAME sealed fixed set
+  - increase evaluation power (more theorems) if the effect size stays small
+  - fold into the M1 write-up as "short-run dynamics encouraging, fixed-set confirmation inconclusive"
