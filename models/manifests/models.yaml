@@ -14,7 +14,7 @@ models:
     local_dir: models/weights/kimina_rl_0_6b
   qwen3_base_0_6b:
     repo_id: Qwen/Qwen3-0.6B-Base
-    revision: main
-    status: reserved
-    purpose: later cold-start comparison; not required for P0 smoke test
+    revision: da87bfb608c14b7cf20ba1ce41287e8de496c0cd   # main pinned 2026-09-17 for the M2 cold-start diagnostic
+    status: required
+    purpose: M2 cold-start RL-signal diagnostic (E021); plain-text protocol per docs/seed_control_audit.md family audit
     local_dir: models/weights/qwen3_base_0_6b
