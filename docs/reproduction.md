@@ -18,6 +18,35 @@ This document is the human-readable index for external dependencies. Concrete re
 
 The download scripts write machine-resolved local locks under ignored `*.local.json` files. When an asset becomes part of a reproducible experiment, copy the resolved commit/date/checksum into this document and commit that record before running the experiment.
 
+## P3 Linux Training Stack
+
+The P3 training experiments (P3-A/P3-B/E018) run on the Linux RTX 3090 host with the
+following stack. It is pinned together with the VERL matrix (research decision D004,
+`docs/research-decisions.md`) because the pinned VERL declares `vllm<=0.9.1`, which
+itself requires `torch==2.7.0`.
+
+```text
+Host:      Ubuntu 24.04.4 LTS / RTX 3090 24 GB / NVIDIA driver 580.173.02
+Python:    3.12.3 (uv-managed .venv)
+Training stack:
+  torch 2.7.0              (CUDA 12.6 wheel stack, +cu126)
+  vLLM 0.9.1
+  flash-attn 2.8.0.post2   (cu12 / torch2.7 / cp312 / cxx11abiTRUE wheel)
+  transformers 4.53.3      (upper cap < 4.54.0: vllm 0.9.1 aimv2 AutoConfig collision)
+  ray 2.48.0
+  numpy 1.26.4             (verl requires numpy<2)
+  kimina-client 0.2.1
+VERL / Kimina: e16b605e8186614c685875c9b57eb19e841b521a (editable submodule; unmodified)
+Lean verifier: projectnumina/kimina-lean-server:2.0.0 (Docker)
+Dataset (P3):  AI-MO/Kimina-Prover-Promptset @ 3009c548d90160d0f5e963d72238610c6732f812
+```
+
+**Environment distinction (do not conflate):** the P0/P1/P2 inference baseline ran on
+torch `2.9.0+cu128` (Windows and early Linux diagnosis); the P3 training stack above is
+torch `2.7.0+cu126`. These are different environments; results from the inference
+baseline must not be attributed to the P3 training stack and vice versa. The full
+machine record lives in `experiments/manifests/p3_0_environment.yaml`.
+
 ## Reproduction rule
 
 Record repository, revision, download date, relevant files, SHA-256 checksums where practical, runtime versions, GPU model, driver, CUDA version, command line, seed, and the exact configuration. A moving `main` reference is not sufficient for a final result.

@@ -4,7 +4,7 @@
 
 ## Linux P3 stage（2026-09-17，服务器 RTX 3090 24 GB；P3-0 → P3-A → P3-B 完成）
 
-- 工作分支 `p3-linux`（基线 `win`@6ef923e / tag `p2.5-win-complete`；submodule e16b605e 未动）；共 20 个提交。
+- 工作分支 `p3-linux`（基线 `win`@6ef923e / tag `p2.5-win-complete`；submodule e16b605e 未动）；`win..p3-linux` = **18**、`p3-linux..win` = **0**（纯前向扩展，实测值）。
 - 环境对齐 pinned VERL 矩阵（决策 D004）：torch 2.7.0+cu126、vllm 0.9.1、flash-attn 2.8.0.post2、transformers 4.53.3、ray 2.48.0、VERL editable——`experiments/manifests/p3_0_environment.yaml`。
 - 迁移 gate：pytest 40 passed / GRPO reference 19 passed / ruff+compileall / doctor 23 passed / verifier 正负 gate / model→Lean smoke / reward 契约实测（kimina-client 0.2.1 ↔ server 2.0.0）全部通过（E012）。
 - Promptset 校准（temp 1.0 / top_p 1.0 / n=4 / 4096，E013）：IGR 0.09375、截断 66.4%、成功轨迹未撞上限；n=8 配对校准（E016）：同 16 定理 IGR 0.00→0.0625。
