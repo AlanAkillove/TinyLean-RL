@@ -35,6 +35,7 @@ from collections import Counter
 from pathlib import Path
 
 import httpx
+from tqdm import tqdm
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
@@ -145,7 +146,8 @@ def adjudge_candidates(candidates: list[dict], args: argparse.Namespace, out_pat
     else:
         done = set()
 
-    for position, candidate in enumerate(candidates, 1):
+    progress = tqdm(candidates, desc="E018-D adjudication", unit="cand", dynamic_ncols=True)
+    for position, candidate in enumerate(progress, 1):
         key = (candidate["checkpoint"], candidate["theorem_index"], candidate["sample_index"])
         if key in done:
             continue
@@ -170,10 +172,14 @@ def adjudge_candidates(candidates: list[dict], args: argparse.Namespace, out_pat
             {**{k: v for k, v in candidate.items() if k != "proof"}, "attempts": attempts, "final_class": final_class}
         )
         summary_line = " ".join(f"{a['kind']}({a['duration_s']}s)" for a in attempts)
-        print(
+        progress.write(
             f"[{position}/{len(candidates)}] {candidate['checkpoint']} thm{candidate['theorem_index']}"
-            f" s{candidate['sample_index']} -> {final_class} [{summary_line}]",
-            flush=True,
+            f" s{candidate['sample_index']} -> {final_class} [{summary_line}]"
+        )
+        tallied = Counter(result["final_class"] for result in results)
+        progress.set_postfix_str(
+            f"ok={tallied['verified_on_recheck']} lean={tallied['deterministic_lean_failure']} "
+            f"res={tallied['deterministic_timeout_or_resource_exhaustion']}"
         )
         out_path.write_text(
             json.dumps({"artifact_type": "e018d_verifier_error_adjudication", "candidates": results}, indent=2),

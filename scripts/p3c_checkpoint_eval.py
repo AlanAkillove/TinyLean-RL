@@ -39,6 +39,7 @@ from promptset_rollout_probe import (
     complete_verifier_code,
     response_items,
 )
+from tqdm import tqdm
 
 from tinylean_rl.evaluation.p3c_stats import candidate_metrics, classify_candidate
 from tinylean_rl.inference.extract import extract_proof
@@ -228,8 +229,16 @@ def main() -> int:
 
     chunk_size = max(1, args.chunk_theorems)
     total_chunks = (len(theorems) + chunk_size - 1) // chunk_size
-    for chunk_index, chunk_start in enumerate(range(0, len(theorems), chunk_size)):
+    progress = tqdm(
+        range(0, len(theorems), chunk_size),
+        desc=f"E018 {args.checkpoint}",
+        total=total_chunks,
+        unit="chunk",
+        dynamic_ncols=True,
+    )
+    for chunk_index, chunk_start in enumerate(progress):
         chunk = theorems[chunk_start : chunk_start + chunk_size]
+        progress.set_postfix_str(f"generating {len(chunk) * args.samples_per_theorem} candidates")
         chunk_prompts: list[str] = []
         chunk_sampling: list[object] = []
         for theorem in chunk:
@@ -366,10 +375,11 @@ def main() -> int:
         if used_mib:
             peak_vram_mib = max(peak_vram_mib, used_mib)
         verified_so_far = sum(record["verified"] for record in records)
-        print(
+        progress.write(
             f"[chunk {chunk_index + 1}/{total_chunks}] gen={chunk_seconds:.1f}s "
             f"verified={verified_so_far}/{len(records)} peak_vram={peak_vram_mib} MiB"
         )
+        progress.set_postfix_str(f"verified {verified_so_far}/{len(records)}, vram {peak_vram_mib} MiB")
         partial_path.write_text(
             json.dumps({"records": records, "processed_theorems": chunk_start + len(chunk)}, ensure_ascii=False)
             + "\n",
