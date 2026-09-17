@@ -56,7 +56,41 @@ verdict:
     only for step30 (+0.0098, CI [-0.0254, +0.0430] includes zero) and McNemar finds no
     solved-ability change (p = 1.0). Secondary trends at step30 (IGR 0.250 -> 0.297,
     all-one groups 0.031 -> 0.000, pass@4/pass@8 above baseline) are consistent with early
-    learning but are not statistically established at n = 64 theorems.
+    learning but are not statistically established at n = 64 theorems. E018-D
+    adjudication (43/43 deterministic, zero corrections) confirms the verifier-error gap
+    is candidate-induced, not measurement contamination.
+
+adjudication_e018d:          # same-day addendum, 2026-09-17 10:16-12:44 UTC
+  script: scripts/p3c_adjudicate_verifier_errors.py
+  candidates: 43             # every verifier_error candidate across the four checkpoints (15+11+8+9)
+  method: "stored proof re-verified verbatim; single candidate; warm server; 120 s timeout; <=3 attempts; fixed 40 GiB cap"
+  classes:
+    deterministic_lean_failure: 8
+    deterministic_timeout_or_resource_exhaustion: 35
+    verified_on_recheck: 0
+    transient_infrastructure_failure: 0
+    unresolved_verifier_error: 0
+  correction: "zero; corrected verified counts identical to observed (65/65/64/70); paired deltas and CIs unchanged"
+  delta_bounds_step30_vs_step0: {pessimistic_none_credited: +0.00977, corrected: +0.00977, optimistic_all_credited: -0.00195}
+  note: >
+    The 6-candidate verifier-error gap (step0 15 vs step30 9) is fully candidate-induced
+    (81% resource explosions on theorem families 53/40/50); no infrastructure-induced
+    miscount exists. The observed positive direction is robust to any error-crediting
+    policy within [-0.20pp, +0.98pp].
+
+fixed_set_naming: >
+  In write-ups call it a "held-out-from-pilot, same-source fixed set" (or "pilot-unseen
+  Promptset fixed set"): it excludes every statement used by E009/E013/E016/E017 in this
+  project, but it is NOT an OOD set (the distill model's training data may contain these
+  theorems) and NOT a strict same-distribution test set (the dataset deliberately
+  reweights hard problems; the 64 theorems were drawn uniformly from 7470 eligible
+  unique statements).
+
+inference_weight: >
+  Primary comparison: theta30 vs theta0 (most consistent verifier environment).
+  theta10: auxiliary timepoint. theta20: keep it in the checkpoint curve but mark it
+  "minor verifier-instance environment deviation" (freshly initialized server instance,
+  effective 40 GiB cap); do not load key causal conclusions onto it.
 
 incidents:                   # full narrative in docs/experiment_log.md E018
   - verify fallback storm: one 128-candidate /verify request timing out degraded to 128
@@ -77,6 +111,9 @@ caveat: >
   training or increasing theorem count are the only legitimate ways to sharpen the verdict.
 
 next_options:
-  - extend training past step30 (another ~30 steps) and re-evaluate the SAME sealed fixed set
-  - increase evaluation power (more theorems) if the effect size stays small
-  - fold into the M1 write-up as "short-run dynamics encouraging, fixed-set confirmation inconclusive"
+  - extend training past step30 (target step60) and re-evaluate ONLY step60 on the SAME
+    sealed 64-theorem set (reuse the existing step0 artifact; no redraw, no re-run of
+    earlier checkpoints)
+  - increase evaluation power (more theorems) only if the effect size stays small
+  - fold into the M1 write-up with the three-part framing: M1 feasibility CONFIRMED /
+    M1 learning dynamics POSITIVE / M1 fixed-set capability gain POSITIVE-INCONCLUSIVE

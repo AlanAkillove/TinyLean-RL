@@ -37,8 +37,12 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
 - **P3-C 完成（2026-09-17，E018）— Fixed-set checkpoint evaluation**：排除 E009/E013/E016/E017 全部已用 statement（150 个）后，seed 20260917 封存 64 定理（生成后不得重抽）；θ0/θ10/θ20/θ30 × 8 样本 × 4096 = 2048 候选，定理级配对。
   - 结果：verified 65/65/64/70（/512）；pass@1 0.127/0.127/0.125/0.137；配对 Δ（θt−θ0）= 0.0000 / −0.0020 / **+0.0098**（θ30），95% CI 均跨零；McNemar 全部 p=1.0。
   - 判定：**POSITIVE-INCONCLUSIVE**——短程动力学 *encouraging*（IGR 0.250→0.297、all-one 组清零、θ30 pass@4/8 高于基座），但固定集确认性端点未达显著（n=64 功效有限）；不称 M1 short-horizon confirmed。
-  - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/p3c_analysis.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`）。
-- **当前下一步（待定）**：①延长训练（>30 步）后以同一封存集复评；②或先扩大评估定理数以提升功效。**不得重抽固定集**。
+  - **verifier-error 复核（E018-D，同日 10:16–12:44 UTC）**：43/43 全部确定性（8 真实 Lean 拒绝 + 35 候选资源爆炸），零修正、Δ 与 CI 不变；错误计入政策下 Δ 稳健区间 **[−0.20pp, +0.98pp]**——测量噪声疑虑排除。
+  - 主比较定为 **θ30 vs θ0**（最一致 verifier 环境）；θ10 为辅助时间点；θ20 保留在曲线中但标注 "minor verifier-instance environment deviation"（新初始化实例 + 40 GiB 限额）、不承载关键因果结论。
+  - 写作命名：该固定集称 **held-out-from-pilot, same-source fixed set**（非 OOD、非严格同分布；Promptset 对难题有故意重加权，64 定理为 7470 个合格 statement 上的均匀抽样）。
+  - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/{p3c_analysis,e018d_verifier_error_adjudication}.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`/`117e1eb`）。
+- **M1 阶段状态（三分句）**：feasibility **CONFIRMED**；learning dynamics **POSITIVE**；fixed-set capability gain **POSITIVE-INCONCLUSIVE**。
+- **当前下一步（待用户决定，训练启动需人工确认）**：训练延长门 **step30 → step60**——先续训 30 步（30→60），然后**仅**以同一封存 64 定理集评估 step60（复用现有 step0 artifact，不重跑、不重抽）。若 Δ₆₀ 明显扩大（如 +3~5pp）再考虑 60→100；若 Δ₆₀≈0 或为负则暂停训练，转向 multiturn / 数据难度 / cold-start 研究，而非继续堆 compute。**不得重抽固定集**。
 
 ## 三、P3 计划（P3-0 → P3-A → P3-B）
 

@@ -332,8 +332,27 @@
 4. **环境差异备案**：θ0/θ10/θ30 在长期运行的服务实例上评估；θ20 在 07:58 新初始化的实例上评估（verifier_error 率 1.6–2.9%，均在 E013 时期区间内）。若未来发现与服务器实例年龄相关的系统性行为差异，θ20 需复评。
 5. step20 最终以 systemd --user 单元（`e018-step20`）运行，与终端生命周期解耦；08:05:28 启动，08:56:56 exit 0。
 
-- 产物：`experiments/results/e018_{base,step10,step20,step30}.json`、`p3c_analysis.json`、`e018a_smoke_*.json`、`e018b_preview_*.json`、`p3c_checkpoint_sanity.json`；摘要 `experiments/manifests/p3c_fixed_eval.yaml`；固定集 `experiments/manifests/p3c_fixed_set.json`。
-- 提交：`e8272e2`（feat pipeline）、`1fb6866`（verify fix）、`d64c31b`（infra cap）。
+**E018-D Verifier-Error Adjudication（同日补做，2026-09-17 10:16–12:44 UTC）**
+
+- 动机：θ0 与 θ30 的 verifier_error 差（15 vs 9，6 个候选）大于 θ30−θ0 的 verified 差（70 vs 65，5 个候选）；在把 +0.98pp 当作正向证据前，先清理测量噪声（原则：measurement 必须先比 effect 可靠）。
+- 方法：四份 E018 JSON 中全部 `verify_status == verifier_error` 候选（43 个：15+11+8+9），用已存 `proof` 字段原样重验，**不重新采样**；单候选请求（隔离、无批内竞争）、热服务端、固定 120 s 超时（与原单验路径一致）、最多 3 次尝试（verified 或两次同型确定性结果提前停）；运行于 systemd 单元 `e018d`（支持断点续跑）。
+- 环境：容器上限 40 GiB（docker update 热调）；注：此前 08:57 曾将上限恢复为 24 GiB，但正常暖 REPL 池占 26–30 GiB，降额直接杀空整个池（容器降至 0.6 GB、所有 /verify 等待 REPL 超时）——重新预热（冷 Mathlib 导入 82.4 s）后恢复；compose 已改为 40 GiB（提交 `117e1eb`）。
+- 结果（43/43 全部有确定性结论，**零修正**）：
+
+| 类别 | 数量 | 说明 |
+|---|---|---|
+| `deterministic_lean_failure` | 8 | 真实 Lean 拒绝（parse error、linarith 失败等，最快 0.15 s） |
+| `deterministic_timeout_or_resource_exhaustion` | 35 | 候选自身资源爆炸：Lean 内部确定性超时（`(deterministic) timeout at isDefEq`）或两次 120 s 超时，集中于定理 #53/#40/#50 家族 |
+| `verified_on_recheck` | 0 | — |
+| `transient_infrastructure_failure` | 0 | — |
+| `unresolved_verifier_error` | 0 | — |
+
+  - 校正后 verified 计数与观测完全一致（65/65/64/70）；配对 Δ 不变（+0.0000 / −0.0020 / +0.0098，CI 不变）。极端边界：若把四个 checkpoint 的 43 个 verifier_error 全部“乐观”记为通过，θ30−θ0 Δ 变为 −0.00195——即 Δ 在任何错误计入政策下都落在 **[−0.20pp, +0.98pp]**，观测方向对 verifier-error 处理稳健。
+- 结论：**E018-C 的 verifier_error 全部为候选自身原因（81% 为资源爆炸）**，不存在基础设施导致的漏计；POSITIVE-INCONCLUSIVE 判定不变，“+0.98pp 是否为测量噪声”的疑虑被排除。θ0/θ30 主对比（最一致环境）可继续承担主结论；θ20 仍标注环境偏差、降权。
+- 产物：`experiments/results/e018d_verifier_error_adjudication.json`（逐候选每次尝试的 kind/status/message/duration 全记录）；脚本 `scripts/p3c_adjudicate_verifier_errors.py`。
+
+- 产物：`experiments/results/e018_{base,step10,step20,step30}.json`、`p3c_analysis.json`、`e018a_smoke_*.json`、`e018b_preview_*.json`、`p3c_checkpoint_sanity.json`、`e018d_verifier_error_adjudication.json`；摘要 `experiments/manifests/p3c_fixed_eval.yaml`；固定集 `experiments/manifests/p3c_fixed_set.json`。
+- 提交：`e8272e2`（feat pipeline）、`1fb6866`（verify fix）、`d64c31b`（infra cap）、`862aa77`（recreate 警告）、`32f039f`（exp 记录）、`117e1eb`（40 GiB cap）、`f87e282`（E018-D 脚本）。
 
 ---
 
