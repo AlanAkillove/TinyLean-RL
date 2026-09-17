@@ -29,6 +29,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from concurrent.futures import ThreadPoolExecutor
+
 import httpx
 import torch
 from promptset_rollout_probe import (
@@ -87,6 +89,48 @@ def gpu_memory_used_mib() -> int | None:
         return _gpu_memory_via_nvidia_smi()
 
 
+def verify_sub_batches(
+    pending: list[tuple[int, dict]],
+    custom_ids: list[str],
+    *,
+    batch_size: int,
+    workers: int,
+    timeout: float,
+    retry_sleep: float,
+) -> list[dict]:
+    """Verify pending candidates in small concurrent sub-batches.
+
+    Mirrors the official reward path's batch_size/max_workers pairing: one slow
+    candidate can only stall its own sub-batch, never the whole chunk. Without
+    this, a 128-candidate single request that exceeds the client timeout
+    degrades into 128 sequential single retries (observed 2026-09-17: one
+    chunk's verification took 17.8 minutes).
+    """
+
+    def verify_sub_batch(start: int) -> list[dict]:
+        stop = min(start + batch_size, len(pending))
+        proofs = [pending[index][1]["proof"] for index in range(start, stop)]
+        ids = custom_ids[start:stop]
+        for attempt in range(2):
+            try:
+                return response_items(verify_codes(proofs, custom_ids=ids, timeout=timeout))
+            except httpx.HTTPError as exc:
+                if attempt == 0:
+                    time.sleep(retry_sleep)
+                else:
+                    print(
+                        f"  [warn] sub-batch {start // batch_size + 1} verify failed "
+                        f"after retry ({exc}); retrying its candidates individually"
+                    )
+        return []
+
+    items: list[dict] = []
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for batch_items in pool.map(verify_sub_batch, range(0, len(pending), batch_size)):
+            items.extend(batch_items)
+    return items
+
+
 def apply_analysis(record: dict, analysis: dict) -> None:
     record["verified"] = bool(analysis["verified"])
     record["has_sorry"] = bool(analysis["has_sorry"])
@@ -111,6 +155,9 @@ def main() -> int:
     parser.add_argument("--max-model-len", type=int, default=5120)
     parser.add_argument("--verify-timeout", type=float, default=120.0)
     parser.add_argument("--first-verify-timeout", type=float, default=600.0)
+    parser.add_argument("--verify-batch-size", type=int, default=8)
+    parser.add_argument("--verify-workers", type=int, default=8)
+    parser.add_argument("--verify-retry-sleep", type=float, default=10.0)
     parser.add_argument("--output", default="")
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()
@@ -256,28 +303,22 @@ def main() -> int:
         if pending:
             verification_started = time.perf_counter()
             timeout = args.first_verify_timeout if first_verify else args.verify_timeout
-            proofs = [record["proof"] for _, record in pending]
             custom_ids = [
                 f"{record['theorem_index']}-{record['sample_index']}" for _, record in pending
             ]
-            decoded: dict = {}
-            for attempt in range(2):
-                try:
-                    decoded = verify_codes(proofs, custom_ids=custom_ids, timeout=timeout)
-                    break
-                except httpx.HTTPError as exc:
-                    if attempt == 0:
-                        time.sleep(15)
-                    else:
-                        print(f"  [warn] batch verify failed after retry ({exc}); retrying per candidate")
+            items = verify_sub_batches(
+                pending,
+                custom_ids,
+                batch_size=max(1, args.verify_batch_size),
+                workers=max(1, args.verify_workers),
+                timeout=timeout,
+                retry_sleep=args.verify_retry_sleep,
+            )
             first_verify = False
-            items = response_items(decoded)
             by_id = {str(item.get("custom_id")): item for item in items}
             retry_indices: list[tuple[int, str]] = []
             for result_index, (record_index, record) in enumerate(pending):
                 item = by_id.get(custom_ids[result_index])
-                if item is None and result_index < len(items) and len(items) == len(pending):
-                    item = items[result_index]
                 if item is None:
                     retry_indices.append((result_index, "missing_item"))
                     continue
