@@ -1,0 +1,29 @@
+# M1 seed replication - pre-registration (Phase 2 of the unattended batch).
+# Frozen BEFORE any replicate run; the seed values and the analysis rules below
+# must not change based on results (no outcome-dependent seed selection).
+audit: docs/seed_control_audit.md
+
+seeds:
+  seed2: 20260918    # runs/m1_seed2, scripts/run_m1_seed2.sh
+  seed3: 20260919    # runs/m1_seed3, only if seed2 completes and the host is stable
+
+seed_knobs:
+  data.seed: "dataloader shuffle generator (main_ppo.py:368)"
+  actor_rollout_ref.rollout.seed: "vLLM engine RNG (vllm_rollout_spmd.py:196)"
+  seed1_effective_defaults: {data.seed: 1, actor_rollout_ref.rollout.seed: 42}
+
+recipe: "identical to E019/P3-B (GRPO/DrGRPO, FULL-FT, n=8, tb4, lr 2e-6, no KL, multiturn off, 4096)"
+
+rules:
+  - fresh start from Kimina-Prover-Distill-0.6B (never from theta30/theta60)
+  - run the full 60 steps unless an unattended stop condition triggers
+    (NaN/OOM/corruption/storage) - no stopping on low reward or low IGR
+  - live sanity after step 1: statement sequence must differ from seed1
+    (otherwise stop: seed plumbing invalid)
+  - primary analysis of replicates is TRAINING DYNAMICS (IGR/Z/O/score by range);
+    the reused P3-C development set is not used to pick a "best" seed
+
+expected_artifacts:
+  dynamics: experiments/results/e020_seed2_dynamics.json (via scripts/rollout_dynamics.py --dir)
+  trainer_metrics: experiments/results/e020_seed2_trainer_metrics.json
+  checkpoints: runs/m1_seed2/global_step_30, global_step_60 (export to runs/m1_seed2_models)
