@@ -1,0 +1,59 @@
+# M1 extension gate - step30 -> step60 training record (E019).
+# Training is COMPLETE; the confirmatory fixed-set evaluation was still
+# running (supervised, attempt 2/6) when this record was committed - see
+# docs/experiment_log.md E019 and docs/research_plan.md (frozen verdict rules).
+stage: M1-extension
+name: Step30-to-Step60 training extension
+status: training-complete / evaluation-pending
+completed_training_utc: "2026-09-17T14:24:56Z"
+runner: scripts/run_e019.sh
+
+training:
+  resume_from: runs/p3b_pilot/global_step_30    # VERL resume_mode=auto; log shows
+                                                # 'Loaded lr_scheduler from .../global_step_30'
+                                                # and the progress bar started at 30/60
+  final_step: 60
+  steps_run: 30
+  frozen_config: "P3-B E017 (GRPO/DrGRPO, norm_adv_by_std_in_grpo=False, FULL-FT, n=8, temp 1.0, top_p 1.0, tb4 -> 32 seq/step, max_prompt 1024, max_response 4096, lr 2e-6, no KL/entropy, vLLM util 0.40, multiturn off)"
+  wall_time_s: 4534            # 13:09:12 -> 14:24:56 UTC (30 steps, ~140 s/step mean)
+  gpu_hours: 1.26
+  checkpoints: [global_step_40, global_step_50, global_step_60]   # 10-60 all present
+  peak_gpu_mem_gb: {allocated: 24.41, reserved: 25.98}
+  exit_code: 0
+  benign_notes: "one Ray dashboard MetricsHead startup traceback (UI only); training proceeded"
+
+dynamics:                      # cross-validated by rollout_dynamics.py + trainer_metrics.py
+  ranges:
+    1-10:  {igr: 0.100, z: 0.900, o: 0.000, score: 0.0594, grad_nonzero_steps: 4, clip: 0.578, entropy: 26.5, resp_len: 3598}
+    11-20: {igr: 0.200, z: 0.800, o: 0.000, score: 0.1000, grad_nonzero_steps: 5, clip: 0.522, entropy: 26.4, resp_len: 3519}
+    21-30: {igr: 0.225, z: 0.750, o: 0.025, score: 0.1750, grad_nonzero_steps: 7, clip: 0.531, entropy: 26.3, resp_len: 3510}
+    31-40: {igr: 0.175, z: 0.825, o: 0.000, score: 0.0813, grad_nonzero_steps: 4, clip: 0.541, entropy: 23.9, resp_len: 3572}
+    41-50: {igr: 0.100, z: 0.900, o: 0.000, score: 0.0500, grad_nonzero_steps: 3, clip: 0.566, entropy: 28.6, resp_len: 3626}
+    51-60: {igr: 0.150, z: 0.850, o: 0.000, score: 0.0688, grad_nonzero_steps: 4, clip: 0.500, entropy: 28.8, resp_len: 3523}
+  finding: >
+    Training-time reward informativeness PEAKED in steps 21-30 (IGR 0.225 / score 0.175)
+    and regressed afterwards (41-50 back to 0.100 / 0.050; 51-60 partial recovery
+    0.150 / 0.0688). Training batches differ every step, so these are aggregate trends;
+    whether the fixed-set capability follows the same shape is exactly what the
+    step60 evaluation (frozen protocol, verdict rules pre-committed) decides.
+
+checkpoint_sanity:             # experiments/results/p3c_checkpoint_sanity.json (regenerated incl. step60)
+  export_identity: true        # step60 exported bitwise-identical (311/311 keys, 3.01 GB) -> runs/p3c_models/step_60
+  diff_vs_step30: {rel_l2: 1.34e-4, max_abs: 4.5e-5, changed_keys: "311/311"}
+  diff_vs_step0:  {rel_l2: 2.35e-4, max_abs: 7.8e-5, changed_keys: "311/311"}
+  drift_theta0_to_thetaN_rel_l2: {10: 9.1e-5, 20: 1.35e-4, 30: 1.67e-4, 60: 2.35e-4}
+
+evaluation:
+  status: pending              # running under supervisor unit e019sup (attempt 2/6)
+  fixed_set: experiments/manifests/p3c_fixed_set.json    # unchanged, never redrawn
+  protocol: "identical to E018-C: 64 x 8, temp 1.0 / top_p 1.0 / max 4096, seeds 20260917+idx*8+sample, strict Kimina 2.0.0, 40 GiB cap, 120 s timeout"
+  primary_comparison: "theta60 vs the reused step0 artifact (e018_base.json; step0 is NOT re-run)"
+  artifact_expected: experiments/results/e019_step60.json
+  verdict_rules_frozen: "docs/research_plan.md Case A-D (committed 2026-09-17, commit 33c0da7, before the run)"
+
+incidents:
+  - systemd-oomd repeatedly kills the evaluation cgroup under user-slice memory pressure:
+    attempts died at 14:38:49 and 15:49:35 UTC ('oom-kill'); the supervisor unit e019sup
+    relaunches automatically (max 6 attempts; chunk-level partial saves bound each loss).
+    Optional user-side mitigation: 'sudo systemctl stop systemd-oomd systemd-oomd.socket'
+    for the session (the 40 GiB container cap still protects the host meanwhile).

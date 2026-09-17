@@ -42,7 +42,7 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - 写作命名：该固定集称 **held-out-from-pilot, same-source fixed set**（非 OOD、非严格同分布；Promptset 对难题有故意重加权，64 定理为 7470 个合格 statement 上的均匀抽样）。
   - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/{p3c_analysis,e018d_verifier_error_adjudication}.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`/`117e1eb`）。
 - **M1 阶段状态（三分句）**：feasibility **CONFIRMED**；learning dynamics **POSITIVE**；fixed-set capability gain **POSITIVE-INCONCLUSIVE**。
-- **当前下一步（已启动，2026-09-17 13:09 UTC）**：训练延长门 **step30 → step60（E019）**——从 `runs/p3b_pilot/global_step_30` 以完全冻结的 P3-B 配置续训至 `global_step_60`（runner：`scripts/run_e019.sh`，`--steps` 为总目标；训练可见性：tmux 会话 `e019` / `tail -f .cache/e019_train.log`）。完成后**仅**以同一封存 64 定理集评估 step60（复用现有 step0 artifact，不重跑、不重抽、不评 40/50、不扩集、不跑 MiniF2F）。
+- **当前进行中（2026-09-17）**：E019 训练**已完成**（exit 0、wall 4534 s ≈ 1.26 GPU-h、checkpoints 40/50/60、θ60≠θ30 rel_L2=1.34e-4；训练期动力学 21–30 达峰后回退——见 `experiments/manifests/m1_step60.yaml`）；**step60 fixed-set 评估进行中**（同 E018-C 协议；监督器 `e019sup` 自动重启应对 systemd-oomd 击杀）。评估**仅**评 step60（复用现有 step0 artifact，不重跑、不重抽、不评 40/50、不扩集、不跑 MiniF2F）。
 - **E019 判定规则（预冻结，step60 评估运行前写入）**——主比较 θ60 vs 原 θ0 artifact（定理级配对，bootstrap 10k / seed 20260917 + McNemar exact）：
   - **Case A（明确更强正信号）**：Δ₆₀ 显著大于 Δ₃₀（大致 +3~5pp）且 CI 主要位于正半轴 → M1 fixed-set capability gain = **SUPPORTED / CONFIRMED**（措辞按 CI 定）；可讨论 60→100，但**不自动执行**。
   - **Case B（小幅为正、仍不确定）**：Δ₆₀ ≈ 0~+2pp 且 CI 仍大范围跨零 → 维持 **POSITIVE-INCONCLUSIVE**；优先在 60 步附近收口 M1，不为显著性无限堆训练。

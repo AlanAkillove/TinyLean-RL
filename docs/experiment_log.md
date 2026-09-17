@@ -356,6 +356,33 @@
 
 ---
 
+## 2026-09-17/18（M1 Extension）
+
+### E019 M1 Step30 → Step60 training extension（训练完成；确认性评估进行中）
+
+- 目的：判断 P3-B 中观察到的正向训练动力学，在继续相同配置训练 30 个 optimizer steps 后，是否转化为更清楚的 held-out-from-pilot fixed-set capability gain（训练时长延长实验，非新算法实验）。
+- 设置：完全冻结 P3-B E017 配置（GRPO/DrGRPO、`norm_adv_by_std_in_grpo=False`、FULL-FT、n=8、temp 1.0、top_p 1.0、tb4→32 seq/step、max_prompt 1024、max_response 4096、lr 2e-6、无 KL/entropy、vLLM util 0.40、multiturn off、Lean 40 GiB cap）。
+- 命令：`bash scripts/run_e019.sh`（bounded resume runner；`--steps` 为**总目标 60**；VERL `resume_mode=auto` 从 `runs/p3b_pilot/global_step_30` 恢复——日志实证 `Loaded lr_scheduler from .../global_step_30`、进度条从 30/60 起步，未误跑成 90）。
+- 结果（训练）：**exit 0**；13:09:12 → 14:24:56 UTC（wall **4534 s ≈ 75.6 min ≈ 1.26 GPU-h**，30 步、~140 s/步）；checkpoints `global_step_40/50/60` 已保存（10–60 全部在位）；峰值显存 allocated 24.4 GB / reserved 26.0 GB；无 OOM/NaN。良性记录：一次 Ray dashboard MetricsHead 启动 traceback（仅 UI 子进程，训练正常继续）。
+- 全过程动力学（`rollout_dynamics.py` 与 `trainer_metrics.py` 双解析器交叉验证；逐 step rollout dump 1–60 完整）：
+
+| range | IGR | Z | O | score | 非零梯度 | clip | entropy | resp_len |
+|---|---|---|---|---|---|---|---|---|
+| 1–10 | 0.100 | 0.900 | 0.000 | 0.0594 | 4/10 | 0.578 | 26.5 | 3598 |
+| 11–20 | 0.200 | 0.800 | 0.000 | 0.1000 | 5/10 | 0.522 | 26.4 | 3519 |
+| 21–30 | **0.225** | 0.750 | 0.025 | **0.1750** | 7/10 | 0.531 | 26.3 | 3510 |
+| 31–40 | 0.175 | 0.825 | 0.000 | 0.0813 | 4/10 | 0.541 | 23.9 | 3572 |
+| 41–50 | 0.100 | 0.900 | 0.000 | 0.0500 | 3/10 | 0.566 | 28.6 | 3626 |
+| 51–60 | 0.150 | 0.850 | 0.000 | 0.0688 | 4/10 | 0.500 | 28.8 | 3523 |
+
+  - **关键观察：训练期奖励信息量在 21–30 达到峰值（IGR 0.225 / score 0.175），31–50 明显回退（41–50 回到 0.100 / 0.050，与最初步段相当），51–60 部分恢复（0.150 / 0.0688）**。每步定理集不同、单步方差大——为聚合趋势；其是否映射到 fixed-set 能力正是 step60 评估要裁决的问题（判定规则已预冻结）。
+- checkpoint sanity（§十五）：导出 bitwise 一致（311/311 keys，3.01 GB，`runs/p3c_models/step_60`）；**θ60≠θ30（rel_L2 = 1.34e-4，311/311 键变化）**、θ60≠θ0（2.35e-4）；漂移序列 θ0→θ10/20/30/60 = 0.91/1.35/1.67/**2.35e-4**。
+- **step60 fixed-set 评估（进行中）**：与 E018-C 完全同协议（同一封存 64 定理集、64×8、同种子表、40 GiB / 120 s、严格 Kimina 2.0.0）；主比较 θ60 vs 复用的 θ0 artifact（不重跑 step0）。运行记录：systemd-oomd 在用户切片内存压力下两次击杀评估单元（14:38:49 / 15:49:35 UTC，`oom-kill`）；现以监督器单元 `e019sup` 自动重启（≤6 次，chunk 级 partial 限制每次损失）运行 attempt 2/6（chunk 1/4 完成：19/128）。**结果与判定待评估完成后另行记录**（Case A–D 规则见 [`research_plan.md`](research_plan.md)）。
+- 产物：`experiments/results/{e019_dynamics,e019_trainer_metrics}.json`、`runs/p3b_pilot/global_step_{40,50,60}`、`runs/p3c_models/step_60`、`experiments/results/p3c_checkpoint_sanity.json`（含 step60）；摘要 `experiments/manifests/m1_step60.yaml`（evaluation: pending）。
+- 提交：`79c1f6e`（runner）、`0c736b8`（进度条）、`08a78b6`（step60 注册）、`33c0da7`（判定规则冻结）、`4a92a61`/`e1b0051`（双解析器）。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：

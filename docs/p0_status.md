@@ -11,9 +11,11 @@
 - Full-FT 单步探针（E014）：exit 0、step 136.4 s、peak reserved 20.5 GB → 训练模式冻结为 FULL-FT。
 - P3-A smoke（E015）：含从 `global_step_3` 的 resume 测试；mixed 组步 grad_norm 0.180。
 - P3-B pilot（E017）：`run_p3_pilot.sh --steps 30 --n 8`，exit 0、4218 s；IGR 0.100→0.200→0.225、Z 0.90→0.75、score 0.059→0.175；checkpoint 10/20/30；显存峰值 23.1 GiB。
-- P3-C 固定集评估（E018，2026-09-17）：排除 E009/E013/E016/E017 已用 150 statement 后封存 64 定理（seed 20260917，held-out-from-pilot same-source）；θ0/θ10/θ20/θ30 各 512 候选，verified **65/65/64/70**（pass@1 0.127/0.127/0.125/0.137）；配对 Δ（θt−θ0）= 0.0000/−0.0020/**+0.0098**（θ30）、95% CI 均跨零、McNemar p=1.0 → **POSITIVE-INCONCLUSIVE**；verifier-error 复核（E018-D）：43/43 全部确定性、零修正，Δ 稳健区间 [−0.20pp, +0.98pp]。
-- 摘要清单：`experiments/manifests/p3_0_complete.yaml`、`experiments/manifests/p3b_pilot.yaml`、`experiments/manifests/p3c_fixed_eval.yaml`；逐次记录 E012–E018。
-- 下一步（待用户决定，训练启动需人工确认）：step30→60 训练延长门；续训后**仅**以同一封存集评估 step60（复用现有 step0 artifact，不重跑、不重抽）。
+- P3-C 固定集评估（E018，2026-09-17）：排除 E009/E013/E016/E017 已用 150 statement 后封存 64 定理（seed 20260917，held-out-from-pilot same-source）；θ0/θ10/θ20/θ30 各 512 候选，verified **65/65/64/70**（pass@1 0.127/0.127/0.125/0.137）；配对 Δ（θt−θ0）= 0.0000/−0.0020/**+0.0098**（θ30）、95% CI 均跨零、McNemar p=1.0 → **POSITIVE-INCONCLUSIVE**；verifier-error 复核（E018-D）：43/43 全部确定性结论、零修正，corrected = observed；故意的 all-errors-success 反事实边界跨零，仅作敏感性上界、不表示符号稳健。
+- E019 M1 延长门（2026-09-17，训练完成）：step30→60 续训 **exit 0**（wall 4534 s ≈ 1.26 GPU-h，30 步、~140 s/步）；checkpoints `global_step_40/50/60`；导出 θ60 bitwise 一致，**θ60≠θ30（rel_L2 1.34e-4，311/311 键变化）**。训练期动力学 21–30 达峰（IGR 0.225 / score 0.175）后回退（41–50：0.100 / 0.050；51–60：0.150 / 0.0688）。
+- step60 fixed-set 评估（进行中）：与 E018-C 同协议（封存 64 定理集、64×8、同种子表、40 GiB / 120 s）；oomd 击杀评估单元后由监督器 `e019sup` 自动重启（attempt 2/6 运行中）。判定规则 Case A–D 已预冻结（research_plan）。
+- 摘要清单：`experiments/manifests/p3_0_complete.yaml`、`experiments/manifests/p3b_pilot.yaml`、`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/manifests/m1_step60.yaml`；逐次记录 E012–E019。
+- 下一步：step60 评估完成 → 按预冻结 Case A–D 规则判定 → 更新 README / research plan；**不自动 step100、不扩集、不跑 MiniF2F、不重抽固定集**。
 
 ## 已完成
 
