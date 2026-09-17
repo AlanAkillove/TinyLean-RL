@@ -39,6 +39,7 @@ DEFAULT_EVALS = {
     "step10": "experiments/results/e018_step10.json",
     "step20": "experiments/results/e018_step20.json",
     "step30": "experiments/results/e018_step30.json",
+    "step60": "experiments/results/e019_step60.json",
 }
 
 
@@ -96,7 +97,7 @@ def main() -> int:
     }
 
     paired: dict[str, dict] = {}
-    for label in ("step10", "step20", "step30"):
+    for label in sorted(entry for entry in counts if entry != "step0"):
         if label not in counts:
             continue
         baseline = counts["step0"]

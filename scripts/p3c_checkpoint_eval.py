@@ -50,6 +50,7 @@ CHECKPOINTS = {
     "step10": {"global_step": 10, "model_dir": "runs/p3c_models/step_10", "label": "step10"},
     "step20": {"global_step": 20, "model_dir": "runs/p3c_models/step_20", "label": "step20"},
     "step30": {"global_step": 30, "model_dir": "runs/p3c_models/step_30", "label": "step30"},
+    "step60": {"global_step": 60, "model_dir": "runs/p3c_models/step_60", "label": "step60"},
 }
 SEED_BASE = 20260917
 SEED_GROUP_SIZE = 8
