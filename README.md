@@ -2,7 +2,7 @@
 
 面向亚十亿参数 Lean4 定理证明器的可验证强化学习研究项目。
 
-当前阶段：**P3-0 → P3-A → P3-B → P3-C 全部完成（Linux RTX 3090 24 GB）** —— 迁移 gate、Promptset on-policy 校准（IGR 0.09375）、full-FT 显存可行性与 GRPO smoke（含 checkpoint resume）、n=8 的 30 步短学习 pilot（Z_t↓、score↑、末段连续梯度），以及封存 64 定理固定集上的 checkpoint 配对评估（E018：θ30−θ0 = +0.98pp、95% CI 跨零 → **POSITIVE-INCONCLUSIVE**；verifier-error 复核 E018-D：43/43 全部确定性、零修正，Δ 稳健区间 [−0.20pp, +0.98pp]）。下一步（待用户决定，训练需人工确认启动）：是否将训练从 30 步延长至 60 步并在同一封存集上评估（见 [`experiments/manifests/p3c_fixed_eval.yaml`](experiments/manifests/p3c_fixed_eval.yaml)）。历史交接文档：[`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)。
+当前阶段：**P3-0 → P3-A → P3-B → P3-C 全部完成（Linux RTX 3090 24 GB）** —— 迁移 gate、Promptset on-policy 校准（IGR 0.09375）、full-FT 显存可行性与 GRPO smoke（含 checkpoint resume）、n=8 的 30 步短学习 pilot（Z_t↓、score↑、末段连续梯度），以及封存 64 定理固定集上的 checkpoint 配对评估（E018：θ30−θ0 = +0.98pp、95% CI 跨零 → **POSITIVE-INCONCLUSIVE**；verifier-error 复核 E018-D：43/43 全部确定性结论、零修正，corrected = observed；故意的 all-errors-success 反事实边界跨零，仅作敏感性上界报告、不表示符号稳健）。下一步（待用户决定，训练需人工确认启动）：是否将训练从 30 步延长至 60 步并在同一封存集上评估（见 [`experiments/manifests/p3c_fixed_eval.yaml`](experiments/manifests/p3c_fixed_eval.yaml)）。历史交接文档：[`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)。
 
 - 研究主线（RL for sub-billion Lean provers）：[`docs/research_plan.md`](docs/research_plan.md)
 - P2 预实验结论（评估校准 / 奖励可靠性 / 奖励信息量）：[`docs/studies/evaluation_calibration.md`](docs/studies/evaluation_calibration.md)

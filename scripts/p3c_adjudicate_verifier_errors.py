@@ -4,8 +4,10 @@
 Re-verifies every candidate whose E018 ``verify_status == "verifier_error"``
 using the stored ``proof`` string (the exact code that was submitted), with no
 re-generation: single-candidate requests against a warm server under a fixed
-24 GiB container cap, timeout 120 s (same as the original single-retry path),
-up to three attempts.
+40 GiB container cap, timeout 120 s (same as the original single-retry path),
+up to three attempts. (24 GiB was experimentally found to be below the normal
+warm REPL-pool footprint ~26-30 GiB and killed the healthy pool; 40 GiB is the
+current fixed verifier instrumentation setting.)
 
 Classification per candidate (decision order):
   1. verified_on_recheck                  any attempt verifies

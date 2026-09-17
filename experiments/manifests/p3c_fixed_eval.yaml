@@ -57,8 +57,9 @@ verdict:
     solved-ability change (p = 1.0). Secondary trends at step30 (IGR 0.250 -> 0.297,
     all-one groups 0.031 -> 0.000, pass@4/pass@8 above baseline) are consistent with early
     learning but are not statistically established at n = 64 theorems. E018-D
-    adjudication (43/43 deterministic, zero corrections) confirms the verifier-error gap
-    is candidate-induced, not measurement contamination.
+    adjudication (43/43 deterministic verdicts, zero corrections) confirms the
+    verifier-error gap consists of reproducible candidate-associated failures
+    under the fixed 120 s / 40 GiB verifier policy - not measurement contamination.
 
 adjudication_e018d:          # same-day addendum, 2026-09-17 10:16-12:44 UTC
   script: scripts/p3c_adjudicate_verifier_errors.py
@@ -70,13 +71,16 @@ adjudication_e018d:          # same-day addendum, 2026-09-17 10:16-12:44 UTC
     verified_on_recheck: 0
     transient_infrastructure_failure: 0
     unresolved_verifier_error: 0
-  correction: "zero; corrected verified counts identical to observed (65/65/64/70); paired deltas and CIs unchanged"
+  correction: "zero recoverable errors; corrected verified counts identical to observed (65/65/64/70); paired deltas and CIs unchanged"
   delta_bounds_step30_vs_step0: {pessimistic_none_credited: +0.00977, corrected: +0.00977, optimistic_all_credited: -0.00195}
   note: >
-    The 6-candidate verifier-error gap (step0 15 vs step30 9) is fully candidate-induced
-    (81% resource explosions on theorem families 53/40/50); no infrastructure-induced
-    miscount exists. The observed positive direction is robust to any error-crediting
-    policy within [-0.20pp, +0.98pp].
+    The 6-candidate verifier-error gap (step0 15 vs step30 9) consists of
+    reproducible candidate-associated failures under the fixed 120 s / 40 GiB
+    verifier policy (35 resource-type + 8 plain Lean rejections; concentrated in
+    theorem families 53/40/50) - no infrastructure-induced miscount exists. The
+    deliberately extreme all-errors-success counterfactual bound crosses zero
+    ([-0.20pp, +0.98pp]) and is reported only as a sensitivity upper bound; it
+    does NOT imply sign robustness. The adjudicable fact is corrected = observed.
 
 fixed_set_naming: >
   In write-ups call it a "held-out-from-pilot, same-source fixed set" (or "pilot-unseen

@@ -342,13 +342,13 @@
 | 类别 | 数量 | 说明 |
 |---|---|---|
 | `deterministic_lean_failure` | 8 | 真实 Lean 拒绝（parse error、linarith 失败等，最快 0.15 s） |
-| `deterministic_timeout_or_resource_exhaustion` | 35 | 候选自身资源爆炸：Lean 内部确定性超时（`(deterministic) timeout at isDefEq`）或两次 120 s 超时，集中于定理 #53/#40/#50 家族 |
+| `deterministic_timeout_or_resource_exhaustion` | 35 | 在固定 120 s / 40 GiB 验证政策下可复现的候选关联资源失败（reproducible candidate-associated resource failures）：Lean 内部确定性超时（`(deterministic) timeout at isDefEq`）或两次 120 s 超时，集中于定理 #53/#40/#50 家族 |
 | `verified_on_recheck` | 0 | — |
 | `transient_infrastructure_failure` | 0 | — |
 | `unresolved_verifier_error` | 0 | — |
 
-  - 校正后 verified 计数与观测完全一致（65/65/64/70）；配对 Δ 不变（+0.0000 / −0.0020 / +0.0098，CI 不变）。极端边界：若把四个 checkpoint 的 43 个 verifier_error 全部“乐观”记为通过，θ30−θ0 Δ 变为 −0.00195——即 Δ 在任何错误计入政策下都落在 **[−0.20pp, +0.98pp]**，观测方向对 verifier-error 处理稳健。
-- 结论：**E018-C 的 verifier_error 全部为候选自身原因（81% 为资源爆炸）**，不存在基础设施导致的漏计；POSITIVE-INCONCLUSIVE 判定不变，“+0.98pp 是否为测量噪声”的疑虑被排除。θ0/θ30 主对比（最一致环境）可继续承担主结论；θ20 仍标注环境偏差、降权。
+  - 校正后 verified 计数与观测完全一致（65/65/64/70）；配对 Δ 不变（+0.0000 / −0.0020 / +0.0098，CI 不变）。故意的 all-errors-success 反事实敏感性边界：若把四个 checkpoint 的 43 个 verifier_error 全部“乐观”记为通过，θ30−θ0 Δ 变为 −0.00195——该区间 [−0.20pp, +0.98pp] 跨越 0，**仅作为反事实上界报告，不表示符号稳健**；可推断的只是 corrected = observed。
+- 结论：E018-C 的 verifier_error 在固定 120 s / 40 GiB 策略下**全部为可复现的候选关联失败**（35 资源型 + 8 真实拒绝）——零可恢复错误（verified_on_recheck/transient/unresolved 均为 0），无需基础设施侧修正；POSITIVE-INCONCLUSIVE 判定不变，“+0.98pp 是否为测量噪声”的疑虑被排除。θ0/θ30 主对比（最一致环境）可继续承担主结论；θ20 仍标注环境偏差、降权。
 - 产物：`experiments/results/e018d_verifier_error_adjudication.json`（逐候选每次尝试的 kind/status/message/duration 全记录）；脚本 `scripts/p3c_adjudicate_verifier_errors.py`。
 
 - 产物：`experiments/results/e018_{base,step10,step20,step30}.json`、`p3c_analysis.json`、`e018a_smoke_*.json`、`e018b_preview_*.json`、`p3c_checkpoint_sanity.json`、`e018d_verifier_error_adjudication.json`；摘要 `experiments/manifests/p3c_fixed_eval.yaml`；固定集 `experiments/manifests/p3c_fixed_set.json`。
