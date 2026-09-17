@@ -1,11 +1,12 @@
 # M1 extension gate - step30 -> step60 training record (E019).
-# Training is COMPLETE; the confirmatory fixed-set evaluation was still
-# running (supervised, attempt 2/6) when this record was committed - see
-# docs/experiment_log.md E019 and docs/research_plan.md (frozen verdict rules).
+# Training and the confirmatory step60 fixed-set evaluation are COMPLETE
+# (including the E019-D verifier-error adjudication and the Phase-1B
+# fixed-set exposure audit). Verdict: Case B -> POSITIVE-INCONCLUSIVE.
 stage: M1-extension
 name: Step30-to-Step60 training extension
-status: training-complete / evaluation-pending
+status: complete
 completed_training_utc: "2026-09-17T14:24:56Z"
+completed_evaluation_utc: "2026-09-17T16:47:00Z"
 runner: scripts/run_e019.sh
 
 training:
@@ -44,12 +45,45 @@ checkpoint_sanity:             # experiments/results/p3c_checkpoint_sanity.json 
   drift_theta0_to_thetaN_rel_l2: {10: 9.1e-5, 20: 1.35e-4, 30: 1.67e-4, 60: 2.35e-4}
 
 evaluation:
-  status: pending              # running under supervisor unit e019sup (attempt 2/6)
+  status: complete
   fixed_set: experiments/manifests/p3c_fixed_set.json    # unchanged, never redrawn
   protocol: "identical to E018-C: 64 x 8, temp 1.0 / top_p 1.0 / max 4096, seeds 20260917+idx*8+sample, strict Kimina 2.0.0, 40 GiB cap, 120 s timeout"
   primary_comparison: "theta60 vs the reused step0 artifact (e018_base.json; step0 is NOT re-run)"
-  artifact_expected: experiments/results/e019_step60.json
+  artifact: experiments/results/e019_step60.json
   verdict_rules_frozen: "docs/research_plan.md Case A-D (committed 2026-09-17, commit 33c0da7, before the run)"
+  step60_observed: {verified: 62, pass_at_1: 0.1211, pass_at_4: 0.2228, pass_at_8: 0.2656, igr: 0.250, trunc: 0.373, verifier_error: 32}
+  step60_corrected: {verified: 69, pass_at_1: 0.1348, pass_at_4: 0.2384, pass_at_8: 0.2812, igr: 0.266}
+  adjudication_e019d:
+    candidates: 32            # all 'Connection reset by peer' / 'Server disconnected' failures
+    verified_on_recheck: 7    # ALL theorem #55 - its whole group was destroyed by a mid-batch connection reset
+    deterministic_lean_failure: 20
+    deterministic_timeout_or_resource_exhaustion: 5
+    transient_infrastructure_failure: 0
+    unresolved_verifier_error: 0
+    corrected_total: "62 -> 69 (+7)"
+  paired_corrected:
+    theta60_vs_theta0:  {mean_delta: +0.0078, ci95: [-0.0254, +0.0430], win_tie_loss: [8, 47, 9], mcnemar_p: 1.000, newly_solved: 2, newly_lost: 2}
+    theta60_vs_theta30: {mean_delta: -0.0020, ci95: [-0.0352, +0.0312], win_tie_loss: [8, 48, 8], mcnemar_p: 1.000, newly_solved: 1, newly_lost: 2}
+
+verdict:
+  case: B
+  classification: POSITIVE-INCONCLUSIVE
+  basis: >
+    Corrected theta60 - theta0 = +0.78 pp with a wide 95% CI that crosses zero and a
+    McNemar p of 1.0 (small positive, still statistically indistinguishable); corrected
+    theta60 vs theta30 is -0.20 pp (flat). Combined with the training-time dynamics
+    (reward informativeness peaked in steps 21-30 and regressed afterwards), the honest
+    reading is: the step30 signal neither strengthened nor was destroyed by continuing
+    to step60. Per the frozen rules: stop seed1 long training, enter replication.
+
+exposure_audit:                # Phase 1B, experiments/results/e019_fixed_set_overlap.json
+  steps_31_60_dump_lines: 960
+  unique_prompt_statements: 116
+  intersection_with_fixed_set: 0     # no direct training exposure
+  relabeling: >
+    Even with zero intersection, the P3-C 64 set was used for the step30 decision
+    (adaptive reuse), so it is repositioned as the 'M1 development / diagnostic fixed
+    set'; a separate final holdout is reserved for Phase 5 after all M1 training ends.
 
 incidents:
   - systemd-oomd repeatedly kills the evaluation cgroup under user-slice memory pressure:

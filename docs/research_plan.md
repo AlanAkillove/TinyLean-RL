@@ -42,7 +42,9 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - 写作命名：该固定集称 **held-out-from-pilot, same-source fixed set**（非 OOD、非严格同分布；Promptset 对难题有故意重加权，64 定理为 7470 个合格 statement 上的均匀抽样）。
   - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/{p3c_analysis,e018d_verifier_error_adjudication}.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`/`117e1eb`）。
 - **M1 阶段状态（三分句）**：feasibility **CONFIRMED**；learning dynamics **POSITIVE**；fixed-set capability gain **POSITIVE-INCONCLUSIVE**。
-- **当前进行中（2026-09-17）**：E019 训练**已完成**（exit 0、wall 4534 s ≈ 1.26 GPU-h、checkpoints 40/50/60、θ60≠θ30 rel_L2=1.34e-4；训练期动力学 21–30 达峰后回退——见 `experiments/manifests/m1_step60.yaml`）；**step60 fixed-set 评估进行中**（同 E018-C 协议；监督器 `e019sup` 自动重启应对 systemd-oomd 击杀）。评估**仅**评 step60（复用现有 step0 artifact，不重跑、不重抽、不评 40/50、不扩集、不跑 MiniF2F）。
+- **E019 完成（2026-09-17）**：step30→60 续训 exit 0（wall 4534 s ≈ 1.26 GPU-h；θ60≠θ30 rel_L2=1.34e-4；训练期动力学 21–30 峰值后回退）。step60 fixed-set 评估完成：观测 62/512，E019-D 复核（32 个连接重置错误中 **7 个复验通过，全部为定理 #55**）校正为 **69/512**；配对 **θ60c vs θ0 = +0.78pp（CI [−2.54, +4.30] 跨零）、θ60c vs θ30 = −0.20pp（持平）**。预冻结规则判定：**Case B → POSITIVE-INCONCLUSIVE**（继续训练到 60 既未加强也未摧毁 step30 信号）→ 停止 seed1 长训练，进入 seed replication。
+- **固定集定位调整（Phase 1B 审计后）**：P3-C 64 定理集与 steps31–60 训练 prompt 交集 = 0，但已被用于 step30 决策（adaptive reuse）→ 正名为 **M1 development / diagnostic fixed set**；最终论文另建独立 **final holdout**（Phase 5，届时冻结）作确认性检验。
+- **当前进行中（2026-09-17 晚）**：**Seed2 复制实验（E020）**——从 Distill 冷启动、seed=20260918（`data.seed` + `rollout.seed`，经 `docs/seed_control_audit.md` 审计）、独立目录 `runs/m1_seed2/`、60 步；预注册于 `experiments/manifests/m1_seed_replication.yaml`（不得按结果更改）。后续优先级：temperature×n 机制实验（P3）→ Qwen3-0.6B-Base 冷启动诊断（P4）→ Seed3（P5）→ final holdout（P6）→ MiniF2F（P7）。
 - **E019 判定规则（预冻结，step60 评估运行前写入）**——主比较 θ60 vs 原 θ0 artifact（定理级配对，bootstrap 10k / seed 20260917 + McNemar exact）：
   - **Case A（明确更强正信号）**：Δ₆₀ 显著大于 Δ₃₀（大致 +3~5pp）且 CI 主要位于正半轴 → M1 fixed-set capability gain = **SUPPORTED / CONFIRMED**（措辞按 CI 定）；可讨论 60→100，但**不自动执行**。
   - **Case B（小幅为正、仍不确定）**：Δ₆₀ ≈ 0~+2pp 且 CI 仍大范围跨零 → 维持 **POSITIVE-INCONCLUSIVE**；优先在 60 步附近收口 M1，不为显著性无限堆训练。

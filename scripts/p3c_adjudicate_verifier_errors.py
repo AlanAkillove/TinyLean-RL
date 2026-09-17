@@ -116,9 +116,9 @@ def classify_candidate(attempts: list[dict]) -> str:
     return "unresolved_verifier_error"
 
 
-def load_verifier_errors() -> list[dict]:
+def load_verifier_errors(evals: dict[str, Path]) -> list[dict]:
     candidates: list[dict] = []
-    for label, path in CHECKPOINTS.items():
+    for label, path in evals.items():
         artifact = json.loads(path.read_text(encoding="utf-8"))
         for record in artifact["records"]:
             if record["verify_status"] != "verifier_error":
@@ -196,9 +196,9 @@ def corrected_counts(original: dict[str, dict[int, int]], credits: dict[str, set
     return corrected
 
 
-def theorem_counts() -> dict[str, dict[int, int]]:
+def theorem_counts(evals: dict[str, Path]) -> dict[str, dict[int, int]]:
     counts: dict[str, dict[int, int]] = {}
-    for label, path in CHECKPOINTS.items():
+    for label, path in evals.items():
         artifact = json.loads(path.read_text(encoding="utf-8"))
         values: dict[int, int] = {}
         for record in artifact["records"]:
@@ -209,9 +209,11 @@ def theorem_counts() -> dict[str, dict[int, int]]:
 
 
 def paired_suite(counts: dict[str, dict[int, int]]) -> dict[str, dict]:
+    if "step0" not in counts:
+        return {}
     theorem_indices = sorted(counts["step0"])
     suite: dict[str, dict] = {}
-    for label in ("step10", "step20", "step30"):
+    for label in sorted(entry for entry in counts if entry != "step0"):
         baseline, treatment = counts["step0"], counts[label]
         deltas = [(treatment[i] - baseline[i]) / SAMPLES_PER_THEOREM for i in theorem_indices]
         suite[f"{label}_vs_step0"] = {
@@ -233,8 +235,21 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="Only the first N candidates (0 = all).")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--skip-probe", action="store_true")
+    parser.add_argument(
+        "--evals",
+        default="",
+        help="Comma list of label=path evaluation artifacts; default = the four E018 checkpoints.",
+    )
     parser.add_argument("--output", default="experiments/results/e018d_verifier_error_adjudication.json")
     args = parser.parse_args()
+
+    evals: dict[str, Path] = dict(CHECKPOINTS)
+    if args.evals:
+        evals = {
+            chunk.partition("=")[0].strip(): ROOT / chunk.partition("=")[2].strip()
+            for chunk in args.evals.split(",")
+            if chunk.strip()
+        }
 
     out_path = ROOT / args.output
     if not args.skip_probe:
@@ -245,7 +260,7 @@ def main() -> int:
             return 1
         print(f"prewarm probe verified in {time.perf_counter() - probe_started:.2f}s", flush=True)
 
-    candidates = load_verifier_errors()
+    candidates = load_verifier_errors(evals)
     if args.limit:
         candidates = candidates[: args.limit]
     print(f"candidates to adjudicate: {len(candidates)}", flush=True)
@@ -254,7 +269,7 @@ def main() -> int:
 
     per_class = Counter(result["final_class"] for result in results)
     per_checkpoint: dict[str, dict] = {}
-    credits: dict[str, set[tuple[int, int]]] = {label: set() for label in CHECKPOINTS}
+    credits: dict[str, set[tuple[int, int]]] = {label: set() for label in evals}
     for result in results:
         bucket = per_checkpoint.setdefault(
             result["checkpoint"],
@@ -267,7 +282,7 @@ def main() -> int:
         if result["final_class"] == "verified_on_recheck":
             credits[result["checkpoint"]].add((result["theorem_index"], result["sample_index"]))
 
-    observed = theorem_counts()
+    observed = theorem_counts(evals)
     corrected = corrected_counts(observed, credits)
     optimistic = corrected_counts(
         observed,
@@ -277,7 +292,7 @@ def main() -> int:
                 for candidate in results
                 if candidate["checkpoint"] == label
             }
-            for label in CHECKPOINTS
+            for label in evals
         },
     )
 
@@ -285,9 +300,21 @@ def main() -> int:
         indices = sorted(counts["step0"])
         return sum(counts[label][i] - counts["step0"][i] for i in indices) / (len(indices) * SAMPLES_PER_THEOREM)
 
+    delta_vs_step0: dict = {"pessimistic_equals_observed": True}
+    if "step0" in observed:
+        target_labels = sorted(entry for entry in observed if entry != "step0")
+        delta_vs_step0.update(
+            {
+                "observed": {label: delta(observed, label) for label in target_labels},
+                "corrected": {label: delta(corrected, label) for label in target_labels},
+                "optimistic": {label: delta(optimistic, label) for label in target_labels},
+            }
+        )
+
     artifact = {
         "artifact_type": "e018d_verifier_error_adjudication",
         "created_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "evals": {label: str(path.relative_to(ROOT)) for label, path in evals.items()},
         "environment": {
             "protocol": "single candidate per request; stored proof re-used; no regeneration",
             "container_mem_limit": "40 GiB (docker update, live; no recreate). 24 GiB proved too small for the warm REPL pool and killed it (2026-09-17 08:57 UTC), requiring a re-warm",
@@ -306,19 +333,15 @@ def main() -> int:
                 "corrected": {label: sum(values.values()) for label, values in corrected.items()},
                 "optimistic_all_verifier_errors_credited": {label: sum(values.values()) for label, values in optimistic.items()},
             },
-            "delta_vs_step0": {
-                "observed": {label: delta(observed, label) for label in ("step10", "step20", "step30")},
-                "corrected": {label: delta(corrected, label) for label in ("step10", "step20", "step30")},
-                "optimistic": {label: delta(optimistic, label) for label in ("step10", "step20", "step30")},
-                "pessimistic_equals_observed": True,
-            },
+            "delta_vs_step0": delta_vs_step0,
             "paired_suite_corrected": paired_suite(corrected),
         },
     }
     out_path.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
     print(json.dumps({"per_class": dict(per_class), "per_checkpoint": per_checkpoint}, indent=2), flush=True)
     print(json.dumps(artifact["correction"]["verified_totals"], indent=2), flush=True)
-    print(json.dumps(artifact["correction"]["delta_vs_step0"], indent=2), flush=True)
+    if "observed" in delta_vs_step0:
+        print(json.dumps(delta_vs_step0, indent=2), flush=True)
     print(f"Output: {out_path}", flush=True)
     return 0
 

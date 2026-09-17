@@ -358,7 +358,7 @@
 
 ## 2026-09-17/18（M1 Extension）
 
-### E019 M1 Step30 → Step60 training extension（训练完成；确认性评估进行中）
+### E019 M1 Step30 → Step60 training extension（已完成；Case B → POSITIVE-INCONCLUSIVE）
 
 - 目的：判断 P3-B 中观察到的正向训练动力学，在继续相同配置训练 30 个 optimizer steps 后，是否转化为更清楚的 held-out-from-pilot fixed-set capability gain（训练时长延长实验，非新算法实验）。
 - 设置：完全冻结 P3-B E017 配置（GRPO/DrGRPO、`norm_adv_by_std_in_grpo=False`、FULL-FT、n=8、temp 1.0、top_p 1.0、tb4→32 seq/step、max_prompt 1024、max_response 4096、lr 2e-6、无 KL/entropy、vLLM util 0.40、multiturn off、Lean 40 GiB cap）。
@@ -377,8 +377,16 @@
 
   - **关键观察：训练期奖励信息量在 21–30 达到峰值（IGR 0.225 / score 0.175），31–50 明显回退（41–50 回到 0.100 / 0.050，与最初步段相当），51–60 部分恢复（0.150 / 0.0688）**。每步定理集不同、单步方差大——为聚合趋势；其是否映射到 fixed-set 能力正是 step60 评估要裁决的问题（判定规则已预冻结）。
 - checkpoint sanity（§十五）：导出 bitwise 一致（311/311 keys，3.01 GB，`runs/p3c_models/step_60`）；**θ60≠θ30（rel_L2 = 1.34e-4，311/311 键变化）**、θ60≠θ0（2.35e-4）；漂移序列 θ0→θ10/20/30/60 = 0.91/1.35/1.67/**2.35e-4**。
-- **step60 fixed-set 评估（进行中）**：与 E018-C 完全同协议（同一封存 64 定理集、64×8、同种子表、40 GiB / 120 s、严格 Kimina 2.0.0）；主比较 θ60 vs 复用的 θ0 artifact（不重跑 step0）。运行记录：systemd-oomd 在用户切片内存压力下两次击杀评估单元（14:38:49 / 15:49:35 UTC，`oom-kill`）；现以监督器单元 `e019sup` 自动重启（≤6 次，chunk 级 partial 限制每次损失）运行 attempt 2/6（chunk 1/4 完成：19/128）。**结果与判定待评估完成后另行记录**（Case A–D 规则见 [`research_plan.md`](research_plan.md)）。
-- 产物：`experiments/results/{e019_dynamics,e019_trainer_metrics}.json`、`runs/p3b_pilot/global_step_{40,50,60}`、`runs/p3c_models/step_60`、`experiments/results/p3c_checkpoint_sanity.json`（含 step60）；摘要 `experiments/manifests/m1_step60.yaml`（evaluation: pending）。
+- **step60 fixed-set 评估（完成）**：与 E018-C 完全同协议（封存 64 定理集、64×8、同种子表、40 GiB / 120 s、严格 Kimina 2.0.0）；主比较 θ60 vs 复用的 θ0 artifact。运行记录：systemd-oomd 两次击杀评估单元（14:38:49 / 15:49:35 UTC），监督器 `e019sup` 自动重启后 attempt 2 一次跑完（exit 0，16:14:18）。
+- **step60 结果**：观测 verified **62/512**（pass@1 0.1211、pass@4 0.2228、pass@8 0.2656、IGR 0.250、截断 0.373）；但 `verifier_error = 32`（6.25%，均为 `Connection reset by peer` / `Server disconnected`，集中于定理 #49/50/53/55）。
+- **E019-D verifier-error 复核**（严格 E018-D 协议：存证重验、单候选、暖服务、40 GiB/120 s、≤3 次）：32 个全部有确定性结论——**7 个 `verified_on_recheck`（全部来自定理 #55，其整组候选被原批次连接重置摧毁；复验 7/8 通过）**、20 个真实 Lean 拒绝、5 个候选关联资源失败、0 瞬时/0 未决。**校正计数 62 → 69/512**（pass@1 0.1348、pass@4 0.2384、pass@8 0.2812、IGR 0.266）。
+- 定理级配对（校正计数，bootstrap 10k/seed 20260917）：
+  - **θ60c vs θ0：+0.78pp，CI [−2.54, +4.30]，W/T/L = 8/47/9，McNemar p=1.0（+2/−2）**；
+  - θ60c vs θ30：−0.20pp，CI [−3.52, +3.12]，W/T/L = 8/48/8，McNemar p=1.0（+1/−2）。
+- **判定（预冻结规则）：Case B → POSITIVE-INCONCLUSIVE**——校正后小幅为正且 CI 宽跨零；θ60≈θ30（持平）。结合训练期动力学（21–30 峰值后回退），如实结论：**继续训练到 step60 既未加强也未摧毁 step30 的信号**。按规则：停止 seed1 长训练，进入 replication。
+- **Phase 1B 暴露审计**（`e019_fixed_set_overlap.json`）：steps 31–60 共 960 dump 行、116 个 unique 训练 prompt、与 P3-C 固定集**交集 = 0**（无直接训练暴露）；但 P3-C 集已被用于 step30 决策（adaptive reuse），据协议降级为 **M1 development / diagnostic fixed set**；最终论文另建独立 holdout（Phase 5）。
+- 运行事故记录：systemd-oomd 在用户切片内存压力下击杀评估单元两次（已由监督器自动重启）；训练本身在 tmux 下 75.6 min 一次跑完。
+- 产物：`experiments/results/{e019_dynamics,e019_trainer_metrics}.json`、`runs/p3b_pilot/global_step_{40,50,60}`、`runs/p3c_models/step_60`、`experiments/results/p3c_checkpoint_sanity.json`（含 step60）；摘要 `experiments/manifests/m1_step60.yaml`（evaluation: complete；Case B）。
 - 提交：`79c1f6e`（runner）、`0c736b8`（进度条）、`08a78b6`（step60 注册）、`33c0da7`（判定规则冻结）、`4a92a61`/`e1b0051`（双解析器）。
 
 ---
