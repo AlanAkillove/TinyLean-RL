@@ -7,8 +7,8 @@
 
 | # | Hydra key | 代码位置 | 作用域 | 可复现性 |
 |---|---|---|---|---|
-| 1 | `data.seed` | `verl/trainer/main_ppo.py:368` → `train_dataloader_generator.manual_seed(data_config.get("seed", 1))` | 训练 dataloader 的 shuffle 生成器（决定每一步看到哪些 prompts、顺序） | 确定性：同一 data.seed + 同一数据集 → 相同 prompt 顺序 |
-| 2 | `actor_rollout_ref.rollout.seed` | `verl/workers/rollout/vllm_rollout/vllm_rollout_spmd.py:196` → `LLM(..., seed=config.get("seed", 0))`；字段定义 `verl/workers/config/engine.py:67`（默认 42） | vLLM 引擎级 RNG：所有 rollout 采样的随机源（temperature=1.0 下） | 确定性（引擎级）；注意 `SamplingParams` 的 kwargs 显式排除 `seed`（`k != "seed"`，L216），即**无** per-request seed，采样流由引擎种子 + 请求消费序列决定 |
+| 1 | `+data.seed` | `verl/trainer/main_ppo.py:368` → `train_dataloader_generator.manual_seed(data_config.get("seed", 1))` | 训练 dataloader 的 shuffle 生成器（决定每一步看到哪些 prompts、顺序） | 确定性：同一 data.seed + 同一数据集 → 相同 prompt 顺序。注意该键不在 hydra struct 中，需 `+` 追加语法（已实证） |
+| 2 | （不可配）FSDP rollout 引擎种子 | `vllm_rollout_spmd.py:196` → `LLM(..., seed=config.get("seed", 0))`；但 FSDP `RolloutConfig`（`verl/workers/config/rollout.py`）**无 seed 字段**（hydra 结构校验实证：`actor_rollout_ref.rollout.seed` 不在 struct；`engine.py:67` 的 `seed: int = 42` 属于 **Megatron** engine 配置） | vLLM 引擎级 RNG | **固定为 0，不可配置**（不修改下游栈的前提下）。不同 run 的采样流经不同请求顺序/数量自然发散 |
 | 3 | （固定，不可配） | `verl/workers/sharding_manager/fsdp_vllm.py:116` → `get_torch_device().manual_seed(gen_dp_rank + 1000)` | 每次权重同步时重置 rollout torch RNG | 固定值，不随实验变化 |
 
 ## 未被配置的随机源（审计结论）
@@ -21,17 +21,18 @@
 
 ## E019（seed1）实际生效值
 
-E019 的 runner（`scripts/run_e019.sh` / `run_p3_pilot.sh`）**未显式设置**上述两个字段，
-因此 seed1 实际使用库默认值：
-- `data.seed = 1`
-- `actor_rollout_ref.rollout.seed = 42`
-
+E019 的 runner（`scripts/run_e019.sh` / `run_p3_pilot.sh`）**未显式设置** `data.seed`，
+因此 seed1 实际使用库默认值 **`data.seed = 1`**；rollout 引擎种子固定 0（不可配）。
 （本审计将“默认值也是有效值”的事实记录在案；后续论文写作须按实际值描述。）
 
 ## Seed2/Seed3 预注册方案（运行前冻结，不得按结果更改）
 
-- seed2 = **20260918** → `data.seed=20260918 actor_rollout_ref.rollout.seed=20260918`
-- seed3 = **20260919** → `data.seed=20260919 actor_rollout_ref.rollout.seed=20260919`
+- seed2 = **20260918** → `+data.seed=20260918`
+- seed3 = **20260919** → `+data.seed=20260919`
+
+独立性论证：dataloader 种子决定每一步的 prompt 序列（已由 live sanity 实证与 seed1 不同），
+而 rollout 采样流随请求序列/状态发散——两条训练轨迹从第 1 步起即独立；唯一不可控的是
+vLLM 引擎的初始种子（固定 0）。这是本 pinned build 在不修改下游栈前提下的最大可控程度。
 
 其它一切配置与 E019 完全相同（frozen P3-B recipe）；从
 `Kimina-Prover-Distill-0.6B` 冷启动，独立目录 `runs/m1_seed2/`、`runs/m1_seed3/`。

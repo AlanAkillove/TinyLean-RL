@@ -8,9 +8,9 @@ seeds:
   seed3: 20260919    # runs/m1_seed3, only if seed2 completes and the host is stable
 
 seed_knobs:
-  data.seed: "dataloader shuffle generator (main_ppo.py:368)"
-  actor_rollout_ref.rollout.seed: "vLLM engine RNG (vllm_rollout_spmd.py:196)"
-  seed1_effective_defaults: {data.seed: 1, actor_rollout_ref.rollout.seed: 42}
+  +data.seed: "dataloader shuffle generator (main_ppo.py:368); the only configurable seed in this pinned build"
+  rollout_engine_seed: "NOT configurable on the FSDP path (RolloutConfig has no seed field; vLLM engine seed fixed at 0) - independence comes from the diverging request streams, verified by the live sanity check"
+  seed1_effective_defaults: {data.seed: 1}
 
 recipe: "identical to E019/P3-B (GRPO/DrGRPO, FULL-FT, n=8, tb4, lr 2e-6, no KL, multiturn off, 4096)"
 
