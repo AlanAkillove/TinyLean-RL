@@ -1,0 +1,469 @@
+{
+  "artifact_type": "p3c_fixed_set",
+  "selection_seed": 20260917,
+  "selection_method": "random.Random(seed).sample(eligible_ids in parquet dedup order, 64)",
+  "dataset_path": "/home/fly/ZJQ/TinyLean-RL/data/raw/kimina_promptset/data/train-00000-of-00001.parquet",
+  "dataset_revision": "3009c548d90160d0f5e963d72238610c6732f812",
+  "dataset_unique_statements": 7620,
+  "excluded_sources": {
+    "E013 p3_0_promptset_temp1.json": 32,
+    "E016 p3_b_n8_calibration.json": 16,
+    "E017 p3b_pilot rollout_data (steps 1-30)": 118
+  },
+  "excluded_count": 150,
+  "eligible_count": 7470,
+  "selected_count": 64,
+  "sealed": true,
+  "theorems": [
+    {
+      "theorem_index": 0,
+      "statement_id": "6dedbbb5-1032-4b5d-bc85-45353bc73ed7",
+      "name": "algebra_181457_v0005",
+      "formal_statement": "import Mathlib\n\n/- Let `a` be a real number. The quadratic equation `x^2 - a*x + 2*a - 1 = 0` has real roots if and only if `a <= 4 - 2*sqrt(3)` or `a >= 4 + 2*sqrt(3)`. -/\ntheorem algebra_181457_v0005 (a : ℝ) :\n    (∃ x : ℝ, x^2 - a * x + 2 * a - 1 = 0) ↔ a ≤ 4 - 2 * Real.sqrt 3 ∨ a ≥ 4 + 2 * Real.sqrt 3 := by sorry",
+      "natural_language": "Let `a` be a real number. The quadratic equation `x^2 - a*x + 2*a - 1 = 0` has real roots if and only if `a <= 4 - 2*sqrt(3)` or `a >= 4 + 2*sqrt(3)`."
+    },
+    {
+      "theorem_index": 1,
+      "statement_id": "eda758de-4a9c-4a67-ae1d-7849ea96ce34",
+      "name": "algebra_241143_v0001",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_241143_v0001\n    (f : ℝ → ℝ)\n    (h : ∀ x y, f x + f y = f (f x * f y))\n    (h' : ∃ z, f z = 0) :\n    ∀ x, f x = 0 := by sorry",
+      "natural_language": "Let `f` be a function from the real numbers to the real numbers such that for all `x, y` in its domain, `f(x) + f(y) = f(f(x) * f(y))`. If there exists a real number `z` such that `f(z) = 0`, then `f(x) = 0` for all real numbers `x`."
+    },
+    {
+      "theorem_index": 2,
+      "statement_id": "8c652b8f-43f4-4b65-bafc-f3c4c851cb6f",
+      "name": "algebra_230987_v0006",
+      "formal_statement": "import Mathlib\n\nopen Real Set\nopen scoped BigOperators\n\n/- The function $f(x) = \\sin(x)$ is monotonically increasing on the open interval from $0$ to $\\pi/2$. -/\ntheorem algebra_230987_v0006 (f : ℝ → ℝ) (hf : f = sin) :\n    MonotoneOn f (Set.Ioo 0 (π/2)) :=\nsorry",
+      "natural_language": "The function $f(x) = \\sin(x)$ is monotonically increasing on the open interval from $0$ to $\\pi/2$."
+    },
+    {
+      "theorem_index": 3,
+      "statement_id": "9cd88f80-4b16-4b64-9ad2-159bb1d19c16",
+      "name": "algebra_313904",
+      "formal_statement": "import Mathlib\n\n/- 11. Given the sequence $\\left\\{a_{n}\\right\\}$ satisfies $a_{1}=1$, and for each $n \\in \\mathbf{N}_{+}, a_{n} 、 a_{n+1}$ are the two roots of the equation $x^{2}+3 n x+b_{n}=0$. Then $\\sum_{k=1}^{20} b_{k}=$ $\\qquad$ -/\ntheorem algebra_313904 {a b : ℕ → ℝ} (ha1 : a 1 = 1)\n    (hroots : ∀ n > 0, a n + a (n + 1) = -3 * n ∧ a n * a (n + 1) = b n)\n    : ∑ k in Finset.range 20, b (k + 1) = 6385 := by",
+      "natural_language": "11. Given the sequence $\\left\\{a_{n}\\right\\}$ satisfies $a_{1}=1$, and for each $n \\in \\mathbf{N}_{+}, a_{n} 、 a_{n+1}$ are the two roots of the equation $x^{2}+3 n x+b_{n}=0$. Then $\\sum_{k=1}^{20} b_{k}=$ $\\qquad$"
+    },
+    {
+      "theorem_index": 4,
+      "statement_id": "b01118dc-cbfe-47ec-ac0b-faa9b95c51a7",
+      "name": "algebra_2954",
+      "formal_statement": "import Mathlib\n\n/- Given that none of $a, b, c, x, y, z$ is zero and the following equalities hold:\n\\[\n\\frac{x^2(y+z)}{a^3} = \\frac{y^2(x+z)}{b^3} = \\frac{z^2(y+x)}{c^3} = \\frac{xyz}{abc} = 1,\n\\]\nprove that:\n\\[\na^3 + b^3 + c^3 + abc = 0.\n\\] -/\ntheorem algebra_2954\n  {a b c x y z : ℝ}\n  (h₀ : a ≠ 0)\n  (h₁ : b ≠ 0)\n  (h₂ : c ≠ 0)\n  (h₃ : x ≠ 0)\n  (h₄ : y ≠ 0)\n  (h₅ : z ≠ 0)\n  (h₆ : x^2 * (y + z) / a^3 = 1)\n  (h₇ : y^2 * (x + z) / b^3 = 1)\n  (h₈ : z^2 * (y + x) / c^3 = 1)\n  (h₉ : x * y * z / (a * b * c) = 1) :\n  a^3 + b^3 + c^3 + a * b * c = 0 := by",
+      "natural_language": "Given that none of $a, b, c, x, y, z$ is zero and the following equalities hold:\n\\[\n\\frac{x^2(y+z)}{a^3} = \\frac{y^2(x+z)}{b^3} = \\frac{z^2(y+x)}{c^3} = \\frac{xyz}{abc} = 1,\n\\]\nprove that:\n\\[\na^3 + b^3 + c^3 + abc = 0.\n\\]"
+    },
+    {
+      "theorem_index": 5,
+      "statement_id": "f4349217-2221-45b8-a96e-caeb0fb68ee5",
+      "name": "number_theory_626808_v0001",
+      "formal_statement": "import Mathlib\n\ntheorem number_theory_626808_v0001 (x y : ℤ) (h₁ : 10 ≤ x ∧ x ≤ 99) (h₂ : 0 < y)\n    (h₃ : 6 * x * y = 1000 * x + y) :\n    (6 * x - 1) ∣ 1000 := by sorry",
+      "natural_language": "Let x be an integer between 10 and 99, inclusive, and let y be a positive integer. If six times the product of x and y is equal to the sum of 1000 times x and y, then the expression 6 times x minus 1 must be a divisor of 1000."
+    },
+    {
+      "theorem_index": 6,
+      "statement_id": "974b8a20-0e36-4624-9151-d7d7e22efa82",
+      "name": "algebra_20909_v4284",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_20909_v4284 {a b c : ℚ} (h1 : (7*a + c) + b = 22 / Real.sqrt 7) (h2 : (11*a + c) + b = 30 / Real.sqrt 11) : b = 0 := by sorry",
+      "natural_language": "Let `a`, `b`, and `c` be rational numbers. If `(7*a + c) + b` times the square root of `7` is equal to `22` and `(11*a + c) + b` times the square root of `11` is equal to `30`, then `b` must be equal to `0`."
+    },
+    {
+      "theorem_index": 7,
+      "statement_id": "c6122c9f-a550-4cc4-90e9-9c3874d39264",
+      "name": "algebra_99471_v12807",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_99471_v12807 {a b : ℤ} (ha : 0 < a) (hb : 0 < b)\n    (h : 100 * (a + b) = a * b - 100) :\n    a > 100 ∧ b > 100 := by sorry",
+      "natural_language": "If $a$ and $b$ are positive integers satisfying the equation $100(a+b) = ab - 100$, then both $a$ and $b$ must be greater than 100."
+    },
+    {
+      "theorem_index": 8,
+      "statement_id": "a303d66b-36e7-420d-aa76-3d671f5e25de",
+      "name": "Algebra_609307_v0001",
+      "formal_statement": "import Mathlib\n\ntheorem Algebra_609307_v0001 (f : ℕ → ℝ) (hf : ∀ x y, f (x + y) = f x * f y) :\n  ∀ n, f n = f 1 ^ n := by sorry",
+      "natural_language": "Let f be a function from the nonnegative integers to the reals such that for all nonnegative integers x and y, f(x + y) = f(x) * f(y). Then for any nonnegative integer n, f(n) equals f(1) raised to the power of n."
+    },
+    {
+      "theorem_index": 9,
+      "statement_id": "4f1b2e01-d448-4b9b-b415-771a6a2546d6",
+      "name": "number_theory_6098973_v18361",
+      "formal_statement": "import Mathlib\n\ntheorem number_theory_6098973_v18361 :\n    IsLeast {p : ℕ | p.Prime ∧ ∃ k > 0, p ∣ (Nat.ofDigits 10 (List.replicate k 42 ++ [1])) ∨ p ∣ (Nat.ofDigits 10 (List.replicate k 42 ++ [1]))}\n    11 := by sorry",
+      "natural_language": "The smallest prime number $p$ for which there exists a positive integer $k$ such that $p$ divides the number formed by $k$ repetitions of the digit block '42', plus or minus 1, is 11."
+    },
+    {
+      "theorem_index": 10,
+      "statement_id": "31d3a660-a0fd-4680-b170-4b84b05dc144",
+      "name": "algebra_17105_v1231",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_17105_v1231 : ((Finset.Icc (-8) 8).filter fun x => x ≠ 0).card = 16 := by sorry",
+      "natural_language": "The number of non-zero integers $m$ that satisfy the inequality $|m| \\leq 8$ is 16."
+    },
+    {
+      "theorem_index": 11,
+      "statement_id": "337c9cac-10cf-429c-8617-098cd8fd8d14",
+      "name": "number_theory_228765",
+      "formal_statement": "import Mathlib\n\n/- C2. In a $6 \\times 6$ grid of numbers:\n(i) all the numbers in the top row and the leftmost column are the same;\n(ii) each other number is the sum of the number above it and the number to the left of it;\n(iii) the number in the bottom right corner is 2016.\nWhat are the possible numbers in the top left corner? -/\ntheorem number_theory_228765 (a : Fin 6 → Fin 6 → ℤ) (h₀ : ∃ x, ∀ i, a i 0 = x)\n    (h₁ : ∃ x, ∀ j, a 0 j = x) (h₂ : ∀ i j, a (i + 1) j = a i (j + 1) + a i j)\n    (h₃ : a 5 5 = 2016) :\n    a 0 0 = 8 := by",
+      "natural_language": "C2. In a $6 \\times 6$ grid of numbers:\n(i) all the numbers in the top row and the leftmost column are the same;\n(ii) each other number is the sum of the number above it and the number to the left of it;\n(iii) the number in the bottom right corner is 2016.\nWhat are the possible numbers in the top left corner?"
+    },
+    {
+      "theorem_index": 12,
+      "statement_id": "c36f0f25-2acc-48b9-bd4f-bf2e6dd6edc1",
+      "name": "algebra_608764_v0007",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_608764_v0007 {N D : Polynomial ℂ} (hN : N ≠ 0) (hD : D ≠ 0)\n    (h : ∃ p : Polynomial ℂ, ∀ x : ℂ, (N.eval x) / (D.eval x) = p.eval x) :\n    ∀ x : ℂ, D.eval x = 0 → N.eval x = 0 := by sorry",
+      "natural_language": "Let `N(x)` and `D(x)` be polynomials with real coefficients. If `D(x)` is not the zero polynomial and the rational function `N(x)/D(x)` represents a polynomial function, then every complex root of `D(x)` must also be a root of `N(x)`."
+    },
+    {
+      "theorem_index": 13,
+      "statement_id": "fa9385c3-aad1-4538-aa61-d0b3f31dfb4b",
+      "name": "algebra_311260_v0007",
+      "formal_statement": "import Mathlib\n\n/- Let `n` and `k` be positive integers. If `x` and `y` are integers such that `x ≥ k` and `y$ is equal to the square root of `x + n$ minus the square root of `x - k`, then `y$ divides `n + k`. -/\ntheorem algebra_311260_v0007 (n k : ℤ) (h₀ : 0 < n) (h₁ : 0 < k)\n    (x : ℤ) (y : ℤ) (h₂ : x ≥ k) (h₃ : y = Real.sqrt (x + n) - Real.sqrt (x - k)) :\n    y ∣ n + k := by sorry",
+      "natural_language": "Let `n` and `k` be positive integers. If `x` and `y` are integers such that `x ≥ k` and `y` is equal to the square root of `x + n` minus the square root of `x - k`, then `y` divides `n + k`."
+    },
+    {
+      "theorem_index": 14,
+      "statement_id": "44983817-a597-43af-adc0-a174ae557381",
+      "name": "number_theory_130361_v0007",
+      "formal_statement": "import Mathlib\n\n/- Let n be a positive integer. If the number of positive divisors of n^2 is 21, then n must be of the form q^10 for some prime q, or of the form q1 * q2^3 for distinct primes q1 and q2. -/\ntheorem number_theory_130361_v0007 (n : ℕ) (hn : n > 0) :\n    (n ^ 2).divisors.card = 21 →\n    ∃ q : ℕ, Nat.Prime q ∧ n = q ^ 10 ∨\n    ∃ q1 q2 : ℕ, Nat.Prime q1 ∧ Nat.Prime q2 ∧ q1 ≠ q2 ∧ n = q1 * q2 ^ 3 := by sorry",
+      "natural_language": "Let n be a positive integer. If the number of positive divisors of n^2 is 21, then n must be of the form q^10 for some prime q, or of the form q1 * q2^3 for distinct primes q1 and q2."
+    },
+    {
+      "theorem_index": 15,
+      "statement_id": "18186ade-1ddc-45c8-a925-bbb0d0f4a4df",
+      "name": "inequalities_126634",
+      "formal_statement": "import Mathlib\n\n/- Let $a, b, c, d$ be strictly positive real numbers. Show that the following inequality is true:\n\n\n$$\n\n\\frac{a}{b}+\\frac{b}{c}+\\frac{c}{d}+\\frac{d}{a} \\geqslant 4\n\n$$\n -/\ntheorem inequalities_126634 (a b c d : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hd : 0 < d) :\n    4 ≤ a / b + b / c + c / d + d / a := by",
+      "natural_language": "Let $a, b, c, d$ be strictly positive real numbers. Show that the following inequality is true:\n\n$$\n\\frac{a}{b}+\\frac{b}{c}+\\frac{c}{d}+\\frac{d}{a} \\geqslant 4\n$$"
+    },
+    {
+      "theorem_index": 16,
+      "statement_id": "d18b0e47-7510-42fa-8b1a-4cc8314de4ef",
+      "name": "algebra_289375",
+      "formal_statement": "import Mathlib\n\n/- In the 539th exercise and the 945th problem, the interpretation of the number sequences can also be written as: $x_{1}=2, y_{1}=3$, and $x_{k+1}=x_{1} y_{k}+y_{1} x_{k}, y_{k+1}=y_{1} y_{k}+2 x_{1} x_{k}$, if $k=1,2,3, \\ldots$ Show that generally\n\n$$\n\\begin{gathered}\nx_{k+r}=x_{r} y_{k}+y_{r} x_{k} \\quad \\text { and } \\quad y_{k+r}=y_{r} y_{k}+2 x_{r} x_{k} \\text {, } \\\\\n\\text { if } \\quad k=1,2,3, \\ldots \\text { and } r=1,2,3, \\ldots\n\\end{gathered}\n$$ -/\ntheorem algebra_289375 {x y : ℕ → ℤ}\n    (hx1 : x 1 = 2) (hy1 : y 1 = 3)\n    (hxn : ∀ k ≥ 1, x (k + 1) = x 1 * y k + y 1 * x k)\n    (hy : ∀ k ≥ 1, y (k + 1) = y 1 * y k + 2 * x 1 * x k) :\n    ∀ k ≥ 1, ∀ r ≥ 1, x (k + r) = x r * y k + y r * x k ∧\n    y (k + r) = y r * y k + 2 * x r * x k := by",
+      "natural_language": "In the 539th exercise and the 945th problem, the interpretation of the number sequences can also be written as: $x_{1}=2, y_{1}=3$, and $x_{k+1}=x_{1} y_{k}+y_{1} x_{k}, y_{k+1}=y_{1} y_{k}+2 x_{1} x_{k}$, if $k=1,2,3, \\ldots$ Show that generally\n\n$$\n\\begin{gathered}\nx_{k+r}=x_{r} y_{k}+y_{r} x_{k} \\quad \\text { and } \\quad y_{k+r}=y_{r} y_{k}+2 x_{r} x_{k} \\text {, } \\\\\n\\text { if } \\quad k=1,2,3, \\ldots \\text { and } r=1,2,3, \\ldots\n\\end{gathered}\n$$"
+    },
+    {
+      "theorem_index": 17,
+      "statement_id": "6d6e9b96-b0ea-4ae5-910f-f1b83231d5fd",
+      "name": "algebra_198764_v0007",
+      "formal_statement": "import Mathlib\n\n/- Let a sequence of real numbers $a_n$ for $n \\ge 1$ be defined by $a_1 = \\sqrt{3}$ and $a_{k+1} = \\sqrt{3+a_k}$ for $k \\ge 1$. Then for all positive integers $n$, it holds that $a_n < 3$. -/\ntheorem algebra_198764_v0007 (a : ℕ → ℝ)\n    (h₀ : a 1 = Real.sqrt 3)\n    (h₁ : ∀ k ≥ 1, a (k + 1) = Real.sqrt (3 + a k)) :\n    ∀ n > 0, a n < 3 := by sorry",
+      "natural_language": "Let a sequence of real numbers $a_n$ for $n \\ge 1$ be defined by $a_1 = \\sqrt{3}$ and $a_{k+1} = \\sqrt{3+a_k}$ for $k \\ge 1$. Then for all positive integers $n$, it holds that $a_n < 3$."
+    },
+    {
+      "theorem_index": 18,
+      "statement_id": "2b837e74-5a97-4b18-85be-a9e0b6080444",
+      "name": "inequalities_597805_v0002",
+      "formal_statement": "import Mathlib\n\n/- Let a, b, c, d be positive real numbers such that a ≥ b ≥ c ≥ d. Then the sum c/(a+b) + d/(b+c) + a/(c+d) + b/(d+a) is greater than or equal to 2. -/\ntheorem inequalities_597805_v0002 (a b c d : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) (hd : 0 < d)\n    (h : a ≥ b ∧ b ≥ c ∧ c ≥ d) :\n    2 ≤ c/(a+b) + d/(b+c) + a/(c+d) + b/(d+a) := by sorry",
+      "natural_language": "Let a, b, c, d be positive real numbers such that a ≥ b ≥ c ≥ d. Then the sum c/(a+b) + d/(b+c) + a/(c+d) + b/(d+a) is greater than or equal to 2."
+    },
+    {
+      "theorem_index": 19,
+      "statement_id": "54bd0b9c-6a47-435e-8402-167c07a0a852",
+      "name": "algebra_191902_v0008",
+      "formal_statement": "import Mathlib\n\n/- For any non-zero real numbers `x` and `y` such that `x + y$ is not zero, the identity `(x^2/y + y^2/x) / (1/x + 1/y) = (x+y)^2 - 3xy$ holds. -/\ntheorem algebra_191902_v0008 {x y : ℝ} (hx : x ≠ 0) (hy : y ≠ 0) (hxy : x + y ≠ 0) :\n    (x ^ 2 / y + y ^ 2 / x) / (1 / x + 1 / y) = (x + y) ^ 2 - 3 * x * y := by sorry",
+      "natural_language": "For any non-zero real numbers `x` and `y` such that `x + y` is not zero, the identity `(x^2/y + y^2/x) / (1/x + 1/y) = (x+y)^2 - 3xy` holds."
+    },
+    {
+      "theorem_index": 20,
+      "statement_id": "717127cd-3cc8-427f-90a1-5a3dfa15fd4e",
+      "name": "algebra_269141_v0007",
+      "formal_statement": "import Mathlib\n\n/- For any positive integer n, the value of the expression `(2n + 1)^2 - 4(n^2 + n)` is 1. -/\ntheorem algebra_269141_v0007 (n : ℕ) (hn : n > 0) : (2 * n + 1)^2 - 4 * (n^2 + n) = 1 := by sorry",
+      "natural_language": "For any positive integer n, the value of the expression `(2n + 1)^2 - 4(n^2 + n)` is 1."
+    },
+    {
+      "theorem_index": 21,
+      "statement_id": "dbb277e7-a2ed-4b75-9f92-1b56bb67f7de",
+      "name": "algebra_11723_v3019",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_11723_v3019 (x : ℂ) :\n    (x - 3)^4 + (x - 5)^4 = -8 ↔ (x - 4)^4 + 6*(x - 4)^2 + 5 = 0 := by sorry",
+      "natural_language": "Let `x` be a complex number. The equation `(x - 3)^4 + (x - 5)^4 = -8` is equivalent to the equation `(x - 4)^4 + 6(x - 4)^2 + 5 = 0`."
+    },
+    {
+      "theorem_index": 22,
+      "statement_id": "2d20acf1-15d9-4ebf-9d61-a5ebd881f157",
+      "name": "number_theory_4603",
+      "formal_statement": "import Mathlib\n\n/- \\( k \\)-th Fermat number -/\nabbrev F_4603 (k : ℕ) := 2 ^ (2 ^ k) + 1\n\n/- Lemma 2.8. Let \\( F_k = 2^{2^k} + 1 \\) denote the \\( k \\)-th Fermat number, where \\( k \\) is a nonnegative integer. Then for all positive integers \\( n \\), we have\n\\[\nF_0 F_1 F_2 \\cdots F_{n-1} = F_n - 2.\n\\] -/\ntheorem number_theory_4603 :\n    ∀ n : ℕ, n > 0 → ∏ i ∈ Finset.range n, F_4603 i = F_4603 n - 2 := by",
+      "natural_language": "Lemma 2.8. Let \\( F_{k}=2^{2^{k}}+1 \\) denote the \\( k \\)th Fermat number, where \\( k \\) is a nonnegative integer. Then for all positive integers \\( n \\), we have\n\\[ F_{0} F_{1} F_{2} \\cdots F_{n-1}=F_{n}-2 \\]"
+    },
+    {
+      "theorem_index": 23,
+      "statement_id": "c0d6c8e0-e215-40ba-b1fd-c522f9373a21",
+      "name": "inequalities_214383",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- 1. Let $a, b$ and $c$ be positive real numbers. Prove that\n\n$$\n\\sqrt{\\frac{a}{b+c}}+\\sqrt{\\frac{b}{c+a}}+\\sqrt{\\frac{c}{a+b}} \\geq 2\n$$ -/\ntheorem inequalities_214383 (a b c : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c) :\n    2 ≤ sqrt (a / (b + c)) + sqrt (b / (c + a)) + sqrt (c / (a + b)) := by",
+      "natural_language": "1. Let $a, b$ and $c$ be positive real numbers. Prove that\n\n$$\n\\sqrt{\\frac{a}{b+c}}+\\sqrt{\\frac{b}{c+a}}+\\sqrt{\\frac{c}{a+b}} \\geq 2\n$$"
+    },
+    {
+      "theorem_index": 24,
+      "statement_id": "63cae326-0557-4f4d-84e6-3105aca67d56",
+      "name": "algebra_272590_v0009",
+      "formal_statement": "import Mathlib\n\n/- Let sequences of integers `a_n` and `b_n` be defined for positive integers `n` by `a_{n+1} = -b_n$ and `b_{n+1} = 2a_n - 3b_n`. Then for any positive integer `n`, the identity `b_{n+2} + 3b_{n+1} + 2b_n = 0` holds. -/\ntheorem algebra_272590_v0009 {a b : ℕ → ℤ} (ha : ∀ n, a (n + 1) = -b n)\n    (hb : ∀ n, b (n + 1) = 2 * a n - 3 * b n) :\n    ∀ n, b (n + 2) + 3 * b (n + 1) + 2 * b n = 0 := by sorry",
+      "natural_language": "Let sequences of integers `a_n` and `b_n` be defined for positive integers `n` by `a_{n+1} = -b_n` and `b_{n+1} = 2a_n - 3b_n`. Then for any positive integer `n`, the identity `b_{n+2} + 3b_{n+1} + 2b_n = 0` holds."
+    },
+    {
+      "theorem_index": 25,
+      "statement_id": "3879f0c2-ff19-4ee4-8583-ca42a6985772",
+      "name": "algebra_280110",
+      "formal_statement": "import Mathlib\n\n/- 10.51 Given a geometric sequence $\\left\\{a_{n}\\right\\}$ with a common ratio of $q(q \\neq 1)$, set $b_{1}=a_{1}+a_{2}+$ $a_{3}, b_{2}=a_{4}+a_{5}+a_{6}, \\cdots, b_{n}=a_{3 n-2}+a_{3 n-1}+a_{3 n}, \\cdots$, then the sequence $\\left\\{b_{n}\\right\\}$\n(A) is an arithmetic sequence.\n(B) is a geometric sequence with a common ratio of $q$.\n(C) is a geometric sequence with a common ratio of $q^{3}$.\n(D) is neither an arithmetic sequence nor a geometric sequence.\n(China High School Mathematics League, 1999) -/\ntheorem algebra_280110 {a b : ℕ → ℝ} {q : ℝ} (hq : q ≠ 1)\n    (ha : ∀ n, a n = a 0 * q ^ n) (hb1 : b 1 = a 0 + a 1 + a 2)\n    (hb2 : b 2 = a 3 + a 4 + a 5) (hb3 : b 3 = a 6 + a 7 + a 8)\n    (hb : ∀ n, b n = a (3 * n - 2) + a (3 * n - 1) + a (3 * n)) :\n    ∃ r, ∀ n, b (n + 1) = r * b n := by",
+      "natural_language": "10.51 Given a geometric sequence $\\left\\{a_{n}\\right\\}$ with a common ratio of $q(q \\neq 1)$, set $b_{1}=a_{1}+a_{2}+$ $a_{3}, b_{2}=a_{4}+a_{5}+a_{6}, \\cdots, b_{n}=a_{3 n-2}+a_{3 n-1}+a_{3 n}, \\cdots$, then the sequence $\\left\\{b_{n}\\right\\}$\n(A) is an arithmetic sequence.\n(B) is a geometric sequence with a common ratio of $q$.\n(C) is a geometric sequence with a common ratio of $q^{3}$.\n(D) is neither an arithmetic sequence nor a geometric sequence.\n(China High School Mathematics League, 1999)"
+    },
+    {
+      "theorem_index": 26,
+      "statement_id": "59a955db-6db2-4363-996f-dfc986606505",
+      "name": "inequalities_103598_v0005",
+      "formal_statement": "import Mathlib\n\n/- Let $x$ and $y$ be positive real numbers. If the product $xy$ is greater than 1, then the sum $x+y$ is greater than 2. -/\ntheorem inequalities_103598_v0005 (x y : ℝ) (hx : 0 < x) (hy : 0 < y)\n    (hxy : x * y > 1) : x + y > 2 := by sorry",
+      "natural_language": "Let $x$ and $y$ be positive real numbers. If the product $xy$ is greater than 1, then the sum $x+y$ is greater than 2."
+    },
+    {
+      "theorem_index": 27,
+      "statement_id": "abf4c7bb-2694-4c34-87f4-8d64b79e8c13",
+      "name": "inequalities_600559",
+      "formal_statement": "import Mathlib\n\n/- 1. For $x, y, z \\geqslant 0$, prove the inequality $x(x-z)^{2}+y(y-z)^{2} \\geqslant(x-z)(y-z)(x+y-z) . \\quad(1992$ Canadian Mathematical Olympiad problem) -/\ntheorem inequalities_600559 (x y z : ℝ) (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 ≤ z) :\n    x * (x - z)^2 + y * (y - z)^2 ≥ (x - z) * (y - z) * (x + y - z) := by",
+      "natural_language": "1. For $x, y, z \\geqslant 0$, prove the inequality $x(x-z)^{2}+y(y-z)^{2} \\geqslant(x-z)(y-z)(x+y-z) . \\quad(1992$ Canadian Mathematical Olympiad problem)"
+    },
+    {
+      "theorem_index": 28,
+      "statement_id": "b7d692b9-6072-42f7-a82e-bb3a2e9a22bf",
+      "name": "inequalities_55386_v8137",
+      "formal_statement": "import Mathlib\n\ntheorem inequalities_55386_v8137 (a b c : ℝ) (ha : a + b ≠ 0) (hb : b + c ≠ 0) (hc : c + a ≠ 0) :\n    (b ^ 3 - c ^ 3) / (b + c) + b * c - b ^ 2 = c ^ 2 - (c ^ 2 * (b + c) + b ^ 2 * c) / (b + c) := by sorry",
+      "natural_language": "Let $a, b, c$ be any real numbers such that $a+b$, $b+c$, and $c+a$ are all non-zero. Prove that the expression $\\frac{b^3-c^3}{b+c} + b c - b^2$ simplifies to $c^2 - \\frac{c^2(b+c) + b^2c}{b+c}$."
+    },
+    {
+      "theorem_index": 29,
+      "statement_id": "a10bcc98-3225-4141-9b93-11d8275a7e47",
+      "name": "number_theory_41230_v22124",
+      "formal_statement": "import Mathlib\n\ntheorem number_theory_41230_v22124 {n : ℕ → ℤ} {a b c d : ℕ} (hn : ∀ k, n k = 101 * k - 100 * 2 ^ k) (h₁ : (n a + n b) % 10100 = (n c + n d) % 10100) :\n    (a + b) % 100 = (c + d) % 100 := by sorry",
+      "natural_language": "Let $n_k = 101k - 100 \\cdot 2^k$ for any integer $k$. If $a, b, c, d$ are integers such that $n_a+n_b$ and $n_c+n_d$ have the same remainder when divided by 10100, then $a+b$ and $c+d$ have the same remainder when divided by 100."
+    },
+    {
+      "theorem_index": 30,
+      "statement_id": "e5ad3129-3313-425c-82db-9368af4207f6",
+      "name": "number_theory_43576_v7453",
+      "formal_statement": "import Mathlib\n\ntheorem number_theory_43576_v7453 :\n    ¬∃ a b c : ℤ, 9 ∣ a + b + c ∧ 9 ∣ a * b + b * c + c * a ∧ a * b * c ≡ 1 [ZMOD 9] := by sorry",
+      "natural_language": "Prove that there are no integers $a, b, c$ such that $a+b+c$ is divisible by 9, $ab+bc+ca$ is divisible by 9, and $abc$ is congruent to 1 modulo 9."
+    },
+    {
+      "theorem_index": 31,
+      "statement_id": "103b6766-a7b8-4d97-a702-339f6ac20344",
+      "name": "number_theory_66066_v0003",
+      "formal_statement": "import Mathlib\n\n/- For any natural number n, 3 to the power of n is congruent to 3 to the power of (n+20) modulo 100. -/\ntheorem number_theory_66066_v0003 (n : ℕ) :\n    3^n ≡ 3^(n+20) [ZMOD 100] := by sorry",
+      "natural_language": "For any natural number n, 3 to the power of n is congruent to 3 to the power of (n+20) modulo 100."
+    },
+    {
+      "theorem_index": 32,
+      "statement_id": "2a27e05f-9097-43db-93c0-27c025cbcdc0",
+      "name": "algebra_154477",
+      "formal_statement": "import Mathlib\n\n/- (1981 National High School League Question) Discuss the equation $x|x|+p x+q=0$. Among the following conclusions, the incorrect one is ( ).\nA. There are at most three real roots\nB. There is at least one real root\nC. There are real roots only when $p^{2}-4 q \\geqslant 0$\nD. When $p<0$ and $q<0$, there are three real roots -/\ntheorem algebra_154477 : \n  (∃ p q : ℝ, (∃ x : ℝ, x * |x| + p * x + q = 0) ∧ p^2 - 4*q < 0) ∧ \n  (∃ p q : ℝ, p < 0 ∧ q < 0 ∧ ¬(∃ s : Finset ℝ, (∀ x ∈ s, x * |x| + p * x + q = 0) ∧ s.card = 3)) := by",
+      "natural_language": "1. (1981 National High School League Question) Discuss the equation $x|x|+p x+q=0$. Among the following conclusions, the incorrect one is ( ).\nA. There are at most three real roots\nB. There is at least one real root\nC. There are real roots only when $p^{2}-4 q \\geqslant 0$\nD. When $p<0$ and $q<0$, there are three real roots"
+    },
+    {
+      "theorem_index": 33,
+      "statement_id": "f6bcf579-f545-448c-b732-95cc4ea5f510",
+      "name": "algebra_288176_v0008",
+      "formal_statement": "import Mathlib\n\n/- Let $x$ and $y$ be real numbers such that $x \\neq 0$ and $y \\neq 0$. There exist two distinct non-zero real numbers $a$ and $b$ that simultaneously satisfy the equations $a^2 xy + ay + x = 0$, $b^2 xy + by + x = 0$, and $(a+b)^4 + (ab)^3 = 0$ if and only if $y(y-4x^2) \\neq 0$ and $1/x^4 + 1/y^3 = 0$. -/\ntheorem algebra_288176_v0008 (x y : ℝ) (hx : x ≠ 0) (hy : y ≠ 0)\n    (h : ∃ a b : ℝ, a ≠ 0 ∧ b ≠ 0 ∧ a ≠ b ∧ a^2 * x * y + a * y + x = 0 ∧\n      b^2 * x * y + b * y + x = 0 ∧ (a + b)^4 + (a * b)^3 = 0) :\n    y * (y - 4 * x^2) ≠ 0 ∧ 1 / x^4 + 1 / y^3 = 0 := by sorry",
+      "natural_language": "Let $x$ and $y$ be real numbers such that $x \\neq 0$ and $y \\neq 0$. There exist two distinct non-zero real numbers $a$ and $b$ that simultaneously satisfy the equations $a^2 xy + ay + x = 0$, $b^2 xy + by + x = 0$, and $(a+b)^4 + (ab)^3 = 0$ if and only if $y(y-4x^2) \\neq 0$ and $1/x^4 + 1/y^3 = 0$."
+    },
+    {
+      "theorem_index": 34,
+      "statement_id": "b8344f6e-719f-42da-8cab-559eb7bdcd38",
+      "name": "algebra_12871_v1348",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_12871_v1348 : ∀ x y z : ℝ, x > 0 → y > 0 → z > 0 →\nx^3 * y^2 * z ≤ 108 * ((x + y + z)/6)^6 := by sorry",
+      "natural_language": "For any positive real numbers $x, y, z$, the inequality $x^3 y^2 z \\le 108 \\left(\\frac{x+y+z}{6}\\right)^6$ holds."
+    },
+    {
+      "theorem_index": 35,
+      "statement_id": "a89ffbb8-e9a2-4d7f-ac51-d281cad49bfd",
+      "name": "algebra_313940",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- Prove that $\\cos \\frac{\\pi}{7}-\\cos \\frac{2 \\pi}{7}+\\cos \\frac{3 \\pi}{7}=$ $\\frac{1}{2} \\cdot($ 5th IMO $)$ -/\ntheorem algebra_313940 : cos (π / 7) - cos (2 * π / 7) + cos (3 * π / 7) = 1 / 2 := by",
+      "natural_language": "Prove that $\\cos \\frac{\\pi}{7}-\\cos \\frac{2 \\pi}{7}+\\cos \\frac{3 \\pi}{7}=$ $\\frac{1}{2} \\cdot($ 5th IMO $)$"
+    },
+    {
+      "theorem_index": 36,
+      "statement_id": "cfbbf6d5-67b6-406a-b224-ec049c0fd633",
+      "name": "calculus_22964_v0001",
+      "formal_statement": "import Mathlib\n\n/- For any real number x, if x is not an integer multiple of π/2, then tan(x) multiplied by tan(π/2 - x) is equal to 1. -/\ntheorem calculus_22964_v0001 (x : ℝ) :\n    ¬∃ n : ℤ, x = n * Real.pi / 2 → Real.tan x * Real.tan (Real.pi / 2 - x) = 1 := by sorry",
+      "natural_language": "For any real number x, if x is not an integer multiple of π/2, then tan(x) multiplied by tan(π/2 - x) is equal to 1."
+    },
+    {
+      "theorem_index": 37,
+      "statement_id": "f57d1a2d-9cff-426b-b4fa-33166e74ccae",
+      "name": "inequalities_57231",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- $ a,b,c>0 $ and $ abc=1 $. Prove that $\\frac{1}{2}\\ (\\sqrt{a}\\ +\\sqrt{b}\\ + \\sqrt{c}\\ ) +\\frac{1}{1+a}\\ + \\frac{1}{1+b}\\ + \\frac{1}{1+c}\\ge\\ 3 $.\n( The official problem is with $ abc = 1 $ but it can be proved without using it. ) -/\ntheorem inequalities_57231 (a b c : ℝ) (ha : 0 < a) (hb : 0 < b) (hc : 0 < c)\n    (h : a * b * c = 1) :\n    3 ≤ (sqrt a + sqrt b + sqrt c) / 2 + 1 / (1 + a) + 1 / (1 + b) + 1 / (1 + c) := by",
+      "natural_language": "$ a,b,c>0 $ and $ abc=1 $. Prove that $\\frac{1}{2}\\ (\\sqrt{a}\\ +\\sqrt{b}\\ + \\sqrt{c}\\ ) +\\frac{1}{1+a}\\ + \\frac{1}{1+b}\\ + \\frac{1}{1+c}\\ge\\ 3 $.\n( The official problem is with $ abc = 1 $ but it can be proved without using it. )"
+    },
+    {
+      "theorem_index": 38,
+      "statement_id": "6fa599fb-a6e4-421f-9a54-bb67b3ed5c88",
+      "name": "inequalities_607925_v0001",
+      "formal_statement": "import Mathlib\n\ntheorem inequalities_607925_v0001 (a b c : ℝ) (ha : a ≠ 0) (hc : c ≠ 0) :\n    a * b * c * ((a - b) / c + (b - c) / a) = b * (a - c) * (a + c - b) := by sorry",
+      "natural_language": "Let `a, b, c` be real numbers such that `a` and `c` are non-zero. Then the expression `a * b * c * ((a - b) / c + (b - c) / a)` is equal to `b * (a - c) * (a + c - b)`."
+    },
+    {
+      "theorem_index": 39,
+      "statement_id": "2b3094af-76e5-4416-811e-a1620bf46bea",
+      "name": "inequalities_152855_v0005",
+      "formal_statement": "import Mathlib\n\n/- Let $a$ and $b$ be positive real numbers such that $a \\cdot b = 1$. Then $\\frac{1}{a^2(b+1)} + \\frac{1}{b^2(a+1)} + \\frac{1}{a+b} \\geq \\frac{3}{2}$. -/\ntheorem inequalities_152855_v0005 (a b : ℝ) (ha : 0 < a) (hb : 0 < b)\n    (hab : a * b = 1) :\n    3 / 2 ≤ 1 / (a ^ 2 * (b + 1)) + 1 / (b ^ 2 * (a + 1)) +\n    1 / (a + b) := by sorry",
+      "natural_language": "Let $a$ and $b$ be positive real numbers such that $a \\cdot b = 1$. Then $\\frac{1}{a^2(b+1)} + \\frac{1}{b^2(a+1)} + \\frac{1}{a+b} \\geq \\frac{3}{2}$."
+    },
+    {
+      "theorem_index": 40,
+      "statement_id": "f8b8e83a-b511-4e9d-8946-9857ec174ec5",
+      "name": "number_theory_323530",
+      "formal_statement": "import Mathlib\n\n/- 5. Let $x, y$ be coprime natural numbers, and $xy=$ 1992. Then the number of different ordered pairs $(x, y)$ is $\\qquad$ -/\ntheorem number_theory_323530 :\n    {(x, y) : ℕ × ℕ | Nat.Coprime x y ∧ x * y = 1992}.encard = 8 := by",
+      "natural_language": "5. Let $x, y$ be coprime natural numbers, and $xy=$ 1992. Then the number of different ordered pairs $(x, y)$ is $\\qquad$"
+    },
+    {
+      "theorem_index": 41,
+      "statement_id": "c29c7989-cfd6-47ae-8866-c0922425a6cc",
+      "name": "algebra_98872",
+      "formal_statement": "import Mathlib\n\n/- 10-3. Solve the system $\\left\\{\\begin{array}{c}2 y=|2 x+3|-|2 x-3| \\\\ 4 x=|y+2|-|y-2|\\end{array}\\right.$ -/\ntheorem algebra_98872 (x y : ℝ) :\n    (2 * y = abs (2 * x + 3) - abs (2 * x - 3)) ∧ (4 * x = abs (y + 2) - abs (y - 2)) ↔\n    (-1 ≤ x ∧ x ≤ 1) ∧ (y = 2 * x) := by",
+      "natural_language": "10-3. Solve the system $\\left\\{\\begin{array}{c}2 y=|2 x+3|-|2 x-3| \\\\ 4 x=|y+2|-|y-2|\\end{array}\\right.$"
+    },
+    {
+      "theorem_index": 42,
+      "statement_id": "2eacdc79-f505-4792-af3a-c1e6cff575b6",
+      "name": "inequalities_245546_v0007",
+      "formal_statement": "import Mathlib\n\n/- For any non-negative integer $n$, the square of the sum of the integers from 0 to $n-1$ is equal to the sum of the cubes of the integers from 0 to $n-1$. -/\ntheorem inequalities_245546_v0007 (n : ℕ) :\n    (∑ i in Finset.range n, i) ^ 2 = ∑ i in Finset.range n, i ^ 3 := by sorry",
+      "natural_language": "For any non-negative integer $n$, the square of the sum of the integers from 0 to $n-1$ is equal to the sum of the cubes of the integers from 0 to $n-1$."
+    },
+    {
+      "theorem_index": 43,
+      "statement_id": "fb0634b5-8474-41ee-9ce8-d0dbce0bf109",
+      "name": "algebra_291240_v0005",
+      "formal_statement": "import Mathlib\n\n/- Let `a` be a positive integer. For a sequence defined by `x_k = k / (k + a)` for any positive integer `k`, the term `x_1` is equal to the product of `x_2` and `x_{a+2}`. -/\ntheorem algebra_291240_v0005 {a : ℕ} (ha : 0 < a) (x : ℕ → ℝ)\n    (hx : ∀ k, 0 < k → x k = k / (k + a)) :\n    x 1 = x 2 * x (a + 2) := by sorry",
+      "natural_language": "Let `a` be a positive integer. For a sequence defined by `x_k = k / (k + a)` for any positive integer `k`, the term `x_1` is equal to the product of `x_2` and `x_{a+2}`."
+    },
+    {
+      "theorem_index": 44,
+      "statement_id": "645f9085-ee5e-4998-880c-33b219df5445",
+      "name": "algebra_213224",
+      "formal_statement": "import Mathlib\n\n/- Solve the following system of equations ( $t$ is a real parameter):\n\n$$\nt \\cdot(x+y+z)=0, t \\cdot(x+y)+z=1, t \\cdot x+y+z=2 .\n$$ -/\ntheorem algebra_213224 :\n    {(t, x, y, z) : ℝ × ℝ × ℝ × ℝ | t * (x + y + z) = 0 ∧ t * (x + y) + z = 1 ∧ t * x + y + z = 2} =\n    {(0, x, 1, 1) | x : ℝ} ∪ \n    {p | ∃ (t : ℝ), t ≠ 0 ∧ t ≠ 1 ∧ p = (t, 2 / (t - 1), -1 / (t - 1), -1 / (t - 1))} := by",
+      "natural_language": "Solve the following system of equations ( $t$ is a real parameter):\n\n$$\nt \\cdot(x+y+z)=0, t \\cdot(x+y)+z=1, t \\cdot x+y+z=2 .\n$$"
+    },
+    {
+      "theorem_index": 45,
+      "statement_id": "51759dc2-dd5f-4924-97b8-61bd2e5e9e32",
+      "name": "number_theory_251087_v0002",
+      "formal_statement": "import Mathlib\n\n/- Let `blue` and `red` be two disjoint sets of natural numbers whose union is the set of all natural numbers greater than 1. If `blue` is closed under addition, the set `red` contains at least one number, and all even numbers greater than 1 are in `blue`, then the number 3 must be in `red`. -/\ntheorem number_theory_251087_v0002 (blue red : Set ℕ) (h₀ : blue ∩ red = ∅)\n    (h₁ : blue ∪ red = {n | 1 < n}) (h₂ : ∀ m ∈ blue, ∀ n ∈ blue, m + n ∈ blue)\n    (h₃ : ∃ m ∈ red, 1 < m) (h₄ : ∀ n, Even n → n > 1 → n ∈ blue) :\n    3 ∈ red := by sorry",
+      "natural_language": "Let `blue` and `red` be two disjoint sets of natural numbers whose union is the set of all natural numbers greater than 1. If `blue` is closed under addition, the set `red` contains at least one number, and all even numbers greater than 1 are in `blue`, then the number 3 must be in `red`."
+    },
+    {
+      "theorem_index": 46,
+      "statement_id": "4086c712-73e0-4427-8902-b27c33500d30",
+      "name": "algebra_189132_v0001",
+      "formal_statement": "import Mathlib\n\n/- Let a function `g` be defined for all real numbers `x` except 2 by the formula `g(x) = (2*x + 3) / (x - 2)`. For any real number `x` such that `x ≠ 2`, `g(x)` is not equal to 2 and `g(g(x))` is equal to `x`. -/\ntheorem algebra_189132_v0001 {g : ℝ → ℝ} (hg : ∀ x, x ≠ 2 → g x = (2 * x + 3) / (x - 2)) :\n    ∀ x, x ≠ 2 → g x ≠ 2 ∧ g (g x) = x := by sorry",
+      "natural_language": "Let a function `g` be defined for all real numbers `x` except 2 by the formula `g(x) = (2*x + 3) / (x - 2)`. For any real number `x` such that `x ≠ 2`, `g(x)` is not equal to 2 and `g(g(x))` is equal to `x`."
+    },
+    {
+      "theorem_index": 47,
+      "statement_id": "f6f12386-dc02-42fb-bdf4-084c688241a4",
+      "name": "algebra_167185_v0002",
+      "formal_statement": "import Mathlib\n\n/- For any positive real number `x` not equal to 1, the identity `logb x (125 * x) = 3 * logb x 5 + 1` holds. -/\ntheorem algebra_167185_v0002 (x : ℝ) (hx : 0 < x ∧ x ≠ 1) :\n    Real.logb x (125 * x) = 3 * Real.logb x 5 + 1 := by sorry",
+      "natural_language": "For any positive real number `x` not equal to 1, the identity `logb x (125 * x) = 3 * logb x 5 + 1` holds."
+    },
+    {
+      "theorem_index": 48,
+      "statement_id": "f6123ff2-bb53-4e89-9a88-e16becb93c98",
+      "name": "number_theory_34498_v0004",
+      "formal_statement": "import Mathlib\n\n/- The multiplicative order of 2 modulo 73 is 9, and the multiplicative order of 2 modulo 71 is 35. -/\ntheorem number_theory_34498_v0004 : orderOf (2 : ZMod 73) = 9 ∧ orderOf (2 : ZMod 71) = 35 := by sorry",
+      "natural_language": "The multiplicative order of 2 modulo 73 is 9, and the multiplicative order of 2 modulo 71 is 35."
+    },
+    {
+      "theorem_index": 49,
+      "statement_id": "47bc6e0e-ef2e-49f0-af2c-44d38dcd44cb",
+      "name": "number_theory_151634_v0002",
+      "formal_statement": "import Mathlib\n\n/- Let $x, y, z$ be positive integers such that $z(x+y) = xy$. If $z$ is coprime to $x$ and $z$ is coprime to $y$, then $z$ is equal to 1. -/\ntheorem number_theory_151634_v0002 (x y z : ℕ) (_ : 0 < x) (hy : 0 < y) (hz : 0 < z)\n    (h1 : z * (x + y) = x * y) (h2 : Nat.Coprime z x) (h3 : Nat.Coprime z y) :\n    z = 1 := by sorry",
+      "natural_language": "Let $x, y, z$ be positive integers such that $z(x+y) = xy$. If $z$ is coprime to $x$ and $z$ is coprime to $y$, then $z$ is equal to 1."
+    },
+    {
+      "theorem_index": 50,
+      "statement_id": "b31eec00-7c88-41d4-a04f-8bf1c706eb73",
+      "name": "algebra_147632",
+      "formal_statement": "import Mathlib\n\n/- ## Task $7 / 65$\n\nWe are looking for three square numbers $a, b$, and $c$ such that $a-b=b-c=24$. -/\ntheorem algebra_147632 {a b c : ℤ} (ha : ∃ m, a = m^2) (hb : ∃ n, b = n^2)\n    (hc : ∃ p, c = p^2) (h1 : a - b = 24) (h2 : b - c = 24) :\n    a = 49 ∧ b = 25 ∧ c = 1 := by",
+      "natural_language": "## Task $7 / 65$\n\nWe are looking for three square numbers $a, b$, and $c$ such that $a-b=b-c=24$."
+    },
+    {
+      "theorem_index": 51,
+      "statement_id": "92116f94-18fb-4486-9cf3-4f361943ee18",
+      "name": "algebra_271793",
+      "formal_statement": "import Mathlib\n\n/- 2. Given the sequence $\\left\\{x_{n}\\right\\}$ satisfies $x_{n+1}=x_{n}-x_{n-1}(n \\geqslant 2), x_{1}=a, x_{2}=b$, let $S_{n}=$ $x_{1}+x_{2}+\\cdots+x_{n}, S_{100}=$ $\\qquad$ , $x_{100}=$ $\\qquad$ -/\ntheorem algebra_271793 {a b : ℝ} (x : ℕ → ℝ) (h : ∀ n, x (n + 1) = x n - x (n - 1)) (hx1 : x 1 = a) (hx2 : x 2 = b) :\n    x 100 = -a ∧ ∑ i in Finset.range 100, x (i + 1) = 2 * b - a := by",
+      "natural_language": "2. Given the sequence $\\left\\{x_{n}\\right\\}$ satisfies $x_{n+1}=x_{n}-x_{n-1}(n \\geqslant 2), x_{1}=a, x_{2}=b$, let $S_{n}=$ $x_{1}+x_{2}+\\cdots+x_{n}, S_{100}=$ $\\qquad$ , $x_{100}=$ $\\qquad$"
+    },
+    {
+      "theorem_index": 52,
+      "statement_id": "3ebeeeba-31f5-4eea-9bf6-5a4dfad74516",
+      "name": "number_theory_23756",
+      "formal_statement": "import Mathlib\n/-7. (FRG 1) ${ }^{\\mathrm{IMO} 1}$ Given that $1-\\frac{1}{2}+\\frac{1}{3}-\\frac{1}{4}+\\cdots-\\frac{1}{1318}+\\frac{1}{1319}=\\frac{p}{q}$, where $p$ and $q$ are natural numbers having no common factor, prove that $p$ is divisible by 1979.-/\ntheorem number_theory_23756 {p q : ℕ} (hpq : p.Coprime q) (hq:q>0)\n    (h : ∑ i ∈ Finset.range 1319, (-1 : ℤ)^i / (i + 1) = p / q) :\n    1979 ∣ p := by",
+      "natural_language": "7. (FRG 1) ${ }^{\\mathrm{IMO} 1}$ Given that $1-\\frac{1}{2}+\\frac{1}{3}-\\frac{1}{4}+\\cdots-\\frac{1}{1318}+\\frac{1}{1319}=\\frac{p}{q}$, where $p$ and $q$ are natural numbers having no common factor, prove that $p$ is divisible by 1979."
+    },
+    {
+      "theorem_index": 53,
+      "statement_id": "5f3204ba-f3d4-45e4-a927-268114784d4e",
+      "name": "number_theory_192355_v0001",
+      "formal_statement": "import Mathlib\n\n/- Let `n` be an integer between 1000 and 9999 inclusive, and let `m` be the integer formed by reversing the order of the decimal digits of `n`. The difference `m - n` is divisible by 9. -/\ntheorem number_theory_192355_v0001 (n m : ℕ) (h₀ : 1000 ≤ n ∧ n ≤ 9999)\n    (h₁ : m = Nat.ofDigits 10 (List.reverse (Nat.digits 10 n))) (h₂ : 9 ∣ m - n) :\n    n = 2034 := by sorry",
+      "natural_language": "Let `n` be an integer between 1000 and 9999 inclusive, and let `m` be the integer formed by reversing the order of the decimal digits of `n`. The difference `m - n` is divisible by 9."
+    },
+    {
+      "theorem_index": 54,
+      "statement_id": "08e1bf18-6db7-44ed-9c4e-1e780ff9a334",
+      "name": "algebra_309962_v0006",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_309962_v0006 {a b c : ℤ} (hroots : ∃ m n, m ≠ n ∧ m^2 + a * m + b = 0 ∧ n^2 + a * n + b = 0)\n    (hroots' : ∃ m' n', m' ≠ n' ∧ m'^2 + c * m' + a = 0 ∧ n'^2 + c * n' + a = 0) (h1 : a = 0) :\n    a + b + c = -3 := by sorry",
+      "natural_language": "Let `m` and `n` be the integer roots of the quadratic equation `x^2 + ax + b = 0`, and let `m+1` and `n+1` be the integer roots of the quadratic equation `x^2 + cx + a = 0`. If the coefficient `a` is 0, then the sum `a+b+c` is -3."
+    },
+    {
+      "theorem_index": 55,
+      "statement_id": "1a2a1504-ace5-4212-b6e2-b624cdc2f8c3",
+      "name": "algebra_231374_v0003",
+      "formal_statement": "import Mathlib\n\n/- For any real numbers `a, b, c, x, y, z`, if `a*x + b*y - c*z = 2*a*b$ and `-a*x + b*y - c*z = 2*b*c$, then `b*y - c*z$ is equal to `b*(a+c)$. -/\ntheorem algebra_231374_v0003 (a b c x y z : ℝ)\n    (h1 : a * x + b * y - c * z = 2 * a * b) (h2 : -a * x + b * y - c * z = 2 * b * c) :\n    b * y - c * z = b * (a + c) := by sorry",
+      "natural_language": "For any real numbers `a, b, c, x, y, z`, if `a*x + b*y - c*z = 2*a*b` and `-a*x + b*y - c*z = 2*b*c`, then `b*y - c*z` is equal to `b*(a+c)`."
+    },
+    {
+      "theorem_index": 56,
+      "statement_id": "ec27b853-7809-40ef-93ad-686a170f9dab",
+      "name": "algebra_273928_v0006",
+      "formal_statement": "import Mathlib\n\nopen Topology Filter Real Complex TopologicalSpace Finset\nopen scoped BigOperators\n\ntheorem algebra_273928_v0006 {z : ℂ} (hz : z = Complex.exp (Complex.I * π / 8)) :\n    (z.re ^ 2 + z.im ^ 2 = (Real.sqrt 2)) := by sorry",
+      "natural_language": "Let `z` be the complex number whose polar form is `cos(π/8) + i*sin(π/8)`. The sum of the real and imaginary parts of `z` squared is equal to the square root of 2."
+    },
+    {
+      "theorem_index": 57,
+      "statement_id": "16f9c588-de99-4a52-9b02-2b93f88d92d0",
+      "name": "inequalities_171125_v2643",
+      "formal_statement": "import Mathlib\n\n/- Let f be an affine function from the real numbers to the real numbers, defined by `f(x) = ax + b$ for some constants `a` and `b`. If f satisfies `f(x+y) + f(y+z) + f(z+x) ≥ 3 * f(x+2*y+3*z)` for all real numbers x, y, and z, then `a` must be equal to 0. -/\ntheorem inequalities_171125_v2643 (a b : ℝ) (f : ℝ → ℝ) (hf : ∀ x, f x = a * x + b)\n    (h : ∀ x y z, f (x + y) + f (y + z) + f (z + x) ≥ 3 * f (x + 2 * y + 3 * z)) :\n    a = 0 := by sorry",
+      "natural_language": "Let f be an affine function from the real numbers to the real numbers, defined by `f(x) = ax + b` for some constants `a` and `b`. If f satisfies `f(x+y) + f(y+z) + f(z+x) ≥ 3 * f(x+2*y+3*z)` for all real numbers x, y, and z, then `a` must be equal to 0."
+    },
+    {
+      "theorem_index": 58,
+      "statement_id": "495c1590-d390-4f71-99e0-a1ece86e61b6",
+      "name": "algebra_314811_v0005",
+      "formal_statement": "import Mathlib\n\n/- If x and y are integers satisfying the equation 15 * x^2 * y^2 = 35 * x^2 - 3 * y^2 + 412, then it must be that (5 * x^2 + 1) * (3 * y^2 - 7) = 405. -/\ntheorem algebra_314811_v0005 {x y : ℤ} (h : 15 * x ^ 2 * y ^ 2 = 35 * x ^ 2 - 3 * y ^ 2 + 412) :\n    (5 * x ^ 2 + 1) * (3 * y ^ 2 - 7) = 405 := by sorry",
+      "natural_language": "If x and y are integers satisfying the equation 15 * x^2 * y^2 = 35 * x^2 - 3 * y^2 + 412, then it must be that (5 * x^2 + 1) * (3 * y^2 - 7) = 405."
+    },
+    {
+      "theorem_index": 59,
+      "statement_id": "c86c017a-933a-49f4-9bd2-cf32bcc19a84",
+      "name": "algebra_78738_v10231",
+      "formal_statement": "import Mathlib\n\nopen Real\n\ntheorem algebra_78738_v10231 (α : ℝ) (n : ℕ) :\n  Real.cos ((n + 2) * α) + Real.cos (n * α) = 2 * Real.cos ((n + 1) * α) * Real.cos α := by sorry",
+      "natural_language": "For any real number $\\alpha$ and any natural number $n$, the trigonometric identity $\\cos((n+2)\\alpha) + \\cos(n\\alpha) = 2\\cos((n+1)\\alpha)\\cos(\\alpha)$ is true."
+    },
+    {
+      "theorem_index": 60,
+      "statement_id": "e163f400-7723-4904-9646-827b4f66e1f3",
+      "name": "number_theory_262725",
+      "formal_statement": "import Mathlib\n\n/- 4. Find all eight-digit numbers $* 2 * 0 * 1 * 6$ with four unknown odd digits marked by asterisks, which are divisible by the number 2016. -/\ntheorem number_theory_262725 (a b c d : ℕ) (ha : Odd a) (hb : Odd b) (hc : Odd c) (hd : Odd d)\n    (h : 2016 ∣ (10000000 + 100000 * a + 20000 + 1000 * b + 100 * c + 10 * d)) :\n    10000000 + 100000 * a + 20000 + 1000 * b + 100 * c + 10 * d = 3290313652307136 := by",
+      "natural_language": "4. Find all eight-digit numbers $* 2 * 0 * 1 * 6$ with four unknown odd digits marked by asterisks, which are divisible by the number 2016."
+    },
+    {
+      "theorem_index": 61,
+      "statement_id": "91de53cb-ec36-49b5-8ed8-248769704b2b",
+      "name": "inequalities_48889_v0001",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- For any real numbers $x$ and $y$, the inequality $(x+1)^2+y^2+1 \\geq 2xy+2x+2$ holds. -/\ntheorem inequalities_48889_v0001 (x y : ℝ) : (x + 1)^2 + y^2 + 1 ≥ 2 * x * y + 2 * x + 2 := by sorry",
+      "natural_language": "For any real numbers $x$ and $y$, the inequality $(x+1)^2+y^2+1 \\geq 2xy+2x+2$ holds."
+    },
+    {
+      "theorem_index": 62,
+      "statement_id": "5254cdd1-415f-4a3d-9553-a3cd508b2260",
+      "name": "number_theory_208108_v0001",
+      "formal_statement": "import Mathlib\n\n/- Let $n$ be an integer such that $3 \\le n \\le 5$. Then $n!$ cannot be expressed as the sum of two squares of integers. -/\ntheorem number_theory_208108_v0001 (n : ℕ) (h₀ : 3 ≤ n) (h₁ : n ≤ 5) :\n    ¬∃ a b, Nat.factorial n = a^2 + b^2 := by sorry",
+      "natural_language": "Let $n$ be an integer such that $3 \\le n \\le 5$. Then $n!$ cannot be expressed as the sum of two squares of integers."
+    },
+    {
+      "theorem_index": 63,
+      "statement_id": "646f7c37-10b0-4374-873f-a992bc074946",
+      "name": "number_theory_84059_v0002",
+      "formal_statement": "import Mathlib\n\n/- The sum $\\frac{2}{3} + \\frac{4}{5} + \\frac{6}{7} + \\frac{8}{9}$ is not an integer. -/\ntheorem number_theory_84059_v0002 : ¬ ∃ n : ℤ, (2/3 : ℝ) + (4/5 : ℝ) + (6/7 : ℝ) + (8/9 : ℝ) = n := by sorry",
+      "natural_language": "The sum $\\frac{2}{3} + \\frac{4}{5} + \\frac{6}{7} + \\frac{8}{9}$ is not an integer."
+    }
+  ],
+  "created_at_utc": "2026-09-17T00:02:14.059242+00:00",
+  "git_revision": "f8aa9e01ca611045d06cfe6ce3f72bfc92eacbfc"
+}
