@@ -1,4 +1,9 @@
 services:
+  # WARNING: `docker compose up -d` RECREATES the container and wipes its
+  # writable layer; the image re-runs its Mathlib initialization on the next
+  # start (observed 2026-09-17: ~500% CPU / >25 GiB RSS for tens of minutes,
+  # during which every /verify fails with NoAvailableReplError). To change
+  # runtime limits, prefer `docker update` (live, no recreate).
   lean-server:
     image: projectnumina/kimina-lean-server:2.0.0
     container_name: tinylean-rl-lean-server
