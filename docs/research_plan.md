@@ -42,7 +42,12 @@ TinyLean-RL 研究「亚十亿参数 Lean4 证明器能否通过 RL 获得可验
   - 写作命名：该固定集称 **held-out-from-pilot, same-source fixed set**（非 OOD、非严格同分布；Promptset 对难题有故意重加权，64 定理为 7470 个合格 statement 上的均匀抽样）。
   - 证据：`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/results/{p3c_analysis,e018d_verifier_error_adjudication}.json`；事故与修复记录见 E018 日志（验证回退风暴 `1fb6866`、OOM 连锁与容器限额 `d64c31b`/`117e1eb`）。
 - **M1 阶段状态（三分句）**：feasibility **CONFIRMED**；learning dynamics **POSITIVE**；fixed-set capability gain **POSITIVE-INCONCLUSIVE**。
-- **当前下一步（待用户决定，训练启动需人工确认）**：训练延长门 **step30 → step60**——先续训 30 步（30→60），然后**仅**以同一封存 64 定理集评估 step60（复用现有 step0 artifact，不重跑、不重抽）。若 Δ₆₀ 明显扩大（如 +3~5pp）再考虑 60→100；若 Δ₆₀≈0 或为负则暂停训练，转向 multiturn / 数据难度 / cold-start 研究，而非继续堆 compute。**不得重抽固定集**。
+- **当前下一步（已启动，2026-09-17 13:09 UTC）**：训练延长门 **step30 → step60（E019）**——从 `runs/p3b_pilot/global_step_30` 以完全冻结的 P3-B 配置续训至 `global_step_60`（runner：`scripts/run_e019.sh`，`--steps` 为总目标；训练可见性：tmux 会话 `e019` / `tail -f .cache/e019_train.log`）。完成后**仅**以同一封存 64 定理集评估 step60（复用现有 step0 artifact，不重跑、不重抽、不评 40/50、不扩集、不跑 MiniF2F）。
+- **E019 判定规则（预冻结，step60 评估运行前写入）**——主比较 θ60 vs 原 θ0 artifact（定理级配对，bootstrap 10k / seed 20260917 + McNemar exact）：
+  - **Case A（明确更强正信号）**：Δ₆₀ 显著大于 Δ₃₀（大致 +3~5pp）且 CI 主要位于正半轴 → M1 fixed-set capability gain = **SUPPORTED / CONFIRMED**（措辞按 CI 定）；可讨论 60→100，但**不自动执行**。
+  - **Case B（小幅为正、仍不确定）**：Δ₆₀ ≈ 0~+2pp 且 CI 仍大范围跨零 → 维持 **POSITIVE-INCONCLUSIVE**；优先在 60 步附近收口 M1，不为显著性无限堆训练。
+  - **Case C（≈0）**：Δ₆₀ ≈ 0 而训练 IGR 仍改善 → 记录 *“RL exploration/reward informativeness improves without detectable held-out capability gain at this compute horizon”*（本身是重要研究结果）；暂停 step100。
+  - **Case D（负）**：Δ₆₀ < 0 且管线/复核无问题 → 记录 *“continued short-horizon RL did not improve and may degrade held-out verified performance under the current single-turn compute-controlled recipe”*；暂停训练，后续才研究 multiturn / 数据难度 / cold-start。
 
 ## 三、P3 计划（P3-0 → P3-A → P3-B）
 
