@@ -97,7 +97,7 @@ outcome_seed3_r4:              # completed 2026-09-18 16:41:46-19:18:59 UTC (wal
     all-period IGR 0.158 / 0.150 / 0.150 (seed1/2/3) - magnitude replicates.
     Peak location is again seed-dependent (21-30 / 41-50 / 1-10); all three
     seeds end below their own peak. Descriptive only - three training seeds.
-  outcome: "holdout seal prerequisites satisfied."
+  outcome: "holdout seal prerequisites satisfied; holdout sealed 2026-09-18 (experiments/manifests/m1_final_holdout.json: excluded 763 / eligible 6857 / selected 128)."
 fallback: >
   NOT NEEDED (seed3 completed as E022-r4). Historical rule: Protocol allows sealing the 128-theorem final holdout WITHOUT seed3 (it is optional)
   and evaluating theta0/seed1/seed2 (+seed3 if it ever completes). The holdout builder

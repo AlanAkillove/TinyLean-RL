@@ -493,6 +493,19 @@
 
 ---
 
+## 2026-09-19（M1 Final Holdout）
+
+### E023 M1 final holdout 封存（completed）
+
+- 目的：全部 M1 训练（seed1/seed2/seed3）结束后，按预注册规则封存 128 定理 final holdout（E023 评估集；封存后不得重抽、不得按结果改超参）。
+- 命令：`.venv/bin/python scripts/build_final_holdout.py`（builder 自动发现 `runs/*/rollout_data` 全部训练 dump 作排除；任一来源含不可解析行即 fail-closed 拒绝封存）。
+- 结果：排除 **763** = E013 32 ∪ E016 16 ∪ P3-C 64 ∪ mechanism 64 ∪ p3b_pilot 227 ∪ m1_seed2 229 ∪ **m1_seed3 227（r4 完整 60 步）** ∪ m2_qwen_smoke 20；eligible **6857** → selected **128**（selection seed 20260918）。两次独立运行（preview 与正式版）选中集合逐序完全一致（确定性）。
+- 产物：`experiments/manifests/m1_final_holdout.json`（sealed=True；git_revision f1ee97d；created 2026-09-18 19:45 UTC）；preview 版存 `.cache/m1_final_holdout_preview.json`。
+- 冻结规则：第一次评估后：不得重抽、不得改超参、不得 step100 chasing。
+- 下一步：**E023 双机评估**——fly90：seed1-step60（`runs/p3c_models/step_60`）+ seed3-step60（`runs/m1_seed3_models/step_60`）；fly122：θ0（Kimina-Distill base）+ seed2-step60（`runs/m1_seed2_models/step_60`）。协议：128×4、T=1.0、top_p=1.0、max 4096、同种子表、严格 Kimina 2.0.0；全部产物回 fly90 后运行 `holdout_multiseed_analyze.py` 出 canonical verdict。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：
