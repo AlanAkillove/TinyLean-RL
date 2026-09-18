@@ -24,6 +24,8 @@ curl --silent --show-error --fail --max-time 5 "${LEAN_SERVER_API_URL:-http://12
   || fail "Lean server unhealthy"
 CAP_NOW="$(docker inspect tinylean-rl-lean-server --format '{{.HostConfig.Memory}}' 2>/dev/null || echo missing)"
 [[ "$CAP_NOW" == "42949672960" ]] || fail "container cap is '$CAP_NOW', expected 40 GiB"
+busy="$(nvidia-smi --query-compute-apps=pid --format=csv,noheader 2>/dev/null | wc -l)"
+(( busy == 0 )) || fail "$busy GPU compute process(es) running - one GPU-heavy job at a time (E022 root cause)"
 free_gib="$(free -g | awk '/^Mem:/{print $7}')"
 (( free_gib >= 8 )) || fail "only ${free_gib} GiB available memory - host unstable for a new run"
 

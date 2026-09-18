@@ -18,8 +18,8 @@
 - E020-M 温度×组大小机制实验（完成）：封存机制集（64 定理、seed 20260918、排除 520 个历史已见 statement）；2×2 条件 IGR：T0.6n8 0.406 / T0.6n4 0.312 / T1.0n8 0.328 / T1.0n4 0.281；**n 4→8 单向增加 informative 组（T=0.6 +6/−0，p=0.031；T=1.0 +3/−0）**；候选成功率四条件几乎不变（0.244–0.250）——机制为分布重组而非能力变化。
 - E021 Qwen3-Base 冷启动诊断（完成，pin da87bfb6）：同协议下 verified 1/512、IGR 0.0156、90.6% parse 错误；5 步 GRPO smoke 全部 score=0/grad=0（20 组全零）→ **reward-dead 边界**（cold-start 需 verified SFT / 不同协议）。
 - E022 seed3 复制（**中止，按协议暂停**）：04:42 UTC 启动、steps 1–3 正常（三 seed step-1 集两两不相交已证），05:02:32 被 systemd-oomd 击杀；根因 = 外部非项目 GPU 任务（`fullsa_p2_gap_calib_640_100`，session-628，5.8 GB 显存）违反单 GPU 任务前提 + 内存压力叠加。**不重启**（同因重复失败规则）；final holdout 评估与 MiniF2F 一并暂停至外部任务结束、主机稳定。恢复时：同 seed 重启 seed3 → `build_final_holdout.py` 构建 → θ0/seed1/seed2/seed3 评估 → MiniF2F。
-- 摘要清单：`experiments/manifests/p3_0_complete.yaml`、`experiments/manifests/p3b_pilot.yaml`、`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/manifests/m1_step60.yaml`；逐次记录 E012–E019。
-- 下一步：step60 评估完成（Case B）→ 按协议进入 Seed2 复制与机制/冷启动诊断；**不自动 step100、不扩集、不跑 MiniF2F（待 holdout 完成后）**。
+- 摘要清单：`experiments/manifests/{p3_0_complete,p3b_pilot,p3c_fixed_eval,m1_step60,m1_seed_replication}.yaml`；逐次记录 E012–E022。
+- 下一步（已暂停，待主机稳定）：按恢复条件重启 seed3 → `build_final_holdout.py` 构建 M1 final holdout（128 定理）→ θ0/seed1/seed2/seed3 评估（多种子分析器 `holdout_multiseed_analyze.py` 已就绪）→ MiniF2F；**不自动 step100、不扩集、不重抽**。
 
 ## 已完成
 

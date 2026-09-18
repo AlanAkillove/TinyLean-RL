@@ -463,7 +463,7 @@
 - 运行记录：2026-09-18 04:42 UTC 由监督器 `m1s3sup` 启动；正常完成 steps 1–3（rollout dumps 1–3 在位，速率 ~159 s/步）。**05:02:32 UTC 被 systemd-oomd 击杀**（`oom-kill`，消耗 CPU 30min59s）。
 - **根因（外部因素）**：同一时段出现**非本项目的 GPU 训练任务** `experiment/train_p2_calibration.py --model gap`（run `fullsa_p2_gap_calib_640_100`，登录会话 session-628，~04:53 UTC 启动，5 进程、占 5.8 GB 显存、82%+18%×4 CPU），违反协议“同一时间只允许一个 GPU-heavy job”的前提；用户切片内存压力叠加使 oomd 再次命中我们的大单元（本日同因击杀已多次：e019e ×2、t06 池膨胀、m1s3sup）。**未对外部任务做任何干预**。
 - **决定（协议强制）**：①不重启 seed3（“同一种原因连续失败两次后不允许无限 retry”）；②**暂停后续 GPU 阶段**（final holdout 评估、MiniF2F）直至外部任务结束且主机稳定；③保留 `runs/m1_seed3/rollout_data/` 1–3.jsonl 作为中止证据。
-- 恢复条件（给下一次窗口）：外部 GPU 任务结束后 → 重启 seed3（同一预注册 seed 20260919）→ 构建 M1 final holdout（构建器 `scripts/build_final_holdout.py` 已就绪，届时 seed3 语句自动纳入排除）→ holdout 评估 θ0/seed1/seed2/seed3 → MiniF2F。
+- 恢复条件（给下一次窗口）：外部 GPU 任务结束后 → 重启 seed3（同一预注册 seed 20260919；runner 已加“GPU 无其他计算进程”守卫）→ 构建 M1 final holdout（构建器 `scripts/build_final_holdout.py`：经 review 修复 JSONL 解析（U+2028）缺陷后重跑验证通过——自动发现全部 `runs/*/rollout_data` 训练 dump 作排除，实测 excluded 595 / eligible 7025 / selected 128；**封存动作仍待 seed3 决定后执行**）→ holdout 评估 θ0/seed1/seed2/seed3（产物编号 **e023_***）→ MiniF2F。
 - 本轮无人值守批次的完成项（不受影响）：E020 seed2 复制 ✓、E020-M 机制实验 ✓、E021 Qwen-Base 诊断与 smoke ✓。
 
 ---

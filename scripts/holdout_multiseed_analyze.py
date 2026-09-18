@@ -28,43 +28,60 @@ from tinylean_rl.evaluation.p3c_stats import (
 )
 
 DEFAULT_EVALS = {
-    "theta0": "experiments/results/e022_holdout_base.json",
-    "seed1": "experiments/results/e022_holdout_seed1.json",
-    "seed2": "experiments/results/e022_holdout_seed2.json",
-    "seed3": "experiments/results/e022_holdout_seed3.json",
+    "theta0": "experiments/results/e023_holdout_base.json",
+    "seed1": "experiments/results/e023_holdout_seed1.json",
+    "seed2": "experiments/results/e023_holdout_seed2.json",
+    "seed3": "experiments/results/e023_holdout_seed3.json",
 }
 
 
-def counts(path: Path) -> dict[int, int]:
+def counts(path: Path) -> tuple[dict[int, int], dict]:
     artifact = json.loads(path.read_text(encoding="utf-8"))
     values: dict[int, int] = {}
     for record in artifact["records"]:
         index = record["theorem_index"]
         values[index] = values.get(index, 0) + int(record["verified"])
-    return values
+    return values, artifact
+
+
+def statement_ids(artifact: dict) -> set[str]:
+    return {record["statement_id"] for record in artifact["records"]}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--samples-per-theorem", type=int, default=4)
-    parser.add_argument("--output", default="experiments/results/e022_multiseed_analysis.json")
+    parser.add_argument("--output", default="experiments/results/e023_multiseed_analysis.json")
     args = parser.parse_args()
 
     evals = {label: ROOT / path for label, path in DEFAULT_EVALS.items()}
     present = {label: path for label, path in evals.items() if path.exists()}
     if "theta0" not in present:
         raise SystemExit("[ERROR] theta0 holdout artifact missing")
-    base = counts(present["theta0"])
+    loaded = {label: counts(path) for label, path in present.items()}
+    base, base_artifact = loaded["theta0"]
     indices = sorted(base)
 
+    # The normalization factor comes from the artifacts themselves (never from a
+    # CLI default that could silently disagree and double all deltas).
+    sample_sizes = {label: artifact["settings"]["samples_per_theorem"] for label, (_, artifact) in loaded.items()}
+    if len(set(sample_sizes.values())) != 1:
+        raise SystemExit(f"[ERROR] samples_per_theorem differs across artifacts: {sample_sizes}")
+    samples_per_theorem = next(iter(sample_sizes.values()))
+
+    # Guard against pairing results from different theorem draws (index ranges
+    # would still match; only the statement ids prove the same 128 theorems).
+    base_ids = statement_ids(base_artifact)
+    for label, (_, artifact) in loaded.items():
+        if statement_ids(artifact) != base_ids:
+            raise SystemExit(f"[ERROR] {label} was evaluated on a different statement set than theta0")
+
     per_seed: dict[str, dict] = {}
-    for label, path in present.items():
+    for label, (treatment, _) in loaded.items():
         if label == "theta0":
             continue
-        treatment = counts(path)
         if sorted(treatment) != indices:
             raise SystemExit(f"[ERROR] {label} does not cover the same holdout theorems")
-        deltas = [(treatment[i] - base[i]) / args.samples_per_theorem for i in indices]
+        deltas = [(treatment[i] - base[i]) / samples_per_theorem for i in indices]
         per_seed[label] = {
             "bootstrap": paired_bootstrap(deltas),
             "win_tie_loss": win_tie_loss([base[i] for i in indices], [treatment[i] for i in indices]),
@@ -86,15 +103,15 @@ def main() -> int:
         },
     }
     artifact = {
-        "artifact_type": "e022_multiseed_analysis",
-        "samples_per_theorem": args.samples_per_theorem,
+        "artifact_type": "e023_multiseed_analysis",
+        "samples_per_theorem": samples_per_theorem,
         "sources": {label: str(path.relative_to(ROOT)) for label, path in present.items()},
         **summary,
     }
     output = ROOT / args.output
     output.write_text(json.dumps(artifact, indent=2), encoding="utf-8")
 
-    print(f"theta0 verified: {summary['theta0_verified']}/{len(indices) * args.samples_per_theorem}")
+    print(f"theta0 verified: {summary['theta0_verified']}/{len(indices) * samples_per_theorem}")
     for label, entry in per_seed.items():
         b = entry["bootstrap"]
         m = entry["solved_indicator"]

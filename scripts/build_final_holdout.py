@@ -35,12 +35,11 @@ from tinylean_rl.evaluation.fixed_set import select_fixed_set
 SELECTION_SEED = 20260918
 N_SELECTED = 128
 
-DUMP_SOURCES = [
-    ("E017+E019 p3b_pilot dumps (steps 1-60)", "runs/p3b_pilot/rollout_data"),
-    ("seed2 replication dumps", "runs/m1_seed2/rollout_data"),
-    ("seed3 replication dumps", "runs/m1_seed3/rollout_data"),
-    ("M2 qwen smoke dumps", "runs/m2_qwen_smoke/rollout_data"),
-]
+# All training dump directories are DISCOVERED (runs/*/rollout_data) instead of
+# being hard-coded, so a seed3 restarted into a fresh directory (or any future
+# training run) cannot be silently missed by the exclusions. Every discovered
+# source must parse cleanly; otherwise the build refuses to seal.
+RUNS_GLOB = "runs/*/rollout_data"
 
 
 def git_revision() -> str:
@@ -85,14 +84,16 @@ def main() -> int:
     mechanism = json.loads((ROOT / args.mechanism_set).read_text(encoding="utf-8"))
     excluded_sources["IGR mechanism set (E020-M)"] = {t["statement_id"] for t in mechanism["theorems"]}
 
-    for label, dump_dir in DUMP_SOURCES:
-        path = ROOT / dump_dir
-        if not path.exists() or not any(path.glob("*.jsonl")):
-            print(f"[warn] {label}: no dumps at {dump_dir} (skipped)")
+    for path in sorted(ROOT.glob(RUNS_GLOB)):
+        if not any(path.glob("*.jsonl")):
             continue
+        label = f"training dumps {path.parent.name}"
         texts, unparsed = dump_formal_statements(path)
         if unparsed:
-            print(f"[warn] {label}: {len(unparsed)} unparsed lines", file=sys.stderr)
+            print(f"[ERROR] {label}: {len(unparsed)} unparsed line(s) - refusing to seal", file=sys.stderr)
+            for sample in unparsed[:5]:
+                print(f"  {sample}", file=sys.stderr)
+            return 2
         source_ids: set[str] = set()
         unmatched: list[str] = []
         for text in sorted(texts):
@@ -107,6 +108,10 @@ def main() -> int:
                 print(f"  {sample!r}", file=sys.stderr)
             return 2
         excluded_sources[label] = source_ids
+
+    if not any(key.startswith("training dumps ") for key in excluded_sources):
+        print("[ERROR] no training dump directories were discovered - refusing to seal", file=sys.stderr)
+        return 2
 
     excluded_ids: set[str] = set().union(*excluded_sources.values())
     eligible_ids = [identifier for identifier in ids if identifier not in excluded_ids]

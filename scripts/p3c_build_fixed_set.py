@@ -51,15 +51,24 @@ def git_revision() -> str:
 
 
 def dump_formal_statements(dump_dir: Path) -> tuple[set[str], list[str]]:
-    """Extract the (normalized) formal-statement text from every rollout dump."""
+    """Extract the (normalized) formal-statement text from every rollout dump.
+
+    JSONL lines are split on ``\n`` ONLY: ``str.splitlines()`` also breaks on
+    U+2028/U+2029 etc., which appear inside Qwen3-Base generations and would
+    corrupt records mid-JSON (observed in runs/m2_qwen_smoke dumps, 2026-09-18).
+    """
 
     texts: set[str] = set()
     unparsed: list[str] = []
     for path in sorted(dump_dir.glob("*.jsonl"), key=lambda p: int(p.stem)):
-        for line in path.read_text(encoding="utf-8").splitlines():
+        for line in path.read_text(encoding="utf-8").split("\n"):
             if not line.strip():
                 continue
-            record = json.loads(line)
+            try:
+                record = json.loads(line)
+            except json.JSONDecodeError:
+                unparsed.append(f"{path.name}: unparseable JSONL line (truncated or corrupted)")
+                continue
             match = FORMAL_BLOCK_RE.search(record.get("input", ""))
             if match:
                 texts.add(normalize(match.group(1)))
