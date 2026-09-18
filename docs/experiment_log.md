@@ -420,6 +420,29 @@
 
 ---
 
+### E020-M Temperature × group-size mechanism calibration（Phase 3）
+
+- 目的：解释“为何 P2.5 IGR 仅 3.1%、而 P3-0/n=8 后 RL 信号明显增加”——在固定诊断协议下量化 temperature / 组大小与 informative reward 组概率的关系。
+- 集合：`igr_mechanism_set.json`（封存 64 定理，seed 20260918；排除项目全部历史已见 statement：E013/E016/P3-C/E017+E019/seed2，共 520 个）。模型固定 Distill base。
+- 设计：仅生成两组 n=8（temp 1.0 / 0.6，同一 theorem/sample 种子表）；n=4 条件用每定理前 4 个样本导出，无需额外生成。候选 2×512。
+- 结果（`e020_mechanism_analysis.json`）：
+
+| condition | verified rate | IGR | Z | O | trunc | informative/1M tok |
+|---|---|---|---|---|---|---|
+| T=0.6 n=8 | 0.244 | **0.406** | 0.562 | 0.031 | 0.551 | 15.40 |
+| T=0.6 n=4 | 0.246 | 0.312 | 0.625 | 0.062 | 0.551 | 23.75 |
+| T=1.0 n=8 | 0.250 | 0.328 | 0.625 | 0.047 | 0.395 | 12.69 |
+| T=1.0 n=4 | 0.250 | 0.281 | 0.625 | 0.094 | 0.398 | 21.98 |
+
+- 定理级配对（informative 指示，newly/lost/still_inf/still_deg + exact McNemar）：
+  - **n=8 vs n=4 @T=0.6：+6/−0，p=0.031（显著）**；@T=1.0：+3/−0，p=0.250——**增大 n 单向增加 informative 组、零损失**；
+  - T=0.6 vs T=1.0：n=8 时 +2/−7（p=0.180）、n=4 时 +4/−6（p=0.754）——降温方向亦提高 IGR，但未达显著，且截断率 +16pp。
+- **解释（按预注册纪律）**：temperature / 组大小与“固定诊断协议下获得 informative reward 组的概率”相关；**不**声称“更大 n 导致更好的最终 RL 性能”。机制观察：B 四条件的候选成功率几乎不变（0.244–0.250），变化的是分布位置（n 增大将部分 all-one 组暴露为 mixed：O 从 0.094→0.047 @T=1.0、0.062→0.031 @T=0.6）。
+- 事件记录（避免重演）：t06 首次运行遭遇**容器 40 GiB 上限抖动**——seed2 的 60 步训练使 REPl 池膨胀至 15+×3.4GB，t06 验证请求在回收抖动中停滞（日志静止 54 min、0/4 chunk、无 warn、/health 无响应）。处理：停客户端 → `docker restart`（保留可写层！清空膨胀池，冷启动 114 s）→ **t06 以降低的验证并发（4×4）重跑成功**（t10 用默认 8×8 已完成；并发为基础设施旋钮，proof/timeout/validity 不变，已写入 artifacts 的 settings 字段）。教训：长训练后/重评估前应对 Lean server 做 `docker restart` 重置池。
+- 产物：`experiments/results/{e020_mech_t10_n8,e020_mech_t06_n8,e020_mechanism_analysis}.json`；集合 `experiments/manifests/igr_mechanism_set.json`。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：
