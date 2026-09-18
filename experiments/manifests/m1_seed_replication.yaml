@@ -27,3 +27,29 @@ expected_artifacts:
   dynamics: experiments/results/e020_seed2_dynamics.json (via scripts/rollout_dynamics.py --dir)
   trainer_metrics: experiments/results/e020_seed2_trainer_metrics.json
   checkpoints: runs/m1_seed2/global_step_30, global_step_60 (export to runs/m1_seed2_models)
+
+outcome_seed2:                 # completed 2026-09-18 01:39 UTC
+  steps: "60/60, exit 0, wall 2:18:10 (~2.30 GPU-h at ~138 s/step)"
+  live_sanity: "step-1 statement sequence disjoint from seed1 (overlap 0)"
+  dynamics:
+    1-10:  {igr: 0.150, score: 0.0437}
+    11-20: {igr: 0.050, score: 0.0437}
+    21-30: {igr: 0.175, score: 0.0750}
+    31-40: {igr: 0.150, score: 0.0844}
+    41-50: {igr: 0.250, score: 0.1437}
+    51-60: {igr: 0.125, score: 0.0563}
+    all:   {igr: 0.150, score: 0.0745}
+  findings: >
+    Overall magnitude replicates (IGR 0.150 vs seed1 0.158). The rise-to-
+    informative-frontier-then-late-decline shape appears in BOTH seeds (the
+    final segment is below each seed's own peak), but the peak LOCATION is
+    seed-dependent (seed1 21-30, seed2 41-50): the '21-30 peak then
+    regression' is not a fixed cross-seed pattern. Descriptive only - two
+    training seeds cannot support seed-level significance claims.
+  checkpoint_notes: >
+    step60 exported bitwise-identical (rel_L2 vs base 2.41e-4, same magnitude
+    as seed1's 2.35e-4). Actor weights of steps 10/20/30 were pruned by
+    max_actor_ckpt_to_keep=3 (only step60 is needed by the final holdout;
+    dynamics come from rollout dumps and are unaffected).
+
+seed3_decision: pending    # run only if the host stays stable; same rules as seed2

@@ -391,6 +391,35 @@
 
 ---
 
+## 2026-09-18（M1 Seed Replication）
+
+### E020 M1 seed2 replication（60 步完整复现，训练动力学分析）
+
+- 目的：检验 0.6B RL 训练动力学能否在独立随机轨迹中重复（补论文最大弱点：只有 1 个训练 seed）。
+- 设置/预注册：`experiments/manifests/m1_seed_replication.yaml`（运行前冻结）；seed 机制经 `docs/seed_control_audit.md` 审计——本 pinned build 唯一可靠种子为 **`+data.seed=20260918`**（dataloader 洗牌；FSDP rollout 引擎种子固定 0、不可配）。其余配置与 E019 完全相同；从 Distill 冷启动，目录 `runs/m1_seed2/`。
+- Live sanity（启动后）：step-1 的 4 个定理与 seed1 **完全不同（重叠 0）**——seed plumbing 生效。
+- 结果：**60/60 步 exit 0**，wall **2:18:10 ≈ 2.30 GPU-h**（~138 s/步）；checkpoints 10–60 存在，其中 40/50/60 保留 actor 权重（keep=3 使 10/20/30 的 actor 权重被清理；step30 权重损失不影响本阶段分析——dynamics 来自 rollout dumps，final holdout 只评 step60 且其权重已导出）；1 处良性 Ray-dashboard traceback（同 E019）。
+- 动力学（`rollout_dynamics` 与 `trainer_metrics` 双解析器交叉验证）：
+
+| range | seed1 IGR / score | seed2 IGR / score |
+|---|---|---|
+| 1–10 | 0.100 / 0.0594 | 0.150 / 0.0437 |
+| 11–20 | 0.200 / 0.1000 | 0.050 / 0.0437 |
+| 21–30 | 0.225 / 0.1750 | 0.175 / 0.0750 |
+| 31–40 | 0.175 / 0.0813 | 0.150 / 0.0844 |
+| 41–50 | 0.100 / 0.0500 | **0.250 / 0.1437** |
+| 51–60 | 0.150 / 0.0688 | 0.125 / 0.0563 |
+| 全体 | 0.158 / 0.0891 | 0.150 / 0.0745 |
+
+- **结论（描述性；只有 2 个训练 seed，不做 seed 级显著性推断）**：
+  - 整体量级复现：全期 IGR 0.150 vs 0.158、score 0.075 vs 0.089——量级相近；
+  - **“中期进入 informative frontier、末段回落”的形态在两个 seed 均出现**（末段 IGR 低于各自峰值）；
+  - 但**峰值位置是种子相关的**（seed1 在 21–30、seed2 在 41–50）——“21–30 峰值后回退”不是跨 seed 的固定模式。
+- checkpoint：`runs/m1_seed2_models/step_60`（导出 bitwise 一致 311/311 keys，3.01 GB；rel_L2 vs base = 2.41e-4，与 seed1 的 2.35e-4 量级一致）；sanity `experiments/results/e020_seed2_checkpoint_sanity.json`。
+- 产物：`experiments/results/{e020_seed2_dynamics,e020_seed2_trainer_metrics,e020_seed2_checkpoint_sanity}.json`、`runs/m1_seed2/`、`runs/m1_seed2_models/step_60`。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：
