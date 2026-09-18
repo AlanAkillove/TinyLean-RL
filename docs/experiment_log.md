@@ -449,7 +449,7 @@
 - 设置：与 Distill 机制实验**完全同协议**（`igr_mechanism_set.json`、64×8、temp 1.0 / top_p 1.0 / max 4096、同种子表、严格 Kimina 2.0.0、prompt 逐字节一致——接口审计见 `docs/m2_prompt_interface_audit.md`；唯一记录偏差 = Base eos 为 `<|endoftext|>`，不予修正；验证并发 4×4）。命令：evaluator `--checkpoint qwen3_base`。
 - 结果（`e020_qwen_base_n8.json`）：**verified = 1/512（0.2%）、Pass@1 = 0.002、IGR = 0.0156（64 组中仅 1 个 mixed）、solved≥1 = 1/64**。
 - 错误构成：**lean_parse_error 464/512 = 90.6%**（产出大量非 Lean 文本）、semantic 43、format-invalid 4、verifier_error 0；截断仅 12.3%（median 长度 907 tokens——短而无效，而非撞上限）。
-- 对照（同集合同协议，Distill base）：verified 128/512（25%）、IGR 0.328——**弱起点的可验证信号率相差约 100×**。
+- 对照（同集合同协议，Distill base）：verified 128/512（25%）、IGR 0.328——**弱起点的候选验证率约低 128×（≈两个数量级），IGR 约低 21×**（写作时两者须严格区分）。
 - **M2 gate 判定（预注册阈值）**：IGR 0.0156 ∈ [0.01, 0.05) → **WEAK** → 按协议执行 5 步 GRPO smoke。
 - **5 步 smoke（E021-SMOKE）**：exit 0，checkpoint `global_step_5` 已保存（loss/grad 有限、entropy 31–57）；但 **5 步全部 score_mean=0、grad_norm=0、pg_loss=0；rollout IGR=0.000 / Z=1.000（20 组全零）**。
 - **M2 结论**：Base 在固定单轮协议下处于 **reward-dead 边界**（IGR 0.0156、验证率较 Distill 低 ~100×、smoke 零混合组）——该协议上的 RL 不可行，cold-start 需干预（verified SFT / 不同协议）。
