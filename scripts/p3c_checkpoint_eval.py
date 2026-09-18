@@ -52,6 +52,9 @@ CHECKPOINTS = {
     "step30": {"global_step": 30, "model_dir": "runs/p3c_models/step_30", "label": "step30"},
     "step60": {"global_step": 60, "model_dir": "runs/p3c_models/step_60", "label": "step60"},
     "qwen3_base": {"global_step": 0, "model_dir": "models/weights/qwen3_base_0_6b", "label": "qwen3_base"},
+    "seed1_step60": {"global_step": 60, "model_dir": "runs/p3c_models/step_60", "label": "seed1_step60"},
+    "seed2_step60": {"global_step": 60, "model_dir": "runs/m1_seed2_models/step_60", "label": "seed2_step60"},
+    "seed3_step60": {"global_step": 60, "model_dir": "runs/m1_seed3_models/step_60", "label": "seed3_step60"},
 }
 SEED_BASE = 20260917
 SEED_GROUP_SIZE = 8
