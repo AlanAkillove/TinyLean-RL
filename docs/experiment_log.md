@@ -443,6 +443,18 @@
 
 ---
 
+### E021 Qwen3-0.6B-Base cold-start diagnostic（Phase 4C/4D）
+
+- 目的：回答 M2 第一问——比 Distill 更弱的 `Qwen3-0.6B-Base`（无 Lean/chat 先验，pin `da87bfb6`）在固定单轮 Lean RL 协议下是否还有可用 verifier reward signal。
+- 设置：与 Distill 机制实验**完全同协议**（`igr_mechanism_set.json`、64×8、temp 1.0 / top_p 1.0 / max 4096、同种子表、严格 Kimina 2.0.0、prompt 逐字节一致——接口审计见 `docs/m2_prompt_interface_audit.md`；唯一记录偏差 = Base eos 为 `<|endoftext|>`，不予修正；验证并发 4×4）。命令：evaluator `--checkpoint qwen3_base`。
+- 结果（`e020_qwen_base_n8.json`）：**verified = 1/512（0.2%）、Pass@1 = 0.002、IGR = 0.0156（64 组中仅 1 个 mixed）、solved≥1 = 1/64**。
+- 错误构成：**lean_parse_error 464/512 = 90.6%**（产出大量非 Lean 文本）、semantic 43、format-invalid 4、verifier_error 0；截断仅 12.3%（median 长度 907 tokens——短而无效，而非撞上限）。
+- 对照（同集合同协议，Distill base）：verified 128/512（25%）、IGR 0.328——**弱起点的可验证信号率相差约 100×**。
+- **M2 gate 判定（预注册阈值）**：IGR 0.0156 ∈ [0.01, 0.05) → **WEAK**（刚越过 reward-dead 线，但密度极低且全部来自单一 theorem 的混合组）→ 按协议允许 5 步 GRPO smoke（目标仅：mixed 组是否出现 / nonzero advantage / finite grad / checkpoint），不跑 60 步。
+- 产物：`experiments/results/e020_qwen_base_n8.json`。
+
+---
+
 ## 追加记录模板
 
 新实验条目按时间顺序追加到本模板上方，采用以下骨架（“产物”写 `experiments/results/` 下文件名）：
