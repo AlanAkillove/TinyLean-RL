@@ -469,6 +469,28 @@
 - **Fallback（协议允许）**：不带 seed3 直接封存 128 定理 final holdout（`scripts/build_final_holdout.py`，干跑验证 excluded 595 / eligible 7025 / selected 128）并对 θ0/seed1/seed2（+seed3 若补跑成功）执行 e023_* 评估；seed3 为可选实验。
 - 本轮无人值守批次的完成项（不受影响）：E020 seed2 复制 ✓、E020-M 机制实验 ✓、E021 Qwen-Base 诊断与 smoke ✓。
 
+**E022-r4（最终尝试，完成；2026-09-18 16:41–19:19 UTC / 本地 2026-09-19 00:41–03:19）**
+
+- 前置：用户明确批准并在安静窗口停止 `systemd-oomd` service + socket（`is-active` 双 inactive）；启动前 `docker restart` 重置 Lean server REPL 池并预热（c=1 10.25 rps；暖后 0.11 s/请求）；r2/r3 现场先备份至 `.cache/m1_seed3_r2r3_dumps/` 与 `.cache/e022_seed3_{super,train}_r3.log`。
+- 运行：双层单元拓扑（`m1s3sup` 轻监督器 + `m1s3train` 训练单元），预注册 seed 20260919 原地 fresh 启动；**attempt 1 一次跑通、无需重试**，`exit 0`，wall **2:37:13**（16:41:46 → 19:18:59 UTC，~157 s/步）；steps 60/60、checkpoints 10–60 全在位；5 处 Ray-dashboard（MetricsHead）良性 traceback（UI 子进程，训练不受影响，E019/E020 同类）。
+- live sanity（step 1）：r4 语句集与 seed1 不相交 ✓；且与 r2/r3（同 seed）prompt 序列完全一致（种子确定性复核）✓。
+- 动力学（`rollout_dynamics.py` 与 `trainer_metrics.py` 双解析器）：
+
+| range | IGR | Z | O | score |
+|---|---|---|---|---|
+| 1–10 | 0.250 | 0.750 | 0.000 | 0.1000 |
+| 11–20 | 0.125 | 0.875 | 0.000 | 0.0594 |
+| 21–30 | 0.125 | 0.825 | 0.050 | 0.0938 |
+| 31–40 | 0.100 | 0.875 | 0.025 | 0.0531 |
+| 41–50 | 0.150 | 0.850 | 0.000 | 0.0844 |
+| 51–60 | 0.150 | 0.850 | 0.000 | 0.0656 |
+| 全体 | **0.150** | 0.838 | 0.013 | 0.0760 |
+
+- **三 seed 汇总（描述性）**：全期 IGR = seed1 0.158 / seed2 0.150 / seed3 0.150（量级复现）；峰值位置三种子各异（21–30 / 41–50 / 1–10）——“峰值位置种子相关”在第三个独立轨迹上再次成立；三者的末段 IGR 均低于各自峰值。
+- checkpoint：`runs/m1_seed3_models/step_60`（311/311 keys、`identical=True`、3.01 GB；**rel_L2 vs base = 2.17e-4**，与 seed1 2.35e-4 / seed2 2.41e-4 同量级；changed_keys 311/311）。
+- 产物（gitignored，本地）：`experiments/results/{e022_seed3_dynamics,e022_seed3_trainer_metrics,e022_seed3_checkpoint_sanity}.json`；`runs/m1_seed3/`（checkpoints 10–60 + rollout dumps 1–60）；`runs/m1_seed3_models/step_60`。
+- 意义：E022 由 aborted-deferred 结转为 **completed**；三 seed 训练复制集齐（θ0/seed1/seed2/seed3 四个评估对象就绪），final holdout seal 前置条件全部满足。运行期 oomd 保持停止，事后应恢复 `sudo systemctl start systemd-oomd.socket`。
+
 ---
 
 ## 追加记录模板

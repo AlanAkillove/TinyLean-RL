@@ -52,8 +52,9 @@ outcome_seed2:                 # completed 2026-09-18 01:39 UTC
     max_actor_ckpt_to_keep=3 (only step60 is needed by the final holdout;
     dynamics come from rollout dumps and are unaffected).
 
-seed3_decision: aborted-deferred
-seed3_outcome: >
+seed3_decision_r1_r3: aborted-deferred   # 历史记录（2026-09-18）
+seed3_decision: completed (E022-r4, 2026-09-18; see outcome_seed3_r4)
+seed3_outcome_r1: >
   Launched 2026-09-18 04:42 UTC (supervisor m1s3sup); steps 1-3 completed normally
   (dumps 1-3.jsonl present; live sanity confirmed pairwise-disjoint step-1 statements
   across all three seeds) and then the unit was systemd-oomd killed at 05:02:32 UTC.
@@ -68,6 +69,7 @@ resume_conditions: >
   When the host is idle again: relaunch seed3 with the SAME pre-registered seed
   (20260919), then build the final holdout (scripts/build_final_holdout.py) and run the
   theta0/seed1/seed2/seed3 holdout evaluations, then MiniF2F.
+  SATISFIED via E022-r4 (2026-09-18 16:41-19:19 UTC; single attempt, exit 0); the holdout build is the next step.
 retry_history_r2_r3: >
   2026-09-18: relaunch r2 (in place, same seed) was oomd-killed at 14:39:02 UTC
   (user-slice pressure 89%); r3 used a two-unit topology (tiny supervisor + separate
@@ -77,8 +79,27 @@ retry_history_r2_r3: >
   memory pressure (no external GPU job present at the time; other agents/IDE load
   observed). Prerequisite to resume (either): user runs
   'sudo systemctl stop systemd-oomd systemd-oomd.socket', or a verified quiet window.
+outcome_seed3_r4:              # completed 2026-09-18 16:41:46-19:18:59 UTC (wall 2:37:13)
+  preconditions: "user-approved stop of systemd-oomd (service+socket) in a quiet window; Lean server REPL pool reset (docker restart + prewarm)"
+  steps: "60/60, exit 0, single attempt (no retry), ~157 s/step; checkpoints 10-60 present"
+  live_sanity: "step-1 statements disjoint from seed1; identical to r2/r3 step-1 (same pre-registered seed 20260919 - determinism re-confirmed)"
+  dynamics:
+    1-10:  {igr: 0.250, score: 0.1000}
+    11-20: {igr: 0.125, score: 0.0594}
+    21-30: {igr: 0.125, score: 0.0938}
+    31-40: {igr: 0.100, score: 0.0531}
+    41-50: {igr: 0.150, score: 0.0844}
+    51-60: {igr: 0.150, score: 0.0656}
+    all:   {igr: 0.150, score: 0.0760}
+  checkpoint: "runs/m1_seed3_models/step_60 (311/311 keys, identical=True, 3.01 GB; rel_L2 vs base 2.17e-4)"
+  findings: >
+    Third independent trajectory completes the pre-registered replication set:
+    all-period IGR 0.158 / 0.150 / 0.150 (seed1/2/3) - magnitude replicates.
+    Peak location is again seed-dependent (21-30 / 41-50 / 1-10); all three
+    seeds end below their own peak. Descriptive only - three training seeds.
+  outcome: "holdout seal prerequisites satisfied."
 fallback: >
-  Protocol allows sealing the 128-theorem final holdout WITHOUT seed3 (it is optional)
+  NOT NEEDED (seed3 completed as E022-r4). Historical rule: Protocol allows sealing the 128-theorem final holdout WITHOUT seed3 (it is optional)
   and evaluating theta0/seed1/seed2 (+seed3 if it ever completes). The holdout builder
   was fixed/verified (excluded 595 / eligible 7025 / selected 128) and must be sealed
   only after the training round's final decision on seed3.

@@ -1,6 +1,6 @@
 # P0 status report
 
-更新时间：2026-09-17（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。双机运行与 Agent 协作规范见 [`dual_server_collaboration.md`](dual_server_collaboration.md)。
+更新时间：2026-09-19（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。双机运行与 Agent 协作规范见 [`dual_server_collaboration.md`](dual_server_collaboration.md)。
 
 ## Linux P3 stage（2026-09-17，服务器 RTX 3090 24 GB；P3-0 → P3-A → P3-B → P3-C 完成）
 
@@ -17,9 +17,9 @@
 - E020 seed2 复制（完成，2026-09-18 01:39 UTC）：60/60 exit 0，wall 2:18:10（~2.30 GPU-h）；live sanity 证明 step-1 定理序列与 seed1 完全不相交；全期 IGR 0.150 vs seed1 0.158；“先升后落”形态双种子复现、峰值位置种子相关（21–30 vs 41–50）；step60 导出 bitwise 一致（rel_L2 2.41e-4）。
 - E020-M 温度×组大小机制实验（完成）：封存机制集（64 定理、seed 20260918、排除 520 个历史已见 statement）；2×2 条件 IGR：T0.6n8 0.406 / T0.6n4 0.312 / T1.0n8 0.328 / T1.0n4 0.281；**n 4→8 单向增加 informative 组（T=0.6 +6/−0，p=0.031；T=1.0 +3/−0）**；候选成功率四条件几乎不变（0.244–0.250）——机制为分布重组而非能力变化。
 - E021 Qwen3-Base 冷启动诊断（完成，pin da87bfb6）：同协议下 verified 1/512（较 Distill 低约 128×）、IGR 0.0156（低约 21×）、90.6% parse 错误；5 步 GRPO smoke 全部 score=0/grad=0（20 组全零）→ **reward-dead 边界**（cold-start 需 verified SFT / 不同协议）。
-- E022 seed3 复制（**中止，按协议暂停**）：04:42 UTC 启动、steps 1–3 正常（三 seed step-1 集两两不相交已证），05:02:32 被 systemd-oomd 击杀；根因 = 外部非项目 GPU 任务（`fullsa_p2_gap_calib_640_100`，session-628，5.8 GB 显存）违反单 GPU 任务前提 + 内存压力叠加。**不重启**（同因重复失败规则）；final holdout 评估与 MiniF2F 一并暂停至外部任务结束、主机稳定。恢复时：同 seed 重启 seed3 → `build_final_holdout.py` 构建 → θ0/seed1/seed2/seed3 评估 → MiniF2F。 **r2/r3 更新（14:10–15:36 UTC）**：两次重启均被 oomd 击杀（89% / 75.8% 压力；双层单元 + ≤3 次有界重试亦耗尽）——seed3 本窗口不可完成；恢复前置：①用户停 oomd（`sudo systemctl stop systemd-oomd systemd-oomd.socket`）或②安静窗口。**Fallback（协议允许）**：不带 seed3 封存 holdout 并评估 θ0/seed1/seed2。
+- E022 seed3 复制（**中止，按协议暂停**）：04:42 UTC 启动、steps 1–3 正常（三 seed step-1 集两两不相交已证），05:02:32 被 systemd-oomd 击杀；根因 = 外部非项目 GPU 任务（`fullsa_p2_gap_calib_640_100`，session-628，5.8 GB 显存）违反单 GPU 任务前提 + 内存压力叠加。**不重启**（同因重复失败规则）；final holdout 评估与 MiniF2F 一并暂停至外部任务结束、主机稳定。恢复时：同 seed 重启 seed3 → `build_final_holdout.py` 构建 → θ0/seed1/seed2/seed3 评估 → MiniF2F。 **r2/r3 更新（14:10–15:36 UTC）**：两次重启均被 oomd 击杀（89% / 75.8% 压力；双层单元 + ≤3 次有界重试亦耗尽）——seed3 本窗口不可完成；恢复前置：①用户停 oomd（`sudo systemctl stop systemd-oomd systemd-oomd.socket`）或②安静窗口。**Fallback（协议允许）**：不带 seed3 封存 holdout 并评估 θ0/seed1/seed2。 **r4 更新（2026-09-18 16:41–19:19 UTC）**：用户批准停止 oomd 后的最后一次正式尝试**完成**——attempt 1 一次跑通、exit 0、wall 2:37:13、60/60、checkpoints 10–60、θ_s3 rel_L2 2.17e-4（三 seed 2.17–2.41e-4 同量级）、全期 IGR 0.150（seed1/seed2/seed3 = 0.158/0.150/0.150；峰值位置三者各异）；E022 结转为 **completed**，final holdout seal 前置满足。
 - 摘要清单：`experiments/manifests/{p3_0_complete,p3b_pilot,p3c_fixed_eval,m1_step60,m1_seed_replication}.yaml`；逐次记录 E012–E022。
-- 下一步（已暂停，待主机稳定）：按恢复条件重启 seed3 → `build_final_holdout.py` 构建 M1 final holdout（128 定理）→ θ0/seed1/seed2/seed3 评估（多种子分析器 `holdout_multiseed_analyze.py` 已就绪）→ MiniF2F；**不自动 step100、不扩集、不重抽**。
+- 下一步（Seed3 已由 E022-r4 完成，前置满足）：`build_final_holdout.py` **正式封存 M1 final holdout**（128 定理；seed3 完整 dumps 已在 `runs/m1_seed3/rollout_data/`，builder 自动排除）→ E023 双机评估（fly90=seed1+seed3 / fly122=θ0+seed2；多种子分析器 `holdout_multiseed_analyze.py` 仅 fly90 运行）→ MiniF2F；不自动 step100、不扩集、不重抽。
 
 ## 已完成
 
