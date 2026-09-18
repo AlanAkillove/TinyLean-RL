@@ -464,6 +464,9 @@
 - **根因（外部因素）**：同一时段出现**非本项目的 GPU 训练任务** `experiment/train_p2_calibration.py --model gap`（run `fullsa_p2_gap_calib_640_100`，登录会话 session-628，~04:53 UTC 启动，5 进程、占 5.8 GB 显存、82%+18%×4 CPU），违反协议“同一时间只允许一个 GPU-heavy job”的前提；用户切片内存压力叠加使 oomd 再次命中我们的大单元（本日同因击杀已多次：e019e ×2、t06 池膨胀、m1s3sup）。**未对外部任务做任何干预**。
 - **决定（协议强制）**：①不重启 seed3（“同一种原因连续失败两次后不允许无限 retry”）；②**暂停后续 GPU 阶段**（final holdout 评估、MiniF2F）直至外部任务结束且主机稳定；③保留 `runs/m1_seed3/rollout_data/` 1–3.jsonl 作为中止证据。
 - 恢复条件（给下一次窗口）：外部 GPU 任务结束后 → 重启 seed3（同一预注册 seed 20260919；runner 已加“GPU 无其他计算进程”守卫）→ 构建 M1 final holdout（构建器 `scripts/build_final_holdout.py`：经 review 修复 JSONL 解析（U+2028）缺陷后重跑验证通过——自动发现全部 `runs/*/rollout_data` 训练 dump 作排除，实测 excluded 595 / eligible 7025 / selected 128；**封存动作仍待 seed3 决定后执行**）→ holdout 评估 θ0/seed1/seed2/seed3（产物编号 **e023_***）→ MiniF2F。
+- **重试记录（E022-r2/r3，2026-09-18 14:10–15:36 UTC）**：服务器空闲后原位重启（同预注册 seed 20260919；live sanity 再次通过，新 step-1 语句与 seed1/seed2 两两不相交）。r2 于 14:39:02 被 systemd-oomd 击杀（user-slice 压力 89%）；r3 改用**双层单元**（轻监督器 + 独立训练单元）与 ≤3 次有界重试：attempt 1 到 step 3 后于 15:35:38 再被击杀（压力 75.8%），attempt 2/3 在模型加载期即被击杀——**有界重试耗尽；seed3 本窗口判定为不可完成**（根因 = 共享主机上的 user-slice 内存压力 + oomd 策略；无外部 GPU 任务时亦然；非种子/代码问题）。检查记录：当前 GPU 无任何外部计算进程（用户 nvidia-smi 观察到空闲属实，因全部任务已停）；本机存在其他负载（codex app-server、IDE 扩展等）。
+- **恢复前置（必须满足其一，供下一会话）**：①用户手动 `sudo systemctl stop systemd-oomd systemd-oomd.socket`；②或确认安静窗口（无其他 agent/重型任务）后以双层单元（`.cache/run_m1_seed3_super2.sh` 模式）重试。
+- **Fallback（协议允许）**：不带 seed3 直接封存 128 定理 final holdout（`scripts/build_final_holdout.py`，干跑验证 excluded 595 / eligible 7025 / selected 128）并对 θ0/seed1/seed2（+seed3 若补跑成功）执行 e023_* 评估；seed3 为可选实验。
 - 本轮无人值守批次的完成项（不受影响）：E020 seed2 复制 ✓、E020-M 机制实验 ✓、E021 Qwen-Base 诊断与 smoke ✓。
 
 ---

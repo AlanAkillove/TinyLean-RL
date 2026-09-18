@@ -68,3 +68,17 @@ resume_conditions: >
   When the host is idle again: relaunch seed3 with the SAME pre-registered seed
   (20260919), then build the final holdout (scripts/build_final_holdout.py) and run the
   theta0/seed1/seed2/seed3 holdout evaluations, then MiniF2F.
+retry_history_r2_r3: >
+  2026-09-18: relaunch r2 (in place, same seed) was oomd-killed at 14:39:02 UTC
+  (user-slice pressure 89%); r3 used a two-unit topology (tiny supervisor + separate
+  training unit) with <=3 bounded attempts - attempt 1 reached step 3 then was killed
+  at 15:35:38 (pressure 75.8%), attempts 2/3 died during model loading. Bounded retries
+  exhausted; seed3 is NOT completable in this window under the current shared-host
+  memory pressure (no external GPU job present at the time; other agents/IDE load
+  observed). Prerequisite to resume (either): user runs
+  'sudo systemctl stop systemd-oomd systemd-oomd.socket', or a verified quiet window.
+fallback: >
+  Protocol allows sealing the 128-theorem final holdout WITHOUT seed3 (it is optional)
+  and evaluating theta0/seed1/seed2 (+seed3 if it ever completes). The holdout builder
+  was fixed/verified (excluded 595 / eligible 7025 / selected 128) and must be sealed
+  only after the training round's final decision on seed3.
