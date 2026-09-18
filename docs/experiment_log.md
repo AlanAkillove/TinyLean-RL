@@ -450,8 +450,10 @@
 - 结果（`e020_qwen_base_n8.json`）：**verified = 1/512（0.2%）、Pass@1 = 0.002、IGR = 0.0156（64 组中仅 1 个 mixed）、solved≥1 = 1/64**。
 - 错误构成：**lean_parse_error 464/512 = 90.6%**（产出大量非 Lean 文本）、semantic 43、format-invalid 4、verifier_error 0；截断仅 12.3%（median 长度 907 tokens——短而无效，而非撞上限）。
 - 对照（同集合同协议，Distill base）：verified 128/512（25%）、IGR 0.328——**弱起点的可验证信号率相差约 100×**。
-- **M2 gate 判定（预注册阈值）**：IGR 0.0156 ∈ [0.01, 0.05) → **WEAK**（刚越过 reward-dead 线，但密度极低且全部来自单一 theorem 的混合组）→ 按协议允许 5 步 GRPO smoke（目标仅：mixed 组是否出现 / nonzero advantage / finite grad / checkpoint），不跑 60 步。
-- 产物：`experiments/results/e020_qwen_base_n8.json`。
+- **M2 gate 判定（预注册阈值）**：IGR 0.0156 ∈ [0.01, 0.05) → **WEAK** → 按协议执行 5 步 GRPO smoke。
+- **5 步 smoke（E021-SMOKE）**：exit 0，checkpoint `global_step_5` 已保存（loss/grad 有限、entropy 31–57、长度 1465–1887）；但 **5 步全部 score_mean=0、grad_norm=0、pg_loss=0；rollout IGR=0.000 / Z=1.000（5×4=20 组全零）**——与诊断速率（~1/512 混合组）一致。
+- **M2 结论（证据支持）**：Base 在固定单轮 Lean 协议下处于 **reward-dead 边界**（IGR 0.0156、验证率较 Distill 低 ~100×、smoke 零混合组）——该协议上的 RL 不可行；cold-start 方向需要干预（verified SFT / 不同协议），而非在该配方上堆 compute。今晚按协议到此为止（不做无人值守长 SFT）。
+- 产物：`experiments/results/{e020_qwen_base_n8,e021_smoke_dynamics}.json`、`runs/m2_qwen_smoke/global_step_5`。
 
 ---
 
