@@ -14,7 +14,10 @@
 - P3-C 固定集评估（E018，2026-09-17）：排除 E009/E013/E016/E017 已用 150 statement 后封存 64 定理（seed 20260917，held-out-from-pilot same-source）；θ0/θ10/θ20/θ30 各 512 候选，verified **65/65/64/70**（pass@1 0.127/0.127/0.125/0.137）；配对 Δ（θt−θ0）= 0.0000/−0.0020/**+0.0098**（θ30）、95% CI 均跨零、McNemar p=1.0 → **POSITIVE-INCONCLUSIVE**；verifier-error 复核（E018-D）：43/43 全部确定性结论、零修正，corrected = observed；故意的 all-errors-success 反事实边界跨零，仅作敏感性上界、不表示符号稳健。
 - E019 M1 延长门（2026-09-17，训练完成）：step30→60 续训 **exit 0**（wall 4534 s ≈ 1.26 GPU-h，30 步、~140 s/步）；checkpoints `global_step_40/50/60`；导出 θ60 bitwise 一致，**θ60≠θ30（rel_L2 1.34e-4，311/311 键变化）**。训练期动力学 21–30 达峰（IGR 0.225 / score 0.175）后回退（41–50：0.100 / 0.050；51–60：0.150 / 0.0688）。
 - step60 fixed-set 评估（完成）：观测 62/512；E019-D 复核（32 个连接重置错误 → 7 个复验通过，全部定理 #55）→ 校正 **69/512**；配对 θ60c vs θ0 = +0.78pp（CI 跨零）、θ60c vs θ30 = −0.20pp；预冻结规则判定 **Case B → POSITIVE-INCONCLUSIVE**。暴露审计：steps31–60 与 P3-C 集交集 = 0；P3-C 集降级为 **development/diagnostic fixed set**。
-- 无人值守批次进行中：Seed2 复制（E020，seed=20260918，runs/m1_seed2，预注册 `m1_seed_replication.yaml`、审计 `docs/seed_control_audit.md`）；后续：temp×n 机制实验 → Qwen3-Base 冷启动 → Seed3 → final holdout → MiniF2F。
+- E020 seed2 复制（完成，2026-09-18 01:39 UTC）：60/60 exit 0，wall 2:18:10（~2.30 GPU-h）；live sanity 证明 step-1 定理序列与 seed1 完全不相交；全期 IGR 0.150 vs seed1 0.158；“先升后落”形态双种子复现、峰值位置种子相关（21–30 vs 41–50）；step60 导出 bitwise 一致（rel_L2 2.41e-4）。
+- E020-M 温度×组大小机制实验（完成）：封存机制集（64 定理、seed 20260918、排除 520 个历史已见 statement）；2×2 条件 IGR：T0.6n8 0.406 / T0.6n4 0.312 / T1.0n8 0.328 / T1.0n4 0.281；**n 4→8 单向增加 informative 组（T=0.6 +6/−0，p=0.031；T=1.0 +3/−0）**；候选成功率四条件几乎不变（0.244–0.250）——机制为分布重组而非能力变化。
+- E021 Qwen3-Base 冷启动诊断（完成，pin da87bfb6）：同协议下 verified 1/512、IGR 0.0156、90.6% parse 错误；5 步 GRPO smoke 全部 score=0/grad=0（20 组全零）→ **reward-dead 边界**（cold-start 需 verified SFT / 不同协议）。
+- E022 seed3 复制（进行中，2026-09-18 04:42 UTC 启动，seed=20260919）：规则同 seed2；完成后构建 M1 final holdout（128 定理，project-unseen same-source）并评估 θ0/θ60_seed1/θ60_seed2/θ60_seed3，随后 MiniF2F（theta0 vs seed1 主比较）。
 - 摘要清单：`experiments/manifests/p3_0_complete.yaml`、`experiments/manifests/p3b_pilot.yaml`、`experiments/manifests/p3c_fixed_eval.yaml`、`experiments/manifests/m1_step60.yaml`；逐次记录 E012–E019。
 - 下一步：step60 评估完成（Case B）→ 按协议进入 Seed2 复制与机制/冷启动诊断；**不自动 step100、不扩集、不跑 MiniF2F（待 holdout 完成后）**。
 
