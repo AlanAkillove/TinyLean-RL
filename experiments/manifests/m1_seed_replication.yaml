@@ -52,4 +52,19 @@ outcome_seed2:                 # completed 2026-09-18 01:39 UTC
     max_actor_ckpt_to_keep=3 (only step60 is needed by the final holdout;
     dynamics come from rollout dumps and are unaffected).
 
-seed3_decision: pending    # run only if the host stays stable; same rules as seed2
+seed3_decision: aborted-deferred
+seed3_outcome: >
+  Launched 2026-09-18 04:42 UTC (supervisor m1s3sup); steps 1-3 completed normally
+  (dumps 1-3.jsonl present; live sanity confirmed pairwise-disjoint step-1 statements
+  across all three seeds) and then the unit was systemd-oomd killed at 05:02:32 UTC.
+  Root cause: a NON-project GPU training job (experiment/train_p2_calibration.py,
+  run fullsa_p2_gap_calib_640_100, login session 628, ~5.8 GB VRAM, started ~04:53 UTC)
+  shared the GPU, breaking the single-GPU-job premise and adding memory pressure.
+  Not touched/stopped by this project. Per protocol (no infinite retries after the
+  same-cause failure repeats; one GPU-heavy job at a time) seed3 is deferred, and the
+  GPU-dependent remainder (final holdout evaluation, MiniF2F) is paused until the
+  external job finishes and the host is stable. Partial state kept at runs/m1_seed3/.
+resume_conditions: >
+  When the host is idle again: relaunch seed3 with the SAME pre-registered seed
+  (20260919), then build the final holdout (scripts/build_final_holdout.py) and run the
+  theta0/seed1/seed2/seed3 holdout evaluations, then MiniF2F.

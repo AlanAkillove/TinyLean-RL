@@ -451,9 +451,20 @@
 - 错误构成：**lean_parse_error 464/512 = 90.6%**（产出大量非 Lean 文本）、semantic 43、format-invalid 4、verifier_error 0；截断仅 12.3%（median 长度 907 tokens——短而无效，而非撞上限）。
 - 对照（同集合同协议，Distill base）：verified 128/512（25%）、IGR 0.328——**弱起点的可验证信号率相差约 100×**。
 - **M2 gate 判定（预注册阈值）**：IGR 0.0156 ∈ [0.01, 0.05) → **WEAK** → 按协议执行 5 步 GRPO smoke。
-- **5 步 smoke（E021-SMOKE）**：exit 0，checkpoint `global_step_5` 已保存（loss/grad 有限、entropy 31–57、长度 1465–1887）；但 **5 步全部 score_mean=0、grad_norm=0、pg_loss=0；rollout IGR=0.000 / Z=1.000（5×4=20 组全零）**——与诊断速率（~1/512 混合组）一致。
-- **M2 结论（证据支持）**：Base 在固定单轮 Lean 协议下处于 **reward-dead 边界**（IGR 0.0156、验证率较 Distill 低 ~100×、smoke 零混合组）——该协议上的 RL 不可行；cold-start 方向需要干预（verified SFT / 不同协议），而非在该配方上堆 compute。今晚按协议到此为止（不做无人值守长 SFT）。
+- **5 步 smoke（E021-SMOKE）**：exit 0，checkpoint `global_step_5` 已保存（loss/grad 有限、entropy 31–57）；但 **5 步全部 score_mean=0、grad_norm=0、pg_loss=0；rollout IGR=0.000 / Z=1.000（20 组全零）**。
+- **M2 结论**：Base 在固定单轮协议下处于 **reward-dead 边界**（IGR 0.0156、验证率较 Distill 低 ~100×、smoke 零混合组）——该协议上的 RL 不可行，cold-start 需干预（verified SFT / 不同协议）。
 - 产物：`experiments/results/{e020_qwen_base_n8,e021_smoke_dynamics}.json`、`runs/m2_qwen_smoke/global_step_5`。
+
+---
+
+### E022 M1 seed3 replication（中止；外部 GPU 任务冲突 + oomd，按协议停止）
+
+- 目的：预注册的第三个训练种子（+data.seed=20260919），规则与 seed2 完全相同；live sanity 已确认 seed1/seed2/seed3 的 step-1 定理集**两两不相交**（三条独立轨迹）。
+- 运行记录：2026-09-18 04:42 UTC 由监督器 `m1s3sup` 启动；正常完成 steps 1–3（rollout dumps 1–3 在位，速率 ~159 s/步）。**05:02:32 UTC 被 systemd-oomd 击杀**（`oom-kill`，消耗 CPU 30min59s）。
+- **根因（外部因素）**：同一时段出现**非本项目的 GPU 训练任务** `experiment/train_p2_calibration.py --model gap`（run `fullsa_p2_gap_calib_640_100`，登录会话 session-628，~04:53 UTC 启动，5 进程、占 5.8 GB 显存、82%+18%×4 CPU），违反协议“同一时间只允许一个 GPU-heavy job”的前提；用户切片内存压力叠加使 oomd 再次命中我们的大单元（本日同因击杀已多次：e019e ×2、t06 池膨胀、m1s3sup）。**未对外部任务做任何干预**。
+- **决定（协议强制）**：①不重启 seed3（“同一种原因连续失败两次后不允许无限 retry”）；②**暂停后续 GPU 阶段**（final holdout 评估、MiniF2F）直至外部任务结束且主机稳定；③保留 `runs/m1_seed3/rollout_data/` 1–3.jsonl 作为中止证据。
+- 恢复条件（给下一次窗口）：外部 GPU 任务结束后 → 重启 seed3（同一预注册 seed 20260919）→ 构建 M1 final holdout（构建器 `scripts/build_final_holdout.py` 已就绪，届时 seed3 语句自动纳入排除）→ holdout 评估 θ0/seed1/seed2/seed3 → MiniF2F。
+- 本轮无人值守批次的完成项（不受影响）：E020 seed2 复制 ✓、E020-M 机制实验 ✓、E021 Qwen-Base 诊断与 smoke ✓。
 
 ---
 
