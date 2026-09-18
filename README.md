@@ -2,14 +2,23 @@
 
 面向亚十亿参数 Lean4 定理证明器的可验证强化学习研究项目。
 
-当前阶段：**P3-0 → P3-A → P3-B → P3-C → M1 step60 延长门 + 无人值守扩展批次（前三块完成；剩余因外部 GPU 任务+oomd 已暂停）** —— 迁移 gate、校准、smoke、n=8 短 pilot、封存 64 定理配对评估（E018：θ30−θ0=+0.98pp、CI 跨零 → POSITIVE-INCONCLUSIVE）、step30→60 延长门（E019：校正后 θ60=69/512；θ60c vs θ0=+0.78pp、vs θ30=−0.20pp → **Case B POSITIVE-INCONCLUSIVE**）。无人值守批次：**Seed2 复制（E020）✓**（60/60、全期 IGR 0.150 vs seed1 0.158；“先升后落”形态双种子复现、峰值位置种子相关）；**温度×组大小机制实验（E020-M）✓**（n=8 vs n=4 单向增加 informative 组：T=0.6 +6/−0，p=0.031）；**Qwen3-Base 冷启动诊断（E021）✓**（IGR 0.0156、候选验证率较 Distill 低约 128×（IGR 低约 21×）、5 步 smoke 零混合组 → **reward-dead 边界**）；**Seed3 复制（E022）中止**（多次被 systemd-oomd 击杀：外部 GPU 任务期 + 共享主机压力 89%/75.8%；双层单元 ≤3 次有界重试亦耗尽 → 本窗口不可完成；恢复前置与 fallback 见 manifest）。后续：M1 final holdout（128 定理，构建器已就绪，待主机空闲后冻结）→ MiniF2F。预注册与规则见 [`experiments/manifests/m1_seed_replication.yaml`](experiments/manifests/m1_seed_replication.yaml)、[`docs/research_plan.md`](docs/research_plan.md)、[`docs/experiment_log.md`](docs/experiment_log.md)。历史交接文档：[`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)。
+当前阶段：**P3-0 → P3-A → P3-B → P3-C → M1 step60 延长门 + 无人值守扩展批次（前三块完成；Seed3 最终尝试进行中）** —— 迁移 gate、校准、smoke、n=8 短 pilot、封存 64 定理配对评估（E018：θ30−θ0=+0.98pp、CI 跨零 → POSITIVE-INCONCLUSIVE）、step30→60 延长门（E019：校正后 θ60=69/512；θ60c vs θ0=+0.78pp、vs θ30=−0.20pp → **Case B POSITIVE-INCONCLUSIVE**）。无人值守批次：**Seed2 复制（E020）✓**（60/60、全期 IGR 0.150 vs seed1 0.158；“先升后落”形态双种子复现、峰值位置种子相关）；**温度×组大小机制实验（E020-M）✓**（n=8 vs n=4 单向增加 informative 组：T=0.6 +6/−0，p=0.031）；**Qwen3-Base 冷启动诊断（E021）✓**（IGR 0.0156、候选验证率较 Distill 低约 128×（IGR 低约 21×）、5 步 smoke 零混合组 → **reward-dead 边界**）；**Seed3 复制（E022）**：r1–r3 被 systemd-oomd 击杀（外部 GPU 任务期 + 共享主机压力 89%/75.8%，双层单元 ≤3 次有界重试耗尽）；2026-09-19 经用户批准停止 oomd 后在安静窗口发起最后一次正式尝试（r4，双层单元 ≤3 有界重试），结果落定后正式封存 M1 final holdout（128 定理，构建器已就绪；fallback = 不带 seed3 封存）→ MiniF2F。预注册与规则见 [`experiments/manifests/m1_seed_replication.yaml`](experiments/manifests/m1_seed_replication.yaml)、[`docs/research_plan.md`](docs/research_plan.md)、[`docs/experiment_log.md`](docs/experiment_log.md)。历史交接文档：[`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)。
 
 - 研究主线（RL for sub-billion Lean provers）：[`docs/research_plan.md`](docs/research_plan.md)
 - P2 预实验结论（评估校准 / 奖励可靠性 / 奖励信息量）：[`docs/studies/evaluation_calibration.md`](docs/studies/evaluation_calibration.md)
-- 逐次实验记录（E001–E018）：[`docs/experiment_log.md`](docs/experiment_log.md)
+- 逐次实验记录（E001–E022）：[`docs/experiment_log.md`](docs/experiment_log.md)
 - P2.5 结论与 Linux 交接：[`docs/studies/rl_readiness.md`](docs/studies/rl_readiness.md) / [`docs/p3_linux_handoff.md`](docs/p3_linux_handoff.md)
 
 本项目遵循“阶段门控、证据驱动”的研究路线：先建立可复现环境和最小端到端链路，再根据预实验结果决定 RL、cold-start、scaling 或 frontier sampling 的后续分支。
+
+## 双机实验架构
+
+- **fly90** — RTX 3090 24GB：primary training node + canonical controller；完整 `runs/` 历史、FULL-FT GRPO / SFT training、canonical manifests/docs，唯一直接维护 `p3-linux`。
+- **fly122** — RTX 3080 10GB：evaluation / data / Lean verification worker（工作分支 `worker/fly122`，不直接维护 canonical）。
+
+两个 Qoder 会话**都物理连接在 fly90** 并默认看到同一个 workspace（本仓库路径）；因此 **fly122 会话必须把 fly90 本地 workspace 视为只读**，其所有目标操作必须显式 `ssh fly@10.3.25.122 '<command>'`（fly122 上另有独立 repo）。
+
+完整协作规范（Git ownership、共享 workspace 安全、artifact 传输、holdout / MiniF2F / M2 SFT 分工、新 Agent checklist）见 [`docs/dual_server_collaboration.md`](docs/dual_server_collaboration.md)。
 
 ## 当前冻结的研究边界
 
@@ -17,8 +26,8 @@
 - Lean verifier：`projectnumina/kimina-lean-server:2.0.0`。
 - 第一标准 benchmark：MiniF2F test（evaluation-only）。
 - 当前只准备 Kimina 0.6B Distill、Kimina 0.6B RL 和 Qwen3 0.6B Base 的资源声明。
-- RL 按阶段门控推进：P3-A/P3-B/P3-C 已完成（P3-C = 固定集确认性评估 + verifier-error 复核）；尚未启动长期训练（step30→60 门控待用户决定），不实现 curriculum/frontier sampling/self-training，不开始 500M/360M 实验（M2/M3）。
-- Cold-start SFT 数据已备料（NuminaMath-LEAN，`data/processed/sft_cold_start/`，prepared only、尚未训练），定位为 **M2 contingency asset**，不属于当前 P3 主线。
+- RL 按阶段门控推进：P3-A/P3-B/P3-C 与 M1 step60 延长门（E019）已完成；种子复制与机制实验（E020/E020-M/E022）已记录；不实现 curriculum/frontier sampling/self-training，不开始 500M/360M 规模实验（M3）。
+- M2 冷启动：Qwen3-0.6B-Base 诊断完成（E021，reward-dead 边界）；verified-SFT 干预已预注册（[`docs/m2_sft_intervention_plan.md`](docs/m2_sft_intervention_plan.md)），cold-start SFT 数据已备料（NuminaMath-LEAN，prepared only、尚未训练）。
 
 ## 仓库结构
 

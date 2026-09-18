@@ -1,6 +1,7 @@
 # P3-0 Linux 交接（RTX 3090 24 GB）
 
 > 本文是 `win` 分支（Windows P2.5 收尾）与 Linux P3-0 之间的交接单。原则：**不重跑已完成实验；先在 Linux 完成环境 gate 与 on-policy 校准，再冻结 P3-A 配置**。
+> 双机运行与 Agent 协作规范见 [`dual_server_collaboration.md`](dual_server_collaboration.md)（fly90 canonical / fly122 worker）。
 
 ## Source
 

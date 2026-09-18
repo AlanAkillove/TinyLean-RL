@@ -1,6 +1,6 @@
 # P0 status report
 
-更新时间：2026-09-17（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。
+更新时间：2026-09-17（Asia/Shanghai）。这是当前工作树的事实记录，不包含未执行的实验结果。逐次实验过程记录见 [`experiment_log.md`](experiment_log.md)。双机运行与 Agent 协作规范见 [`dual_server_collaboration.md`](dual_server_collaboration.md)。
 
 ## Linux P3 stage（2026-09-17，服务器 RTX 3090 24 GB；P3-0 → P3-A → P3-B → P3-C 完成）
 
