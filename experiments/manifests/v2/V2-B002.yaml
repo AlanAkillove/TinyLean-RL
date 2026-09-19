@@ -1,0 +1,116 @@
+status: PREREGISTERED
+track: B
+
+experiment: V2-B002
+title: >
+  Family-clean compute-response pilot for theta0: five-budget response-pattern
+  heterogeneity and pathwise Hindsight Oracle headroom screening (no decision model)
+created_at_utc: 2026-09-19T18:55:39Z
+
+purpose:
+  question: >
+    RQ2/RQ3 prerequisite: in a family-clean, sub-billion-parameter Lean prover
+    setting, is theorem-level inference compute demand heterogeneous enough that
+    adaptive allocation has exploitable Oracle headroom under a fixed total
+    inference budget?
+  hypothesis: >
+    The five-bit response patterns (y512..y4096) contain a non-trivial
+    compute-sensitive population and the Hindsight-Oracle-vs-Uniform frontier gap
+    persists across realistic allocated-budget levels; otherwise the adaptive
+    allocator line may stop after B002 (a negative result is an acceptable
+    research outcome).
+  scope_guard: >
+    This pilot trains NO decision model (no XGBoost / MLP / frozen-embedding
+    predictor / encoder / RL / Track C). It only measures heterogeneity and
+    upper-bounds headroom. B003 (Expected Oracle) is gated on a positive B002.
+
+models:
+  - label: theta0
+    path: models/weights/kimina_distill_0_6b
+    revision: >
+      identical to the V2-E001 theta0 (model.safetensors sha256
+      34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2;
+      config.json sha256 f823a08cdadbe0e04ae184b6ea55a75bbabef8499151a170e90e01972d742ba5)
+
+dataset:
+  name: AI-MO/Kimina-Prover-Promptset (train parquet)
+  revision: 3009c548d90160d0f5e963d72238610c6732f812
+  split: >
+    V2-B002 pilot set: first 512 eligible family components of the family-component
+    registry (component = connected component of L3 name-family, L2 skeleton and
+    normalized non-empty natural-language equality), one deterministic
+    representative per component (member with min sha256(statement_id)).
+    Family-level no-contact: no selected component member touches V1-used sets,
+    E023 holdout, A3-primary (A001), A-reserve, B1-audit-reserved or
+    C-joint-holdout, and all members sit in B-train/B-validation/B-test.
+  selection_artifact: experiments/manifests/v2/v2_b002_pilot_set.json
+  theorem_count: 512
+
+protocol:
+  budgets: [512, 1024, 2048, 3072, 4096]
+  label_source: prefix_truncation
+  samples_per_theorem: 1
+  temperature: 1.0
+  top_p: 1.0
+  max_new_tokens: 4096
+  seed_schedule: "gen_seed = 20260920 + rank * 8 + 0 (replicate 0; rank 1..512)"
+  generation_path: >
+    canonical HF single-candidate path (the B1 PASS semantics): transformers
+    4.53.3 fp16, batch_size=1, num_return_sequences=1, do_sample=True,
+    set_seed(gen_seed)
+  extraction: >
+    extract_proof (conservative) + complete_verifier_code assembly (strips the
+    ":=" by sorry" placeholder); runner statuses no_extracted_proof /
+    assemble_failed cover candidate-side failures before the verifier
+  verifier: >
+    local Kimina Lean server (projectnumina/kimina-lean-server:2.0.0) through the
+    B0 VerificationSession: explicit server timeout 60 s < client timeout 90 s,
+    canary fail-close gate, per-candidate calls (verification_batch_size=1) so
+    every prefix carries its own verification runtime
+  engine_exclusions: >
+    vLLM must not construct this dataset (V2-B001: same-config reruns diverge);
+    batched HF is not used (B002 studies clean semantics before throughput)
+
+pinned_artifacts:
+  - path: experiments/manifests/v2/family_component_registry.json
+    sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
+  - path: experiments/manifests/v2/v2_b002_pilot_set.json
+    sha256: 4c9b8f297203deaae508323cd1cc1340056f3ebd1a8cd5445f5f210da04b3e05
+
+analysis:
+  primary:
+    - five-bit response-pattern distribution with descriptive categories
+    - monotonic vs non-monotonic trajectory counts (no automatic fixing; cases listed for forensics)
+    - pathwise Hindsight Oracle frontier vs uniform on the allocated max-token cap axis
+  secondary:
+    - first-success budget and min-success cost distributions
+    - verification health (status by budget, infrastructure outcomes, runtimes)
+    - actual generated tokens / generation seconds reported separately from allocated cap
+  oracle_positioning: >
+    The Hindsight Oracle knows the realized outcome of the SAME trajectory, is not
+    deployable and is strictly stronger than an Expected Oracle; it is a screening
+    upper bound for allocator value, never an achievable target.
+  go_no_go_rule: >
+    An evidence memo after the run (frontier gap across realistic budget levels +
+    compute-sensitive population size + token/solved savings); no hard-coded
+    single-point threshold. GO opens V2-B003 (multi-seed Expected Oracle) only.
+
+freeze_rule:
+  - "pilot set, seed schedule and the five budgets are frozen at this commit"
+  - "no re-selection and no budget added/removed after seeing outcomes"
+  - "verification policy frozen (server_timeout 60 s, client 90 s, canary gate)"
+  - "no engine switch (vLLM excluded; batched HF not used)"
+
+outputs:
+  raw: >
+    experiments/results/v2_b002_rollouts.jsonl (+ v2_b002_run_meta.jsonl;
+    gitignored); analysis experiments/results/v2_b002_analysis.json (gitignored)
+  artifact_hashes: []   # filled after the run; sha256 per artifact
+
+result_summary: null
+status_note: >
+  Preregistered 2026-09-19T18:55:39Z; the manifest is committed to worker/v2-allocator
+  BEFORE any formal launch (the V2-E001 protocol deviation - manifest frozen on
+  disk but only committed after launch - must not repeat). Smoke runs (limit <= 4
+  theorems, separate output file) do not count as results. Formal launch only
+  after the B001 canonical merge completes and fly122 re-syncs main2.
