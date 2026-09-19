@@ -54,3 +54,29 @@ def test_result_is_valid_matches_official_semantics():
     assert not kimina.result_is_valid({"error": "Connection error."})
     assert not kimina.result_is_valid({})
 
+
+
+def test_verify_codes_sends_explicit_server_timeout(monkeypatch):
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured.update(kwargs)
+        return DummyResponse()
+
+    monkeypatch.setattr(kimina.httpx, "post", fake_post)
+    kimina.verify_codes(["proof"], custom_ids=["a"], base_url="http://server", server_timeout=30)
+    assert captured["json"]["timeout"] == 30
+
+
+def test_timeout_field_omitted_by_default_and_set_when_requested(monkeypatch):
+    captured = {}
+
+    def fake_post(url, **kwargs):
+        captured.update(kwargs)
+        return DummyResponse()
+
+    monkeypatch.setattr(kimina.httpx, "post", fake_post)
+    kimina.verify_codes(["proof"], custom_ids=["a"], base_url="http://server")
+    assert "timeout" not in captured["json"]
+    kimina.verify_code("proof", custom_id="a", base_url="http://server", server_timeout=45)
+    assert captured["json"]["timeout"] == 45

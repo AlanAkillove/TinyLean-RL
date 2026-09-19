@@ -74,8 +74,17 @@ def verify_code(
     base_url: str | None = None,
     api_key: str | None = None,
     timeout: float | None = None,
+    server_timeout: int | None = None,
 ) -> dict[str, Any]:
-    """Submit one proof candidate and return the decoded server response."""
+    """Submit one proof candidate and return the decoded server response.
+
+    ``server_timeout`` is the explicit server-side per-request budget (the
+    Kimina ``VerifyRequestBody.timeout`` field; server default 300s). Track B
+    always sends it, and it must be strictly smaller than the client-side
+    ``timeout``: the server then kills a pathological candidate (REPL
+    destroy) *before* the client gives up, so a client-side timeout stays a
+    genuine infrastructure signal (see docs/v2/b0_verifier_reliability.md).
+    """
 
     url = (base_url or os.getenv("LEAN_SERVER_API_URL", "http://127.0.0.1:8000")).rstrip("/")
     request_timeout = timeout or float(os.getenv("TINYLEAN_HTTP_TIMEOUT", "60"))
@@ -88,6 +97,8 @@ def verify_code(
         "codes": [{"custom_id": custom_id, "proof": proof}],
         "infotree_type": "original",
     }
+    if server_timeout is not None:
+        payload["timeout"] = int(server_timeout)
     # The Lean server is a local service; a system-level proxy (for example an
     # HTTP proxy registered on a Windows development machine) must never
     # intercept these requests.
@@ -112,8 +123,13 @@ def verify_codes(
     base_url: str | None = None,
     api_key: str | None = None,
     timeout: float | None = None,
+    server_timeout: int | None = None,
 ) -> dict[str, Any]:
-    """Submit a batch of proof candidates to reduce verifier HTTP overhead."""
+    """Submit a batch of proof candidates to reduce verifier HTTP overhead.
+
+    ``server_timeout`` is the explicit server-side per-request budget; see
+    ``verify_code`` for the Track B policy rationale.
+    """
 
     if custom_ids is not None and len(custom_ids) != len(proofs):
         raise ValueError("custom_ids and proofs must have equal length")
@@ -128,6 +144,8 @@ def verify_codes(
         "codes": [{"custom_id": custom_id, "proof": proof} for custom_id, proof in zip(ids, proofs)],
         "infotree_type": "original",
     }
+    if server_timeout is not None:
+        payload["timeout"] = int(server_timeout)
     # The Lean server is a local service; a system-level proxy (for example an
     # HTTP proxy registered on a Windows development machine) must never
     # intercept these requests.
