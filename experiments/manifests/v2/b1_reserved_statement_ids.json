@@ -1,0 +1,28 @@
+{
+  "artifact_type": "b1_audit_reserved_statement_ids",
+  "experiment": "V2-E001 (canonical alias V2-B001, Track B)",
+  "purpose": "B1 budget-semantics audit development subset (fly122). Registered as the 'B1-audit-reserved' exception in the V2 theorem-role registry; carved out of every V2 role (A/C per the coordination note 2026-09-19; B roles too, per the V2-E001 usage_note: 'must stay excluded from the future B2 train/val/test pools and from any final evaluation').",
+  "source": "fly122 worker/v2-allocator commit f03ebba, experiments/manifests/v2/v2_e001_theorems.json",
+  "source_sha256_of_fetched_copy": "e2372df35df1223f251282873327f8828074e3caa76fa2166763566571075a9c",
+  "source_created_at_utc": "2026-09-19T14:32:11.997032+00:00",
+  "fetched_via": "ssh fly@10.3.25.122 cat (read-only); byte-identical pull assumed",
+  "count": 16,
+  "statement_ids": [
+    "7a334bef-8c3c-4575-9b7c-d211c9a87f82",
+    "c42ecb8e-07a5-4450-b5de-71505c072fbd",
+    "3473fd63-4015-49fb-93a4-18a17932274d",
+    "9bd17255-a094-45be-a91e-f7b047b07dd6",
+    "2c1e5899-5d2d-44c0-83aa-37136ed56fb6",
+    "d0056458-0861-409c-a1cf-bac856e2e825",
+    "2e0e640a-d936-4315-8c05-2c3e05f1b022",
+    "5c35fddd-7f94-40ef-bb70-b8dd17d4c27c",
+    "61eb70b8-df8d-41c6-bddb-4d1f8df07773",
+    "ac087f4e-794a-4d60-a81d-ca5645b2da19",
+    "e2e105da-96d0-48b6-b95b-48c134209896",
+    "c5ab78b7-5ad8-41c4-9bf0-dc35e780e90e",
+    "f656ae1b-e1b2-4e30-9be5-ce00501b3c4c",
+    "498cfcbe-c23e-4184-ba12-88b6f7952ffe",
+    "d1ee5163-8c82-4e8c-8dfd-6cda3143c2fa",
+    "2f3a5e2f-b1ce-47d9-90fe-2bfa0e28ed82"
+  ]
+}
