@@ -4,7 +4,7 @@
 
 > How can a sub-billion-parameter Lean prover solve more theorems under limited compute?
 
-**Status: V2-0 COMPLETE; TRACK A A0 COMPLETE / A1 IN PROGRESS; NO `V2-E###` EXPERIMENT HAS RUN.**
+**Status: V2-0 COMPLETE; TRACK A A0+A1 COMPLETE (A2/A3 AWAITING DECISION); NO `V2-E###` EXPERIMENT HAS RUN.**
 
 _(Recorded 2026-09-19 on `main2`. V1 is frozen: see [`legacy_evidence.md`](legacy_evidence.md) and tag `v1-research-freeze-20260919`.)_
 
@@ -35,7 +35,7 @@ Track C — final joint evaluation       (fly90; only after A AND B are done; V2
 
 - **Track A**: diagnose the V1 RL dynamics, refine the recipe only where evidence demands
   it, then select and freeze `theta_RL*` with an explicit selection rationale; working plan
-  in `track_a_rl_plan.md` (added by the A1 milestone).
+  and A1 decision memo: [`track_a_rl_plan.md`](track_a_rl_plan.md).
 - **Track B**: frozen scope unchanged — budget semantics (V2-1), budget-response dataset
   (V2-2), uniform-vs-oracle headroom (V2-3), lightweight allocator (V2-4); independent of
   Track A progress.
@@ -129,7 +129,7 @@ prerequisite for the main project line to stand.
 | --- | --- | --- | --- |
 | — | V2-0 | Repository / protocol freeze | complete (no experiment run) |
 | A | A0 | Track structure + manifest conventions (`track:` field) | complete |
-| A | A1 | V1 RL-evidence diagnosis → RL recipe decision memo | in progress (`track_a_rl_plan.md`) |
+| A | A1 | V1 RL-evidence diagnosis → RL recipe decision memo | complete ([`track_a_rl_plan.md`](track_a_rl_plan.md)) |
 | A | A2 | Minimal recipe refinement (new training only if A1/A3 justifies it) | gated on A1 |
 | A | A3 | Checkpoint comparison on a dedicated sealed selection set | not started |
 | A | A4 | Freeze `theta_RL*` (checkpoint + hashes + rationale) | not started |

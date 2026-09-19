@@ -2,7 +2,7 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 COMPLETE; TRACK A A0 COMPLETE / A1 IN PROGRESS; NO `V2-E###` EXPERIMENT HAS RUN.**
+Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE (A2/A3 AWAITING DECISION); NO `V2-E###` EXPERIMENT HAS RUN.**
 
 V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 
@@ -20,7 +20,8 @@ V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-
 
 | Document | Purpose |
 | --- | --- |
-| [`research_plan.md`](research_plan.md) | V2 main question, RQ1–RQ5, phase plan (V2-0 … V2-X), guardrails |
+| [`research_plan.md`](research_plan.md) | V2 main question, RQ1–RQ5, Track A/B/C structure, guardrails |
+| [`track_a_rl_plan.md`](track_a_rl_plan.md) | Track A (RL prover) plan + A1 RL recipe decision memo (V1 evidence synthesis, candidate next steps) |
 | [`experiment_protocol.md`](experiment_protocol.md) | Frozen protocol: theorem-level splits, decision-model metrics, allocation metrics, primary figures |
 | [`data_contract.md`](data_contract.md) | Planned `budget_response` schema; prefix-truncation vs direct-budget labels; V2-1 calibration; no enforced monotonicity |
 | [`legacy_evidence.md`](legacy_evidence.md) | Index of the frozen V1 evidence (links only; numbers live in the canonical docs/manifests) |
