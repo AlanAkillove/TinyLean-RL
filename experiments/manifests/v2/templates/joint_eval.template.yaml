@@ -1,0 +1,40 @@
+# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-E###.yaml at pre-registration time.
+# Contains no run data: every value below is a placeholder or null.
+status: TEMPLATE
+
+experiment: V2-E###
+title: "Distill/RLVR x Uniform/Adaptive 2x2 joint evaluation"
+created_at_utc: null
+
+cells:
+  A: {prover: theta0, policy: uniform}
+  B: {prover: theta0, policy: adaptive}
+  C: {prover: qrl,    policy: uniform}
+  D: {prover: qrl,    policy: adaptive}
+
+provers:
+  theta0: {path: <model dir>, revision: null}
+  qrl:    {path: <model dir>, revision: null}
+
+benchmark:
+  dataset: <name>
+  revision: null
+  split: <frozen evaluation split>
+  budgets: [512, 1024, 2048, 3072, 4096]
+  budget_total: <B_total rule>
+
+statistics:
+  unit: theorem_level_paired
+  methods: [paired_bootstrap_ci, win_tie_loss, mcnemar_exact]
+
+freeze_rule:
+  - no checkpoint switching after launch
+  - no budget-set or sampling change after launch
+  - no theorem removal from the frozen split
+
+outputs:
+  raw: <gitignored path>
+  artifact_hashes: []
+
+result_summary: null
+status_note: null

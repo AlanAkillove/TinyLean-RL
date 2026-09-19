@@ -1,0 +1,41 @@
+# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-E###.yaml at pre-registration time.
+# Contains no run data: every value below is a placeholder or null.
+status: TEMPLATE
+
+experiment: V2-E###            # assigned at pre-registration; never reuse V1 E### numbers
+title: <one-line title>
+created_at_utc: null           # set at pre-registration
+
+purpose:
+  question: <which RQ this run addresses>
+  hypothesis: <falsifiable statement>
+
+models:
+  - label: <e.g. theta0 / seed1_step60 / qrl>
+    path: <model dir>
+    revision: null             # checkpoint hash / revision, filled before launch
+
+dataset:
+  name: <dataset name>
+  revision: null               # pinned revision, filled before launch
+  split: <theorem-level split name or manifest path>
+  theorem_count: null
+
+protocol:
+  budgets: [512, 1024, 2048, 3072, 4096]
+  label_source: <prefix_truncation | direct_budget>
+  samples_per_theorem: null
+  temperature: null
+  top_p: null
+  max_new_tokens: null
+  seed_schedule: <formula string>
+  verifier: <server image + strict-rule pointer>
+
+freeze_rule: []                # list what cannot change after launch
+
+outputs:
+  raw: <gitignored path>
+  artifact_hashes: []          # filled after the run; sha256 per artifact
+
+result_summary: null           # filled after the run
+status_note: null              # required once status is not PREREGISTERED

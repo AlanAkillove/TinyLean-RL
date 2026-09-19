@@ -1,0 +1,37 @@
+# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-E###.yaml at pre-registration time.
+# Contains no run data: every value below is a placeholder or null.
+status: TEMPLATE
+
+experiment: V2-E###
+title: <allocator study title>
+created_at_utc: null
+
+inputs:
+  budget_response: <V2-E### artifact path + sha256, filled before launch>
+  split: <train/val/test theorem-level split manifest>
+
+model:
+  family: <uniform | heuristic | xgboost | mlp-on-frozen-projection | other>
+  features: <feature list or representation revision>
+  calibration: <method if any>
+
+training:
+  objective: <e.g. BCE>
+  hyperparameters: <placeholder>
+
+allocation:
+  global_optimizer: <greedy / knapsack solver / ...>
+  budget_total: <definition of B_total>
+
+metrics:
+  decision_model: [log_loss, brier, ece]
+  allocation: [solved_at_budget, tokens_per_solved, gpu_seconds_per_solved, utilization, regret_vs_oracle]
+
+freeze_rule: []
+
+outputs:
+  raw: <gitignored path>
+  artifact_hashes: []
+
+result_summary: null
+status_note: null

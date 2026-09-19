@@ -1,5 +1,7 @@
 # TinyLean-RL 研究计划（主线）
 
+> Legacy V1 research plan, frozen on 2026-09-19. Current plan: [`docs/v2/research_plan.md`](v2/research_plan.md).
+
 > 定位：**亚十亿参数 Lean4 定理证明器的强化学习**（RL for sub-billion Lean provers）。
 > P2 预实验结果（评估校准 / 奖励可靠性 / 奖励信息量）见 [`studies/evaluation_calibration.md`](studies/evaluation_calibration.md)——它们是 P3 的输入，不是本项目的主线目标。
 > 逐次实验过程见 [`experiment_log.md`](experiment_log.md)；当前快照见 [`p0_status.md`](p0_status.md)。

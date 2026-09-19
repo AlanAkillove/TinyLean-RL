@@ -1,5 +1,7 @@
 # 实验日志（Experiment log）
 
+> Historical V1 experiment log, frozen on 2026-09-19. New experiments use the V2-E### namespace (see [`docs/v2/legacy_evidence.md`](v2/legacy_evidence.md) and `experiments/manifests/v2/`).
+
 本文件按时间顺序记录每次实验运行的目的、设置、命令、结果与结论，只保留实际执行过的内容。
 当前状态快照见 [`p0_status.md`](p0_status.md)，研究主线与统计功效分析见 [`research_plan.md`](research_plan.md)，阶段约束与决策格式见 [`experiment_protocol.md`](experiment_protocol.md)。
 大体量原始产物保存在 `experiments/results/`（不进 Git），本日志保留可核对的摘要与指向。
