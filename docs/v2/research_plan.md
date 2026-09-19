@@ -4,18 +4,49 @@
 
 > How can a sub-billion-parameter Lean prover solve more theorems under limited compute?
 
-**Status: V2-0 REPOSITORY PREPARATION COMPLETE; NO V2 EXPERIMENT HAS RUN.**
+**Status: V2-0 COMPLETE; TRACK A A0 COMPLETE / A1 IN PROGRESS; NO `V2-E###` EXPERIMENT HAS RUN.**
 
 _(Recorded 2026-09-19 on `main2`. V1 is frozen: see [`legacy_evidence.md`](legacy_evidence.md) and tag `v1-research-freeze-20260919`.)_
 
-The project has two complementary pillars:
+The project runs as **two parallel tracks plus a joint final evaluation** (amendment
+2026-09-19, below):
 
-1. **Training-time**: verifier-based RL / RLVR (V1 lineage; RQ1 summarizes what is rigorously established).
-2. **Inference-time**: adaptive test-time compute allocation (RQ2–RQ5; new in V2).
+1. **Track A — RL / prover improvement** (fly90): diagnostic + minimal-recipe RL work that
+   ends in a frozen final RL prover checkpoint `theta_RL*` (RQ1 is its starting evidence).
+2. **Track B — adaptive compute allocator** (fly122): inference-time adaptive test-time
+   compute allocation (RQ2–RQ4).
+3. **Track C — joint evaluation** (fly90): the prover × allocation main study and the final
+   benchmark (RQ5), started only after Track A and Track B complete.
 
 ---
 
-## RQ1 — RLVR under constrained compute
+## Track structure (amendment 2026-09-19)
+
+The former linear V2-1 → V2-6 plan is reorganized into two parallel tracks plus a joint
+evaluation. The RQ set, the `V2-E###` numbering, and the V2-0 protocol freeze are
+unchanged; manifests now carry a `track: A | B | C` field
+(see [`../../experiments/manifests/v2/README.md`](../../experiments/manifests/v2/README.md)).
+
+```text
+Track A — RL / prover improvement      (fly90; owns theta_RL*; stages A0–A4)
+Track B — adaptive compute allocator   (fly122; independent; phases V2-1…V2-4)
+Track C — final joint evaluation       (fly90; only after A AND B are done; V2-5…V2-6)
+```
+
+- **Track A**: diagnose the V1 RL dynamics, refine the recipe only where evidence demands
+  it, then select and freeze `theta_RL*` with an explicit selection rationale; working plan
+  in `track_a_rl_plan.md` (added by the A1 milestone).
+- **Track B**: frozen scope unchanged — budget semantics (V2-1), budget-response dataset
+  (V2-2), uniform-vs-oracle headroom (V2-3), lightweight allocator (V2-4); independent of
+  Track A progress.
+- **Track C**: 2×2 prover × allocation study (V2-5) and final benchmark (V2-6); it does not
+  start before Track A freezes `theta_RL*` and Track B completes.
+- **Cross-track interface**: Track A hands over exactly one artifact — the frozen
+  `theta_RL*` (checkpoint + manifest + hashes) at A4; no intermediate checkpoint shuttling.
+  Shared interface/schema changes are allowed on both sides, but allocator training and the
+  budget-response dataset stay in Track B.
+
+## RQ1 — RLVR under constrained compute (Track A evidence base)
 
 Reuse V1 results as-is; do **not** repackage them as new experiments. The permitted rigorous summary of V1:
 
@@ -27,7 +58,7 @@ Reuse V1 results as-is; do **not** repackage them as new experiments. The permit
   McNemar flips).
 - **No stable benchmark improvement is claimed.**
 
-## RQ2 — Heterogeneous inference-compute demand
+## RQ2 — Heterogeneous inference-compute demand (Track B)
 
 Define the per-theorem compute-response curve
 
@@ -41,7 +72,7 @@ Goal: measure `p_i(b)` per theorem and quantify heterogeneity across theorems �
 allocator would have to exploit. Curves are measured empirically; monotonicity is **not** assumed
 (see [`data_contract.md`](data_contract.md) §5).
 
-## RQ3 — Oracle allocation headroom
+## RQ3 — Oracle allocation headroom (Track B)
 
 For a global budget `B_total`, study
 
@@ -52,7 +83,7 @@ max  Σ_i p_i(b_i)     subject to     Σ_i b_i ≤ B_total
 First compare **uniform allocation** vs **oracle allocation**. If the oracle-vs-uniform headroom is
 small, the adaptive-allocator line may be stopped — it is not forced to continue.
 
-## RQ4 — Lightweight adaptive allocator
+## RQ4 — Lightweight adaptive allocator (Track B)
 
 Do **not** train a `theorem → optimal budget class` model. Train instead
 
@@ -73,7 +104,7 @@ Uniform
 
 Avoid introducing a new large router at the start.
 
-## RQ5 — RLVR × adaptive inference (main study)
+## RQ5 — RLVR × adaptive inference (main study, Track C)
 
 Final 2×2 design:
 
@@ -92,18 +123,23 @@ main 2×2.
 Sequential / contextual-bandit allocation is an **optional extension only**; it must not be a
 prerequisite for the main project line to stand.
 
-## Phase plan (frozen)
+## Phase plan (track-mapped)
 
-| Phase | Scope | Status |
-| --- | --- | --- |
-| V2-0 | Repository / protocol freeze | repository preparation complete (no experiment run) |
-| V2-1 | Prefix-vs-direct budget equivalence audit | not started |
-| V2-2 | Budget-response dataset construction | not started |
-| V2-3 | Uniform-vs-Oracle headroom study | not started |
-| V2-4 | Lightweight allocator | not started |
-| V2-5 | Distill/RLVR × Uniform/Adaptive main study | not started |
-| V2-6 | External benchmark / MiniF2F final evaluation | not started |
-| V2-X | Optional sequential/bandit extension | optional |
+| Track | Phase | Scope | Status |
+| --- | --- | --- | --- |
+| — | V2-0 | Repository / protocol freeze | complete (no experiment run) |
+| A | A0 | Track structure + manifest conventions (`track:` field) | complete |
+| A | A1 | V1 RL-evidence diagnosis → RL recipe decision memo | in progress (`track_a_rl_plan.md`) |
+| A | A2 | Minimal recipe refinement (new training only if A1/A3 justifies it) | gated on A1 |
+| A | A3 | Checkpoint comparison on a dedicated sealed selection set | not started |
+| A | A4 | Freeze `theta_RL*` (checkpoint + hashes + rationale) | not started |
+| B | V2-1 | Prefix-vs-direct budget equivalence audit | not started (fly122) |
+| B | V2-2 | Budget-response dataset construction | not started (fly122) |
+| B | V2-3 | Uniform-vs-Oracle headroom study | not started (fly122) |
+| B | V2-4 | Lightweight allocator | not started (fly122) |
+| C | V2-5 | Distill/RLVR × Uniform/Adaptive main study | blocked until A4 + B done |
+| C | V2-6 | External benchmark / MiniF2F final evaluation | blocked until A4 + B done |
+| — | V2-X | Optional sequential/bandit extension | optional |
 
 **No V2-E### manifest or result exists yet.** V2-E numbers are only assigned at formal
 (pre-registered) run time; see [`../../experiments/manifests/v2/README.md`](../../experiments/manifests/v2/README.md).
@@ -115,3 +151,7 @@ prerequisite for the main project line to stand.
   direct-budget interventions before V2-1 completes.
 - No monotonic regularization in the first allocator models; monotonicity is measured, not assumed.
 - Interfaces are frozen before implementation; allocator code is added only when a phase requires it.
+- Track A runs one formal RL job at a time on fly90; no new training without a specific
+  diagnosed question (A1/A3), and every formal run is preregistered before launch.
+- Checkpoint selection (A3) uses a dedicated selection set; the Track C final benchmark is
+  never used to pick checkpoints, and the frozen `theta_RL*` is not swapped after A4.

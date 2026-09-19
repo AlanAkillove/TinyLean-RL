@@ -1,6 +1,7 @@
 # TEMPLATE ONLY — copy to experiments/manifests/v2/V2-E###.yaml at pre-registration time.
 # Contains no run data: every value below is a placeholder or null.
 status: TEMPLATE
+track: B                    # A = RL prover (fly90) | B = allocator (fly122) | C = joint eval
 
 experiment: V2-E###
 title: <allocator study title>

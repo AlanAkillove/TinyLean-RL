@@ -2,12 +2,15 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 REPOSITORY PREPARATION COMPLETE; NO V2 EXPERIMENT HAS RUN.**
+Status: **V2-0 COMPLETE; TRACK A A0 COMPLETE / A1 IN PROGRESS; NO `V2-E###` EXPERIMENT HAS RUN.**
 
-V2 has two complementary pillars:
+V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 
-1. **Training-time**: verifier-based RL / RLVR (inherited from the frozen V1 lineage).
-2. **Inference-time**: adaptive test-time compute allocation (new in V2).
+1. **Track A — training-time**: verifier-based RL / RLVR prover improvement (inherited from
+   the frozen V1 lineage), ending in the frozen final checkpoint `theta_RL*` (fly90).
+2. **Track B — inference-time**: adaptive test-time compute allocation (fly122).
+3. **Track C — joint evaluation**: prover × allocation main study plus the final benchmark,
+   started only after Track A and Track B complete (fly90).
 
 > All of P0–P3 / E001–E024 is **V1 historical evidence**: kept, not rewritten, not renumbered
 > (branch `p3-linux`, tag `v1-research-freeze-20260919`).
