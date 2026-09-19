@@ -1,0 +1,107 @@
+# E024 - MiniF2F external-benchmark evaluation (theta0 vs seed1-step60).
+# PRE-REGISTRATION: frozen before the first formal generation.
+#
+# Research question: does the absence of a consistent positive effect on the
+# same-source final holdout (E023) also appear on an external benchmark?
+# Primary comparison: theta0 vs seed1-step60 (seed1 is the pre-determined
+# primary training replicate; no result-dependent checkpoint selection).
+# Primary evaluation host: fly122 only (the E023 cross-device audit showed
+# that cross-device vLLM stochastic sampling is not trajectory-identical).
+# Order: freeze -> canonicalize (fly90 review + p3-linux) -> evaluate.
+
+status: "PREREGISTERED - awaiting canonical review/gate before formal generation"
+
+purpose:
+  question: "Does the absence of a consistent positive effect on the same-source final holdout (E023: cross-seed mean -0.91pp, positive sign 1/3) also appear on an external benchmark?"
+  benchmark: "MiniF2F test"
+  comparison: "theta0 vs seed1-step60"
+  no_result_dependent_selection: "seed3 solved@4 = 47 in E023 must not change the primary replicate"
+
+dataset:
+  name: "MiniF2F test; AI-MO/minif2f_test HF mirror (Kimina recipe-compatible)"
+  parquet: data/raw/minif2f_hf/data/train-00000-of-00001.parquet
+  revision: 5def318348521dfc34875045a9ecddf729a2b49f
+  upstream_repo: "openai/miniF2F at 4e433ff5cadff23f9911a2bb5bbab2d351ce5554"
+  audit:
+    test_rows: 244
+    columns: [name, informal_prefix, formal_statement]
+    names_unique: true
+    cross_check: "244/244 problem correspondence with upstream lean/src/test.lean; one naming variant: imosl_2007_algebra_p6 (HF) vs imo_2007_p6 (upstream)"
+    statement_shape: "formal_statement carries imports plus an informal doc comment and ends with the by-tactic opener (244/244)"
+  order: "parquet row order is frozen; theorem_index = row index; no shuffling"
+
+models:
+  theta0:
+    path: models/weights/kimina_distill_0_6b
+    global_step: 0
+  seed1_step60:
+    path: runs/p3c_models/step_60
+    global_step: 60
+
+protocol:
+  evaluator: scripts/e024_minif2f_eval.py
+  analyzer: scripts/e024_minif2f_analyze.py
+  host: "fly122 only (RTX 3080 10GB; single-host primary)"
+  theorems: 244
+  samples_per_theorem: 4
+  temperature: 1.0
+  top_p: 1.0
+  max_new_tokens: 4096
+  generation: "vLLM, same engine args as the E023 evaluator (gpu_memory_utilization 0.85, max_model_len 5120, chunk_theorems 16)"
+  seed_schedule: "20260917 + theorem_index*8 + sample_index"
+  verifier: "strict Kimina 2.0.0 localhost server; valid = no error-severity message and no sorry"
+  verify_workers: 4
+  verify_batch_size: 4
+  execution: "theta0 and seed1-step60 run strictly serially on one GPU; never two engines at once"
+
+prompt_contract:
+  system_prompt: "You are an expert in mathematics and proving theorems in Lean 4."
+  user_template: |
+    Think about and solve the following problems step by step in Lean 4.
+
+    # Problem:
+    {informal_problem}
+
+    # Formal Statement:
+    ```lean4
+    {formal_statement}
+    ```
+  informal_source_field: informal_prefix
+  formal_source_field: formal_statement
+  rationale: "same proving interface as the pinned recipe/Promptset evaluator (identical template and chat-template application); only the informal source column differs; no prompt mixing"
+
+artifacts:
+  theta0: experiments/results/e024_minif2f_theta0.json
+  seed1_step60: experiments/results/e024_minif2f_seed1_step60.json
+  theta0_adjudication: experiments/results/e024_minif2f_theta0_adjudication.json
+  seed1_adjudication: experiments/results/e024_minif2f_seed1_step60_adjudication.json
+  analysis: experiments/results/e024_minif2f_analysis.json
+
+statistics:
+  primary_unit: "theorem-level paired comparison (244 theorems)"
+  tests:
+    - "theorem-level paired bootstrap (10000 resamples, seed 20260917), 95% CI"
+    - "win/tie/loss on per-theorem verified counts"
+    - "exact two-sided McNemar on the solved indicator"
+  forbidden: "candidate-level pseudo-independent significance tests"
+  pairing_guards: [statement_id alignment, samples-per-theorem equality, seed-schedule equality]
+
+adjudication_policy:
+  mode: "stored proof only; NO regeneration"
+  server: "warm Lean server; same timeout; bounded attempts (scripts/p3c_adjudicate_verifier_errors.py)"
+  reporting: "observed and corrected counts reported side by side; raw artifacts never overwritten"
+  primary_note: "if corrected differs from observed, the primary paired analysis records the corrected policy explicitly"
+
+freeze_rule:
+  after_first_primary_evaluation_starts:
+    - "no checkpoint switching"
+    - "no seed redraw"
+    - "no sampling hyperparameter change"
+    - "no token-budget change"
+    - "no theorem removal (server 500 / timeout / resource-failure theorems stay in the primary 244; post-hoc sensitivity must be labelled separately)"
+
+interpretation_policy:
+  near_zero: "external benchmark evaluation is consistent with E023: no reliable capability improvement was detected under the current low-compute recipe"
+  positive_ci_crosses_zero: "directionally positive but inconclusive external effect"
+  differs_from_e023: "external and same-source evaluations differ; the discrepancy requires cautious interpretation"
+  e023_override: "E024 must not overwrite the E023 verdict"
