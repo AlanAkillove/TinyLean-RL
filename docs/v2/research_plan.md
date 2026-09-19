@@ -150,7 +150,10 @@ is RUNNING on fly122.** Numbers are assigned at formal (pre-registered) run time
 pre-amendment ids stay registered in the [registry](../../experiments/manifests/v2/registry.yaml).
 Theorem-level role assignments (B-train / B-validation / B-test / A-selection /
 C-joint-holdout + B1-audit-reserved) come from the frozen
-[`theorem_role_registry.json`](../../experiments/manifests/v2/theorem_role_registry.json).
+[`theorem_role_registry.json`](../../experiments/manifests/v2/theorem_role_registry.json)
+(exact-statement isolation only; the measured source-problem family leakage is in
+[`family_leakage_audit.md`](family_leakage_audit.md), and future splits - the Track C final
+holdout in particular - must use the family-component split defined there).
 
 ## Guardrails
 
@@ -163,3 +166,7 @@ C-joint-holdout + B1-audit-reserved) come from the frozen
   diagnosed question (A1/A3), and every formal run is preregistered before launch.
 - Checkpoint selection (A3) uses a dedicated selection set; the Track C final benchmark is
   never used to pick checkpoints, and the frozen `theta_RL*` is not swapped after A4.
+- Track C's final holdout is drawn on **family components** - L3 source-family merged with
+  L2 statement-skeleton and normalized nonempty natural-language equality as cross-name
+  links - from a future family-granular registry amendment, never from the exact-statement
+  registry (see [`family_leakage_audit.md`](family_leakage_audit.md) §5.3).

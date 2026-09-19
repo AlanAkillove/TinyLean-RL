@@ -78,9 +78,10 @@ A001 set has a `_v`-sibling that V1 trained on or evaluated.
 ### 3.4 Impact numbers for future amendments
 
 - **A001 effective clusters**: 512 ids in **392 families** (98 families carry 218 ids).
-  Family correlation shrinks the effective sample: treat borderline paired CIs on A001 as
-  ~**1.14×** wider than the nominal i.i.d. width. The preregistered decision rule and
-  margins are unchanged; this only affects how borderline CIs are read in the write-up.
+  The ~**1.14×** CI-width factor is a *heuristic sensitivity* only (392 vs 512 clusters),
+  not a formal correction: A001 executes the preregistered theorem-level bootstrap
+  unchanged (see §5.1). A family-cluster bootstrap may be added after completion as a
+  clearly-labelled post-hoc robustness analysis without touching the rule or the verdict.
 - **Track C family-clean subset**: only **90 of 680** C-joint-holdout ids have an L3 family
   disjoint from *everything* (V1-used ∪ E023 ∪ B/A roles). If "clean" only needs to mean
   "not used for selection", the number is 361/680. A family-granular re-partition is
@@ -103,8 +104,43 @@ A001 set has a `_v`-sibling that V1 trained on or evaluated.
 4. **Track B (fly122)**: derive B2 train/val/test from family-complete groups; extend the
    B1 carve-out to its family siblings (51+12+9 ids in the B pools) if the no-contact
    guarantee must hold at family level.
-5. **Track C**: freeze the final holdout from the family-clean C-joint subset (90 ids), or
-   re-partition under a family-granular amendment before the final evaluation.
+5. **Track C**: the final holdout is drawn on the family-component split (§5.3), not on the
+   exact-statement registry; 90/680 C-joint ids are family-clean today, so the component
+   split is materialized as a family-granular registry amendment before the final evaluation.
 
 References: `experiment_protocol.md` §2/§8 (corrected 2026-09-20), `theorem_role_registry.json`
 (unchanged), `track_a_rl_plan.md` §4.1 amendment.
+
+## 5. Owner constraints (2026-09-20, post-recognition)
+
+Recorded as canonical methodology constraints. They change neither the frozen sets nor the
+running V2-A001 execution.
+
+### 5.1 CI width is heuristic sensitivity only
+
+The 392-vs-512 cluster arithmetic (~1.14x) is a *heuristic sensitivity note*, not a formal
+CI correction. V2-A001 strictly executes the preregistered theorem-level bootstrap
+(`paired_bootstrap`, 10k resamples, seed 20260917): the selection rule, margins and verdict
+are computed from it, unchanged. After A001 completes, a **family-cluster bootstrap** (L3
+families as resampling units) may be reported as a clearly-labelled *post-hoc robustness*
+analysis only; it must never alter the selection rule or the A001 verdict.
+
+### 5.2 A-reserve is not an independent A2 evaluation set
+
+A-reserve shares **56 L3 families** with A3-primary, so it is no longer suitable as the
+independent key-evaluation set for a future `V2-A002`. Candidate 2 stays dormant; if it is
+ever triggered, its evaluation set is a **newly preregistered A2-eval set** under the
+family-granular registry, family-disjoint from A001. A-reserve is **not re-drawn now**, and
+no A001 frozen artifact changes. This supersedes the usage note recorded inside the frozen
+`theorem_role_registry.json` (`a_selection_split.usage`); the registry file itself is
+untouched.
+
+### 5.3 Track C holdout = family-component split
+
+The Track C final holdout is based on a **family-component split**, not the existing
+exact-statement registry. Component definition (at least): merge by L3 source-family, and
+add cross-name connections via L2 statement-skeleton equality and normalized nonempty
+`natural_language` equality (connected components of the union of these relations). The
+component split is materialized as a preregistered family-granular registry amendment
+before any Track C evaluation, so that no evaluation theorem shares a component with V1
+training/evaluation data or with any A/B selection pool.

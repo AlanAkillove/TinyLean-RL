@@ -209,13 +209,18 @@ Selection-set requirements (to freeze at preregistration):
 
 **2026-09-20 amendment (family leakage audit).** The audit measured the set's real
 isolation: 232/512 A001 ids share an L3 source-problem family with a V1-consumed statement
-(52/512 with the sealed E023 holdout; 392 effective clusters, borderline CIs ≈ 1.14x wider).
-The set and the one-shot rule stay frozen. Consequences: (a) the A001 outcome is a
-*selection statistic* for `theta_RL*` only — no A001 delta, even with `ci_low > 0`, is a
-confirmatory RL-vs-theta0 capability claim; (b) the A4 freeze package must include the audit
-and report the overlap next to the selection outcome; (c) the Track C final holdout comes
-from a family-clean split (90/680 C-joint ids are family-clean today, or re-partition under
-the family-granular amendment); (d) the audit completes between A001 and the A4 freeze.
+(52/512 with the sealed E023 holdout; 392 effective clusters - the 1.14x width factor is a
+heuristic sensitivity note, never a formal CI correction). The set and the one-shot rule
+stay frozen: A001 executes the preregistered theorem-level bootstrap unchanged.
+Consequences: (a) the A001 outcome is a *selection statistic* for `theta_RL*` only - no
+A001 delta, even with `ci_low > 0`, is a confirmatory RL-vs-theta0 capability claim; (b) the
+A4 freeze package must include the audit and report the overlap next to the selection
+outcome; (c) the Track C final holdout is built on the family-component split (L3 merged
+with L2-skeleton / NL equality; [`family_leakage_audit.md`](family_leakage_audit.md) §5.3),
+not the exact-statement registry; (d) the audit completes between A001 and the A4 freeze;
+(e) A-reserve is not independent from A3-primary (56 shared L3 families) - a future
+Candidate 2 would preregister a new A001-family-disjoint A2-eval set instead (§4.2, audit
+§5.2); A-reserve is not re-drawn and no frozen artifact changes.
 
 ### 4.2 Candidate 2 (conditional, one training run) — `V2-A002`-class
 
@@ -232,8 +237,11 @@ freeze the best-evidenced checkpoint and document the null.
   detectable capability gain under the same single-GPU budget?*
 - Preconditions before any launch: runner/interface changes reviewed; a memory probe for
   the enlarged `max_model_len`/KV footprint; its own preregistered manifest with a go/no-go
-  rule evaluated on the frozen `A-reserve` set (Δ vs theta0 and vs the incumbent
-  `theta_RL*`); user confirmation and foreground monitoring per the training-run norms.
+  rule evaluated on a **newly frozen, A001-family-disjoint A2-eval set** (Δ vs theta0 and vs
+  the incumbent `theta_RL*`) - the `A-reserve` split is *not* independent (56 shared L3
+  families with A3-primary; 2026-09-20 amendment,
+  [`family_leakage_audit.md`](family_leakage_audit.md) §5.2); user confirmation and
+  foreground monitoring per the training-run norms.
 - Why not something lighter as the "one run": T=0.6 or larger-n variants contradict §2.5
   (no significant IGR gain, solve rate invariant, comparability cost); lr/horizon changes
   are outside the allowed direction list; 60→100 is barred by the E019 Case-B rule.
@@ -260,3 +268,11 @@ Addendum (2026-09-20): the theorem-family leakage audit completed while A001 was
 running; it is a required element of the A4 freeze package, and the A001 outcome's
 positioning is selection-only (no confirmatory capability claim). No frozen set, rule or
 protocol was modified by the audit.
+
+Addendum (2026-09-20b, owner constraints): (1) the 1.14x CI-width factor is heuristic
+sensitivity only - the preregistered theorem-level bootstrap governs; a family-cluster
+bootstrap may be added post-completion as robustness only, never changing the rule or the
+verdict; (2) A-reserve is not suitable as a V2-A002 evaluation set (56 shared L3 families);
+a future Candidate 2 preregisters a new family-disjoint A2-eval set under the
+family-granular registry; (3) the Track C final holdout uses the family-component split,
+never the exact-statement registry. Candidate 2 stays dormant; nothing frozen changes.
