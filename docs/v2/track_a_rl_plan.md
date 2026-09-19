@@ -1,7 +1,8 @@
 # TinyLean-RL V2 — Track A: RL prover plan & recipe decision memo
 
-Status: **A0 complete; A1 complete (this memo).** No training run has been launched; no
-`V2-E###` manifest exists yet.
+Status: **A0 complete; A1 complete (this memo); A3 preregistered as `V2-A001`
+(evaluation-only, frozen A3-primary set).** No training run has been launched; Candidate 2
+(the only conditional training run) stays dormant.
 Track structure: [`research_plan.md`](research_plan.md) (Track A/B/C amendment). V1 evidence
 index: [`legacy_evidence.md`](legacy_evidence.md). Discipline: [`experiment_protocol.md`](experiment_protocol.md),
 [`../dual_server_collaboration.md`](../dual_server_collaboration.md) §6.1,
@@ -163,12 +164,15 @@ Physically available candidates (verified on fly90, 2026-09-19):
 
 Selection-set requirements (to freeze at preregistration):
 
-- **Fresh and sealed**: build with a fail-closed builder (the `build_final_holdout.py`
-  pattern): exclude the 763 statements used anywhere in V1 training/evaluation **and** the
-  128 sealed E023 holdout statements; draw from the remaining pool (≈6.7 k unique
-  statements) with a pre-registered seed; never redraw.
-- **Size for power**: target ≈2 pp resolution (paired CI ≤ ±2.5 pp) → ≈192–256 theorems ×
-  4 samples per model; exact size fixed in the manifest.
+- **Fresh and sealed (realized)**: the V2 theorem-role registry (built 2026-09-19,
+  `experiments/manifests/v2/theorem_role_registry.json`) partitions the eligible pool
+  (6,729 statements = 7,620 unique minus the 763 V1-used and the 128 sealed E023 holdout)
+  into B-train / B-validation / B-test / A-selection / C-joint-holdout. The **A3-primary**
+  subset (512 theorems, group-aligned, order-hash frozen) is materialized as
+  `v2_a001_selection_set.json`; the remainder (`A-reserve`, 162) is reserved for the
+  conditional second A-track decision only.
+- **Size for power**: 512 theorems × 4 samples → paired CI ≈ ±1.6–1.7 pp (target ≥ ~2 pp
+  resolution).
 - **One host**: all models of the comparison on fly90; never mix hosts (E023 cross-device
   audit: per-sample trajectories are not bitwise-reproducible across hosts).
 - **Protocol**: strict Kimina 2.0.0, temp 1.0 / top_p 1.0 / max 4096, canonical seed
@@ -182,7 +186,7 @@ Selection-set requirements (to freeze at preregistration):
 
 ## 4. Candidate next steps (maximum two)
 
-### 4.1 Candidate 1 (recommended, no training) — `V2-E001`
+### 4.1 Candidate 1 (accepted, no training) — `V2-A001` (preregistered)
 
 **Checkpoint-selection evaluation on a fresh sealed selection set.**
 
@@ -191,17 +195,17 @@ Selection-set requirements (to freeze at preregistration):
 - Models: core family = seed1 {step10, 20, 30, 60} + theta0 anchor (5); recommended
   additions: seed2-step60, seed3-step60 (7 total) so the "seed1 is the default" claim is
   re-measured on equal footing.
-- Compute: order of ~5–8 GPU-hours on fly90 for 7 models at ~192–256 theorems × 4 (E023
-  rate: 512 candidates ≈ 27 min). Purpose estimate, not a wall-time promise.
-- Deliverable: canonical selection artifact(s) + a filled `V2-E001` manifest recording the
+- Compute: order of ~12–15 GPU-hours on fly90 for 7 models at the frozen 512-theorem ×
+  4 set (E023 rate: 512 candidates ≈ 27 min). Purpose estimate, not a wall-time promise.
+- Deliverable: canonical selection artifact(s) + the filled `V2-A001` manifest recording the
   rule application → the `theta_RL*` candidate for A4.
-- Requires a formal preregistration: **yes** — the `V2-E###` manifest (template
-  `rl_training.template.yaml`; `track: A`, `training_steps: 0`) must be committed before
-  launch, including the selection rule, margin, and tie-break.
+- Preregistration: committed before launch (`experiments/manifests/v2/V2-A001.yaml`; template
+  `rl_training.template.yaml`; `track: A`, evaluation-only) including the frozen set, the
+  selection rule, margin, and tie-break.
 - Explicitly not: a Track C endpoint, a benchmarking claim, or a fishing exercise — one
   draw, one decision.
 
-### 4.2 Candidate 2 (conditional, one training run) — `V2-E002`-class
+### 4.2 Candidate 2 (conditional, one training run) — `V2-A002`-class
 
 Trigger: only if (i) Candidate 1 shows every available checkpoint statistically ≤ theta0
 (no candidate adopts), **and** (ii) the project decides Track A should attempt one
@@ -216,8 +220,8 @@ freeze the best-evidenced checkpoint and document the null.
   detectable capability gain under the same single-GPU budget?*
 - Preconditions before any launch: runner/interface changes reviewed; a memory probe for
   the enlarged `max_model_len`/KV footprint; its own preregistered manifest with a go/no-go
-  rule (selection-set Δ vs theta0 and vs the incumbent `theta_RL*` candidate); user
-  confirmation and foreground monitoring per the training-run norms.
+  rule evaluated on the frozen `A-reserve` set (Δ vs theta0 and vs the incumbent
+  `theta_RL*`); user confirmation and foreground monitoring per the training-run norms.
 - Why not something lighter as the "one run": T=0.6 or larger-n variants contradict §2.5
   (no significant IGR gain, solve rate invariant, comparability cost); lr/horizon changes
   are outside the allowed direction list; 60→100 is barred by the E019 Case-B rule.
@@ -232,8 +236,10 @@ Also recorded: A2 (minimal recipe refinement *with training*) is **not justified
 A1's specific finding is a missing *selection-evidence* surface (A3), not a defective
 recipe whose fix demands training.
 
-## 6. Next decision point
+## 6. Decision status (2026-09-19)
 
-Approve Candidate 1 (preregister `V2-E001`) — this is the only Track A action required to
-reach A3. Candidate 2 stays dormant until its trigger conditions are met and the project
-owner confirms; no training starts without that confirmation.
+Project-owner decision: A2 deferred; A3 prioritized and preregistered as `V2-A001`;
+Candidate 2 stays dormant — it may be triggered only by its published conditions and
+explicit owner approval, and never starts automatically. Note: fly122's pre-amendment
+`V2-E001` (canonical alias `V2-B001`) is a Track B experiment, unrelated to this Track-A
+numbering.

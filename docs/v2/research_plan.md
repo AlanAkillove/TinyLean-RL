@@ -4,7 +4,7 @@
 
 > How can a sub-billion-parameter Lean prover solve more theorems under limited compute?
 
-**Status: V2-0 COMPLETE; TRACK A A0+A1 COMPLETE (A2/A3 AWAITING DECISION); NO `V2-E###` EXPERIMENT HAS RUN.**
+**Status: V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 PREREGISTERED; TRACK B B1 RUNNING (raw id V2-E001 = alias V2-B001); NO TRACK A/C EXPERIMENT HAS RUN YET.**
 
 _(Recorded 2026-09-19 on `main2`. V1 is frozen: see [`legacy_evidence.md`](legacy_evidence.md) and tag `v1-research-freeze-20260919`.)_
 
@@ -23,8 +23,10 @@ The project runs as **two parallel tracks plus a joint final evaluation** (amend
 ## Track structure (amendment 2026-09-19)
 
 The former linear V2-1 → V2-6 plan is reorganized into two parallel tracks plus a joint
-evaluation. The RQ set, the `V2-E###` numbering, and the V2-0 protocol freeze are
-unchanged; manifests now carry a `track: A | B | C` field
+evaluation. The RQ set and the V2-0 protocol freeze are unchanged; formal numbering now
+uses the track-specific namespaces `V2-A###` / `V2-B###` / `V2-C###` (naming amendment
+2026-09-19; registry: [`../../experiments/manifests/v2/registry.yaml`](../../experiments/manifests/v2/registry.yaml)),
+and manifests carry a `track: A | B | C` field
 (see [`../../experiments/manifests/v2/README.md`](../../experiments/manifests/v2/README.md)).
 
 ```text
@@ -130,10 +132,12 @@ prerequisite for the main project line to stand.
 | — | V2-0 | Repository / protocol freeze | complete (no experiment run) |
 | A | A0 | Track structure + manifest conventions (`track:` field) | complete |
 | A | A1 | V1 RL-evidence diagnosis → RL recipe decision memo | complete ([`track_a_rl_plan.md`](track_a_rl_plan.md)) |
-| A | A2 | Minimal recipe refinement (new training only if A1/A3 justifies it) | gated on A1 |
-| A | A3 | Checkpoint comparison on a dedicated sealed selection set | not started |
+| A | A2 | Minimal recipe refinement (new training only if A1/A3 justifies it) | gated on A3 |
+| A | A3 | Checkpoint comparison on a dedicated sealed selection set | preregistered (`V2-A001`; A3-primary of the theorem-role registry) |
 | A | A4 | Freeze `theta_RL*` (checkpoint + hashes + rationale) | not started |
-| B | V2-1 | Prefix-vs-direct budget equivalence audit | not started (fly122) |
+| B | B0 | Verifier reliability guard (shared infrastructure) | complete; merged into main2 (fly122 commit) |
+| B | B1 | Budget-semantics audit (raw id `V2-E001` = alias `V2-B001`) | RUNNING (fly122) |
+| B | V2-1 | Prefix-vs-direct budget equivalence audit | not started (fly122; B1 is its first stage) |
 | B | V2-2 | Budget-response dataset construction | not started (fly122) |
 | B | V2-3 | Uniform-vs-Oracle headroom study | not started (fly122) |
 | B | V2-4 | Lightweight allocator | not started (fly122) |
@@ -141,8 +145,12 @@ prerequisite for the main project line to stand.
 | C | V2-6 | External benchmark / MiniF2F final evaluation | blocked until A4 + B done |
 | — | V2-X | Optional sequential/bandit extension | optional |
 
-**No V2-E### manifest or result exists yet.** V2-E numbers are only assigned at formal
-(pre-registered) run time; see [`../../experiments/manifests/v2/README.md`](../../experiments/manifests/v2/README.md).
+**No Track A/C experiment has run yet; the first B-track experiment (`V2-B001`, raw id `V2-E001`)
+is RUNNING on fly122.** Numbers are assigned at formal (pre-registered) run time; raw
+pre-amendment ids stay registered in the [registry](../../experiments/manifests/v2/registry.yaml).
+Theorem-level role assignments (B-train / B-validation / B-test / A-selection /
+C-joint-holdout + B1-audit-reserved) come from the frozen
+[`theorem_role_registry.json`](../../experiments/manifests/v2/theorem_role_registry.json).
 
 ## Guardrails
 

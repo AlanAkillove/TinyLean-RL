@@ -1,9 +1,9 @@
-# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-E###.yaml at pre-registration time.
+# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-B###.yaml at pre-registration time.
 # Contains no run data: every value below is a placeholder or null.
 status: TEMPLATE
 track: B                    # A = RL prover (fly90) | B = allocator (fly122) | C = joint eval
 
-experiment: V2-E###            # assigned at pre-registration; never reuse V1 E### numbers
+experiment: V2-B###            # assigned at pre-registration; never reuse V1 E### numbers
 title: <one-line title>
 created_at_utc: null           # set at pre-registration
 

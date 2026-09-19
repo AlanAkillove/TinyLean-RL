@@ -1,6 +1,6 @@
 # TinyLean-RL V2 — Experiment Protocol
 
-Frozen 2026-09-19 (V2-0) on `main2`. Applies to all new (`V2-E###`) experiments.
+Frozen 2026-09-19 (V2-0) on `main2`. Applies to all new V2 experiments (`V2-A###` / `V2-B###` / `V2-C###`; naming amendment 2026-09-19, registry: `experiments/manifests/v2/registry.yaml`).
 V1 protocol and records remain authoritative for V1 numbers (frozen; see [`legacy_evidence.md`](legacy_evidence.md)).
 
 ## 1. Invariants carried over from V1
@@ -61,7 +61,7 @@ Primary figures:
 
 ## 7. Pre-registration and freeze discipline
 
-- Every formal (`V2-E###`) experiment gets a manifest **before** the run
+- Every formal (`V2-A###` / `V2-B###` / `V2-C###`) experiment gets a manifest **before** the run
   (`experiments/manifests/v2/`; start from a template).
 - Each manifest states its own freeze rule (what cannot change after launch).
 - Failed / aborted runs keep their manifest with an updated status and a status note — never deleted,

@@ -2,7 +2,7 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE (A2/A3 AWAITING DECISION); NO `V2-E###` EXPERIMENT HAS RUN.**
+Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 PREREGISTERED; TRACK B B1 RUNNING (raw id V2-E001 = alias V2-B001); NO TRACK A/C EXPERIMENT HAS RUN YET.**
 
 V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 
@@ -14,7 +14,9 @@ V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-
 
 > All of P0–P3 / E001–E024 is **V1 historical evidence**: kept, not rewritten, not renumbered
 > (branch `p3-linux`, tag `v1-research-freeze-20260919`).
-> New experiments are numbered `V2-E001`, `V2-E002`, ... (see `experiments/manifests/v2/README.md`).
+> New experiments use the track namespaces `V2-A###` / `V2-B###` / `V2-C###`; raw pre-amendment
+> ids (`V2-E001`) and their canonical aliases are permanently registered in
+> `experiments/manifests/v2/registry.yaml`.
 
 ## Contents
 
@@ -25,6 +27,8 @@ V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-
 | [`experiment_protocol.md`](experiment_protocol.md) | Frozen protocol: theorem-level splits, decision-model metrics, allocation metrics, primary figures |
 | [`data_contract.md`](data_contract.md) | Planned `budget_response` schema; prefix-truncation vs direct-budget labels; V2-1 calibration; no enforced monotonicity |
 | [`legacy_evidence.md`](legacy_evidence.md) | Index of the frozen V1 evidence (links only; numbers live in the canonical docs/manifests) |
+| `experiments/manifests/v2/registry.yaml` | Canonical V2 experiment registry (track namespaces + raw-id aliases, e.g. V2-E001 = V2-B001) |
+| [`../dual_server_collaboration.md`](../dual_server_collaboration.md) | Dual-server rules; V2 numbering amendment in §14 |
 
 ## Branches
 
