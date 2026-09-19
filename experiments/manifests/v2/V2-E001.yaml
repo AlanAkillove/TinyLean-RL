@@ -1,0 +1,99 @@
+status: RUNNING
+
+experiment: V2-E001
+track: B
+title: Budget-semantics audit — direct-budget vs 4096-prefix equivalence for theta0
+created_at_utc: 2026-09-19T14:40:00Z
+
+purpose:
+  question: >
+    RQ2 prerequisite (V2-1 / Track B B1): under the canonical single-candidate
+    sampling path (batch_size=1, num_return_sequences=1, explicit per-candidate
+    seed), is a direct-budget generation G(x, seed, b) token-identical to the
+    first b tokens of G(x, seed, 4096), for b in {512, 1024, 2048, 3072}?
+    This decides whether B2 may use prefix-derived (cheap) budget labels or
+    must generate every budget directly.
+  hypothesis: >
+    On the canonical single-candidate path, direct-budget and 4096-prefix
+    generations are token-identical for every b, and same-seed reruns are
+    token-identical. A batched path (HF batch / vLLM) may or may not preserve
+    token identity; it is measured and reported separately.
+
+models:
+  - label: theta0
+    path: models/weights/kimina_distill_0_6b
+    revision: >
+      model.safetensors sha256 34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2;
+      config.json sha256 f823a08cdadbe0e04ae184b6ea55a75bbabef8499151a170e90e01972d742ba5
+
+dataset:
+  name: AI-MO/Kimina-Prover-Promptset (train parquet)
+  revision: 3009c548d90160d0f5e963d72238610c6732f812
+  split: >
+    development subset of 16 theorems; theorem-level; all V1-used sets excluded
+    (p3c_fixed_set 64, m1_final_holdout 128, igr_mechanism_set 64, E013 32,
+    E016 16); never MiniF2F test / M1 final holdout / E024 records
+  theorem_count: 16
+  theorem_list_file: experiments/manifests/v2/v2_e001_theorems.json
+  selection_method: random.Random(20260919).sample(eligible_ids in parquet dedup order, 16)
+
+protocol:
+  stage1_canonical_path:
+    engine: transformers 4.53.3 (AutoModelForCausalLM, float16, single GPU)
+    batch_size: 1
+    num_return_sequences: 1
+    temperature: 1.0
+    top_p: 1.0
+    do_sample: true
+    pad_token_id: eos_token_id
+    prompt_contract: canonical Promptset chat template (scripts/promptset_rollout_probe.py build_prompt_text)
+    runs_per_candidate: [512-det1, 512-det2, 1024, 2048, 3072, 4096]
+    seed_schedule: "gen_seed = 20260919 + theorem_rank * 8 + replicate, replicate in {0, 1}"
+    generations_total: 192
+  stage2_batch_probes:
+    conditional: run only after stage1 completes cleanly
+    hf_batch:
+      targets: theorem_rank 0-3, replicate 0
+      batch_size: 4
+      budgets: [1024 (x2 determinism), 4096]
+    vllm:
+      version: 0.9.1
+      targets: theorem_rank 0-3, replicate 0
+      n: 1
+      budgets: [1024 (x2 determinism), 4096]
+      max_model_len: 5120
+      gpu_memory_utilization: 0.85
+  verifier: not used; generation-semantics audit only (no Lean verification)
+  storage: token ids and metadata only; no Lean verification in B1
+
+analysis:
+  primary: token-identical comparison of raw token ids (never decoded strings)
+  determinism_check: "512-det1 == 512-det2 (token ids), per (theorem, replicate)"
+  prefix_check: "direct_b == full4096[:len(direct_b)], per (theorem, replicate, b)"
+  verdict_rule: >
+    single_candidate_path = PASS iff every determinism and prefix check holds
+    for all 16 x 2 candidates; otherwise FAIL with the mismatch list (first
+    divergence positions). Stage 2 verdicts reported per engine with the same
+    checks plus batch-vs-single reference differences.
+  outputs:
+    summary: experiments/results/v2_b1_budget_semantics.json (gitignored; summary copied to result_summary)
+    raw: experiments/results/v2_b1_rollouts.jsonl (gitignored)
+
+freeze_rule:
+  - theorem list (16 ids + statements) is frozen at preregistration
+  - seed schedule, budgets, engine, sampling parameters frozen before the run
+  - no re-selection, no re-run of stage1 after seeing stage1 outcomes
+  - stage 2 runs may be skipped (recorded as skipped) but never re-tuned
+
+outputs:
+  raw: experiments/results/v2_b1_rollouts.jsonl
+  analysis: experiments/results/v2_b1_budget_semantics.json
+  artifact_hashes: []   # filled after the run
+
+result_summary: null
+status_note: null
+status_note: >
+  Stage 1 launched on fly122 as systemd user unit fly122-v2e001-b1
+  (smoke run of rank 0 x 2 replicates completed first: determinism PASS,
+  prefix 5/5 PASS on the completed replicate). Stage 2 probes remain
+  conditional on stage 1 completing cleanly.

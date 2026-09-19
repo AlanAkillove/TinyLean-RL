@@ -1,0 +1,168 @@
+{
+  "artifact_type": "v2_e001_theorem_list",
+  "experiment": "V2-E001",
+  "track": "B",
+  "selection_seed": 20260919,
+  "selection_method": "random.Random(20260919).sample(eligible_ids in parquet dedup order, 16)",
+  "dataset_name": "AI-MO/Kimina-Prover-Promptset (train)",
+  "dataset_path": "data/raw/kimina_promptset/data/train-00000-of-00001.parquet",
+  "dataset_revision": "3009c548d90160d0f5e963d72238610c6732f812",
+  "excluded_sources": {
+    "p3c_fixed_set": 64,
+    "m1_final_holdout": 128,
+    "igr_mechanism_set": 64,
+    "E013_sampled": 32,
+    "E016_sampled": 16
+  },
+  "eligible_count": 7332,
+  "excluded_total": 288,
+  "theorem_count": 16,
+  "usage_note": "development subset for budget-semantics auditing; must stay excluded from the future B2 train/val/test pools and from any final evaluation",
+  "theorems": [
+    {
+      "rank": 0,
+      "statement_id": "7a334bef-8c3c-4575-9b7c-d211c9a87f82",
+      "name": "algebra_269141_v0002",
+      "formal_statement": "import Mathlib\n\n/- Let $a, b, c$ be real numbers with $a \\neq 0$. If the discriminant $b^2 - 4ac$ of the quadratic equation $ax^2 + bx + c = 0$ is 1, then the absolute difference between the roots is $1/|a|$. -/\ntheorem algebra_269141_v0002 {a b c : ℝ} (ha : a ≠ 0) (h : b^2 - 4*a*c = 1) :\n    ∃ x y, x ≠ y ∧ a*x^2 + b*x + c = 0 ∧ a*y^2 + b*y + c = 0 ∧ |x - y| = 1/|a| := by sorry",
+      "statement_sha256": "f696d509450d132b7fb2eeaa9d71dcbc5afebbae09a5839c58b18c5e35f01311",
+      "natural_language": "Let $a, b, c$ be real numbers with $a \\neq 0$. If the discriminant $b^2 - 4ac$ of the quadratic equation $ax^2 + bx + c = 0$ is 1, then the absolute difference between the roots is $1/|a|$.",
+      "natural_language_sha256": "9b74de7e04644c591cbe67264a102625a2cf4e645188116e794287fd63dc7246"
+    },
+    {
+      "rank": 1,
+      "statement_id": "c42ecb8e-07a5-4450-b5de-71505c072fbd",
+      "name": "number_theory_117300",
+      "formal_statement": "import Mathlib\n\n/- 19.1.33 ** The sequence $\\left\\{x_{n}\\right\\}$ is defined as:\n$$\nx_{1}=x_{2}=1, x_{n+2}=14 x_{n+1}-x_{n}-4, n \\geqslant 1 .\n$$\n\nProve: Every term in the sequence $\\left\\{x_{n}\\right\\}$ is a perfect square. -/\ntheorem number_theory_117300 {x : ℕ → ℤ}\n    (hx1 : x 1 = 1) (hx2 : x 2 = 1)\n    (hxn : ∀ n ≥ 1, x (n + 2) = 14 * x (n + 1) - x n - 4) :\n    ∀ n, IsSquare (x n) := by",
+      "statement_sha256": "31ea8ff73e3ff0512f1d4bbbcf6c01684b54dbb6fe22978baefb32d1f4b47c82",
+      "natural_language": "19.1.33 ** The sequence $\\left\\{x_{n}\\right\\}$ is defined as:\n$$\nx_{1}=x_{2}=1, x_{n+2}=14 x_{n+1}-x_{n}-4, n \\geqslant 1 .\n$$\n\nProve: Every term in the sequence $\\left\\{x_{n}\\right\\}$ is a perfect square.",
+      "natural_language_sha256": "e9575d32463e4c3784ba4b0171e996d66cd0e776180ac330738b8e4986edfb53"
+    },
+    {
+      "rank": 2,
+      "statement_id": "3473fd63-4015-49fb-93a4-18a17932274d",
+      "name": "number_theory_229850",
+      "formal_statement": "import Mathlib\n\n/- Example 7 A positive integer $n$ cannot be divisible by 2 or 3, and there do not exist non-negative integers $a, b$ such that $\\left|2^{a}-3^{b}\\right|=n$. Find the minimum value of $n$. -/\ntheorem number_theory_229850 (n : ℕ) (hn : n > 0) (h2 : ¬ 2 ∣ n) (h3 : ¬ 3 ∣ n)\n    (h : ∀ a b : ℕ, |(2 ^ a : ℤ) - 3 ^ b| ≠ n) :\n    n ≥ 35 := by",
+      "statement_sha256": "b3efa1a9831ae8161dc8c86ca8ae3dc0b0977015e312f161f2ac06de15f1536d",
+      "natural_language": "Example 7 A positive integer $n$ cannot be divisible by 2 or 3, and there do not exist non-negative integers $a, b$ such that $\\left|2^{a}-3^{b}\\right|=n$. Find the minimum value of $n$.",
+      "natural_language_sha256": "9d1846ded8e3aaa2541cc910cea5a339ccbc9f03ee97c7e4c3602b3643345e0a"
+    },
+    {
+      "rank": 3,
+      "statement_id": "9bd17255-a094-45be-a91e-f7b047b07dd6",
+      "name": "algebra_130245_v0006",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- For any real number x and any natural number n, the equality cos((n+2)*x) + cos(n*x) = 2 * cos((n+1)*x) * cos(x) holds. -/\ntheorem algebra_130245_v0006 (x : ℝ) (n : ℕ) :\n    cos ((n + 2) * x) + cos (n * x) = 2 * cos ((n + 1) * x) * cos x := by sorry",
+      "statement_sha256": "70921d1c0bcaf5c3a3e0ea99d590671f506761c545340d614b3e201788b2da06",
+      "natural_language": "For any real number x and any natural number n, the equality cos((n+2)*x) + cos(n*x) = 2 * cos((n+1)*x) * cos(x) holds.",
+      "natural_language_sha256": "d1bd66e0deb19154b603fc7084702a3cb10eccd78a6e63b84476b8e50ecc1663"
+    },
+    {
+      "rank": 4,
+      "statement_id": "2c1e5899-5d2d-44c0-83aa-37136ed56fb6",
+      "name": "algebra_12822_v1127",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_12822_v1127\n    (f : ℝ → ℝ)\n    (hf : f = fun x => 3^(x + 1)) :\n    Set.image f (Set.Ico (-1) 0) = Set.Ico 1 3 := by sorry",
+      "statement_sha256": "52ec6e807335bfa0ae4bb163c4c112e5e5cfb5b6c41792152993c46a7b653d2e",
+      "natural_language": "Let f be a function from real numbers to real numbers defined by `f(x) = 3^(x+1)`. The image of the interval `[-1, 0)` under the function `f` is the interval `[1, 3)`.",
+      "natural_language_sha256": "21878a70e34541bca381624be3085687cfcb7c1b4fb2f5f3a0d1dfd56b532cb3"
+    },
+    {
+      "rank": 5,
+      "statement_id": "d0056458-0861-409c-a1cf-bac856e2e825",
+      "name": "number_theory_144063",
+      "formal_statement": "import Mathlib\n\ndef I : Set ℤ := {x | 1 ≤ x ∧ x ≤ 100}\n\ndef A : Set ℤ := {m | 1 ≤ m ∧ m ≤ 100 ∧ ∃ k, m = 2 * k + 1}\n\ndef B : Set ℤ := {n | 1 ≤ n ∧ n ≤ 100 ∧ ∃ k, n = 3 * k}\n\n/- 6. Given the universal set $I=\\{x \\mid 1 \\leqslant x \\leqslant 100, x \\in \\mathbf{Z}\\}$ and its two subsets $A=\\{m \\mid 1 \\leqslant m \\leqslant$ $100, m=2 k+1, k \\in \\mathbf{Z}\\}, B=\\{n \\mid 1 \\leqslant n \\leqslant 100, n=3 k, k \\in \\mathbf{Z}\\}$, the largest element in $\\bar{A} \\cap B$ is $\\qquad$ . -/\ntheorem number_theory_144063 :\n    IsGreatest {x | x ∈ I ∧ ¬x ∈ A ∧ x ∈ B} 96 := by",
+      "statement_sha256": "2b8c23275d48c9949051d93d399a9c6449b5cadbdfcf0ff0940d7ad687c4b8f4",
+      "natural_language": "6. Given the universal set $I=\\{x \\mid 1 \\leqslant x \\leqslant 100, x \\in \\mathbf{Z}\\}$ and its two subsets $A=\\{m \\mid 1 \\leqslant m \\leqslant$ $100, m=2 k+1, k \\in \\mathbf{Z}\\}, B=\\{n \\mid 1 \\leqslant n \\leqslant 100, n=3 k, k \\in \\mathbf{Z}\\}$, the largest element in $\\bar{A} \\cap B$ is $\\qquad$ .",
+      "natural_language_sha256": "355e9424d3e74aa0895519e7b075d4bd46b72e6c69236c6e6152b46e59b9579f"
+    },
+    {
+      "rank": 6,
+      "statement_id": "2e0e640a-d936-4315-8c05-2c3e05f1b022",
+      "name": "number_theory_313328_v0001",
+      "formal_statement": "import Mathlib\n\n/- Let `m` be a positive integer. Let `[x]` denote the greatest integer not exceeding the real number `x`, and let `{x}` denote the fractional part of `x`, given by `x - [x]`. If `[(2m+1){sqrt(2m+1)}] = m$, then `m$ must be a triangular number. -/\ntheorem number_theory_313328_v0001 (m : ℕ) (hm : m > 0) (h : ⌊(2 * m + 1) * Real.sqrt (2 * m + 1)⌋ = m) :\n    ∃ k, m = k * (k + 1) / 2 := by sorry",
+      "statement_sha256": "e2555e76022346070e1c164f0d7a91990187f381c8fd6283c74709c6c856f838",
+      "natural_language": "Let `m` be a positive integer. Let `[x]` denote the greatest integer not exceeding the real number `x`, and let `{x}` denote the fractional part of `x`, given by `x - [x]`. If `[(2m+1){sqrt(2m+1)}] = m`, then `m` must be a triangular number.",
+      "natural_language_sha256": "61922c4379a49bac2b018f442d941f8bc53a905ff51ec7d3e5e06cb4d355ec0e"
+    },
+    {
+      "rank": 7,
+      "statement_id": "5c35fddd-7f94-40ef-bb70-b8dd17d4c27c",
+      "name": "algebra_13061",
+      "formal_statement": "import Mathlib\n\n/-Let $S$ be the set of positive real numbers.  Let $f : S \\to \\mathbb{R}$ be a function such that\n\\[f(x) f(y) = f(xy) + 2005 \\left( \\frac{1}{x} + \\frac{1}{y} + 2004 \\right)\\]for all $x,$ $y > 0.$\n\nLet $n$ be the number of possible values of $f(2),$ and let $s$ be the sum of all possible values of $f(2).$  Find $n \\times s.$-/\ntheorem algebra_13061 (f : ℝ → ℝ) (h : ∀ x y, x > 0 → y > 0 → f x * f y = f (x * y) + 2005 * (1 / x + 1 / y + 2004)) : ∃(S : Finset ℝ), S = {z | f 2 = z} ∧ S.card * (∑ z ∈ S, z) = 4011/2 := by",
+      "statement_sha256": "a37927af7257b7567b67ac37ba168859dc4d1d54a86aa0f05eea2754dde2e8c0",
+      "natural_language": "Let $S$ be the set of positive real numbers.  Let $f : S \\to \\mathbb{R}$ be a function such that\n\\[f(x) f(y) = f(xy) + 2005 \\left( \\frac{1}{x} + \\frac{1}{y} + 2004 \\right)\\]for all $x,$ $y > 0.$\n\nLet $n$ be the number of possible values of $f(2),$ and let $s$ be the sum of all possible values of $f(2).$  Find $n \\times s.$",
+      "natural_language_sha256": "d6344bb30bb819607610fda57d0d1a4be188caaf1fe10c3faadc6d777150f09f"
+    },
+    {
+      "rank": 8,
+      "statement_id": "61eb70b8-df8d-41c6-bddb-4d1f8df07773",
+      "name": "algebra_206099",
+      "formal_statement": "import Mathlib\n\n/- ## Problem 3\n\nGiven integers $\\mathrm{a}_{0}, \\mathrm{a}_{1}, \\ldots, \\mathrm{a}_{100}$, satisfying $\\mathrm{a}_{1}>\\mathrm{a}_{0}, \\mathrm{a}_{1}>0$, and $\\mathrm{a}_{\\mathrm{r}+2}=3 \\mathrm{a}_{\\mathrm{r}+1}-2 \\mathrm{a}_{\\mathrm{r}}$ for $\\mathrm{r}=0,1, \\ldots, 98$. Prove $\\mathrm{a}_{100}>2^{99}$.\n\n -/\ntheorem algebra_206099 (a : ℕ → ℤ) (h₀ : a 1 > a 0) (h₁ : a 1 > 0)\n    (h₂ : ∀ r ∈ Finset.range 99, a (r + 2) = 3 * a (r + 1) - 2 * a r) :\n    a 100 > 2 ^ 99 := by",
+      "statement_sha256": "58459329eb6d399239ffed3d8f42432447cfe94af6bccc5b86340f2c8f338bbe",
+      "natural_language": "## Problem 3\n\nGiven integers $\\mathrm{a}_{0}, \\mathrm{a}_{1}, \\ldots, \\mathrm{a}_{100}$, satisfying $\\mathrm{a}_{1}>\\mathrm{a}_{0}, \\mathrm{a}_{1}>0$, and $\\mathrm{a}_{\\mathrm{r}+2}=3 \\mathrm{a}_{\\mathrm{r}+1}-2 \\mathrm{a}_{\\mathrm{r}}$ for $\\mathrm{r}=0,1, \\ldots, 98$. Prove $\\mathrm{a}_{100}>2^{99}$.\n\n",
+      "natural_language_sha256": "de64582924a2ddb076fb74a70290dfd33eaf1f567525e91bdbcb3ddf4a59d205"
+    },
+    {
+      "rank": 9,
+      "statement_id": "ac087f4e-794a-4d60-a81d-ca5645b2da19",
+      "name": "algebra_214768",
+      "formal_statement": "import Mathlib\n\n/- Example 4 (1997 National High School Competition Question) Given the sequence $\\left\\{x_{n}\\right\\}$ satisfies $x_{n+1}=x_{n}-x_{n-1}(n \\geqslant 2)$, $x_{1}=a, x_{2}=b$, and let $S_{n}=x_{1}+x_{2}+\\cdots+x_{n}$, then which of the following conclusions is correct? ( ).\nA. $x_{100}=-a, S_{100}=2 b-a$\nB. $x_{100}=-b, S_{100}=2 b-a$\nC. $x_{100}=-b, S_{100}=b-a$\nD. $x_{100}=-a, S_{100}=b-a$ -/\ntheorem algebra_214768 {a b : ℝ} (x : ℕ → ℝ) (h : ∀ n, x (n + 1) = x n - x (n - 1))\n    (hx1 : x 1 = a) (hx2 : x 2 = b) :\n    x 100 = -a ∧ ∑ i in Finset.Icc 1 100, x i = 2 * b - a := by",
+      "statement_sha256": "0051a0daec6a5708a2b8674f2993f062a350d395b3297a99fa815ddbf108274f",
+      "natural_language": "Example 4 (1997 National High School Competition Question) Given the sequence $\\left\\{x_{n}\\right\\}$ satisfies $x_{n+1}=x_{n}-x_{n-1}(n \\geqslant 2)$, $x_{1}=a, x_{2}=b$, and let $S_{n}=x_{1}+x_{2}+\\cdots+x_{n}$, then which of the following conclusions is correct? ( ).\nA. $x_{100}=-a, S_{100}=2 b-a$\nB. $x_{100}=-b, S_{100}=2 b-a$\nC. $x_{100}=-b, S_{100}=b-a$\nD. $x_{100}=-a, S_{100}=b-a$",
+      "natural_language_sha256": "65d58a75de66b1bb785e5af8fd3926171d2a933ec9274e2af78233d325572564"
+    },
+    {
+      "rank": 10,
+      "statement_id": "e2e105da-96d0-48b6-b95b-48c134209896",
+      "name": "inequalities_295992_v0002",
+      "formal_statement": "import Mathlib\n\n/- For any positive real number $x$, the value of the expression $\\frac{x}{x^2+1}$ is at most $\\frac{1}{2}$. -/\ntheorem inequalities_295992_v0002 (x : ℝ) (hx : 0 < x) : x / (x ^ 2 + 1) ≤ 1 / 2 := by sorry",
+      "statement_sha256": "e867543a5e0ce870723ae924cd58ce089b9e17c5ebe02be680a1e88dc815c9ad",
+      "natural_language": "For any positive real number $x$, the value of the expression $\\frac{x}{x^2+1}$ is at most $\\frac{1}{2}$.",
+      "natural_language_sha256": "79e82384184de4aca3354282029811b68c9e81e632cc65a53b7f581dbc0d2ea5"
+    },
+    {
+      "rank": 11,
+      "statement_id": "c5ab78b7-5ad8-41c4-9bf0-dc35e780e90e",
+      "name": "number_theory_38941_v8418",
+      "formal_statement": "import Mathlib\n\ntheorem number_theory_38941_v8418 {p m : ℕ} (hp : p.Prime) (hm : 0 < m)\n    (h : p * (p + m + 1) = (m + 1)^3) : p ∣ m + 1 := by sorry",
+      "statement_sha256": "4488d4bb624783f273d2eed95f06b9e184cf80b95f53e30734b87ac541e6374f",
+      "natural_language": "Let p be a prime number and let m be a positive integer. If p multiplied by the quantity (p + m + 1) is equal to the cube of (m + 1), then m + 1 must be divisible by p.",
+      "natural_language_sha256": "7a3d140e13e4318082126a586dba2da88da0f722a5b994ca87b890142bb04597"
+    },
+    {
+      "rank": 12,
+      "statement_id": "f656ae1b-e1b2-4e30-9be5-ce00501b3c4c",
+      "name": "inequalities_230072",
+      "formal_statement": "import Mathlib\n\n/- 21. (2004 China Western Mathematical Olympiad) Let $u$, $v$, $w$ be positive real numbers, satisfying the condition $u \\sqrt{v w}+v \\sqrt{w u}+w \\sqrt{u v} \\geqslant$ 1. Find the minimum value of $u+v+w$. -/\ntheorem inequalities_230072\n  : IsLeast\n    ((fun (u, v, w) => u + v + w) '' {(u, v, w) : ℝ × ℝ × ℝ | 0 < u ∧ 0 < v ∧ 0 < w ∧ 1 ≤ u * √(v * w) + v * √(w * u) + w * √(u * v)})\n    √3\n  := by",
+      "statement_sha256": "943b90ccc128d6a97809e11b652c797e9bd68a0c55829fe8e183e755a4be7187",
+      "natural_language": "21. (2004 China Western Mathematical Olympiad) Let $u$, $v$, $w$ be positive real numbers, satisfying the condition $u \\sqrt{v w}+v \\sqrt{w u}+w \\sqrt{u v} \\geqslant$ 1. Find the minimum value of $u+v+w$.",
+      "natural_language_sha256": "e05c8383e841016b52c7983e9e552cb5e1719bb37ae57513530f0bec7c95e180"
+    },
+    {
+      "rank": 13,
+      "statement_id": "498cfcbe-c23e-4184-ba12-88b6f7952ffe",
+      "name": "algebra_184340_v0004",
+      "formal_statement": "import Mathlib\n\n/- For any real numbers a and b, the polynomial `a^3 + a^2 + a*b + a^2*b` is equal to the product `a*(a+1)*(a+b)$. -/\ntheorem algebra_184340_v0004 (a b : ℝ) : a^3 + a^2 + a * b + a^2 * b = a * (a + 1) * (a + b) := by sorry",
+      "statement_sha256": "d9911aa643be1370520901477276ef1fdfbc4a693f072aff1ad850b70048edb1",
+      "natural_language": "For any real numbers a and b, the polynomial `a^3 + a^2 + a*b + a^2*b` is equal to the product `a*(a+1)*(a+b)`.",
+      "natural_language_sha256": "641374ee3509b21cc5b55e1c11b63cb9e616a8326ffc7c340872575f294b95d5"
+    },
+    {
+      "rank": 14,
+      "statement_id": "d1ee5163-8c82-4e8c-8dfd-6cda3143c2fa",
+      "name": "algebra_9043_v4845",
+      "formal_statement": "import Mathlib\n\ntheorem algebra_9043_v4845 (p q : ℝ) (α : ℝ) (h₁ : Real.sin α + Real.cos α = - p) (h₂ : Real.sin α * Real.cos α = q) :\n    p + q ≥ -1 := by sorry",
+      "statement_sha256": "108704fa62acd8642f631943dc4908b9e93e4ce5e48e57cfe0d29a9e5cf9090c",
+      "natural_language": "Let $p$ and $q$ be real numbers. If there exists a real number $\\alpha$ such that $\\sin \\alpha$ and $\\cos \\alpha$ are the roots of the quadratic equation $x^2+px+q=0$, then $p+q \\ge -1$.",
+      "natural_language_sha256": "a83b5363da4d6b1725b1497776e058a9d94ebd3076bdc3ecf0c113a0eb8e5b91"
+    },
+    {
+      "rank": 15,
+      "statement_id": "2f3a5e2f-b1ce-47d9-90fe-2bfa0e28ed82",
+      "name": "inequalities_167543_v0005",
+      "formal_statement": "import Mathlib\n\nopen Real\n\n/- Let $n$ be a positive integer and let $x_1, x_2, \\ldots, x_n$ be positive real numbers. If the product of these numbers is 1, then their sum is greater than or equal to $n$. -/\ntheorem inequalities_167543_v0005 (n : ℕ) (hn : 0 < n) (x : Fin n → ℝ)\n    (hx : ∀ i, 0 < x i) (hxp : ∏ i, x i = 1) :\n    ∑ i, x i ≥ n := by sorry",
+      "statement_sha256": "761a2b9d5a909ccad7b5af2fea985e7c79809c2bd4f81ae8ed6e8c6ac54be4a7",
+      "natural_language": "Let $n$ be a positive integer and let $x_1, x_2, \\ldots, x_n$ be positive real numbers. If the product of these numbers is 1, then their sum is greater than or equal to $n$.",
+      "natural_language_sha256": "e65dc90c735ea6e4d99ad66fb274c3d5e6d9208491c1b0175fec0770b444518d"
+    }
+  ],
+  "created_at_utc": "2026-09-19T14:32:11.997032+00:00"
+}
