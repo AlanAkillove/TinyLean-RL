@@ -166,6 +166,14 @@ p3-linux push（仅 fly90）
 - 默认是 **review + cherry-pick**；
 - 禁止 blind merge 整个 worker branch——worker branch 可能包含 host-specific helpers、intermediate commits、worker-only notes，canonical history 必须保持精炼。
 
+### 6.1 V2 branch update（2026-09-19）
+
+- `p3-linux` 现为 **frozen V1 evidence branch**（annotated tag `v1-research-freeze-20260919`；E001–E024 证据冻结，不再接收新实验）。
+- `main2` 为 **V2 canonical development branch**（研究计划见 `docs/v2/research_plan.md`）。
+- fly90 仍为 canonical controller 与两个分支的唯一直接维护者；fly122 仍为 worker，不重写 canonical history。
+- 未来 worker branch 必须从**明确指定的 `main2` SHA** 分叉（handoff 中记录 base SHA），并沿用 review → cherry-pick → test → push 流程。
+- artifact 传输与 raw-data policy 不变（§8–§10）。
+
 ## 7. Shared fly90 Workspace Safety
 
 fly90 primary session 在执行以下操作前：
@@ -325,6 +333,8 @@ model: ...
 
 最终 canonical manifest 在 fly90 合并。
 
+V2 编号（2026-09-19 起）：所有新实验使用 `V2-E###`（`V2-E001`, ...）；既有 `E###` 编号永不复用。未执行的 V1 预留编号（E025/E026）不再使用，后续 M2/SFT 类工作一律进入 `V2-E###`。V2 manifests 位于 `experiments/manifests/v2/`（参见其 README 与模板）。
+
 ## 15. Artifact Provenance
 
 双机产生的正式 artifact 必须记录：
@@ -451,7 +461,8 @@ GPU state
 最终项目真相只来自：
 
 ```text
-fly90 / p3-linux
+fly90 / p3-linux   (frozen V1 evidence; tag v1-research-freeze-20260919)
+fly90 / main2      (V2 canonical development, since 2026-09-19)
 ```
 
 不是：
