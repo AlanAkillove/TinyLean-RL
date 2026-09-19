@@ -522,6 +522,23 @@
 - 保全动作（CPU 层）：fly90 sensitivity raw 与其 partial adjudication 已字节一致另存为 `e023_holdout_seed1_fly90_crossdevice.json` / `..._crossdevice_adjudication.json`（防止未来 primary artifact 占用 canonical 文件名时丢失；原文件未改动）。
 - 更新后的下一步：fly122 补跑 primary seed1 + seed3 → artifacts 回 fly90 → `holdout_multiseed_analyze.py`（仅 fly90，四份 primary 齐全后）。**fly90 不再有 E023 GPU 任务。**
 
+**E023 final analysis（2026-09-19，fly90 CPU-only；primary = fly122 四模型）**
+
+- 输入（全部 fly122 primary，双端 SHA256 逐一核对一致）：θ0 120/512、seed1 **122/512**、seed2 113/512、seed3 **111/512**；adjudication credit 全 0（corrected = observed）。
+- 一致性核验（全部通过）：四模型各 128 定理 / 512 records；statement_id 集完全一致且与 sealed holdout 的 index→id 映射一致；samples_per_theorem=4；fixed_set=`m1_final_holdout.json`（selection_seed 20260918、git 04033aa）。
+- Analyzer 输入歧义修复：`holdout_multiseed_analyze.py` 新增显式 `--theta0/--seed1/--seed2/--seed3`（默认值向后兼容；纯 plumbing，统计定义不变）+ 新增 3 项测试（显式路径映射 / statement-id 守卫 / samples-per-theorem 守卫）；以显式 primary 路径运行（canonical 的 `e023_holdout_seed1.json` 仍属 fly90 sensitivity，绝不误用）。
+- **Per-seed（Δ = θ60−θ0，theorem-level paired）**：
+  - seed1：**+0.0039**（+2 candidates），CI95 [−0.0293, +0.0371]，WTL 20/92/16，McNemar +7/−9，p=0.804；
+  - seed2：**−0.0137**（−7），CI95 [−0.0469, +0.0195]，WTL 15/92/21，McNemar +5/−6，p=1.000；
+  - seed3：**−0.0176**（−9），CI95 [−0.0508, +0.0156]，WTL 14/96/18，McNemar +6/−5，p=1.000。
+  - 所有 CI 跨零；McNemar 全部不显著。
+- **Cross-seed**：mean **−0.0091**，range [−0.0176, +0.0039]，positive sign 1/3（negative 2/3；descriptive only）。
+- 覆盖度（solved@4 = ≥1 verified）：θ0 46 / seed1 44 / seed2 45 / **seed3 47**；solved_all：15/19/15/13。
+- **seed3 焦点**：candidate 总数 111（低于 θ0 120）而 solved@4 47（略升）——每定理 verified 计数直方图 [0/1/2/3/4] 从 θ0 的 [82,11,11,9,15] 变为 [81,15,13,6,13]：成功由“少定理全解”向“多定理浅解”重组（all-4 15→13、1–2 解 22→28）。无 paired 显著结果，不做能力方向解释。
+- **theorem 38**：四个 primary × 四个样本全部稳定 HTTP 500（`lean_message: Server error '500 Internal Server Error' .../verify`），**保留在 primary 128-定理分析**；post-hoc sensitivity（127 定理、明确标记、不影响 primary verdict）结论不变（Δ 差 ≤0.0002、tie −1、McNemar 不变）→ `e023_theorem38_sensitivity.json`。
+- **Cross-device sensitivity（fly90 seed1 vs fly122 seed1，NOT primary）**：raw output exact 5/512（0.98%）、proof exact 19/512（3.71%）、verified agreement 447/512（87.30%）、flips fly90-only 31 / fly122-only 34、aggregate 119 vs 122、IGR 0.2656 vs 0.1953（audit `e023_seed1_crossdevice_audit_fly122.json`）。限定结论：本协议下跨 GPU/runtime 的 vLLM 随机评估非轨迹级一致，故 primary 统一单主机；**不外推**到所有 GPU/解码栈。
+- **E023 结论（三 seed 整体）**：verifier-RL 的 trainability / informative signal 可复现（三 seed IGR 与机制一致），但**现 60 步低算力配方下下游能力增益并非一致为正**（1 正 2 负、全部 CI 跨零、McNemar 不显著）。主产物：`e023_multiseed_analysis.json`。
+
 ---
 
 ## 追加记录模板

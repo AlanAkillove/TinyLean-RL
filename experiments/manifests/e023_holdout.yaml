@@ -1,12 +1,13 @@
-# E023 — M1 final-holdout evaluation (Phase 5F). INTERIM record (3/4 models).
+# E023 — M1 final-holdout evaluation (Phase 5F). FINAL record.
 #
-# Four model evaluations on the sealed 128-theorem holdout
+# Four model checkpoints evaluated on the sealed 128-theorem holdout
 # (experiments/manifests/m1_final_holdout.json; selection seed 20260918).
-# The canonical verdict (scripts/holdout_multiseed_analyze.py, fly90 only)
-# runs ONLY after all four artifacts are complete. No result-dependent
-# checkpoint selection; no post-hoc theorem removal (theorem-38 HTTP-500
-# pattern stays in the primary analysis; sensitivity analyses only if clearly
-# marked as post-hoc).
+# Primary host policy: all four checkpoints on fly122 (frozen 2026-09-19,
+# before any fly122 seed1/seed3 results; see host_policy_amendment below).
+# Canonical analysis (scripts/holdout_multiseed_analyze.py, fly90, CPU-only)
+# was produced after all four primary artifacts were complete. No
+# result-dependent checkpoint selection; theorem 38 retained in the primary
+# 128-theorem analysis (post-hoc sensitivity only, clearly marked).
 
 protocol:
   evaluator: scripts/p3c_checkpoint_eval.py
@@ -19,70 +20,110 @@ protocol:
   verify_workers: 4
   verify_batch_size: 4
   verifier: "strict Kimina 2.0.0, per-machine localhost server (never cross-host)"
-
-split_after_amendment:        # decided 2026-09-19, BEFORE any fly122 seed1/seed3 results
-  fly122 (PRIMARY): [theta0, seed1_step60, seed2_step60, seed3_step60]
-  fly90  (sensitivity only): [seed1_step60 cross-device reproducibility run - NOT primary]
+  evaluator_revision: 04033aa
 
 host_policy_amendment:
   reason:
-    - "external GPU occupation on fly90 (shared host) - the remaining GPU work cannot run locally"
+    - "external GPU occupation on fly90 (shared host) - the remaining GPU work could not run locally"
     - "elimination of model x host confounding (single evaluation host for all four checkpoints); cross-device vLLM stochastic sampling is not bitwise-reproducible per sample"
   decision_time: "frozen 2026-09-19, before fly122 seed1/seed3 results exist"
   primary_eval_host: "fly122 for all four checkpoints"
-  sensitivity: "fly90 seed1_step60 raw evaluation (verified 119/512, IGR 0.265625) is retained UNCHANGED and re-labelled as a cross-device sensitivity / reproducibility run - NOT the primary seed1 E023 result; no host selection based on fly122 outcomes"
+  final_layout: "primary seed1/seed3 live at e023_holdout_seed{1,3}_fly122.json; the plain e023_holdout_seed1.json path still holds the fly90 cross-device sensitivity run (byte-identical copy also at ..._fly90_crossdevice.json); the analyzer was invoked with explicit --theta0/--seed1/--seed2/--seed3 paths"
   unchanged: [sealed holdout (128, selection_seed 20260918), sampling protocol, seed schedule, verifier semantics, theorem 38 retained]
-  artifact_naming: "fly90 sensitivity raw preserved byte-identical at e023_holdout_seed1_fly90_crossdevice.json (+ partial adjudication at ..._crossdevice_adjudication.json); fly122 primary seed1/seed3 will occupy the canonical e023_holdout_seed1.json / e023_holdout_seed3.json paths required by holdout_multiseed_analyze.py"
 
-status_overall: "paused (external GPU on fly90); primary host = fly122. Primary complete: theta0, seed2_step60 (2/4). Primary pending: seed1_step60, seed3_step60 (fly122). fly90 seed1 = cross-device sensitivity (non-primary)."
+status_overall: "COMPLETED - primary analysis run 2026-09-19 on fly90 (CPU-only); output: experiments/results/e023_multiseed_analysis.json"
 
-results_observed:            # raw eval counts; corrected = observed when adjudication is complete
+results_primary:              # final PRIMARY results (all four checkpoints on fly122); corrected = observed (adjudicated credit 0)
   theta0:
-    host: fly122
     verified: 120
-    candidates: 512
     igr: 0.2421875
-    pass_at_1: 0.2344
-    pass_at_4: 0.3594
+    pass_at_4: 0.359375
     solved_ge1: 46
+    solved_all: 15
     verifier_errors: 5
-    adjudication: {status: complete, credited: 0, corrected: 120, optimistic_bound: 125}
+    adjudication: {credited: 0, corrected: 120}
   seed1_step60:
-    host: fly90
-    role: "cross-device sensitivity / reproducibility run (NON-PRIMARY; primary seed1 will be re-evaluated on fly122)"
-    verified: 119
-    candidates: 512
-    igr: 0.265625
-    pass_at_1: 0.2324
-    pass_at_4: 0.375
-    solved_ge1: 48
-    verifier_errors: 4
-    adjudication: {status: "partial (interrupted; 3 candidates recorded; --resume available)", credited: null}
+    verified: 122
+    igr: 0.1953125
+    pass_at_4: 0.34375
+    solved_ge1: 44
+    solved_all: 19
+    verifier_errors: 5
+    adjudication: {credited: 0, corrected: 122}
   seed2_step60:
-    host: fly122
     verified: 113
-    candidates: 512
     igr: 0.234375
-    pass_at_1: 0.2207
-    pass_at_4: 0.3516
+    pass_at_4: 0.3515625
     solved_ge1: 45
+    solved_all: 15
     verifier_errors: 6
-    adjudication: {status: complete, credited: 0, corrected: 113, optimistic_bound: 119}
+    adjudication: {credited: 0, corrected: 113}
   seed3_step60:
-    host: "fly122 (primary; pending)"
-    status: not_started
+    verified: 111
+    igr: 0.265625
+    pass_at_4: 0.3671875
+    solved_ge1: 47
+    solved_all: 13
+    verifier_errors: 4
+    adjudication: {credited: 0, corrected: 111}
 
-artifacts_sha256:            # transferred via rsync over LAN; sha256 verified identical on both hosts
-  fly122_side_pulled_to_fly90:
+canonical_analysis:           # theta0_verified = 120/512; per-seed delta = theta60 - theta0 (theorem-level paired)
+  output: experiments/results/e023_multiseed_analysis.json
+  per_seed:
+    seed1:
+      candidate_delta: 2
+      mean_delta: 0.00390625
+      ci95: [-0.029296875, 0.037109375]
+      win_tie_loss: [20, 92, 16]
+      mcnemar: {newly_solved: 7, newly_lost: 9, p_two_sided: 0.803619384765625}
+    seed2:
+      candidate_delta: -7
+      mean_delta: -0.013671875
+      ci95: [-0.046875, 0.01953125]
+      win_tie_loss: [15, 92, 21]
+      mcnemar: {newly_solved: 5, newly_lost: 6, p_two_sided: 1.0}
+    seed3:
+      candidate_delta: -9
+      mean_delta: -0.017578125
+      ci95: [-0.05078125, 0.015625]
+      win_tie_loss: [14, 96, 18]
+      mcnemar: {newly_solved: 6, newly_lost: 5, p_two_sided: 1.0}
+  cross_seed: {seed_count: 3, mean_effect: -0.009114583333333334, range: [-0.017578125, 0.00390625], positive_sign_count: 1, note: "descriptive only; all per-seed CIs straddle zero"}
+  wording: "verifier-RL trainability / informative signal is reproducible, but downstream capability gains are not consistently positive under the present 60-step low-compute recipe."
+
+consistency_checks:           # all passed before the canonical run
+  - "128 theorems per model (all four)"
+  - "512 records per model (all four)"
+  - "statement_id sets identical across the four primaries and equal to the sealed holdout"
+  - "per-record theorem_index -> statement_id mapping matches the sealed holdout manifest"
+  - "samples_per_theorem = 4 in all four artifacts"
+  - "fixed_set = experiments/manifests/m1_final_holdout.json, selection_seed = 20260918, git_revision = 04033aa"
+
+sensitivity_runs:             # NOT part of the primary verdict
+  fly90_seed1_crossdevice:
+    artifact: experiments/results/e023_holdout_seed1_fly90_crossdevice.json
+    verified: 119
+    igr: 0.265625
+    audit: experiments/results/e023_seed1_crossdevice_audit_fly122.json
+    audit_numbers: {raw_output_exact: "5/512", proof_exact: "19/512", verified_agreement: "447/512", flips: {fly90_only: 31, fly122_only: 34}, aggregate_verified: {fly90: 119, fly122: 122}, paired_records: 512}
+    conclusion_scope: "stochastic vLLM evaluation is not trajectory-identical across the two GPU/runtime environments under this protocol; therefore primary model comparisons were harmonized to one host (no generalization to all GPUs or decoding stacks)"
+  theorem38_posthoc:
+    artifact: experiments/results/e023_theorem38_sensitivity.json
+    note: "theorem 38 shows a stable HTTP 500 in all four samples of all four primary checkpoints; it is retained in the primary 128-theorem analysis; the clearly-marked 127-theorem variant changes nothing material (deltas within 0.0002, one fewer tie, McNemar unchanged)"
+
+artifacts_sha256:             # transferred via rsync over LAN; sha256 verified identical on both hosts
+  fly122_primary_extended:
+    e023_holdout_seed1_fly122.json: 5ed68a55154644e084e41c24cada14b5d10743463a6b031ddfd5b5b3a60e98c9
+    e023_holdout_seed1_fly122_adjudication.json: 4a274b3ca5d00835ac02ce2fc5a035e7b37b1699fc3baa0fcf063ec8f571ab58
+    e023_holdout_seed3_fly122.json: b01f3016c122b484af612b591531032d2db6e6bdafd3724e04e7d8a7aec9cd55
+    e023_holdout_seed3_fly122_adjudication.json: 494531b75d1b8830647876f26592f3892a961621ce2bab00ff07463a9016d908
+    e023_seed1_crossdevice_audit_fly122.json: 51d9267d15ef5e6c0fdcdb203be8dc0b8bd0819f566a566c487f3c0ee767643e
+  fly122_earlier:
     e023_holdout_base.json: 58d6d419402eda144ae7f72e87bd056a89d5b9d8680df6c29c6f1195b0d0392e
     e023_holdout_seed2.json: cd350aa89f742b6c4eb95d438c2e574cee47462e88cdd1ed16467dd33fc54915
     e023_holdout_base_adjudication.json: 84bbb6da9a86d52e62baad01bb7981a31ca85d5c43d67716ca81ba84957685df
     e023_holdout_seed2_adjudication.json: be21e6ff6426918ff5eaa4dcd0265a577987bf0ff24849b682ea5504c6d8fcc8
-  fly90_side:
+  fly90_sensitivity:
     e023_holdout_seed1.json: 253becc8b2a7d73990d88e795bc59fa0d6f0304723bde866f1acf0a3c7e493f8
-    e023_holdout_seed1_adjudication.json: "7cdddd0de2accb12d3a8a2637af83e851866ad929991529c7cb20dda0bbc00cb  # PARTIAL artifact (interrupted run)"
-
-pause:
-  reason: "external project occupying the GPU on the shared host (2 python processes, ~5.8 GiB VRAM each); single-GPU-heavy-job-at-a-time rule"
-  resume_plan: "fly122 completes PRIMARY seed1_step60 + seed3_step60 -> pull artifacts to fly90 -> holdout_multiseed_analyze.py on fly90 (only after all four primary artifacts are complete). fly90 has NO remaining E023 GPU work."
-  resume_conditions: "fly122 evaluator GPU free + quiet window (systemd-oomd state decided by the user)"
+    e023_holdout_seed1_fly90_crossdevice.json: 253becc8b2a7d73990d88e795bc59fa0d6f0304723bde866f1acf0a3c7e493f8
+    e023_holdout_seed1_adjudication.json: "7cdddd0de2accb12d3a8a2637af83e851866ad929991529c7cb20dda0bbc00cb  # partial artifact (interrupted run)"

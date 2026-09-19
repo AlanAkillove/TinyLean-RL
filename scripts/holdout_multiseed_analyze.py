@@ -8,6 +8,10 @@ replicates' step60) and reports, per seed:
 plus a descriptive cross-seed summary (sign consistency, effect sizes,
 range). With only 2-3 training seeds no seed-level significance testing
 is attempted - descriptive consistency only.
+
+Input paths default to the canonical artifact names and can be overridden
+explicitly (--theta0/--seed1/--seed2/--seed3), e.g. when the primary host is
+harmonized and per-checkpoint file names differ.
 """
 
 from __future__ import annotations
@@ -35,6 +39,19 @@ DEFAULT_EVALS = {
 }
 
 
+def resolve(path: str) -> Path:
+    """Resolve a CLI path relative to the repo root (absolute paths pass through)."""
+    candidate = Path(path)
+    return candidate if candidate.is_absolute() else ROOT / candidate
+
+
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def counts(path: Path) -> tuple[dict[int, int], dict]:
     artifact = json.loads(path.read_text(encoding="utf-8"))
     values: dict[int, int] = {}
@@ -50,10 +67,27 @@ def statement_ids(artifact: dict) -> set[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--theta0", default=DEFAULT_EVALS["theta0"], help="theta0 artifact path (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--seed1", default=DEFAULT_EVALS["seed1"], help="seed1 artifact path (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--seed2", default=DEFAULT_EVALS["seed2"], help="seed2 artifact path (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--seed3", default=DEFAULT_EVALS["seed3"], help="seed3 artifact path (default: %(default)s)"
+    )
     parser.add_argument("--output", default="experiments/results/e023_multiseed_analysis.json")
     args = parser.parse_args()
 
-    evals = {label: ROOT / path for label, path in DEFAULT_EVALS.items()}
+    evals = {
+        "theta0": resolve(args.theta0),
+        "seed1": resolve(args.seed1),
+        "seed2": resolve(args.seed2),
+        "seed3": resolve(args.seed3),
+    }
     present = {label: path for label, path in evals.items() if path.exists()}
     if "theta0" not in present:
         raise SystemExit("[ERROR] theta0 holdout artifact missing")
@@ -105,7 +139,7 @@ def main() -> int:
     artifact = {
         "artifact_type": "e023_multiseed_analysis",
         "samples_per_theorem": samples_per_theorem,
-        "sources": {label: str(path.relative_to(ROOT)) for label, path in present.items()},
+        "sources": {label: display_path(path) for label, path in present.items()},
         **summary,
     }
     output = ROOT / args.output
