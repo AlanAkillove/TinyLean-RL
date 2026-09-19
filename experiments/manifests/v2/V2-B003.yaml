@@ -1,0 +1,73 @@
+experiment: V2-B003
+title: >
+  Multi-seed compute-response + Expected Oracle (family-clean independent
+  evaluation)
+status: PREREGISTERED
+created_at_utc: "2026-09-20T04:58:00Z"
+owner: fly122 (worker/v2-allocator)
+related:
+  - V2-B002 (gated predecessor: pilot compute-response + Hindsight Oracle)
+  - docs/v2/research_plan.md
+  - docs/v2/experiment_protocol.md
+  - docs/v2/family_leakage_audit.md
+
+launch_gate: >
+  (1) B002 (V2-B002) completes with a GO decision recorded in its decision
+  memo; if B002 is NO-GO this preregistration is abandoned (status -> ABORTED)
+  and no B003 generation happens. (2) The B003 runner/analyzer implementation
+  (scripts/v2_b003_*.py + tests) is committed before launch. After this
+  preregistration no protocol parameter may change without a recorded
+  amendment.
+
+dataset:
+  evaluation_set_artifact: experiments/manifests/v2/v2_b003_eval_set.json
+  component_count: 192
+  statements_covered: 293
+  provenance: >
+    untouched reserve pool (v2_b002_reserve_pool.json, 216 components);
+    disjoint from V1 / V2-A / V2-B002 content by construction
+  buffer: "24 components (not promotable into the evaluation without a recorded protocol deviation)"
+
+protocol:
+  k_trajectories_per_theorem: 8
+  budgets: [512, 1024, 2048, 3072, 4096]
+  label_source: prefix_truncation
+  generation_path: >
+    single-path HF candidate generation (batch=1, n=1, explicit seed,
+    temperature 1.0, top_p 1.0, max_new_tokens 4096) - B1-compatible; vLLM is
+    excluded (B1: trajectory identity fails); batch>1 is excluded (B1: the
+    batched path differs from the single path token-for-token).
+  seed_schedule: "gen_seed = 20261001 + rank * 8 + replicate (rank 1..192 in component_id order; replicate 0..7)"
+  verifier: >
+    B0 VerificationSession (server_timeout 60s < client_timeout 90s, canary
+    fail-close, batch_size=1 per-candidate for exact per-prefix runtimes)
+  engine_exclusions: [vllm, hf_batch_gt1]
+
+analysis:
+  primary:
+    - per-theorem per-budget success probability p_i(b) from K=8 independent trajectories (label = first-success within the budget prefix)
+    - Uniform vs Expected Oracle vs Hindsight Oracle on the allocated max-token cap axis
+    - oracle headroom assessment feeding the B004 decision
+  notes: >
+    B003 trains no decision model (no XGBoost/MLP/frozen-embedding predictor/
+    encoder/RL). Its purpose is to quantify how much headroom an expected-value
+    oracle retains over uniform allocation at the same total allocated cap.
+
+runtime_expectation: "~1536 trajectories x ~140s single-path ~= 60h plus serial verification (order 60-65h total)"
+
+pinned_artifacts:
+  - path: experiments/manifests/v2/v2_b003_eval_set.json
+    sha256: 75de2fdabb2597aba1ad4be18d1e103bc6bcbdbb31899ac63d27153b82ac1a75
+  - path: experiments/manifests/v2/v2_b002_reserve_pool.json
+    sha256: 2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a
+  - path: experiments/manifests/v2/family_component_registry.json
+    sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
+
+status_note: >
+  Preregistered 2026-09-20 WHILE B002 is running and its results are unknown -
+  the B003 design must not be contaminated by B002 outcomes. The runner
+  (scripts/v2_b003_generate.py) and analyzer (scripts/v2_b003_analyze.py) are
+  implemented during the B002 run and committed with tests BEFORE any B003
+  launch; the implementation must not touch the frozen parameters above.
+  Launch additionally requires the B002 GO decision. Failed or aborted runs
+  keep this manifest with their status.

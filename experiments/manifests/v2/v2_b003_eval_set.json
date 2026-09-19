@@ -1,0 +1,1629 @@
+{
+  "artifact_type": "v2_b003_eval_set",
+  "experiment": "V2-B003",
+  "status": "frozen",
+  "purpose": "family-clean independent evaluation set for the B003 multi-seed compute-response + Expected Oracle analysis",
+  "rules": [
+    "evaluation set = lexicographically first 192 reserve-pool components (component_id), keeping 24 as buffer",
+    "the buffer may not be promoted into the evaluation without a recorded protocol deviation",
+    "nothing in this set may be generated, verified or trained on before the B003 manifest is committed AND the B002 GO decision is recorded",
+    "the set stays frozen through B003; any change requires an amendment before launch"
+  ],
+  "inputs": {
+    "reserve_pool": {
+      "path": "/home/fly/ZJQ/TinyLean-RL/experiments/manifests/v2/v2_b002_reserve_pool.json",
+      "sha256": "2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a"
+    }
+  },
+  "counts": {
+    "reserve": 216,
+    "evaluation": 192,
+    "buffer": 24,
+    "statements_covered": 293
+  },
+  "size_distribution": {
+    "1": 180,
+    "8": 2,
+    "9": 3,
+    "10": 7
+  },
+  "domain_distribution": {
+    "algebra": 97,
+    "number": 51,
+    "inequalities": 37,
+    "calculus": 5,
+    "Algebra": 1,
+    "algebra240229": 1
+  },
+  "buffer_component_ids": [
+    "fc-f6926cda5361",
+    "fc-f6e8f191d1c2",
+    "fc-f7dde289d525",
+    "fc-f7e131119281",
+    "fc-f8aabb8e5a15",
+    "fc-f8f585a726b7",
+    "fc-f97e0a85230f",
+    "fc-f9da9881fae7",
+    "fc-fa744c5db430",
+    "fc-fac219e63390",
+    "fc-fb0f46626d2b",
+    "fc-fb826318a4e6",
+    "fc-fb8902691048",
+    "fc-fc3df7992aa2",
+    "fc-fc6c56b489df",
+    "fc-fdd6234e6710",
+    "fc-fdeb5c340cec",
+    "fc-fe4d9e37e87c",
+    "fc-fe5390cf5fc3",
+    "fc-fec29726ef03",
+    "fc-ff9f71ec3e00",
+    "fc-ffa96673f879",
+    "fc-ffb0c7731b04",
+    "fc-ffd71cb34558"
+  ],
+  "evaluation_components": [
+    {
+      "component_id": "fc-b699b9ca096c",
+      "size": 1,
+      "representative_statement_id": "0401ccd7-978e-4edb-9eab-ec2e12df603a",
+      "names_sample": [
+        "inequalities_600468"
+      ]
+    },
+    {
+      "component_id": "fc-b6e4787c1c58",
+      "size": 1,
+      "representative_statement_id": "18ce6ac8-f33b-4ae5-b815-004885071919",
+      "names_sample": [
+        "algebra_313171"
+      ]
+    },
+    {
+      "component_id": "fc-b71d9bae7d69",
+      "size": 1,
+      "representative_statement_id": "fdc4d4d4-2a20-4976-bb63-32db66914dbc",
+      "names_sample": [
+        "inequalities_8012"
+      ]
+    },
+    {
+      "component_id": "fc-b79949662f2b",
+      "size": 1,
+      "representative_statement_id": "31f59fc0-bf71-4a3b-aab9-e8b9a050efcb",
+      "names_sample": [
+        "number_theory_611546"
+      ]
+    },
+    {
+      "component_id": "fc-b80d3fe4d4a7",
+      "size": 1,
+      "representative_statement_id": "846a5e4c-188e-47bd-ae28-985c0be2ed4d",
+      "names_sample": [
+        "number_theory_242210"
+      ]
+    },
+    {
+      "component_id": "fc-b840db20b024",
+      "size": 1,
+      "representative_statement_id": "b3833c64-737f-4867-bde8-d5672e1b512b",
+      "names_sample": [
+        "algebra_119175"
+      ]
+    },
+    {
+      "component_id": "fc-b879173d2ee0",
+      "size": 1,
+      "representative_statement_id": "f80f8392-9077-463c-88f4-e4fc3e99bd08",
+      "names_sample": [
+        "algebra_288176_1"
+      ]
+    },
+    {
+      "component_id": "fc-b879ac7770df",
+      "size": 1,
+      "representative_statement_id": "75deebd4-6865-469f-a2a3-aef3ccb83ff3",
+      "names_sample": [
+        "inequalities_11006"
+      ]
+    },
+    {
+      "component_id": "fc-b8f7e791e0d6",
+      "size": 1,
+      "representative_statement_id": "7a3a5cf2-f1ad-4693-a92c-ddfab6049ce3",
+      "names_sample": [
+        "number_theory_9634"
+      ]
+    },
+    {
+      "component_id": "fc-b991b74a9b08",
+      "size": 1,
+      "representative_statement_id": "aa89621f-9f85-461a-9c43-80f7d7a27ee5",
+      "names_sample": [
+        "inequalities_227533"
+      ]
+    },
+    {
+      "component_id": "fc-b99e2363d1ef",
+      "size": 1,
+      "representative_statement_id": "bc65ee93-afed-4b43-8def-530504d778f4",
+      "names_sample": [
+        "number_theory_7381"
+      ]
+    },
+    {
+      "component_id": "fc-b9fbd95e2e4d",
+      "size": 1,
+      "representative_statement_id": "3ef31d8f-2d79-4cfa-93ce-158c8849600d",
+      "names_sample": [
+        "algebra_149"
+      ]
+    },
+    {
+      "component_id": "fc-bb0321969032",
+      "size": 1,
+      "representative_statement_id": "1f8b2a4f-4577-4ace-bc48-e703393dd7f1",
+      "names_sample": [
+        "algebra_166030"
+      ]
+    },
+    {
+      "component_id": "fc-bbe4cbd0facc",
+      "size": 1,
+      "representative_statement_id": "823ff90b-30ae-4461-a0b0-1f3b673f920e",
+      "names_sample": [
+        "number_theory_253344"
+      ]
+    },
+    {
+      "component_id": "fc-bc12fd1e4eaa",
+      "size": 1,
+      "representative_statement_id": "48bc458f-09ee-4058-9d9d-047f9c675ce4",
+      "names_sample": [
+        "algebra_10762"
+      ]
+    },
+    {
+      "component_id": "fc-bc154aae0d44",
+      "size": 1,
+      "representative_statement_id": "4ed103d3-71cb-4e84-aea0-b419f3e9ae4e",
+      "names_sample": [
+        "inequalities_170060"
+      ]
+    },
+    {
+      "component_id": "fc-bc66be881176",
+      "size": 1,
+      "representative_statement_id": "4771696a-8d43-4c98-bf3d-379435fb20df",
+      "names_sample": [
+        "Algebra_a4"
+      ]
+    },
+    {
+      "component_id": "fc-bcb583542601",
+      "size": 1,
+      "representative_statement_id": "b7a25a14-c602-4b87-a751-70b8ead87d1f",
+      "names_sample": [
+        "number_theory_266439"
+      ]
+    },
+    {
+      "component_id": "fc-bce915ed7ffc",
+      "size": 1,
+      "representative_statement_id": "1b7da537-cff2-49de-a971-1888fd4d504e",
+      "names_sample": [
+        "number_theory_225745"
+      ]
+    },
+    {
+      "component_id": "fc-bd30cabbe53b",
+      "size": 1,
+      "representative_statement_id": "3dd140c6-f83f-4ea0-8912-61211b35c014",
+      "names_sample": [
+        "algebra_180988"
+      ]
+    },
+    {
+      "component_id": "fc-bd6687bd51ea",
+      "size": 1,
+      "representative_statement_id": "6cd30693-4dc5-4084-b53e-f0f344c76d6b",
+      "names_sample": [
+        "number_theory_166323"
+      ]
+    },
+    {
+      "component_id": "fc-bdcd666b1768",
+      "size": 1,
+      "representative_statement_id": "9a152ed6-32e8-4d94-be87-5ed3c77fe84a",
+      "names_sample": [
+        "inequalities_114467"
+      ]
+    },
+    {
+      "component_id": "fc-be20cdb15eed",
+      "size": 1,
+      "representative_statement_id": "a1716dfb-180d-437e-8d93-0a28cd20cfc3",
+      "names_sample": [
+        "algebra_878"
+      ]
+    },
+    {
+      "component_id": "fc-be4d43b7dd24",
+      "size": 1,
+      "representative_statement_id": "39ae6134-15b8-4bf0-b6cc-b7115efb695e",
+      "names_sample": [
+        "number_theory_283424"
+      ]
+    },
+    {
+      "component_id": "fc-be8aa4949954",
+      "size": 1,
+      "representative_statement_id": "9f9b0d0a-1e0c-4c77-85d0-2385f85d68e2",
+      "names_sample": [
+        "algebra_205575"
+      ]
+    },
+    {
+      "component_id": "fc-bed12ff696b2",
+      "size": 1,
+      "representative_statement_id": "82945ac0-e94e-4d94-8ffa-a8e1e9357ce0",
+      "names_sample": [
+        "number_theory_237465"
+      ]
+    },
+    {
+      "component_id": "fc-bef4e652ccd1",
+      "size": 1,
+      "representative_statement_id": "cfa30ad2-3829-4195-b455-3b3d3dec38ac",
+      "names_sample": [
+        "inequalities_33857"
+      ]
+    },
+    {
+      "component_id": "fc-c00438bf1601",
+      "size": 1,
+      "representative_statement_id": "f31577c8-0cbd-4c1f-a9f4-c8f1e7dab677",
+      "names_sample": [
+        "inequalities_42383"
+      ]
+    },
+    {
+      "component_id": "fc-c04ebf7bd57e",
+      "size": 1,
+      "representative_statement_id": "bed697ea-89af-43a8-afce-c2cb31619626",
+      "names_sample": [
+        "number_theory_206159"
+      ]
+    },
+    {
+      "component_id": "fc-c052c3f801a9",
+      "size": 1,
+      "representative_statement_id": "b46f0145-d10b-49bb-875f-609081671a3e",
+      "names_sample": [
+        "algebra_21866"
+      ]
+    },
+    {
+      "component_id": "fc-c06d9d9ead84",
+      "size": 1,
+      "representative_statement_id": "cda4d1fa-e18e-4391-b7e4-0878b6d87be1",
+      "names_sample": [
+        "number_theory_4004"
+      ]
+    },
+    {
+      "component_id": "fc-c098f6174811",
+      "size": 1,
+      "representative_statement_id": "2ce56f4d-bad5-4041-87e4-75b3c41831a7",
+      "names_sample": [
+        "algebra_311794"
+      ]
+    },
+    {
+      "component_id": "fc-c0d78e9b7636",
+      "size": 1,
+      "representative_statement_id": "e4f9c085-77ba-49ef-8bf2-a9a2b82670f4",
+      "names_sample": [
+        "algebra_196447"
+      ]
+    },
+    {
+      "component_id": "fc-c137754ad050",
+      "size": 1,
+      "representative_statement_id": "6f878b65-51ce-4084-a615-cf8c42464a68",
+      "names_sample": [
+        "algebra_222540"
+      ]
+    },
+    {
+      "component_id": "fc-c1604818c615",
+      "size": 1,
+      "representative_statement_id": "7a4f8a8b-816a-4fc5-b908-06a1ef3064b6",
+      "names_sample": [
+        "number_theory_191410"
+      ]
+    },
+    {
+      "component_id": "fc-c17ba19bae3d",
+      "size": 1,
+      "representative_statement_id": "c25c9de3-8bfe-496c-8b28-d270a2421a96",
+      "names_sample": [
+        "inequalities_148508"
+      ]
+    },
+    {
+      "component_id": "fc-c1ac4e01024b",
+      "size": 1,
+      "representative_statement_id": "aab254d2-96f2-4d9d-af3c-b455350591d7",
+      "names_sample": [
+        "number_theory_110835"
+      ]
+    },
+    {
+      "component_id": "fc-c1dbb976ec6c",
+      "size": 1,
+      "representative_statement_id": "00a7ce74-6a35-4551-bb14-928958426e87",
+      "names_sample": [
+        "algebra_173868"
+      ]
+    },
+    {
+      "component_id": "fc-c1f244d816cc",
+      "size": 1,
+      "representative_statement_id": "9335c8c9-2f99-43c5-b869-107929dacac4",
+      "names_sample": [
+        "algebra_227122"
+      ]
+    },
+    {
+      "component_id": "fc-c1ff01dc7c46",
+      "size": 1,
+      "representative_statement_id": "410945a5-f62a-4074-b633-7cb3b2fa7732",
+      "names_sample": [
+        "inequalities_257503"
+      ]
+    },
+    {
+      "component_id": "fc-c20e01db261d",
+      "size": 1,
+      "representative_statement_id": "7d811b62-971b-4061-8a04-9b90aab2fcb9",
+      "names_sample": [
+        "number_theory_290560_a"
+      ]
+    },
+    {
+      "component_id": "fc-c278d46a5d2a",
+      "size": 1,
+      "representative_statement_id": "3a15f933-354a-4bb5-b235-9dbbcb5985f7",
+      "names_sample": [
+        "algebra_184978"
+      ]
+    },
+    {
+      "component_id": "fc-c29436f12eee",
+      "size": 1,
+      "representative_statement_id": "fbaa6ef9-ab83-48ee-bf5b-7fe8e5b84b5f",
+      "names_sample": [
+        "algebra_178182"
+      ]
+    },
+    {
+      "component_id": "fc-c304bba73a9f",
+      "size": 1,
+      "representative_statement_id": "2b6eefe1-03cc-4386-b8db-03c074ca11e0",
+      "names_sample": [
+        "number_theory_64488"
+      ]
+    },
+    {
+      "component_id": "fc-c33f1bf0b0bd",
+      "size": 1,
+      "representative_statement_id": "67044c1c-fee6-4123-84fc-d03e22005e19",
+      "names_sample": [
+        "algebra_326227"
+      ]
+    },
+    {
+      "component_id": "fc-c35f7ca281a3",
+      "size": 1,
+      "representative_statement_id": "f20abde2-2bb8-459f-bb48-fc6ce59fc261",
+      "names_sample": [
+        "inequalities_3241"
+      ]
+    },
+    {
+      "component_id": "fc-c37db218a801",
+      "size": 1,
+      "representative_statement_id": "d77b6305-3f4d-4383-b451-a5b7bb149d8f",
+      "names_sample": [
+        "algebra_227921"
+      ]
+    },
+    {
+      "component_id": "fc-c461b2310cb5",
+      "size": 1,
+      "representative_statement_id": "1ad61c66-379f-447d-afd0-dfdf9ac30b00",
+      "names_sample": [
+        "number_theory_105648"
+      ]
+    },
+    {
+      "component_id": "fc-c4b263321c7a",
+      "size": 1,
+      "representative_statement_id": "54509dc6-f489-47fc-9761-1d56f73dbf7a",
+      "names_sample": [
+        "algebra_223864"
+      ]
+    },
+    {
+      "component_id": "fc-c58cca395654",
+      "size": 9,
+      "representative_statement_id": "c126bb0d-8283-4007-974d-080e1d623369",
+      "names_sample": [
+        "algebra_308469",
+        "algebra_308469_v0001",
+        "algebra_308469_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-c65f7d05458d",
+      "size": 1,
+      "representative_statement_id": "e94ea1a2-f355-47e5-abbf-d9c12cf8e3b7",
+      "names_sample": [
+        "algebra_259368"
+      ]
+    },
+    {
+      "component_id": "fc-c677078aac0a",
+      "size": 1,
+      "representative_statement_id": "9fb43c9e-1a1c-435c-82cb-9a61ca4e7c47",
+      "names_sample": [
+        "algebra_221067"
+      ]
+    },
+    {
+      "component_id": "fc-c68e1c76b354",
+      "size": 1,
+      "representative_statement_id": "83c9fbb4-a889-4f5c-a899-4a35974450e3",
+      "names_sample": [
+        "algebra_1414"
+      ]
+    },
+    {
+      "component_id": "fc-c6f9f84d1485",
+      "size": 1,
+      "representative_statement_id": "b116c610-6a1b-43db-95be-972c5ffb4d23",
+      "names_sample": [
+        "algebra_30029"
+      ]
+    },
+    {
+      "component_id": "fc-c74aaf743a85",
+      "size": 1,
+      "representative_statement_id": "1cae53ac-8c9c-4187-a013-d9a1901e1021",
+      "names_sample": [
+        "inequalities_193852"
+      ]
+    },
+    {
+      "component_id": "fc-c772f8af0f89",
+      "size": 1,
+      "representative_statement_id": "8ab58371-e75e-4b57-ae90-3e1795585646",
+      "names_sample": [
+        "inequalities_117840"
+      ]
+    },
+    {
+      "component_id": "fc-c78176763f76",
+      "size": 1,
+      "representative_statement_id": "ff78d364-e3cd-4e70-9b6f-3a326085de54",
+      "names_sample": [
+        "algebra_11161"
+      ]
+    },
+    {
+      "component_id": "fc-c8f82212ad2b",
+      "size": 1,
+      "representative_statement_id": "39373145-ff28-4e51-9d52-915b55cb5db1",
+      "names_sample": [
+        "inequalities_240161"
+      ]
+    },
+    {
+      "component_id": "fc-c91a257da7ca",
+      "size": 1,
+      "representative_statement_id": "abd3b6fd-dcd9-4a94-a27e-ec6a71e82eed",
+      "names_sample": [
+        "algebra_302885"
+      ]
+    },
+    {
+      "component_id": "fc-c949ff58b527",
+      "size": 1,
+      "representative_statement_id": "f323e7a9-dd10-49fd-8867-2f95f8caddb5",
+      "names_sample": [
+        "algebra_145938"
+      ]
+    },
+    {
+      "component_id": "fc-c9729520ad07",
+      "size": 1,
+      "representative_statement_id": "73e772a1-774e-4708-bac0-89ca8aebe8fb",
+      "names_sample": [
+        "number_theory_604818"
+      ]
+    },
+    {
+      "component_id": "fc-c97ab475b18f",
+      "size": 1,
+      "representative_statement_id": "01d6d8a7-9cfb-4ff0-8e9b-137915bea7f4",
+      "names_sample": [
+        "inequalities_3913"
+      ]
+    },
+    {
+      "component_id": "fc-c98fbbc0a16a",
+      "size": 1,
+      "representative_statement_id": "4dabc45d-7e31-4ef7-8bcb-3f50b16a9bc3",
+      "names_sample": [
+        "algebra_91737"
+      ]
+    },
+    {
+      "component_id": "fc-c992a60adff7",
+      "size": 1,
+      "representative_statement_id": "84f6e4c6-8313-4b07-a79a-f22c8357121c",
+      "names_sample": [
+        "algebra_4324"
+      ]
+    },
+    {
+      "component_id": "fc-c9b0b7134d35",
+      "size": 1,
+      "representative_statement_id": "a08c774c-f44d-4167-a946-2cea0304d6b4",
+      "names_sample": [
+        "number_theory_608158"
+      ]
+    },
+    {
+      "component_id": "fc-c9d42d4ddf41",
+      "size": 1,
+      "representative_statement_id": "a0436c5a-7b4b-40e6-b4d6-876ec93d9f7a",
+      "names_sample": [
+        "inequalities_8433"
+      ]
+    },
+    {
+      "component_id": "fc-ca16efc85e1b",
+      "size": 1,
+      "representative_statement_id": "37a1bd30-c43c-475c-9c77-60909d6c4807",
+      "names_sample": [
+        "algebra_72183"
+      ]
+    },
+    {
+      "component_id": "fc-ca1e0e060b8d",
+      "size": 1,
+      "representative_statement_id": "e3d0ef85-8025-41fe-b530-c7ccfc1930a2",
+      "names_sample": [
+        "inequalities_47934"
+      ]
+    },
+    {
+      "component_id": "fc-ca534ece8106",
+      "size": 1,
+      "representative_statement_id": "d2157809-1c4a-4746-ae7f-d1bb6d06db99",
+      "names_sample": [
+        "inequalities_239346"
+      ]
+    },
+    {
+      "component_id": "fc-ca5bdef7148e",
+      "size": 1,
+      "representative_statement_id": "1ec91931-56c3-40da-91e9-38775ddb10d1",
+      "names_sample": [
+        "algebra240229"
+      ]
+    },
+    {
+      "component_id": "fc-caf856395dbd",
+      "size": 1,
+      "representative_statement_id": "6746567d-98ec-4682-99df-bb73ca19949e",
+      "names_sample": [
+        "inequalities_128985"
+      ]
+    },
+    {
+      "component_id": "fc-cb3eabc811ec",
+      "size": 1,
+      "representative_statement_id": "9118ee90-af31-4058-bad9-769607a29f26",
+      "names_sample": [
+        "number_theory_1288"
+      ]
+    },
+    {
+      "component_id": "fc-cb3ebbfe8dd2",
+      "size": 1,
+      "representative_statement_id": "0d59620d-2355-438f-ba34-dfca0294155f",
+      "names_sample": [
+        "algebra_8917"
+      ]
+    },
+    {
+      "component_id": "fc-cc05046a8991",
+      "size": 1,
+      "representative_statement_id": "ed33870d-411c-494d-b94d-6954f8fdf132",
+      "names_sample": [
+        "algebra_11511"
+      ]
+    },
+    {
+      "component_id": "fc-cc601544bece",
+      "size": 1,
+      "representative_statement_id": "772d34ba-08b5-46e1-b05e-012127ea366b",
+      "names_sample": [
+        "algebra_136457"
+      ]
+    },
+    {
+      "component_id": "fc-cc6dd6a65446",
+      "size": 1,
+      "representative_statement_id": "654978d8-2887-46cb-9f2a-9167777b95c2",
+      "names_sample": [
+        "algebra_322157"
+      ]
+    },
+    {
+      "component_id": "fc-cc7d562fdd26",
+      "size": 1,
+      "representative_statement_id": "0d1a27fc-0088-40ef-b8cb-c20773d20df3",
+      "names_sample": [
+        "algebra_233720"
+      ]
+    },
+    {
+      "component_id": "fc-cd17b4a30033",
+      "size": 1,
+      "representative_statement_id": "a2cccf35-e157-4d4d-8ba6-e228b6e78a18",
+      "names_sample": [
+        "inequalities_126413"
+      ]
+    },
+    {
+      "component_id": "fc-cd8a2c992218",
+      "size": 1,
+      "representative_statement_id": "cd837af4-c5c1-4773-855a-29951280601d",
+      "names_sample": [
+        "algebra_274065"
+      ]
+    },
+    {
+      "component_id": "fc-cdae51d15676",
+      "size": 1,
+      "representative_statement_id": "2e168aae-7194-4a21-a838-7d55fa488cc1",
+      "names_sample": [
+        "algebra_314828"
+      ]
+    },
+    {
+      "component_id": "fc-cddad8fe120d",
+      "size": 1,
+      "representative_statement_id": "4171cbde-4533-4e98-a6c7-1aeb9dd64789",
+      "names_sample": [
+        "number_theory_164004"
+      ]
+    },
+    {
+      "component_id": "fc-ce305fbcf2ec",
+      "size": 1,
+      "representative_statement_id": "3bbce2b5-2646-43d1-9c28-138a2c44976d",
+      "names_sample": [
+        "algebra_598409"
+      ]
+    },
+    {
+      "component_id": "fc-d12b441c1f40",
+      "size": 1,
+      "representative_statement_id": "3247d023-e65c-480c-8744-a1345ecffd8f",
+      "names_sample": [
+        "algebra_287176"
+      ]
+    },
+    {
+      "component_id": "fc-d13b3b898561",
+      "size": 1,
+      "representative_statement_id": "575b2a5b-4981-4b79-b1d4-2a6f9ff482eb",
+      "names_sample": [
+        "inequalities_171125_f"
+      ]
+    },
+    {
+      "component_id": "fc-d1968ccd1dc4",
+      "size": 1,
+      "representative_statement_id": "4a4ef5a7-9b43-4c59-bd60-71d14eaf4dd4",
+      "names_sample": [
+        "algebra_147489"
+      ]
+    },
+    {
+      "component_id": "fc-d1e35f82e716",
+      "size": 1,
+      "representative_statement_id": "e320cd36-3502-405c-a9e0-5d72b5c5c5cb",
+      "names_sample": [
+        "algebra_148721"
+      ]
+    },
+    {
+      "component_id": "fc-d24f5a6ddcc1",
+      "size": 1,
+      "representative_statement_id": "90d2b1dd-cbad-4d2e-9503-482cec6cb421",
+      "names_sample": [
+        "algebra_178"
+      ]
+    },
+    {
+      "component_id": "fc-d251c9099972",
+      "size": 1,
+      "representative_statement_id": "2ab3f587-6073-4728-b132-c03d39ca3465",
+      "names_sample": [
+        "number_theory_88742"
+      ]
+    },
+    {
+      "component_id": "fc-d3e112949976",
+      "size": 1,
+      "representative_statement_id": "ba4ca33f-1fcc-4703-826f-8938d9b71ddd",
+      "names_sample": [
+        "number_theory_293639"
+      ]
+    },
+    {
+      "component_id": "fc-d4a799c145c1",
+      "size": 1,
+      "representative_statement_id": "92599a20-3bc5-4db4-8b93-5c9b0b570e13",
+      "names_sample": [
+        "algebra_13058"
+      ]
+    },
+    {
+      "component_id": "fc-d4b5576d04c4",
+      "size": 1,
+      "representative_statement_id": "f56d800f-9a7b-4758-83b2-047217d9ef2b",
+      "names_sample": [
+        "inequalities_180276"
+      ]
+    },
+    {
+      "component_id": "fc-d4d79eb979d2",
+      "size": 1,
+      "representative_statement_id": "719469a9-9d8a-4149-b26e-33580c08ff62",
+      "names_sample": [
+        "number_theory_2726"
+      ]
+    },
+    {
+      "component_id": "fc-d6235d8bc992",
+      "size": 1,
+      "representative_statement_id": "fdcc1f67-06b9-4319-97a5-d8a19f77cf70",
+      "names_sample": [
+        "number_theory_96597"
+      ]
+    },
+    {
+      "component_id": "fc-d63831a9d930",
+      "size": 1,
+      "representative_statement_id": "4fdb8d9e-8ba4-4c7b-9dd2-e8406a307603",
+      "names_sample": [
+        "algebra_178100"
+      ]
+    },
+    {
+      "component_id": "fc-d6e3c5706ab5",
+      "size": 1,
+      "representative_statement_id": "4bffb877-6a44-4570-9e1f-89d4c8f1509b",
+      "names_sample": [
+        "algebra_245685"
+      ]
+    },
+    {
+      "component_id": "fc-d7b1f72dfc7e",
+      "size": 1,
+      "representative_statement_id": "3e58d007-f667-4b6e-9fb6-00eb514a5f65",
+      "names_sample": [
+        "algebra_110858"
+      ]
+    },
+    {
+      "component_id": "fc-d7c65dcccde6",
+      "size": 1,
+      "representative_statement_id": "ece488af-b2d3-4a20-a475-940b69a55c7f",
+      "names_sample": [
+        "inequalities_82865"
+      ]
+    },
+    {
+      "component_id": "fc-d7f3b07e530f",
+      "size": 1,
+      "representative_statement_id": "44cd2447-db13-40c2-bb98-7c0691285946",
+      "names_sample": [
+        "number_theory_185337"
+      ]
+    },
+    {
+      "component_id": "fc-d820bb54bb45",
+      "size": 1,
+      "representative_statement_id": "1ad481e1-db27-4459-8c28-d4cb27032bc7",
+      "names_sample": [
+        "inequalities_602637"
+      ]
+    },
+    {
+      "component_id": "fc-d83cca360919",
+      "size": 1,
+      "representative_statement_id": "867831b9-d38b-4f98-9f5d-58d5213cbb92",
+      "names_sample": [
+        "number_theory_166"
+      ]
+    },
+    {
+      "component_id": "fc-d8a797cb8c27",
+      "size": 1,
+      "representative_statement_id": "41090a2e-5a2b-443c-93de-4a4fede7c43f",
+      "names_sample": [
+        "number_theory_230706"
+      ]
+    },
+    {
+      "component_id": "fc-d8c4b6cd11a9",
+      "size": 1,
+      "representative_statement_id": "603590ed-6d69-4fc9-8ac2-03b39c66387a",
+      "names_sample": [
+        "inequalities_601721"
+      ]
+    },
+    {
+      "component_id": "fc-d8cdcb05e0aa",
+      "size": 1,
+      "representative_statement_id": "fa0456e1-264d-4a98-8449-e0adec7d2ef3",
+      "names_sample": [
+        "algebra_197289"
+      ]
+    },
+    {
+      "component_id": "fc-d8de845ae767",
+      "size": 1,
+      "representative_statement_id": "5090680c-0f4c-4de7-835a-5424b5212a1e",
+      "names_sample": [
+        "algebra_288044"
+      ]
+    },
+    {
+      "component_id": "fc-d984daa76ad3",
+      "size": 10,
+      "representative_statement_id": "36af9471-3941-4b0e-b0bc-bbbf4bde48d3",
+      "names_sample": [
+        "inequalities_216493",
+        "inequalities_216493_v0001",
+        "inequalities_216493_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-d9c9bb1d91e2",
+      "size": 10,
+      "representative_statement_id": "111aba50-cdf6-4d52-b93e-965261813130",
+      "names_sample": [
+        "calculus_23157",
+        "calculus_23157_v4814",
+        "calculus_23157_v4815"
+      ]
+    },
+    {
+      "component_id": "fc-da8c57d86afb",
+      "size": 1,
+      "representative_statement_id": "1feb53ca-03d9-43ce-afd1-f7c7af72d722",
+      "names_sample": [
+        "inequalities_193252"
+      ]
+    },
+    {
+      "component_id": "fc-daa0706454ce",
+      "size": 1,
+      "representative_statement_id": "a6a11696-6d27-477e-afda-1a4367231186",
+      "names_sample": [
+        "algebra_95360"
+      ]
+    },
+    {
+      "component_id": "fc-dab8850405fe",
+      "size": 1,
+      "representative_statement_id": "387b0193-4b66-4824-847b-872548183e09",
+      "names_sample": [
+        "algebra_172810"
+      ]
+    },
+    {
+      "component_id": "fc-db2724610608",
+      "size": 1,
+      "representative_statement_id": "95fe0536-2ee0-4793-b7ff-25828dd0f1b1",
+      "names_sample": [
+        "algebra_109813"
+      ]
+    },
+    {
+      "component_id": "fc-dbaf9c098bf1",
+      "size": 1,
+      "representative_statement_id": "5d09c958-8443-48f5-bb78-cb5e7353fc6c",
+      "names_sample": [
+        "inequalities_26579"
+      ]
+    },
+    {
+      "component_id": "fc-dc886e3b5148",
+      "size": 1,
+      "representative_statement_id": "c1a9486a-853d-419f-be9a-ca8392b8f0b3",
+      "names_sample": [
+        "algebra_1538"
+      ]
+    },
+    {
+      "component_id": "fc-dcecfef064e3",
+      "size": 1,
+      "representative_statement_id": "3f887512-bc44-486c-a4b1-d33dfa3f3efe",
+      "names_sample": [
+        "algebra_320662"
+      ]
+    },
+    {
+      "component_id": "fc-dded20d6b5f2",
+      "size": 1,
+      "representative_statement_id": "9171f3e6-1201-4456-b7fe-40ec734876ef",
+      "names_sample": [
+        "number_theory_301123"
+      ]
+    },
+    {
+      "component_id": "fc-de5bb1f7b06e",
+      "size": 1,
+      "representative_statement_id": "590aa498-9d5d-498a-a99c-949f6ff6fc8b",
+      "names_sample": [
+        "calculus_15123"
+      ]
+    },
+    {
+      "component_id": "fc-de67e1256f12",
+      "size": 8,
+      "representative_statement_id": "f10a074e-4e7e-4d06-ae73-d05bae38be13",
+      "names_sample": [
+        "inequalities_27739",
+        "inequalities_27739_v0001",
+        "inequalities_27739_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-de8afa5a1db5",
+      "size": 1,
+      "representative_statement_id": "592d50e4-b5cd-4656-9b4e-2c8bbac258f1",
+      "names_sample": [
+        "number_theory_194242"
+      ]
+    },
+    {
+      "component_id": "fc-de9dfd8f0d56",
+      "size": 1,
+      "representative_statement_id": "ae4f001b-7a91-489f-84ce-d28234a61995",
+      "names_sample": [
+        "algebra_97738"
+      ]
+    },
+    {
+      "component_id": "fc-def8e3c96c78",
+      "size": 10,
+      "representative_statement_id": "296eb12c-6527-4311-bc05-11e017692945",
+      "names_sample": [
+        "algebra_326879",
+        "algebra_326879_v0001",
+        "algebra_326879_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-df3c8894cfa4",
+      "size": 1,
+      "representative_statement_id": "1f9063a2-0629-4704-aca2-f80d97f9e42e",
+      "names_sample": [
+        "calculus_40991"
+      ]
+    },
+    {
+      "component_id": "fc-dfb98a95402d",
+      "size": 1,
+      "representative_statement_id": "bd023b50-311a-40d7-ae17-6954c768f35f",
+      "names_sample": [
+        "number_theory_290242"
+      ]
+    },
+    {
+      "component_id": "fc-e00c020ace65",
+      "size": 1,
+      "representative_statement_id": "d6924fa8-4d7c-43d1-b877-e8f4cc5abc41",
+      "names_sample": [
+        "algebra_16801"
+      ]
+    },
+    {
+      "component_id": "fc-e05215d10e22",
+      "size": 1,
+      "representative_statement_id": "4863ecd7-28b6-4c24-adad-77c2ab03c0a9",
+      "names_sample": [
+        "algebra_11425"
+      ]
+    },
+    {
+      "component_id": "fc-e0633e2c6834",
+      "size": 1,
+      "representative_statement_id": "3702b110-4cdc-41bd-b7ef-b82256834ced",
+      "names_sample": [
+        "algebra_233240"
+      ]
+    },
+    {
+      "component_id": "fc-e114bb563f0e",
+      "size": 1,
+      "representative_statement_id": "3ba77b58-db07-4ad2-b00e-0762d56153a4",
+      "names_sample": [
+        "number_theory_260028"
+      ]
+    },
+    {
+      "component_id": "fc-e11cf6551d42",
+      "size": 1,
+      "representative_statement_id": "ed99363e-aa68-4e08-8993-5d6de4986d1c",
+      "names_sample": [
+        "number_theory_95972"
+      ]
+    },
+    {
+      "component_id": "fc-e13f0f9fd753",
+      "size": 1,
+      "representative_statement_id": "d78977ec-8cb1-4a07-96d0-eae65d86e386",
+      "names_sample": [
+        "number_theory_172454"
+      ]
+    },
+    {
+      "component_id": "fc-e176d54d8336",
+      "size": 1,
+      "representative_statement_id": "07046815-292f-49c6-a02f-bc0a1c709ced",
+      "names_sample": [
+        "number_theory_6455"
+      ]
+    },
+    {
+      "component_id": "fc-e17d41d67a5e",
+      "size": 1,
+      "representative_statement_id": "c1f97268-a1e5-4e55-95ed-8f990e6accbb",
+      "names_sample": [
+        "inequalities_597899"
+      ]
+    },
+    {
+      "component_id": "fc-e1861474b401",
+      "size": 1,
+      "representative_statement_id": "d46aff96-5d31-44e2-8984-8179a5611c70",
+      "names_sample": [
+        "number_theory_190847"
+      ]
+    },
+    {
+      "component_id": "fc-e1cd2c14baa5",
+      "size": 1,
+      "representative_statement_id": "88e01d8a-32aa-4afc-9a2a-b1683e57b6a5",
+      "names_sample": [
+        "number_theory_198917"
+      ]
+    },
+    {
+      "component_id": "fc-e23ba506d457",
+      "size": 1,
+      "representative_statement_id": "6ebdbb8d-184c-42d4-9b8b-315a12660a78",
+      "names_sample": [
+        "number_theory_76279"
+      ]
+    },
+    {
+      "component_id": "fc-e2637d5e8c53",
+      "size": 1,
+      "representative_statement_id": "0cf3f441-5507-4e4d-a59f-920c46029edf",
+      "names_sample": [
+        "algebra_138070"
+      ]
+    },
+    {
+      "component_id": "fc-e2964e3ea9d0",
+      "size": 1,
+      "representative_statement_id": "af5b5b67-6dcb-4c4a-8de0-c3e24571fa77",
+      "names_sample": [
+        "number_theory_31249"
+      ]
+    },
+    {
+      "component_id": "fc-e2bd36e81d65",
+      "size": 1,
+      "representative_statement_id": "1fdc63dc-eeef-4806-955b-f0ffdc1d2d4d",
+      "names_sample": [
+        "algebra_3353"
+      ]
+    },
+    {
+      "component_id": "fc-e3513c43ec01",
+      "size": 1,
+      "representative_statement_id": "080a605b-faac-4ca4-82b6-e37481f03986",
+      "names_sample": [
+        "number_theory_113344"
+      ]
+    },
+    {
+      "component_id": "fc-e3f2ac2e12ef",
+      "size": 1,
+      "representative_statement_id": "b8c41a4e-0922-4708-9651-1f8d4607fe55",
+      "names_sample": [
+        "inequalities_246290"
+      ]
+    },
+    {
+      "component_id": "fc-e4cf6859801b",
+      "size": 1,
+      "representative_statement_id": "abd1b041-2c92-4486-8036-ee1cc98f040d",
+      "names_sample": [
+        "number_theory_99977"
+      ]
+    },
+    {
+      "component_id": "fc-e4e7d37ccb9a",
+      "size": 1,
+      "representative_statement_id": "75d91f22-7279-440f-b0a6-42b8c6a1decb",
+      "names_sample": [
+        "algebra_12174"
+      ]
+    },
+    {
+      "component_id": "fc-e56d15c66fdc",
+      "size": 1,
+      "representative_statement_id": "30ea76c6-de8f-4b0f-82ea-9f958c2f687e",
+      "names_sample": [
+        "number_theory_26087"
+      ]
+    },
+    {
+      "component_id": "fc-e6d2e84449c2",
+      "size": 1,
+      "representative_statement_id": "59ca64bb-fa6b-4c3b-8346-89ce731296de",
+      "names_sample": [
+        "algebra_106125"
+      ]
+    },
+    {
+      "component_id": "fc-e71b68d56db4",
+      "size": 1,
+      "representative_statement_id": "7db4cb23-4699-489d-b1de-cd11626e175b",
+      "names_sample": [
+        "number_theory_246413"
+      ]
+    },
+    {
+      "component_id": "fc-e727f1a4e8ad",
+      "size": 1,
+      "representative_statement_id": "ec6ddf24-3e29-4beb-8b72-beafcef58f18",
+      "names_sample": [
+        "algebra_167146"
+      ]
+    },
+    {
+      "component_id": "fc-e78adb3cc600",
+      "size": 10,
+      "representative_statement_id": "3da8b42c-c239-4e06-9f04-082cfa5ce0ac",
+      "names_sample": [
+        "algebra_245421",
+        "algebra_245421_v0001",
+        "algebra_245421_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-e7caff87a4ed",
+      "size": 1,
+      "representative_statement_id": "99abf63c-211e-40da-8d36-6ec0028e6ad7",
+      "names_sample": [
+        "algebra_323297"
+      ]
+    },
+    {
+      "component_id": "fc-e8ff97c1b9a7",
+      "size": 1,
+      "representative_statement_id": "9eef05a9-620d-493d-bfbc-58126e963d9d",
+      "names_sample": [
+        "algebra_216625"
+      ]
+    },
+    {
+      "component_id": "fc-e9819fac82ae",
+      "size": 1,
+      "representative_statement_id": "796b9096-3cf2-4554-8cd3-d83d3e358ce9",
+      "names_sample": [
+        "algebra_209025"
+      ]
+    },
+    {
+      "component_id": "fc-e98a573dbca5",
+      "size": 1,
+      "representative_statement_id": "e97422c6-4ed1-430f-a11a-4a0cb7244ad4",
+      "names_sample": [
+        "algebra_185530"
+      ]
+    },
+    {
+      "component_id": "fc-e9d1c5621a5e",
+      "size": 1,
+      "representative_statement_id": "c4ef5188-011a-49cd-b4ff-fdb6e7a660a3",
+      "names_sample": [
+        "algebra_11662"
+      ]
+    },
+    {
+      "component_id": "fc-e9d38625d7b5",
+      "size": 1,
+      "representative_statement_id": "3f9aaf79-95b7-44a0-b7fe-fa4d073268c0",
+      "names_sample": [
+        "number_theory_289621"
+      ]
+    },
+    {
+      "component_id": "fc-ea3bd16d0ea6",
+      "size": 1,
+      "representative_statement_id": "1df1a8b4-e092-42e4-9627-d2da5d57df9a",
+      "names_sample": [
+        "algebra_154188"
+      ]
+    },
+    {
+      "component_id": "fc-ea83895536af",
+      "size": 1,
+      "representative_statement_id": "e1e8163e-d937-4e46-9bd1-9297bde17b38",
+      "names_sample": [
+        "algebra_600896"
+      ]
+    },
+    {
+      "component_id": "fc-eb345a5649dd",
+      "size": 1,
+      "representative_statement_id": "05fdf04e-42a8-41f2-8065-832827190c41",
+      "names_sample": [
+        "inequalities_37477"
+      ]
+    },
+    {
+      "component_id": "fc-eb4d99836cbd",
+      "size": 1,
+      "representative_statement_id": "b71245a9-cd22-44cd-9f05-365eb4932e24",
+      "names_sample": [
+        "algebra_607329"
+      ]
+    },
+    {
+      "component_id": "fc-ebb5b39906ed",
+      "size": 1,
+      "representative_statement_id": "a4020bc9-cb50-4af3-afad-dd14e0d9d257",
+      "names_sample": [
+        "algebra_165391"
+      ]
+    },
+    {
+      "component_id": "fc-ebbfdb5cfa7b",
+      "size": 8,
+      "representative_statement_id": "9823fd8b-65d4-4bb8-be6a-a988117cb29d",
+      "names_sample": [
+        "algebra_224858",
+        "algebra_224858_v0001",
+        "algebra_224858_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-ebfea4e7b711",
+      "size": 1,
+      "representative_statement_id": "ba11030b-bd9e-4caf-a291-5097f729b923",
+      "names_sample": [
+        "calculus_127090"
+      ]
+    },
+    {
+      "component_id": "fc-ec0d374e1c73",
+      "size": 1,
+      "representative_statement_id": "f78b91ac-5cfe-45be-ae55-539ea07a2beb",
+      "names_sample": [
+        "algebra_162351"
+      ]
+    },
+    {
+      "component_id": "fc-ec49affbd454",
+      "size": 1,
+      "representative_statement_id": "14543f5e-0d95-4e0c-8599-f6c6a88ce0af",
+      "names_sample": [
+        "inequalities_52705"
+      ]
+    },
+    {
+      "component_id": "fc-ec691da1798f",
+      "size": 1,
+      "representative_statement_id": "e01ac7e1-b301-4e21-98bb-0a02af855bde",
+      "names_sample": [
+        "algebra_167062"
+      ]
+    },
+    {
+      "component_id": "fc-ed5c456be972",
+      "size": 1,
+      "representative_statement_id": "6390174f-2762-4a39-8dbf-c55b017b8033",
+      "names_sample": [
+        "algebra_285435"
+      ]
+    },
+    {
+      "component_id": "fc-ed5e1b7fae2a",
+      "size": 1,
+      "representative_statement_id": "0a175b9c-0bdc-4074-b7fd-5c621c30878c",
+      "names_sample": [
+        "algebra_234121"
+      ]
+    },
+    {
+      "component_id": "fc-ee6ad26a7420",
+      "size": 1,
+      "representative_statement_id": "9d5e7b59-1849-40ba-98fb-1f465488d146",
+      "names_sample": [
+        "algebra_46374"
+      ]
+    },
+    {
+      "component_id": "fc-eefdda55e328",
+      "size": 1,
+      "representative_statement_id": "8570b754-8fb1-4b0f-aa9e-4fb977a67e72",
+      "names_sample": [
+        "algebra_604521"
+      ]
+    },
+    {
+      "component_id": "fc-ef09a1804807",
+      "size": 1,
+      "representative_statement_id": "a0990978-40ff-4bcf-8e7f-ede8ac3a3e64",
+      "names_sample": [
+        "algebra_321395"
+      ]
+    },
+    {
+      "component_id": "fc-efc3963e35ac",
+      "size": 9,
+      "representative_statement_id": "f94c6ac0-7f02-4ae6-a8ba-13ceb088a5d9",
+      "names_sample": [
+        "calculus_18606",
+        "calculus_18606_v0001",
+        "calculus_18606_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-efc64b8661e4",
+      "size": 1,
+      "representative_statement_id": "9ba1704b-6647-4360-8aca-1d97f114dd0e",
+      "names_sample": [
+        "algebra_238498"
+      ]
+    },
+    {
+      "component_id": "fc-efca40190bc8",
+      "size": 1,
+      "representative_statement_id": "ee41f768-ca77-45d7-b2af-cfed325179d2",
+      "names_sample": [
+        "number_theory_13655"
+      ]
+    },
+    {
+      "component_id": "fc-f093cb942dff",
+      "size": 1,
+      "representative_statement_id": "ca6004e1-d60c-45a8-9e24-85e9e6a1299b",
+      "names_sample": [
+        "number_theory_315792"
+      ]
+    },
+    {
+      "component_id": "fc-f09856ff33f4",
+      "size": 1,
+      "representative_statement_id": "ade9cc1d-1c20-4aee-8f85-4cb3db87d983",
+      "names_sample": [
+        "inequalities_205702"
+      ]
+    },
+    {
+      "component_id": "fc-f0d68aabdce6",
+      "size": 1,
+      "representative_statement_id": "34020b06-a75e-4434-84dc-3400eb573e99",
+      "names_sample": [
+        "algebra_148952"
+      ]
+    },
+    {
+      "component_id": "fc-f0f14ff6eab9",
+      "size": 1,
+      "representative_statement_id": "34da8401-0151-4ffb-9403-0aca015708b9",
+      "names_sample": [
+        "algebra_314725"
+      ]
+    },
+    {
+      "component_id": "fc-f109e3d53d7c",
+      "size": 1,
+      "representative_statement_id": "a3cb23e0-6ccb-47de-bc14-4b35ff964b1b",
+      "names_sample": [
+        "inequalities_102291"
+      ]
+    },
+    {
+      "component_id": "fc-f11da97aa18f",
+      "size": 10,
+      "representative_statement_id": "9cfcfc01-c285-4b3f-8a00-8ea95015ee0f",
+      "names_sample": [
+        "algebra_20931",
+        "algebra_20931_v0001",
+        "algebra_20931_v1637"
+      ]
+    },
+    {
+      "component_id": "fc-f12ff86df0b4",
+      "size": 1,
+      "representative_statement_id": "070ae134-8928-4a40-b2be-a89c32eac82e",
+      "names_sample": [
+        "algebra_599737"
+      ]
+    },
+    {
+      "component_id": "fc-f192e8a444c1",
+      "size": 10,
+      "representative_statement_id": "b520e65c-4628-48d5-81a7-cbac6f2b2749",
+      "names_sample": [
+        "number_theory_301212",
+        "number_theory_301212_v0001",
+        "number_theory_301212_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-f1998716719e",
+      "size": 1,
+      "representative_statement_id": "f600b50f-07a7-419e-839a-9035e5b6467d",
+      "names_sample": [
+        "algebra_292365"
+      ]
+    },
+    {
+      "component_id": "fc-f1aa8622495e",
+      "size": 1,
+      "representative_statement_id": "a410b5e9-37b2-4e47-9a1b-54b7a1635606",
+      "names_sample": [
+        "number_theory_6935"
+      ]
+    },
+    {
+      "component_id": "fc-f1f621fc4cf4",
+      "size": 1,
+      "representative_statement_id": "b6f74c2a-c95c-4f2f-a250-12de92a4c13e",
+      "names_sample": [
+        "number_theory_278234"
+      ]
+    },
+    {
+      "component_id": "fc-f2ccebfd45da",
+      "size": 1,
+      "representative_statement_id": "0b1f6d9d-da34-46fc-9585-74dcbbb56b9f",
+      "names_sample": [
+        "algebra_294182"
+      ]
+    },
+    {
+      "component_id": "fc-f2e19b2d65d6",
+      "size": 1,
+      "representative_statement_id": "6f505cbc-7076-449c-98b4-798b9ceb9e49",
+      "names_sample": [
+        "algebra_200554"
+      ]
+    },
+    {
+      "component_id": "fc-f34e0b5e9f1f",
+      "size": 1,
+      "representative_statement_id": "57345f6c-3602-483c-96e2-914852834090",
+      "names_sample": [
+        "algebra_30341"
+      ]
+    },
+    {
+      "component_id": "fc-f358296d3323",
+      "size": 1,
+      "representative_statement_id": "87f5b37c-f524-4af4-adba-ca9572df14d0",
+      "names_sample": [
+        "algebra_127711"
+      ]
+    },
+    {
+      "component_id": "fc-f3691a29b5e6",
+      "size": 9,
+      "representative_statement_id": "b2edb86b-6d28-496b-bd84-f9522d53f3e3",
+      "names_sample": [
+        "number_theory_290855",
+        "number_theory_290855_v0001",
+        "number_theory_290855_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-f4379f4aab14",
+      "size": 10,
+      "representative_statement_id": "681d08a4-2e63-4579-a33d-dbd430260099",
+      "names_sample": [
+        "number_theory_129902",
+        "number_theory_129902_v0001",
+        "number_theory_129902_v0002"
+      ]
+    },
+    {
+      "component_id": "fc-f442d55bab38",
+      "size": 1,
+      "representative_statement_id": "b38ef0f3-4e0f-4423-81a2-4c0bf5873ce3",
+      "names_sample": [
+        "algebra_315617"
+      ]
+    },
+    {
+      "component_id": "fc-f4d92418518c",
+      "size": 1,
+      "representative_statement_id": "a2e09410-4308-4205-beda-c8f6b5e5ec7a",
+      "names_sample": [
+        "inequalities_253629"
+      ]
+    },
+    {
+      "component_id": "fc-f554a76170d6",
+      "size": 1,
+      "representative_statement_id": "868a03b5-dee8-4381-82ff-c6b161d3f652",
+      "names_sample": [
+        "algebra_9427"
+      ]
+    },
+    {
+      "component_id": "fc-f56a98a60797",
+      "size": 1,
+      "representative_statement_id": "7a4f1b70-6063-4e54-a3cb-a240a2761440",
+      "names_sample": [
+        "algebra_163405"
+      ]
+    },
+    {
+      "component_id": "fc-f59581488f97",
+      "size": 1,
+      "representative_statement_id": "ca6486ed-97c3-42ae-946c-59f595977ed4",
+      "names_sample": [
+        "inequalities_66865"
+      ]
+    },
+    {
+      "component_id": "fc-f5ca46e2a7c1",
+      "size": 1,
+      "representative_statement_id": "529e7d18-b41b-40af-b3a1-a429a73f7893",
+      "names_sample": [
+        "algebra_112920"
+      ]
+    },
+    {
+      "component_id": "fc-f67c78a92c01",
+      "size": 1,
+      "representative_statement_id": "bdb113e9-4cce-44e1-85c6-851f6c30e74e",
+      "names_sample": [
+        "algebra_318813"
+      ]
+    }
+  ],
+  "created_at_utc": "2026-09-19T20:50:29.514461+00:00",
+  "git_revision": "ee8c5efd00344c4b4e523cbba42f509dad4ae4fd",
+  "script": "scripts/v2_b003_freeze_eval.py"
+}
