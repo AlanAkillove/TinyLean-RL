@@ -1,0 +1,77 @@
+# E023 — M1 final-holdout evaluation (Phase 5F). INTERIM record (3/4 models).
+#
+# Four model evaluations on the sealed 128-theorem holdout
+# (experiments/manifests/m1_final_holdout.json; selection seed 20260918).
+# The canonical verdict (scripts/holdout_multiseed_analyze.py, fly90 only)
+# runs ONLY after all four artifacts are complete. No result-dependent
+# checkpoint selection; no post-hoc theorem removal (theorem-38 HTTP-500
+# pattern stays in the primary analysis; sensitivity analyses only if clearly
+# marked as post-hoc).
+
+protocol:
+  evaluator: scripts/p3c_checkpoint_eval.py
+  theorems: 128
+  samples_per_theorem: 4
+  temperature: 1.0
+  top_p: 1.0
+  max_new_tokens: 4096
+  seed_schedule: "20260917 + theorem_index*8 + sample_index"
+  verify_workers: 4
+  verify_batch_size: 4
+  verifier: "strict Kimina 2.0.0, per-machine localhost server (never cross-host)"
+
+split:
+  fly122: [theta0, seed2_step60]
+  fly90:  [seed1_step60, seed3_step60]
+
+status_overall: "paused (external GPU job on the shared host); 3/4 evaluations complete"
+
+results_observed:            # raw eval counts; corrected = observed when adjudication is complete
+  theta0:
+    host: fly122
+    verified: 120
+    candidates: 512
+    igr: 0.2421875
+    pass_at_1: 0.2344
+    pass_at_4: 0.3594
+    solved_ge1: 46
+    verifier_errors: 5
+    adjudication: {status: complete, credited: 0, corrected: 120, optimistic_bound: 125}
+  seed1_step60:
+    host: fly90
+    verified: 119
+    candidates: 512
+    igr: 0.265625
+    pass_at_1: 0.2324
+    pass_at_4: 0.375
+    solved_ge1: 48
+    verifier_errors: 4
+    adjudication: {status: "partial (interrupted; 3 candidates recorded; --resume available)", credited: null}
+  seed2_step60:
+    host: fly122
+    verified: 113
+    candidates: 512
+    igr: 0.234375
+    pass_at_1: 0.2207
+    pass_at_4: 0.3516
+    solved_ge1: 45
+    verifier_errors: 6
+    adjudication: {status: complete, credited: 0, corrected: 113, optimistic_bound: 119}
+  seed3_step60:
+    host: fly90
+    status: not_started
+
+artifacts_sha256:            # transferred via rsync over LAN; sha256 verified identical on both hosts
+  fly122_side_pulled_to_fly90:
+    e023_holdout_base.json: 58d6d419402eda144ae7f72e87bd056a89d5b9d8680df6c29c6f1195b0d0392e
+    e023_holdout_seed2.json: cd350aa89f742b6c4eb95d438c2e574cee47462e88cdd1ed16467dd33fc54915
+    e023_holdout_base_adjudication.json: 84bbb6da9a86d52e62baad01bb7981a31ca85d5c43d67716ca81ba84957685df
+    e023_holdout_seed2_adjudication.json: be21e6ff6426918ff5eaa4dcd0265a577987bf0ff24849b682ea5504c6d8fcc8
+  fly90_side:
+    e023_holdout_seed1.json: 253becc8b2a7d73990d88e795bc59fa0d6f0304723bde866f1acf0a3c7e493f8
+    e023_holdout_seed1_adjudication.json: "7cdddd0de2accb12d3a8a2637af83e851866ad929991529c7cb20dda0bbc00cb  # PARTIAL artifact (interrupted run)"
+
+pause:
+  reason: "external project occupying the GPU on the shared host (2 python processes, ~5.8 GiB VRAM each); single-GPU-heavy-job-at-a-time rule"
+  resume_plan: "seed1 adjudication (--resume) -> seed3 evaluation (.cache/run_e023_seed3.sh) -> seed3 adjudication -> holdout_multiseed_analyze.py on fly90"
+  resume_conditions: "GPU free + quiet window (systemd-oomd is back to active; the user decides its state for the next heavy window)"

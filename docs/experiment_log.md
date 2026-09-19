@@ -504,6 +504,16 @@
 - 冻结规则：第一次评估后：不得重抽、不得改超参、不得 step100 chasing。
 - 下一步：**E023 双机评估**——fly90：seed1-step60（`runs/p3c_models/step_60`）+ seed3-step60（`runs/m1_seed3_models/step_60`）；fly122：θ0（Kimina-Distill base）+ seed2-step60（`runs/m1_seed2_models/step_60`）。协议：128×4、T=1.0、top_p=1.0、max 4096、同种子表、严格 Kimina 2.0.0；全部产物回 fly90 后运行 `holdout_multiseed_analyze.py` 出 canonical verdict。
 
+### E023 final-holdout evaluation（进行中 3/4；因外部 GPU 占用暂停）
+
+- 协议（四模型统一）：sealed `m1_final_holdout.json`（128 定理，selection seed 20260918）；128×4、T=1.0 / top_p=1.0 / max 4096、canonical seed schedule `20260917 + theorem_index*8 + sample_index`、verify-workers=4 / verify-batch-size=4、严格 Kimina 2.0.0（每机本地 server）；evaluator `scripts/p3c_checkpoint_eval.py`。**四模型全部完成前不运行 canonical verdict、不做 seed 选择。**
+- 分工：fly122 = θ0 + seed2-step60；fly90 = seed1-step60 + seed3-step60。
+- fly122（完成 + adjudication 完成）：θ0 verified **120/512**（IGR 0.2422 / pass@1 0.2344 / pass@4 0.3594 / solved≥1 46；verifier_error 5 → credited 0，corrected 120）；seed2-step60 verified **113/512**（IGR 0.2344 / pass@1 0.2207 / pass@4 0.3516 / solved≥1 45；verifier_error 6 → credited 0，corrected 113）。
+- fly90：seed1-step60 评估完成（03:28:13→03:55:27 UTC，27 分钟，rc=0）：verified **119/512**（IGR 0.2656 / pass@1 0.2324 / pass@4 0.375 / solved≥1 48 / truncation 0.369；verifier_error 4）；**adjudication 被执行中断**（partial：3 candidates 已记录、无 summary；`--resume` 可续）。seed3-step60 **未启动**。
+- artifact 完整性：fly122 四个产物经 rsync 拉回（LAN ~113 MB/s），**双端 SHA256 完全一致**（base 58d6d4… / seed2 cd350a… / base_adj 84bbb6… / seed2_adj be21e6…）；fly90 侧 seed1 产物 253becc8…（adjudication partial 7cdddd0d…）。raw artifacts 未修改。
+- **暂停**：外部同学项目占用 GPU（2×python ≈5.8 GiB VRAM each）；按“同一时间一个 GPU-heavy 任务”规则暂停（当时 oomd 已恢复 active）。恢复顺序 = seed1 adjudication（`--resume`）→ seed3 评估（`.cache/run_e023_seed3.sh` 就绪）→ seed3 adjudication → `holdout_multiseed_analyze.py`（仅 fly90）。恢复条件：GPU 空闲 + 安静窗口。
+- 产物（gitignored，本地）：`experiments/results/e023_holdout_{base,seed1,seed2}.json`、`e023_holdout_{base,seed2}_adjudication.json`、`e023_holdout_seed1_adjudication.json`（partial）；摘要 `experiments/manifests/e023_holdout.yaml`。
+
 ---
 
 ## 追加记录模板
