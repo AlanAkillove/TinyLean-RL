@@ -1,8 +1,10 @@
 # TinyLean-RL V2 — Track A: RL prover plan & recipe decision memo
 
 Status: **A0 complete; A1 complete (this memo); A3 preregistered as `V2-A001`
-(evaluation-only, frozen A3-primary set).** No training run has been launched; Candidate 2
-(the only conditional training run) stays dormant.
+(evaluation-only, frozen A3-primary set) and running since 2026-09-19; theorem-family
+leakage audit complete 2026-09-20 ([`family_leakage_audit.md`](family_leakage_audit.md)).**
+No training run has been launched; Candidate 2 (the only conditional training run) stays
+dormant.
 Track structure: [`research_plan.md`](research_plan.md) (Track A/B/C amendment). V1 evidence
 index: [`legacy_evidence.md`](legacy_evidence.md). Discipline: [`experiment_protocol.md`](experiment_protocol.md),
 [`../dual_server_collaboration.md`](../dual_server_collaboration.md) §6.1,
@@ -205,6 +207,16 @@ Selection-set requirements (to freeze at preregistration):
 - Explicitly not: a Track C endpoint, a benchmarking claim, or a fishing exercise — one
   draw, one decision.
 
+**2026-09-20 amendment (family leakage audit).** The audit measured the set's real
+isolation: 232/512 A001 ids share an L3 source-problem family with a V1-consumed statement
+(52/512 with the sealed E023 holdout; 392 effective clusters, borderline CIs ≈ 1.14x wider).
+The set and the one-shot rule stay frozen. Consequences: (a) the A001 outcome is a
+*selection statistic* for `theta_RL*` only — no A001 delta, even with `ci_low > 0`, is a
+confirmatory RL-vs-theta0 capability claim; (b) the A4 freeze package must include the audit
+and report the overlap next to the selection outcome; (c) the Track C final holdout comes
+from a family-clean split (90/680 C-joint ids are family-clean today, or re-partition under
+the family-granular amendment); (d) the audit completes between A001 and the A4 freeze.
+
 ### 4.2 Candidate 2 (conditional, one training run) — `V2-A002`-class
 
 Trigger: only if (i) Candidate 1 shows every available checkpoint statistically ≤ theta0
@@ -243,3 +255,8 @@ Candidate 2 stays dormant — it may be triggered only by its published conditio
 explicit owner approval, and never starts automatically. Note: fly122's pre-amendment
 `V2-E001` (canonical alias `V2-B001`) is a Track B experiment, unrelated to this Track-A
 numbering.
+
+Addendum (2026-09-20): the theorem-family leakage audit completed while A001 was still
+running; it is a required element of the A4 freeze package, and the A001 outcome's
+positioning is selection-only (no confirmatory capability claim). No frozen set, rule or
+protocol was modified by the audit.

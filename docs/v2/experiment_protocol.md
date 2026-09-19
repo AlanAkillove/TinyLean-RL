@@ -18,7 +18,10 @@ V1 protocol and records remain authoritative for V1 numbers (frozen; see [`legac
   must never straddle train/test.
 - Near-duplicate theorem families stay within one split: normalize statements (whitespace / comments /
   binder names) and group near-duplicates before splitting; the **group**, not the raw row, is the
-  split unit.
+  split unit. *(2026-09-20 correction: the realized V2 registry guarantees exact-statement isolation
+  only - the measured source-problem family leakage is in
+  [`family_leakage_audit.md`](family_leakage_audit.md); every future split must use the family key
+  (L3), audited at the skeleton layer (L2).)*
 - Splits are frozen in the experiment manifest **before** the formal run; no re-splitting after seeing results.
 
 ## 3. Budget definitions (must not be conflated)
@@ -80,8 +83,13 @@ B-train 60% | B-validation 10% | B-test 10% | A-selection 10% | C-joint-holdout 
 - Pool = the Promptset statements with no V1 consumption history (7,620 unique minus the
   763 V1-used and the 128 sealed E023 holdout = 6,729).
 - Role = `sha256("<salt>|<normalized statement>")` bucket; the normalized statement is the
-  split unit (near-duplicate families move together, §2). `B1-audit-reserved` statements
-  (fly122 `V2-B001`) are carved out of every role.
+  split unit. This guarantees **exact-statement isolation only** - the 6,729 statements formed
+  6,729 groups, and the `_v<digits>` source-problem families are NOT isolated (2026-09-20 audit:
+  684/1,568 pool families span >= 2 roles, 85 % of ids involved; 232/512 A001 ids share a family
+  with V1-consumed statements - see [`family_leakage_audit.md`](family_leakage_audit.md)).
+  Family-granular isolation lands with the next registry amendment, never as a re-split of this
+  frozen partition. `B1-audit-reserved` statements (fly122 `V2-B001`) are carved out of every
+  role at the statement level; their family siblings are listed in the audit.
 - A-selection is split by a frozen order hash into **A3-primary** (materialized as
   `v2_a001_selection_set.json`, the V2-A001 selection set) and **A-reserve** (reserved for
   the conditional second A-track decision only).
