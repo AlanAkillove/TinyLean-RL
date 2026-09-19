@@ -1,4 +1,4 @@
-status: PREREGISTERED
+status: RUNNING
 track: B
 
 experiment: V2-B002
@@ -143,3 +143,13 @@ status_note: >
   (y512=0 and ANY larger budget succeeds - not only 4096) and both Hindsight
   Oracle frontiers. No frozen protocol parameter (pilot, seeds, budgets)
   changed in this addendum.
+
+  Launch record (2026-09-20): canonical gate cleared via main2 integration
+  5fbc69c (B001=V2-B001 COMPLETE, B002 preregistered; fly122 ff-merged main2).
+  Pre-launch check block: HEAD=5fbc69c3e1d3e6c3f4c61f9c62304002f3ca4cbb;
+  worktree clean; V2-B002.yaml sha256=3b5483764f105b4c5f46d8967ad69d13f1f3530782a161212a718d1b5d5ddb02;
+  prereg commit a914bd9 and pre-launch amendment 0a2c798 are HEAD ancestors;
+  pilot sha256=4c9b8f297203deaae508323cd1cc1340056f3ebd1a8cd5445f5f210da04b3e05;
+  reserve sha256=2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a.
+  Status -> RUNNING; launched via the systemd user unit fly122-v2b002-pilot
+  (single-path HF candidate generation, K=1, no vLLM, budgets 512..4096).
