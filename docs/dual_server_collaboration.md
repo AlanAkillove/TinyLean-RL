@@ -333,7 +333,7 @@ model: ...
 
 最终 canonical manifest 在 fly90 合并。
 
-V2 编号（2026-09-19 起）：所有新实验使用 `V2-E###`（`V2-E001`, ...）；既有 `E###` 编号永不复用。未执行的 V1 预留编号（E025/E026）不再使用，后续 M2/SFT 类工作一律进入 `V2-E###`。V2 manifests 位于 `experiments/manifests/v2/`（参见其 README 与模板）。
+V2 编号（2026-09-19 起，同日命名修订）：所有新实验使用 Track-specific namespace —— Track A `V2-A###`（RL prover，fly90）、Track B `V2-B###`（adaptive allocator，fly122）、Track C `V2-C###`（joint evaluation，fly90）；既有 `E###` 编号永不复用。改名前已运行的 raw 编号 `V2-E001`（fly122 Budget Semantics Audit）**不改写、不重命名**，在 `experiments/manifests/v2/registry.yaml` 中永久登记 canonical alias **V2-B001**；`V2-E###` 对新的正式实验关闭。未执行的 V1 预留编号（E025/E026）不再使用。V2 manifests 位于 `experiments/manifests/v2/`（参见其 README、registry 与模板）；定理角色划分（B-train / B-validation / B-test / A-selection / C-joint-holdout + B1-audit-reserved）见 `theorem_role_registry.json`（coordination 2026-09-19）。
 
 ## 15. Artifact Provenance
 

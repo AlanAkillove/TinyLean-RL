@@ -17,7 +17,7 @@
 - **V1 证据已冻结**：annotated tag `v1-research-freeze-20260919`（branch `p3-linux`）。E001–E024 为历史证据，不删除、不改写、不重编号。
   - V1 严谨总结（不重复原始数字，详见 [V1 证据索引](docs/v2/legacy_evidence.md)）：RL 训练链路 / trainability 已建立；positive / mixed reward groups 稳定可观察；多 seed 训练动力学可复现；60-step 低算力配方下 held-out 能力增益小且 seed-sensitive / inconclusive；**未宣称稳定 benchmark improvement**。
   - E024 MiniF2F：**PAUSED / ABORTED DUE TO VERIFIER INFRASTRUCTURE INCIDENT; no E024 result claim.**（见 [docs/e024_status.md](docs/e024_status.md)）
-- **V2 仓库准备完成（V2-0）；尚未运行任何 V2 实验。** **No V2 adaptive-allocation experiment has been run yet.**
+- **V2 进行中（2026-09-19 命名修订：Track 命名空间 `V2-A###` / `V2-B###` / `V2-C###`）**：Track A A0/A1 完成、A3 已预注册（`V2-A001`）；Track B B1（raw id `V2-E001` = alias `V2-B001`）在 fly122 运行中。**尚无 Track A/C 实验运行。**
 
 ## 文档地图
 
@@ -28,7 +28,7 @@
 | [docs/v2/data_contract.md](docs/v2/data_contract.md) | `budget_response` 数据契约（prefix vs direct-budget；不预设单调性） |
 | [docs/v2/legacy_evidence.md](docs/v2/legacy_evidence.md) | V1 证据索引（指向 canonical 文档 / manifests，不重述数字） |
 | [docs/experiment_log.md](docs/experiment_log.md) · [docs/research_plan.md](docs/research_plan.md) | V1 全量记录（已标注冻结） |
-| `experiments/manifests/v2/` | V2 manifests（命名空间 `V2-E###`；含模板与规则） |
+| `experiments/manifests/v2/` | V2 manifests（命名空间 `V2-A###` / `V2-B###` / `V2-C###`；含 registry、theorem-role registry、模板与规则） |
 
 ## 复现性与协作
 

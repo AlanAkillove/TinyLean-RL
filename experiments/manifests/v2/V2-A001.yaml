@@ -1,0 +1,116 @@
+# V2-A001 - Track-A checkpoint-selection evaluation (evaluation-only; no training).
+# Preregistration committed before the run; frozen per freeze_rule below.
+# The rule text and constants are mirrored by scripts/v2_a001_analyze.py
+# (pure decision functions, unit-tested in tests/test_v2_a001_analyze.py).
+status: PREREGISTERED
+track: A
+experiment: V2-A001
+title: "Checkpoint-selection evaluation on the frozen A3-primary set (512 theorems x 4 samples)"
+created_at_utc: "2026-09-19T15:48:31Z"
+owner: fly90
+
+research_question: >
+  Which physically available RL checkpoint - seed1 step10/20/30/60, seed2-step60,
+  seed3-step60 - is the most defensible theta_RL* candidate under one clean,
+  preregistered selection protocol on a fresh sealed set, with theta0 as anchor?
+hypothesis: >
+  The V1 default (seed1-step60) is not detectably superior to the other seeds'
+  step-60 endpoints, and no RL checkpoint shows a detectable gain over theta0 at
+  the 512-theorem paired resolution (paired CI ~ +/-1.6-1.7 pp).
+
+starting_checkpoint: null      # evaluation-only; no training
+starting_checkpoint_revision: null
+training_data: null
+seed: null                     # evaluation-only; evaluation sampling schedule fixed below
+training_steps: 0
+n: null
+temperature: 1.0               # evaluation sampling temperature
+top_p: 1.0
+max_response: 4096
+
+stopping_rule: >
+  unattended-safe, no wall-time cap: the runner stops the batch when a model
+  fails twice in a row (same-cause rule); chunk-level partials are resumable
+  (--resume, fail-closed settings check), so an oomd kill loses at most one
+  16-theorem chunk.
+checkpoint_schedule: null      # evaluation-only
+
+evaluation:
+  host: fly90                  # all seven models on one host (E023 cross-device audit)
+  set: experiments/manifests/v2/v2_a001_selection_set.json
+  set_sha256: f429ddd7c628c3ce36b9ee7309c1fc68c819a0e03d20b38f5fd44112d7853e86
+  set_role: >
+    A-selection partition / A3-primary subset of the V2 theorem-role registry
+    (deterministic normalized-hash partition; sealed in commit 1930f75 before the run)
+  selector: scripts/build_v2_theorem_roles.py
+  samples_per_theorem: 4
+  sampling_seed_schedule: "20260917 + theorem_index * 8 + sample_index (canonical)"
+  sampler: {temperature: 1.0, top_p: 1.0, max_new_tokens: 4096}
+  evaluator: scripts/p3c_checkpoint_eval.py
+  evaluator_flags: "--chunk-theorems 16 --verify-workers 4 --verify-batch-size 4 --resume --offline"
+  runner: scripts/run_v2_a001.sh
+  analyzer: scripts/v2_a001_analyze.py     # implements the selection rule below
+  models:
+    base:         {path: models/weights/kimina_distill_0_6b, global_step: 0, role: "theta0 anchor (never a candidate)"}
+    step10:       {path: runs/p3c_models/step_10, global_step: 10}
+    step20:       {path: runs/p3c_models/step_20, global_step: 20}
+    step30:       {path: runs/p3c_models/step_30, global_step: 30}
+    seed1_step60: {path: runs/p3c_models/step_60, global_step: 60}
+    seed2_step60: {path: runs/m1_seed2_models/step_60, global_step: 60}
+    seed3_step60: {path: runs/m1_seed3_models/step_60, global_step: 60}
+  model_hashes:                # sha256 of model.safetensors, measured on fly90 2026-09-19
+    base:         34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2
+    step10:       987262a17d88ce8ca6cd23ace11e6693b0d322cb13b62ef1ada5e71df6290d34
+    step20:       0651e91369234abad5d60c19909693cfd6d4484cd15a91b48f266c5070376acf
+    step30:       0343caee6111953489d77b9e09fb44c5196624e919fd4a3a7b6a8addf7bcbcd1
+    seed1_step60: dc6bd29d8835c339f26eabb2d8670b8150e5994a5862e134ce557aae3a4529a7
+    seed2_step60: a3a23a6ff56bcdb018f2209d090813f02f85ca53be6dc9e890d842c6e51fcebb
+    seed3_step60: 0d31f947a1736ac00b2867b2314678490de05b93bbd27e9eb24d9da0f7b2507f
+  outputs: "experiments/results/v2_a001_<label>.json (7 artifacts) + v2_a001_analysis.json"
+
+primary_metrics:
+  - "theorem-level paired bootstrap CI of Delta = (c_i/n) difference (mean_c_over_n, pp); 10k resamples, seed 20260917, alpha 0.05"
+  - "win/tie/loss counts and exact McNemar on the solved indicator s_i = [c_i >= 1]"
+comparison_checkpoint: "theta0 anchor (base) and the default incumbent (seed1_step60)"
+
+selection_rule:
+  default_candidate: seed1_step60
+  anchor: base                 # theta0 is the reference anchor, never a candidate
+  candidates: [step10, step20, step30, seed1_step60, seed2_step60, seed3_step60]
+  procedure:
+    - "R3 (degradation override, evaluated first): if ci_low(Delta(default - theta0)) < 0, select argmax_C mean(Delta(C - theta0)) over candidates with ci_low(Delta(C - theta0)) >= -1.0 pp; if none qualifies, select the least-bad point estimate overall (tagged R3-least-bad)."
+    - "R1 (strict superiority): else, if some candidate has ci_low(Delta(C - default)) > 0, select argmax_C mean(Delta(C - default))."
+    - "R2 (default): else keep seed1_step60."
+  tie_break: "larger point estimate, then smaller global step, then lexicographic label"
+  one_shot: "one draw, one decision; no re-draw, no rule switching, no post-hoc theorem removal"
+
+go_no_go_rule:
+  freeze: >
+    If the selected model S has ci_low(Delta(S - theta0)) > 0 (established gain over
+    theta0), it is freeze-ready as theta_RL* for A4 and the Track C handoff.
+  owner_decision: >
+    Otherwise (no established gain: ci_low <= 0, covering degraded ci_high < 0 and
+    sub-threshold positives), V2-A001 does NOT freeze automatically. The owner picks
+    between (a) freezing S as theta_RL* with the null/degraded outcome documented, and
+    (b) triggering the single Candidate-2 run (V2-A002-class; multiturn restoration,
+    track_a_rl_plan.md section 4.2) on the frozen A-reserve set.
+  candidate2: >
+    Candidate 2 is never started automatically: it requires explicit owner approval,
+    its own preregistered manifest, and the published conditions. The analyzer emits
+    one of: degraded (ci_high < 0) / null (point < +1 pp, CI spans 0) / borderline
+    (point >= +1 pp, CI spans 0).
+  theta0_not_selectable: "theta0 is the reference anchor, never theta_RL* (Track C needs an RL prover)."
+
+freeze_rule:
+  - "no re-draw, removal, addition or reordering of the A3-primary set"
+  - "no sampling-protocol or evaluator-flag change after launch (temperature, top_p, max tokens, seeds, chunking)"
+  - "no mid-run model additions or replacements; one host only (fly90)"
+  - "the rule, margins and tie-breaks above are not reinterpreted after seeing data"
+
+outputs:
+  raw: "experiments/results/v2_a001_{base,step10,step20,step30,seed1_step60,seed2_step60,seed3_step60}.json"
+  analysis: experiments/results/v2_a001_analysis.json
+  artifact_hashes: []          # filled after the run
+
+result_summary: null
+status_note: null

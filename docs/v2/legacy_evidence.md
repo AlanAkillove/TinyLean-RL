@@ -53,6 +53,6 @@ Independently re-hashed over LAN on 2026-09-19 (values match `docs/e024_status.m
 
 - M2 verified-SFT intervention: preregistered only (`docs/m2_sft_intervention_plan.md`); never run.
 - M3 model-size frontier: never started.
-- Reserved-but-unrun V1 numbers (e.g. E025/E026) are superseded; all future experiments use `V2-E###`.
+- Reserved-but-unrun V1 numbers (e.g. E025/E026) are superseded; V2 experiments use the track namespaces `V2-A###` / `V2-B###` / `V2-C###` (naming amendment 2026-09-19; the pre-amendment raw id `V2-E001` stays registered as alias `V2-B001` in `experiments/manifests/v2/registry.yaml`).
 - V1 detailed status remains linked via the frozen docs above; V2 planning starts at
   [`docs/v2/research_plan.md`](research_plan.md).

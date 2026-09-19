@@ -1,0 +1,52 @@
+# Canonical V2 experiment registry.
+#
+# Naming amendment (2026-09-19): new formal experiments use track-specific
+# namespaces - V2-A### (Track A, RL prover / fly90), V2-B### (Track B, adaptive
+# allocator / fly122), V2-C### (Track C, joint evaluation / fly90). The
+# pre-amendment shared namespace "V2-E###" is closed for new experiments.
+# Official raw identifiers are never rewritten; aliases are registered here
+# permanently. This file is append-only for aliases and experiment entries.
+#
+# Manifests are still created before the run and frozen per their own
+# freeze_rule (see README.md).
+
+registry:
+  amended_at_utc: "2026-09-19"
+  namespaces:
+    V2-A###: {track: A, owner: fly90, scope: "RL prover line ending in frozen theta_RL*"}
+    V2-B###: {track: B, owner: fly122, scope: "adaptive compute allocator"}
+    V2-C###: {track: C, owner: fly90, scope: "joint prover x allocation evaluation"}
+
+aliases:
+  # raw id used before the naming amendment -> canonical track-scoped id
+  V2-E001:
+    canonical: V2-B001
+    title: "Budget-semantics audit - direct-budget vs 4096-prefix equivalence for theta0"
+    owner: fly122
+    status: RUNNING
+    manifest: "experiments/manifests/v2/V2-E001.yaml (raw id kept; source: fly122 worker/v2-allocator f03ebba)"
+    note: >
+      Preregistered and launched by fly122 on the pre-amendment main2 (ca804f1).
+      The raw identifier V2-E001 and every artifact keep their original names;
+      V2-B001 is the canonical track-scoped alias for all future references.
+      The published usage_note reserves its 16-theorem subset as
+      B1-audit-reserved in the V2 theorem-role registry.
+
+experiments:
+  V2-B001:
+    alias_of: V2-E001
+    track: B
+    owner: fly122
+    status: RUNNING            # as of 2026-09-19 (fly122 B1; coordination check)
+    note: "first B-track experiment; see aliases.V2-E001"
+  V2-A001:
+    track: A
+    owner: fly90
+    status: RUNNING            # launched 2026-09-19T15:52:50Z (systemd user unit v2-a001) from main2 2977f2c
+    note: >
+      Checkpoint-selection evaluation on the frozen A3-primary set
+      (v2_a001_selection_set.json; set sha256 f429ddd7c628c3ce36b9ee7309c1fc68c819a0e03d20b38f5fd44112d7853e86).
+      Seven models x 512 theorems x 4 samples on fly90; preregistration in
+      experiments/manifests/v2/V2-A001.yaml (committed before launch); analysis by
+      scripts/v2_a001_analyze.py applying the R1/R2/R3 selection rule and the
+      freeze-vs-owner-decision outcome rule.

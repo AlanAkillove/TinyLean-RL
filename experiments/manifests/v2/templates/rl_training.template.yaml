@@ -1,0 +1,51 @@
+# TEMPLATE ONLY — copy to experiments/manifests/v2/V2-A###.yaml at pre-registration time.
+# Contains no run data: every value below is a placeholder or null.
+# Track A (RL prover / fly90). Working plan + field requirements: docs/v2/track_a_rl_plan.md.
+status: TEMPLATE
+track: A                    # A = RL prover (fly90) | B = allocator (fly122) | C = joint eval
+
+experiment: V2-A###            # assigned at pre-registration; never reuse V1 E### numbers
+title: <one-line title>
+created_at_utc: null           # set at pre-registration
+
+research_question: <the specific diagnosed question this run answers>
+hypothesis: <falsifiable statement>
+
+starting_checkpoint: <model dir / label, e.g. models/weights/kimina_distill_0_6b (theta0)>
+starting_checkpoint_revision: null    # weights hash / revision, filled before launch
+
+training_data:
+  name: <dataset name, e.g. AI-MO/Kimina-Prover-Promptset>
+  revision: null               # pinned revision, filled before launch
+  sampling: <fixed order / +data.seed value>
+
+seed: <+data.seed value — the only configurable seed in the pinned build (docs/seed_control_audit.md)>
+training_steps: <total target optimizer steps (TOTAL, not additional)>
+n: <rollout group size>
+temperature: <rollout temperature>
+top_p: <sampling top_p>
+max_response: <max_response_length>
+
+stopping_rule: <unattended stop conditions only; e.g. NaN / OOM / corruption / storage>
+checkpoint_schedule: <save_freq and how many checkpoints are kept>
+
+# Evaluation-only runs (e.g. the A3 checkpoint-selection evaluation): set
+# training_steps: 0 and fill this block instead of a training recipe.
+evaluation:
+  host: <fly90 | fly122 — one host per comparison; never mixed>
+  set: <selection-set manifest path; sealed before launch; never the final benchmark>
+  samples_per_theorem: null
+  seed_schedule: null
+
+primary_metrics: [<e.g. theorem-level paired delta vs comparison checkpoint>]
+comparison_checkpoint: <e.g. theta0 / seed1_step60>
+go_no_go_rule: <pre-committed decision rule; must be written before launch>
+
+freeze_rule: []                # list what cannot change after launch
+
+outputs:
+  raw: <gitignored path>
+  artifact_hashes: []          # filled after the run; sha256 per artifact
+
+result_summary: null           # filled after the run
+status_note: null              # required once status is not PREREGISTERED
