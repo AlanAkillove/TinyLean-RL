@@ -25,6 +25,7 @@ import e024_minif2f_eval as evaluator
 from promptset_rollout_probe import SYSTEM_PROMPT, USER_TEMPLATE
 
 REAL_MINIF2F = ROOT / "data" / "raw" / "minif2f_hf" / "data" / "train-00000-of-00001.parquet"
+REAL_MODEL_DIR = ROOT / "models" / "weights" / "kimina_distill_0_6b"
 
 
 def _write_parquet(path: Path, count: int) -> None:
@@ -246,3 +247,64 @@ def test_real_minif2f_file() -> None:
     assert len(rows) == 244
     assert len({row["statement_id"] for row in rows}) == 244
     assert all(row["formal_statement"].rstrip().endswith(":= by") for row in rows)
+
+
+def test_proof_assembly_appends_single_by_level() -> None:
+    formal = "import Mathlib\n\ntheorem t : True := by"
+    expected = "import Mathlib\n\ntheorem t : True := by\nnorm_num"
+    assert evaluator.complete_verifier_code(formal, "by\n  norm_num") == expected
+    assert evaluator.complete_verifier_code(formal, "norm_num") == expected
+
+
+def test_proof_assembly_keeps_by_cases_tactic_name() -> None:
+    formal = "import Mathlib\n\ntheorem t : True := by"
+    assembled = evaluator.complete_verifier_code(
+        formal, "by_cases h : True\n  · trivial\n  · trivial"
+    )
+    assert assembled is not None
+    assert "\nby_cases h : True" in assembled
+    assert "\n_cases" not in assembled
+
+
+def test_proof_assembly_passthrough_and_normalisation() -> None:
+    full = "import Mathlib\n\ntheorem t : True := by\n  trivial"
+    assert evaluator.complete_verifier_code("IGNORED := by", f"  {full}  ") == full
+    assert (
+        evaluator.complete_verifier_code(
+            "import Mathlib\n\ntheorem t : True := by sorry", "trivial"
+        )
+        == "import Mathlib\n\ntheorem t : True := by\ntrivial"
+    )
+    assert evaluator.complete_verifier_code("theorem t : True := by", "   ") is None
+
+
+def test_candidate_coverage_guard() -> None:
+    complete = _artifact(_records("stmt", 4, 4, {}), 4, 4)
+    dropped = dict(complete, records=complete["records"][:-1])
+    with pytest.raises(SystemExit):
+        analyzer.verify_pairing(complete, dropped)
+    duplicated = dict(complete, records=complete["records"] + [complete["records"][0]])
+    with pytest.raises(SystemExit):
+        analyzer.verify_pairing(complete, duplicated)
+
+
+@pytest.mark.skipif(
+    not (REAL_MINIF2F.exists() and REAL_MODEL_DIR.exists()),
+    reason="local MiniF2F parquet or model weights missing",
+)
+def test_real_prompt_snapshot() -> None:
+    from transformers import AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(
+        REAL_MODEL_DIR, trust_remote_code=True, local_files_only=True
+    )
+    rows = evaluator.load_minif2f_rows(REAL_MINIF2F)
+    prompt = evaluator.build_prompt_text(tokenizer, evaluator.prompt_fields(rows[0]))
+    assert prompt.count("# Problem:") == 1
+    assert prompt.count("# Formal Statement:") == 1
+    assert prompt.count("```lean4") == 1
+    assert SYSTEM_PROMPT in prompt
+    assert "\n# Problem:\n" in prompt
+    assert "\n# Formal Statement:\n" in prompt
+    assert rows[0]["formal_statement"].rstrip().endswith(":= by")
+    assert "<think>" not in prompt

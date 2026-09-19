@@ -55,6 +55,29 @@ def statement_alignment(records: list[dict[str, Any]]) -> dict[int, str]:
     return mapping
 
 
+def verify_complete_grid(artifact: dict[str, Any], label: str) -> None:
+    """Fail-close when the candidate grid is incomplete or contains duplicates."""
+
+    settings = artifact["settings"]
+    theorems = settings["theorems"]
+    samples = settings["samples_per_theorem"]
+    keys = [
+        (record["theorem_index"], record["sample_index"])
+        for record in artifact["records"]
+    ]
+    if len(keys) != len(set(keys)):
+        raise SystemExit(f"{label}: duplicate (theorem_index, sample_index) candidates")
+    expected = {(index, sample) for index in range(theorems) for sample in range(samples)}
+    missing = sorted(expected - set(keys))
+    unexpected = sorted(set(keys) - expected)
+    if missing or unexpected:
+        raise SystemExit(
+            f"{label}: candidate coverage incomplete "
+            f"(missing={len(missing)} e.g. {missing[:3]}, "
+            f"unexpected={len(unexpected)} e.g. {unexpected[:3]})"
+        )
+
+
 def verify_pairing(theta0: dict[str, Any], seed1: dict[str, Any]) -> None:
     samples0 = theta0["settings"]["samples_per_theorem"]
     samples1 = seed1["settings"]["samples_per_theorem"]
@@ -64,6 +87,8 @@ def verify_pairing(theta0: dict[str, Any], seed1: dict[str, Any]) -> None:
         )
     if theta0["settings"]["theorems"] != seed1["settings"]["theorems"]:
         raise SystemExit("theorem count mismatch between artifacts")
+    verify_complete_grid(theta0, "theta0")
+    verify_complete_grid(seed1, "seed1")
     left = statement_alignment(theta0["records"])
     right = statement_alignment(seed1["records"])
     if set(left) != set(right):

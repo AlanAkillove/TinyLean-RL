@@ -106,7 +106,9 @@ def complete_verifier_code(formal_statement: str, extracted: str) -> str | None:
         if not re.search(r":=\s*by$", formal):
             formal = f"{formal} := by"
     body = extracted.strip()
-    if body.startswith("by"):
+    # Strip only a standalone leading ``by`` keyword; tactic names such as
+    # ``by_cases`` or ``by_contra`` must keep their full name.
+    if re.match(r"by(\s|$)", body):
         body = body[2:].lstrip()
     return f"{formal}\n{body}".strip()
 
