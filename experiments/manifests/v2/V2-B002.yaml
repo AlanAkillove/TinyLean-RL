@@ -45,6 +45,13 @@ dataset:
     C-joint-holdout, and all members sit in B-train/B-validation/B-test.
   selection_artifact: experiments/manifests/v2/v2_b002_pilot_set.json
   theorem_count: 512
+  reserve_pool_artifact: experiments/manifests/v2/v2_b002_reserve_pool.json
+  reserve_note: >
+    the 216 eligible components NOT selected into the pilot are frozen as the
+    untouched reserve pool (v2_b002_reserve_pool.json): after B002 the 512
+    pilot components may serve as predictor training/development data, while
+    the B003 independent evaluation must be drawn only from the reserve pool
+    (target 160-192 components + buffer).
 
 protocol:
   budgets: [512, 1024, 2048, 3072, 4096]
@@ -76,12 +83,20 @@ pinned_artifacts:
     sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
   - path: experiments/manifests/v2/v2_b002_pilot_set.json
     sha256: 4c9b8f297203deaae508323cd1cc1340056f3ebd1a8cd5445f5f210da04b3e05
+  - path: experiments/manifests/v2/v2_b002_reserve_pool.json
+    sha256: 2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a
 
 analysis:
   primary:
-    - five-bit response-pattern distribution with descriptive categories
-    - monotonic vs non-monotonic trajectory counts (no automatic fixing; cases listed for forensics)
-    - pathwise Hindsight Oracle frontier vs uniform on the allocated max-token cap axis
+    - >
+      five-bit response-pattern distribution with the owner-defined categories:
+      easy (y512=1), compute-sensitive (y512=0 and any larger budget succeeds),
+      hopeless-at-4096 (y4096=0), first-success budget distribution, and
+      non-monotonic trajectories (no automatic fixing; cases listed for forensics)
+    - >
+      pathwise Hindsight Oracle DUAL frontier vs uniform: (a) fixed total allocated
+      budget -> solved theorems, and (b) fixed solved count -> required allocated
+      tokens
   secondary:
     - first-success budget and min-success cost distributions
     - verification health (status by budget, infrastructure outcomes, runtimes)
@@ -114,3 +129,17 @@ status_note: >
   disk but only committed after launch - must not repeat). Smoke runs (limit <= 4
   theorems, separate output file) do not count as results. Formal launch only
   after the B001 canonical merge completes and fly122 re-syncs main2.
+
+  Launch-prep addendum (owner-approved 2026-09-20, before any formal launch):
+  (a) component-rule bias check - component_id is content-addressed
+  (fc-<sha256(sorted member statement ids)[:12]>), carries no
+  name/category/source semantics, and the pilot-vs-reserve domain composition
+  test is statistically indistinguishable (chi2=10.1, dof=12, p=0.605);
+  therefore the frozen lexicographic selection rule STANDS UNCHANGED;
+  (b) the remaining 216 eligible components are frozen as the untouched
+  reserve pool (v2_b002_reserve_pool.json, sha256 pinned above) for the B003
+  evaluation;
+  (c) the analyzer reports the owner-defined compute-sensitive category
+  (y512=0 and ANY larger budget succeeds - not only 4096) and both Hindsight
+  Oracle frontiers. No frozen protocol parameter (pilot, seeds, budgets)
+  changed in this addendum.

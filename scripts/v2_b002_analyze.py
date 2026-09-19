@@ -97,7 +97,7 @@ def analyze_patterns(records: list[dict]) -> dict:
     )
     categories = {
         "easy_success_at_512": sum(1 for p in patterns if p[0] == "1"),
-        "compute_sensitive": sum(1 for p in patterns if p[0] == "0" and p[-1] == "1"),
+        "compute_sensitive": sum(1 for p in patterns if p[0] == "0" and "1" in p[1:]),
         "hopeless_at_4096": sum(1 for p in patterns if p[-1] == "0"),
         "always_success": sum(1 for p in patterns if p == "11111"),
         "never_success": sum(1 for p in patterns if p == "00000"),
@@ -211,6 +211,19 @@ def analyze_oracle(records: list[dict]) -> dict:
 
     frontier = [{"cap": cumulative[k], "solved": k} for k in range(len(cumulative))]
 
+    uniform_required = []
+    for target in sorted({v for v in uniform_solved.values() if v > 0}):
+        for index, budget in enumerate(BUDGETS):
+            if uniform_solved[str(budget)] >= target:
+                uniform_required.append(
+                    {
+                        "solved_target": target,
+                        "uniform_budget": budget,
+                        "required_allocated_cap": n * budget,
+                    }
+                )
+                break
+
     uniform_points = []
     for index, budget in enumerate(BUDGETS):
         cap = n * budget
@@ -293,6 +306,18 @@ def analyze_oracle(records: list[dict]) -> dict:
         "uniform_solved": uniform_solved,
         "uniform_points": uniform_points,
         "oracle_frontier_breakpoints": frontier,
+        "required_cap_by_solved_count": {
+            "oracle": [
+                {"solved": k, "required_allocated_cap": cumulative[k]}
+                for k in range(len(cumulative))
+            ],
+            "uniform": uniform_required,
+            "note": (
+                "dual frontier for fixed-solved-count reporting: oracle = minimum allocated cap "
+                "solving k theorems under the pathwise hindsight knapsack; uniform = smallest "
+                "uniform budget reaching at least k solved (cap = n * budget)"
+            ),
+        },
         "savings": savings,
         "hypothetical_actual_compute_by_budget": actual_estimates,
         "realized_cost": realized,

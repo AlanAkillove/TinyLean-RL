@@ -65,12 +65,13 @@ class TestPatternAnalysis:
             make_record(2, "00111"),  # compute-sensitive
             make_record(3, "00000"),  # hopeless + never
             make_record(4, "00001"),  # late success
+            make_record(5, "01000"),  # owner-defined compute-sensitive: no 4096 success
         ]
         result = analyze_patterns(records)
         cats = result["categories"]
         assert cats["easy_success_at_512"] == 1
-        assert cats["compute_sensitive"] == 2  # ranks 2 and 4
-        assert cats["hopeless_at_4096"] == 1
+        assert cats["compute_sensitive"] == 3  # ranks 2, 4, 5 (any larger budget, not only 4096)
+        assert cats["hopeless_at_4096"] == 2  # ranks 3 and 5
         assert cats["always_success"] == 1
         assert cats["never_success"] == 1
         assert cats["late_success_ge_3072"] == 1
@@ -123,6 +124,25 @@ class TestOracle:
         assert result["savings"]["uniform_4096_solved"] == 0
         assert result["savings"]["oracle_cap_for_same_solved"] is None
         assert result["savings"]["allocated_cap_savings_pct"] is None
+
+    def test_required_cap_dual_frontier(self):
+        records = [
+            make_record(1, "11111"),  # cost 512
+            make_record(2, "00111"),  # cost 2048
+            make_record(3, "00000"),  # never
+        ]
+        result = analyze_oracle(records)
+        req = result["required_cap_by_solved_count"]
+        assert req["oracle"][:3] == [
+            {"solved": 0, "required_allocated_cap": 0},
+            {"solved": 1, "required_allocated_cap": 512},
+            {"solved": 2, "required_allocated_cap": 2560},
+        ]
+        uni = {entry["solved_target"]: entry for entry in req["uniform"]}
+        assert uni[1]["uniform_budget"] == 512
+        assert uni[1]["required_allocated_cap"] == 3 * 512
+        assert uni[2]["uniform_budget"] == 2048
+        assert uni[2]["required_allocated_cap"] == 3 * 2048
 
     def test_frontier_breakpoints_are_cumulative(self):
         records = [make_record(1, "10000"), make_record(2, "00100")]
