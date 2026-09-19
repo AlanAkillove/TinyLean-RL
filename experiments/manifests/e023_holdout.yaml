@@ -20,11 +20,21 @@ protocol:
   verify_batch_size: 4
   verifier: "strict Kimina 2.0.0, per-machine localhost server (never cross-host)"
 
-split:
-  fly122: [theta0, seed2_step60]
-  fly90:  [seed1_step60, seed3_step60]
+split_after_amendment:        # decided 2026-09-19, BEFORE any fly122 seed1/seed3 results
+  fly122 (PRIMARY): [theta0, seed1_step60, seed2_step60, seed3_step60]
+  fly90  (sensitivity only): [seed1_step60 cross-device reproducibility run - NOT primary]
 
-status_overall: "paused (external GPU job on the shared host); 3/4 evaluations complete"
+host_policy_amendment:
+  reason:
+    - "external GPU occupation on fly90 (shared host) - the remaining GPU work cannot run locally"
+    - "elimination of model x host confounding (single evaluation host for all four checkpoints); cross-device vLLM stochastic sampling is not bitwise-reproducible per sample"
+  decision_time: "frozen 2026-09-19, before fly122 seed1/seed3 results exist"
+  primary_eval_host: "fly122 for all four checkpoints"
+  sensitivity: "fly90 seed1_step60 raw evaluation (verified 119/512, IGR 0.265625) is retained UNCHANGED and re-labelled as a cross-device sensitivity / reproducibility run - NOT the primary seed1 E023 result; no host selection based on fly122 outcomes"
+  unchanged: [sealed holdout (128, selection_seed 20260918), sampling protocol, seed schedule, verifier semantics, theorem 38 retained]
+  artifact_naming: "fly90 sensitivity raw preserved byte-identical at e023_holdout_seed1_fly90_crossdevice.json (+ partial adjudication at ..._crossdevice_adjudication.json); fly122 primary seed1/seed3 will occupy the canonical e023_holdout_seed1.json / e023_holdout_seed3.json paths required by holdout_multiseed_analyze.py"
+
+status_overall: "paused (external GPU on fly90); primary host = fly122. Primary complete: theta0, seed2_step60 (2/4). Primary pending: seed1_step60, seed3_step60 (fly122). fly90 seed1 = cross-device sensitivity (non-primary)."
 
 results_observed:            # raw eval counts; corrected = observed when adjudication is complete
   theta0:
@@ -39,6 +49,7 @@ results_observed:            # raw eval counts; corrected = observed when adjudi
     adjudication: {status: complete, credited: 0, corrected: 120, optimistic_bound: 125}
   seed1_step60:
     host: fly90
+    role: "cross-device sensitivity / reproducibility run (NON-PRIMARY; primary seed1 will be re-evaluated on fly122)"
     verified: 119
     candidates: 512
     igr: 0.265625
@@ -58,7 +69,7 @@ results_observed:            # raw eval counts; corrected = observed when adjudi
     verifier_errors: 6
     adjudication: {status: complete, credited: 0, corrected: 113, optimistic_bound: 119}
   seed3_step60:
-    host: fly90
+    host: "fly122 (primary; pending)"
     status: not_started
 
 artifacts_sha256:            # transferred via rsync over LAN; sha256 verified identical on both hosts
@@ -73,5 +84,5 @@ artifacts_sha256:            # transferred via rsync over LAN; sha256 verified i
 
 pause:
   reason: "external project occupying the GPU on the shared host (2 python processes, ~5.8 GiB VRAM each); single-GPU-heavy-job-at-a-time rule"
-  resume_plan: "seed1 adjudication (--resume) -> seed3 evaluation (.cache/run_e023_seed3.sh) -> seed3 adjudication -> holdout_multiseed_analyze.py on fly90"
-  resume_conditions: "GPU free + quiet window (systemd-oomd is back to active; the user decides its state for the next heavy window)"
+  resume_plan: "fly122 completes PRIMARY seed1_step60 + seed3_step60 -> pull artifacts to fly90 -> holdout_multiseed_analyze.py on fly90 (only after all four primary artifacts are complete). fly90 has NO remaining E023 GPU work."
+  resume_conditions: "fly122 evaluator GPU free + quiet window (systemd-oomd state decided by the user)"

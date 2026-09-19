@@ -507,12 +507,20 @@
 ### E023 final-holdout evaluation（进行中 3/4；因外部 GPU 占用暂停）
 
 - 协议（四模型统一）：sealed `m1_final_holdout.json`（128 定理，selection seed 20260918）；128×4、T=1.0 / top_p=1.0 / max 4096、canonical seed schedule `20260917 + theorem_index*8 + sample_index`、verify-workers=4 / verify-batch-size=4、严格 Kimina 2.0.0（每机本地 server）；evaluator `scripts/p3c_checkpoint_eval.py`。**四模型全部完成前不运行 canonical verdict、不做 seed 选择。**
-- 分工：fly122 = θ0 + seed2-step60；fly90 = seed1-step60 + seed3-step60。
+- 分工（原始计划；已被下方 host policy amendment 取代）：fly122 = θ0 + seed2-step60；fly90 = seed1-step60 + seed3-step60。
 - fly122（完成 + adjudication 完成）：θ0 verified **120/512**（IGR 0.2422 / pass@1 0.2344 / pass@4 0.3594 / solved≥1 46；verifier_error 5 → credited 0，corrected 120）；seed2-step60 verified **113/512**（IGR 0.2344 / pass@1 0.2207 / pass@4 0.3516 / solved≥1 45；verifier_error 6 → credited 0，corrected 113）。
 - fly90：seed1-step60 评估完成（03:28:13→03:55:27 UTC，27 分钟，rc=0）：verified **119/512**（IGR 0.2656 / pass@1 0.2324 / pass@4 0.375 / solved≥1 48 / truncation 0.369；verifier_error 4）；**adjudication 被执行中断**（partial：3 candidates 已记录、无 summary；`--resume` 可续）。seed3-step60 **未启动**。
 - artifact 完整性：fly122 四个产物经 rsync 拉回（LAN ~113 MB/s），**双端 SHA256 完全一致**（base 58d6d4… / seed2 cd350a… / base_adj 84bbb6… / seed2_adj be21e6…）；fly90 侧 seed1 产物 253becc8…（adjudication partial 7cdddd0d…）。raw artifacts 未修改。
-- **暂停**：外部同学项目占用 GPU（2×python ≈5.8 GiB VRAM each）；按“同一时间一个 GPU-heavy 任务”规则暂停（当时 oomd 已恢复 active）。恢复顺序 = seed1 adjudication（`--resume`）→ seed3 评估（`.cache/run_e023_seed3.sh` 就绪）→ seed3 adjudication → `holdout_multiseed_analyze.py`（仅 fly90）。恢复条件：GPU 空闲 + 安静窗口。
+- **暂停**：外部同学项目占用 GPU（2×python ≈5.8 GiB VRAM each）；按“同一时间一个 GPU-heavy 任务”规则暂停（当时 oomd 已恢复 active）。恢复顺序（已被下方 host policy amendment 取代）= seed1 adjudication（`--resume`）→ seed3 评估（`.cache/run_e023_seed3.sh` 就绪）→ seed3 adjudication → `holdout_multiseed_analyze.py`（仅 fly90）。恢复条件：GPU 空闲 + 安静窗口。
 - 产物（gitignored，本地）：`experiments/results/e023_holdout_{base,seed1,seed2}.json`、`e023_holdout_{base,seed2}_adjudication.json`、`e023_holdout_seed1_adjudication.json`（partial）；摘要 `experiments/manifests/e023_holdout.yaml`。
+
+**E023 host policy amendment（2026-09-19；在 fly122 seed1/seed3 结果出现之前冻结）**
+
+- **新 primary**：θ0 / seed1-step60 / seed2-step60 / seed3-step60 **全部在 fly122 评估**。原因：fly90 GPU 被外部占用不可用 + 消除 model checkpoint × evaluation host 混杂（跨设备 vLLM stochastic sampling 不保证逐样本 bitwise 一致）。
+- fly90 已完成的 seed1 评估（verified 119/512、IGR 0.265625）：**保留、内容不改动**，重定位为 **cross-device sensitivity / reproducibility run（不计入 primary）**；禁止依据 fly122 seed1 结果在两个 host 结果间挑选。
+- 不变项：sealed holdout（128 定理、selection seed 20260918）、sampling protocol、seed schedule、verifier semantics、theorem 38 保留。
+- 保全动作（CPU 层）：fly90 sensitivity raw 与其 partial adjudication 已字节一致另存为 `e023_holdout_seed1_fly90_crossdevice.json` / `..._crossdevice_adjudication.json`（防止未来 primary artifact 占用 canonical 文件名时丢失；原文件未改动）。
+- 更新后的下一步：fly122 补跑 primary seed1 + seed3 → artifacts 回 fly90 → `holdout_multiseed_analyze.py`（仅 fly90，四份 primary 齐全后）。**fly90 不再有 E023 GPU 任务。**
 
 ---
 
