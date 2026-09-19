@@ -2,7 +2,7 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 REPOSITORY PREPARATION COMPLETE; NO V2 EXPERIMENT HAS RUN.**
+Status: **V2-0 REPOSITORY PREPARATION COMPLETE; V2-1 CALIBRATION STARTED (Track B: B0 verifier guard + B1 budget-semantics audit complete; no V2 training or allocator run yet).**
 
 V2 has two complementary pillars:
 
@@ -21,6 +21,8 @@ V2 has two complementary pillars:
 | [`experiment_protocol.md`](experiment_protocol.md) | Frozen protocol: theorem-level splits, decision-model metrics, allocation metrics, primary figures |
 | [`data_contract.md`](data_contract.md) | Planned `budget_response` schema; prefix-truncation vs direct-budget labels; V2-1 calibration; no enforced monotonicity |
 | [`legacy_evidence.md`](legacy_evidence.md) | Index of the frozen V1 evidence (links only; numbers live in the canonical docs/manifests) |
+| [`b0_verifier_reliability.md`](b0_verifier_reliability.md) | Track B B0: verifier reliability audit and frozen verification policy (E024 used as forensic input only; no E024 claim) |
+| [`b1_budget_semantics.md`](b1_budget_semantics.md) | Track B B1 (V2-E001): budget-semantics audit results and gate decision (canonical path PASS) |
 
 ## Branches
 
@@ -30,7 +32,7 @@ V2 has two complementary pillars:
 
 ## Guardrails (summary)
 
-- No V2 experiment has run; no V2 result, manifest or artifact exists.
+- No V2 training or allocator run has happened; V2-E001 (Track B B1) is a completed generation-semantics audit, and its manifest and raw artifacts exist under the Track B rules.
 - Prefix-derived budget labels may not be claimed equivalent to direct-budget interventions before V2-1 completes.
 - Monotonicity of `p_i(b)` is a measurement question, not an assumption.
 - Interfaces are frozen before implementation; no allocator code is added during V2-0.

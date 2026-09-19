@@ -1,4 +1,4 @@
-status: RUNNING
+status: COMPLETE
 
 experiment: V2-E001
 track: B
@@ -88,12 +88,49 @@ freeze_rule:
 outputs:
   raw: experiments/results/v2_b1_rollouts.jsonl
   analysis: experiments/results/v2_b1_budget_semantics.json
-  artifact_hashes: []   # filled after the run
+  artifact_hashes:
+    - path: experiments/results/v2_b1_rollouts.jsonl
+      bytes: 2125409
+      sha256: ef5219cdacda5321688cc1943b97980aa804a41516a68264e863e0e4fbd82da9
+      note: raw token-id rollouts, 198 records (gitignored)
+    - path: experiments/results/v2_b1_budget_semantics.json
+      bytes: 31024
+      sha256: b023391801ceefade9c41d3ad3ed89ce5b6559574d7518a71bd41e1ddea21149
+      note: analysis summary (gitignored)
+    - path: experiments/results/v2_e001_stage1_run.log
+      bytes: 42422
+      sha256: 343da092a6b1eaa666c7d5bf2457e51c71d299ebfd4fb8bfbc195375fd3a15f5
+      note: stage-1 run log (gitignored; service finished, file final)
 
-result_summary: null
+result_summary: >
+  SINGLE-CANDIDATE PATH: PASS. Direct-budget generations are token-identical
+  to the 4096-run prefix for every b in {512,1024,2048,3072}, and same-seed
+  reruns are token-identical (32/32 determinism + 160/160 prefix checks over
+  16 theorems x 2 seeds). Prefix-derived (cheap) budget labels are therefore
+  VALID for B2 on this path. HF batch=4: internally self-consistent
+  (determinism 4/4, prefix 4/4) but token streams differ from the
+  single-candidate path; usable for B2 only with an explicit engine-semantics
+  statement plus re-verification at the chosen batch composition. vLLM 0.9.1:
+  FAIL (same-config reruns diverge) - not usable for budget-response
+  construction. Natural-completion (EOS) rate of the 4096 runs: 9/32; no
+  trajectory stopped before 1508 tokens. Cost: 343,895 generated tokens in
+  12,571 s generation time (single path, RTX 3080 10GB) - throughput input
+  for B2 sizing.
+
 status_note: null
 status_note: >
-  Stage 1 launched on fly122 as systemd user unit fly122-v2e001-b1
-  (smoke run of rank 0 x 2 replicates completed first: determinism PASS,
-  prefix 5/5 PASS on the completed replicate). Stage 2 probes remain
-  conditional on stage 1 completing cleanly.
+  Stage 1 (canonical single-candidate path) ran on fly122 as systemd user
+  unit fly122-v2e001-b1 and completed 2026-09-19 18:19:09 UTC after
+  3h29m43s: verdict PASS (determinism 32/32, prefix 160/160 on token ids).
+  Stage 2 batch probes ran the same day: hf-batch internally consistent
+  (determinism 4/4, prefix 4/4; tokens differ from the single-candidate
+  path, expected shared-RNG-stream effect); vLLM 0.9.1 FAILED determinism
+  and prefix (same-config rerun diverges after 52/195/153/412 tokens).
+
+  Protocol deviation (honest record, not backdated): this manifest was
+  written and frozen on disk BEFORE stage 1 launched (file mtime 14:43:39
+  UTC vs systemd ExecMainStartTimestamp 14:49:25 UTC) but was NOT committed
+  to git until commit f03ebba, created after the run had started. No
+  experiment parameter changed after launch; the deviation is limited to
+  the missing pre-launch commit. Details in docs/v2/b1_budget_semantics.md
+  section 5.
