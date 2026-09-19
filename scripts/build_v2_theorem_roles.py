@@ -199,7 +199,7 @@ def main() -> int:
     roles[B1_RESERVED_ROLE] = []
     b1_absorbed_groups: list[dict] = []
     for norm, group_ids in sorted(pool_groups.items(), key=lambda item: item[0]):
-        role, bucket = role_of(norm, args.salt)
+        role, _bucket = role_of(norm, args.salt)
         reserved = [identifier for identifier in group_ids if identifier in b1_ids]
         if reserved:
             roles[B1_RESERVED_ROLE].extend(sorted(group_ids))

@@ -117,7 +117,6 @@ result_summary: >
   12,571 s generation time (single path, RTX 3080 10GB) - throughput input
   for B2 sizing.
 
-status_note: null
 status_note: >
   Stage 1 (canonical single-candidate path) ran on fly122 as systemd user
   unit fly122-v2e001-b1 and completed 2026-09-19 18:19:09 UTC after

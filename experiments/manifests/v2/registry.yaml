@@ -23,22 +23,53 @@ aliases:
     canonical: V2-B001
     title: "Budget-semantics audit - direct-budget vs 4096-prefix equivalence for theta0"
     owner: fly122
-    status: RUNNING
-    manifest: "experiments/manifests/v2/V2-E001.yaml (raw id kept; source: fly122 worker/v2-allocator f03ebba)"
+    status: COMPLETE
+    manifest: "experiments/manifests/v2/V2-E001.yaml (raw id kept; source: fly122 worker/v2-allocator f03ebba; results adcb52a)"
     note: >
       Preregistered and launched by fly122 on the pre-amendment main2 (ca804f1).
       The raw identifier V2-E001 and every artifact keep their original names;
       V2-B001 is the canonical track-scoped alias for all future references.
       The published usage_note reserves its 16-theorem subset as
       B1-audit-reserved in the V2 theorem-role registry.
+      Completed 2026-09-19: canonical single-candidate HF path PASS;
+      see docs/v2/b1_budget_semantics.md.
 
 experiments:
   V2-B001:
     alias_of: V2-E001
     track: B
     owner: fly122
-    status: RUNNING            # as of 2026-09-19 (fly122 B1; coordination check)
-    note: "first B-track experiment; see aliases.V2-E001"
+    status: COMPLETE           # canonical integration 2026-09-20
+    note: >
+      First B-track experiment (B1 gate). Canonical single-candidate HF
+      determinism 32/32; token-prefix exact match 160/160 (token ids;
+      16 theorems x 2 seeds, budgets {512,1024,2048,3072} vs the 4096 prefix).
+      B1 PASS: prefix-derived budget labels are valid on the canonical path.
+      vLLM 0.9.1 does not satisfy this experiment's trajectory-identity
+      requirement (same-config reruns diverge) and must not construct
+      budget-response datasets. See aliases.V2-E001.
+  V2-B002:
+    track: B
+    owner: fly122
+    status: PREREGISTERED      # launch gate cleared by canonical integration (2026-09-20)
+    manifest: experiments/manifests/v2/V2-B002.yaml
+    preregistration_history:
+      initial_preregistration: a914bd9
+      final_pre_launch_amendment: 0a2c798
+    launch_gate: >
+      Formal launch must occur after 0a2c798 and after this canonical
+      integration; manifest status flips to RUNNING on fly122 at launch.
+    frozen_artifacts:
+      - {path: experiments/manifests/v2/family_component_registry.json, sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024}
+      - {path: experiments/manifests/v2/v2_b002_pilot_set.json, sha256: 4c9b8f297203deaae508323cd1cc1340056f3ebd1a8cd5445f5f210da04b3e05}
+      - {path: experiments/manifests/v2/v2_b002_reserve_pool.json, sha256: 2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a}
+    note: >
+      Family-clean compute-response pilot (no decision model): 512 frozen
+      family components (first eligible in the component registry, one
+      deterministic representative per component); the remaining 216 eligible
+      components are frozen untouched as the B003 reserve pool.
+      vLLM excluded; canonical HF single-candidate path with the B0
+      verification session (server timeout 60 s < client 90 s, canary gate).
   V2-A001:
     track: A
     owner: fly90

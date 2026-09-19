@@ -2,7 +2,7 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 PREREGISTERED; TRACK B B1 RUNNING (raw id V2-E001 = alias V2-B001); NO TRACK A/C EXPERIMENT HAS RUN YET.**
+Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 (V2-A001) RUNNING; TRACK B B1 COMPLETE (raw id V2-E001 = alias V2-B001) / B002 PREREGISTERED; NO TRACK C EXPERIMENT HAS RUN YET.**
 
 V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 
@@ -40,7 +40,7 @@ V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-
 
 ## Guardrails (summary)
 
-- No V2 training or allocator run has happened; V2-E001 (Track B B1) is a completed generation-semantics audit, and its manifest and raw artifacts exist under the Track B rules.
+- No V2 training run has happened. V2-A001 (Track A checkpoint-selection) is running on fly90; V2-E001 (Track B B1) is a completed generation-semantics audit (PASS); their manifests and raw artifacts exist under the track rules.
 - Prefix-derived budget labels may not be claimed equivalent to direct-budget interventions before V2-1 completes.
 - Monotonicity of `p_i(b)` is a measurement question, not an assumption.
 - Interfaces are frozen before implementation; no allocator code is added during V2-0.
