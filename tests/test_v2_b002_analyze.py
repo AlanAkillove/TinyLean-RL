@@ -117,6 +117,13 @@ class TestOracle:
         assert savings["uniform_4096_solved"] == 2
         assert savings["oracle_cap_for_same_solved"] == 2560
 
+    def test_savings_none_when_nothing_solved(self):
+        records = [make_record(1, "00000")]
+        result = analyze_oracle(records)
+        assert result["savings"]["uniform_4096_solved"] == 0
+        assert result["savings"]["oracle_cap_for_same_solved"] is None
+        assert result["savings"]["allocated_cap_savings_pct"] is None
+
     def test_frontier_breakpoints_are_cumulative(self):
         records = [make_record(1, "10000"), make_record(2, "00100")]
         result = analyze_oracle(records)

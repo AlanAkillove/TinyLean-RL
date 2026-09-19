@@ -230,7 +230,11 @@ def analyze_oracle(records: list[dict]) -> dict:
         )
 
     solved_full = uniform_solved[str(4096)]
-    oracle_cap_for_full = cumulative[solved_full] if solved_full <= len(solvable) else None
+    # A zero solved count has no meaningful "same solved" target: report None
+    # instead of a vacuous 100% saving (the smoke edge case).
+    oracle_cap_for_full = (
+        cumulative[solved_full] if 0 < solved_full <= len(solvable) else None
+    )
     cap_full = n * 4096
     savings = {
         "uniform_4096_solved": solved_full,
