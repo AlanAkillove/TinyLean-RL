@@ -153,3 +153,18 @@ status_note: >
   reserve sha256=2378688d0c1b36f1bb03ac2aded728da7e9bdf26927516c87bab067e7e07285a.
   Status -> RUNNING; launched via the systemd user unit fly122-v2b002-pilot
   (single-path HF candidate generation, K=1, no vLLM, budgets 512..4096).
+
+  Concurrency amendment (2026-09-20, owner-approved, DURING the run): paused
+  after 8/512 completed (ranks 1-8 recorded). Before switching, the completed
+  trajectories were re-generated in fresh concurrent processes with identical
+  frozen parameters - token-for-token match 8/8 (artifacts:
+  v2_b002_concurrency_check.json 4/4, _567.json 3/3, _8.json 1/1; wall 213s for
+  4 fully concurrent theorems; measured throughput gain 2.83x). This establishes
+  cross-process determinism (mid-run pause/restart is harmless) and
+  multi-process semantic equivalence (each process remains single-path batch=1).
+  Generation path amended: remaining theorems run as 4 disjoint rank shards
+  (rank % 4) via run_b002_sharded.sh; per-shard outputs are merged by
+  merge_b002_shards.py (strict equality on overlapping ranks, atomic write).
+  No other frozen parameter changed; per-trajectory semantics unchanged and
+  empirically verified. Helper scripts: concurrency_check / prepare_shards /
+  merge_shards / run_b002_sharded.

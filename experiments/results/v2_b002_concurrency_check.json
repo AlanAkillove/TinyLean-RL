@@ -1,0 +1,59 @@
+{
+  "artifact_type": "v2_b002_concurrency_check",
+  "purpose": "cross-process + concurrency equivalence evidence for a B002 amendment",
+  "n_workers": 4,
+  "ranks": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "results": [
+    {
+      "rank": 1,
+      "gen_seed": 20260928,
+      "match": true,
+      "n_new": 4096,
+      "n_recorded": 4096,
+      "first_mismatch": null,
+      "generation_seconds": 195.93,
+      "wall_seconds": 206.4
+    },
+    {
+      "rank": 2,
+      "gen_seed": 20260936,
+      "match": true,
+      "n_new": 4096,
+      "n_recorded": 4096,
+      "first_mismatch": null,
+      "generation_seconds": 195.96,
+      "wall_seconds": 206.44
+    },
+    {
+      "rank": 3,
+      "gen_seed": 20260944,
+      "match": true,
+      "n_new": 3228,
+      "n_recorded": 3228,
+      "first_mismatch": null,
+      "generation_seconds": 159.36,
+      "wall_seconds": 169.79
+    },
+    {
+      "rank": 4,
+      "gen_seed": 20260952,
+      "match": true,
+      "n_new": 4096,
+      "n_recorded": 4096,
+      "first_mismatch": null,
+      "generation_seconds": 195.88,
+      "wall_seconds": 206.36
+    }
+  ],
+  "all_match": true,
+  "wall_seconds_total": 213.3,
+  "serial_reference_seconds_per_theorem": 151.0,
+  "throughput_gain_estimate": 2.83,
+  "created_at_utc": "2026-09-19T21:10:52.797176+00:00",
+  "verdict": "PASS"
+}

@@ -1,0 +1,26 @@
+{
+  "artifact_type": "v2_b002_concurrency_check",
+  "purpose": "cross-process + concurrency equivalence evidence for a B002 amendment",
+  "n_workers": 1,
+  "ranks": [
+    8
+  ],
+  "results": [
+    {
+      "rank": 8,
+      "gen_seed": 20260984,
+      "match": true,
+      "n_new": 4096,
+      "n_recorded": 4096,
+      "first_mismatch": null,
+      "generation_seconds": 147.0,
+      "wall_seconds": 150.9
+    }
+  ],
+  "all_match": true,
+  "wall_seconds_total": 156.3,
+  "serial_reference_seconds_per_theorem": 151.0,
+  "throughput_gain_estimate": 0.97,
+  "created_at_utc": "2026-09-19T21:22:55.162398+00:00",
+  "verdict": "PASS"
+}

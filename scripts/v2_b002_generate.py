@@ -21,6 +21,13 @@ Raw output (gitignored): experiments/results/v2_b002_rollouts.jsonl - one record
 per theorem; per-budget entries carry the assembled candidate sha256, outcome,
 message and verification runtime. Resume-safe at theorem granularity. vLLM must
 not be used (V2-B001: same-config reruns diverge).
+
+Concurrency amendment (2026-09-20, owner-approved): --shard-index/--shard-count
+let several processes run disjoint rank shards (rank %% shard_count == shard_index),
+each process still single-path batch=1 with the frozen parameters. Token-level
+equivalence with the serial path was verified before switching
+(scripts/v2_b002_concurrency_check.py: 7/7 recorded trajectories reproduced in
+fresh concurrent processes; measured throughput gain 2.83x).
 """
 
 from __future__ import annotations
@@ -158,6 +165,8 @@ def main() -> int:
     parser.add_argument("--output", default=DEFAULT_OUTPUT)
     parser.add_argument("--meta", default=DEFAULT_META)
     parser.add_argument("--limit", type=int, default=0, help="smoke: only the first N pilot theorems")
+    parser.add_argument("--shard-index", type=int, default=0, help="concurrency amendment: this shard's index")
+    parser.add_argument("--shard-count", type=int, default=1, help="concurrency amendment: total shard count")
     parser.add_argument("--server-url", default=None)
     parser.add_argument("--server-timeout", type=float, default=60.0)
     parser.add_argument("--client-slack", type=float, default=30.0)
@@ -231,6 +240,13 @@ def main() -> int:
             print("[V2-B002] canary probe failed before the run - refusing to start (fail-close)", file=sys.stderr)
             return 2
         print(f"[V2-B002] canary ok; server {server_url}, server_timeout {args.server_timeout}s")
+
+    if args.shard_count > 1:
+        if not 0 <= args.shard_index < args.shard_count:
+            print("[V2-B002] bad shard index/count - refusing (fail-close)", file=sys.stderr)
+            return 2
+        theorems = [t for t in theorems if t["rank"] % args.shard_count == args.shard_index]
+        print(f"[V2-B002] shard {args.shard_index}/{args.shard_count}: {len(theorems)} theorems")
 
     done = load_done_ranks(output_path)
     jobs = [t for t in theorems if t["rank"] not in done]
