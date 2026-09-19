@@ -9,6 +9,10 @@ Engine consistency with the P3-B rollout: vLLM, temperature 1.0 / top_p 1.0,
 4096 max new tokens, and the same prompt construction as the rollout probe
 (which mirrors the training recipe). The evaluator never modifies weights.
 
+Resumability: ``--resume`` loads a matching ``<output>.partial.json`` (fail-closed
+validation via ``tinylean_rl.evaluation.resume``) and continues at the last fully
+completed chunk; per-candidate computation semantics are unchanged.
+
 Seed schedule: ``seed_base + theorem_index * 8 + sample_index`` with the
 canonical group size 8 (fixed across checkpoints and across preview/full
 runs; candidates are NOT treated as paired samples).
@@ -42,6 +46,12 @@ from promptset_rollout_probe import (
 from tqdm import tqdm
 
 from tinylean_rl.evaluation.p3c_stats import candidate_metrics, classify_candidate
+from tinylean_rl.evaluation.resume import (
+    ResumeError,
+    chunk_start_offset,
+    file_sha256,
+    load_resume_state,
+)
 from tinylean_rl.inference.extract import extract_proof
 from tinylean_rl.verifier.kimina import verify_code, verify_codes
 
@@ -166,6 +176,11 @@ def main() -> int:
     parser.add_argument("--verify-retry-sleep", type=float, default=10.0)
     parser.add_argument("--output", default="")
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Continue from a matching <output>.partial.json (fail-closed settings check).",
+    )
     args = parser.parse_args()
 
     spec = CHECKPOINTS[args.checkpoint]
@@ -229,10 +244,34 @@ def main() -> int:
     generation_seconds = 0.0
     verification_seconds = 0.0
     peak_vram_mib = 0
-    first_verify = True
     started_all = time.perf_counter()
 
     chunk_size = max(1, args.chunk_theorems)
+    settings = {
+        "checkpoint": args.checkpoint,
+        "fixed_set_sha256": file_sha256(fixed_set_path),
+        "theorems": len(theorems),
+        "samples_per_theorem": args.samples_per_theorem,
+        "temperature": args.temperature,
+        "top_p": args.top_p,
+        "max_new_tokens": args.max_new_tokens,
+        "chunk_theorems": chunk_size,
+        "seed_base": args.seed_base,
+    }
+    completed_theorems = 0
+    if args.resume and partial_path.exists():
+        try:
+            state = load_resume_state(partial_path, settings)
+            completed_theorems = chunk_start_offset(state.processed_theorems, chunk_size, len(theorems))
+        except ResumeError as exc:
+            print(f"[ERROR] resume refused: {exc}", file=sys.stderr)
+            return 2
+        records = state.records
+        print(
+            f"[E018] resuming from partial: {completed_theorems}/{len(theorems)} theorems already processed"
+        )
+    first_verify = completed_theorems == 0
+
     total_chunks = (len(theorems) + chunk_size - 1) // chunk_size
     progress = tqdm(
         range(0, len(theorems), chunk_size),
@@ -242,6 +281,8 @@ def main() -> int:
         dynamic_ncols=True,
     )
     for chunk_index, chunk_start in enumerate(progress):
+        if chunk_start < completed_theorems:
+            continue
         chunk = theorems[chunk_start : chunk_start + chunk_size]
         progress.set_postfix_str(f"generating {len(chunk) * args.samples_per_theorem} candidates")
         chunk_prompts: list[str] = []
@@ -386,7 +427,14 @@ def main() -> int:
         )
         progress.set_postfix_str(f"verified {verified_so_far}/{len(records)}, vram {peak_vram_mib} MiB")
         partial_path.write_text(
-            json.dumps({"records": records, "processed_theorems": chunk_start + len(chunk)}, ensure_ascii=False)
+            json.dumps(
+                {
+                    "records": records,
+                    "processed_theorems": chunk_start + len(chunk),
+                    "settings": settings,
+                },
+                ensure_ascii=False,
+            )
             + "\n",
             encoding="utf-8",
         )
@@ -407,6 +455,8 @@ def main() -> int:
         )
         if total_seconds
         else None,
+        "resumed_from_partial": bool(completed_theorems),
+        "resume_skipped_theorems": completed_theorems,
     }
     artifact = {
         "artifact_type": "p3c_checkpoint_eval",
