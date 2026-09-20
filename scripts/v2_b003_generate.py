@@ -191,6 +191,12 @@ def main() -> int:
     parser.add_argument("--output", default=DEFAULT_OUTPUT)
     parser.add_argument("--meta", default=DEFAULT_META)
     parser.add_argument("--limit", type=int, default=0, help="smoke: only the first N theorems")
+    parser.add_argument(
+        "--replicates",
+        type=int,
+        default=REPLICATES,
+        help="smoke-only override of the frozen K=8; the formal run must use the default",
+    )
     parser.add_argument("--shard-index", type=int, default=0, help="this shard's index")
     parser.add_argument("--shard-count", type=int, default=1, help="total shard count")
     parser.add_argument("--server-url", default=None)
@@ -259,7 +265,7 @@ def main() -> int:
                 "verification_batch_size": 1,
                 "limit": args.limit,
                 "theorems": len(theorems),
-                "replicates": REPLICATES,
+                "replicates": args.replicates,
                 "folds": {"A": [0, 1, 2, 3], "B": [4, 5, 6, 7]},
                 "output": str(output_path),
                 "model_revision": model_revision,
@@ -283,7 +289,7 @@ def main() -> int:
     jobs = [
         (theorem, replicate)
         for theorem in theorems
-        for replicate in range(REPLICATES)
+        for replicate in range(args.replicates)
         if (theorem["rank"], replicate) not in done
     ]
     print(f"[V2-B003] pending trajectories: {len(jobs)} (already done: {len(done)})")
