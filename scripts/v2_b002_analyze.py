@@ -184,11 +184,19 @@ def analyze_verification_health(records: list[dict]) -> dict:
 def analyze_oracle(records: list[dict]) -> dict:
     """Pathwise Hindsight Oracle vs Uniform, on allocated-cap and actual-token axes.
 
+    Two upper bounds are reported (owner spec 2026-09-20):
+
+    - no_skip (PRIMARY): every theorem receives at least the 512 floor; the oracle
+      picks each theorem's budget in {512..4096}. This isolates pure reallocation
+      and never relies on dropping theorems.
+    - skip_allowed: additionally allows 0 for any theorem (triage + allocation);
+      strictly stronger and correspondingly less deployable.
+
     The oracle knows each theorem's realized five-budget outcome of THIS trajectory
-    and picks the cheapest successful budget (multi-choice knapsack with unit
-    profit; the greedy by min-success cost is exact). It is a screening upper
-    bound, strictly stronger than any deployable policy (including the Expected
-    Oracle) - the report must never claim an allocator can achieve it.
+    (multi-choice knapsack with unit profit; the greedy by min-success cost is
+    exact). It is a screening upper bound, strictly stronger than any deployable
+    policy (including the Expected Oracle) - the report must never claim an
+    allocator can achieve it.
     """
 
     n = len(records)
@@ -202,14 +210,21 @@ def analyze_oracle(records: list[dict]) -> dict:
         for index, budget in enumerate(BUDGETS)
     }
 
-    cumulative = [0]
+    floor = BUDGETS[0]  # 512 token floor of the no-skip oracle
+    # skip-allowed oracle: only solved theorems consume cap
+    skip_cumulative = [0]
     for cost in solvable:
-        cumulative.append(cumulative[-1] + cost)
+        skip_cumulative.append(skip_cumulative[-1] + cost)
+    # no-skip oracle (PRIMARY): every theorem consumes at least the 512 floor
+    no_skip_cumulative = [n * floor]
+    for cost in solvable:
+        no_skip_cumulative.append(no_skip_cumulative[-1] + (cost - floor))
 
-    def oracle_solved_at(cap: int) -> int:
+    def solved_at(cumulative: list[int], cap: int) -> int:
         return max(0, bisect.bisect_right(cumulative, cap) - 1)
 
-    frontier = [{"cap": cumulative[k], "solved": k} for k in range(len(cumulative))]
+    skip_frontier = [{"cap": skip_cumulative[k], "solved": k} for k in range(len(skip_cumulative))]
+    no_skip_frontier = [{"cap": no_skip_cumulative[k], "solved": k} for k in range(len(no_skip_cumulative))]
 
     uniform_required = []
     for target in sorted({v for v in uniform_solved.values() if v > 0}):
@@ -228,39 +243,51 @@ def analyze_oracle(records: list[dict]) -> dict:
     for index, budget in enumerate(BUDGETS):
         cap = n * budget
         uniform_at = uniform_solved[str(budget)]
-        oracle_at = oracle_solved_at(cap)
+        no_skip_at = solved_at(no_skip_cumulative, cap)
+        skip_at = solved_at(skip_cumulative, cap)
         uniform_points.append(
             {
                 "budget": budget,
                 "allocated_cap": cap,
                 "uniform_solved": uniform_at,
-                "oracle_solved_at_same_cap": oracle_at,
-                "oracle_gain_solved": oracle_at - uniform_at,
-                "oracle_gain_pct_of_uniform": round(
-                    100.0 * (oracle_at - uniform_at) / max(1, uniform_at), 2
+                "no_skip_oracle_solved_at_same_cap": no_skip_at,
+                "no_skip_oracle_gain_solved": no_skip_at - uniform_at,
+                "no_skip_oracle_gain_pct_of_uniform": round(
+                    100.0 * (no_skip_at - uniform_at) / max(1, uniform_at), 2
                 ),
+                "skip_allowed_oracle_solved_at_same_cap": skip_at,
+                "skip_allowed_oracle_gain_solved": skip_at - uniform_at,
             }
         )
 
     solved_full = uniform_solved[str(4096)]
     # A zero solved count has no meaningful "same solved" target: report None
     # instead of a vacuous 100% saving (the smoke edge case).
-    oracle_cap_for_full = (
-        cumulative[solved_full] if 0 < solved_full <= len(solvable) else None
-    )
+    can_target_full = 0 < solved_full <= len(solvable)
+    no_skip_cap_for_full = no_skip_cumulative[solved_full] if can_target_full else None
+    skip_cap_for_full = skip_cumulative[solved_full] if can_target_full else None
     cap_full = n * 4096
+
+    def savings_pct(cap: int | None) -> float | None:
+        return round(100.0 * (cap_full - cap) / cap_full, 2) if cap is not None else None
+
     savings = {
         "uniform_4096_solved": solved_full,
         "uniform_4096_allocated_cap": cap_full,
-        "oracle_cap_for_same_solved": oracle_cap_for_full,
-        "allocated_cap_savings_pct": (
-            round(100.0 * (cap_full - oracle_cap_for_full) / cap_full, 2)
-            if oracle_cap_for_full is not None
-            else None
-        ),
+        "primary_no_skip": {
+            "oracle_cap_for_same_solved": no_skip_cap_for_full,
+            "allocated_cap_savings_pct": savings_pct(no_skip_cap_for_full),
+        },
+        "skip_allowed": {
+            "oracle_cap_for_same_solved": skip_cap_for_full,
+            "allocated_cap_savings_pct": savings_pct(skip_cap_for_full),
+        },
         "note": (
-            "savings are in ALLOCATED max-token cap; actual generated tokens and runtime are "
-            "reported separately and are not interchangeable with the cap"
+            "savings are in ALLOCATED max-token cap; PRIMARY = no-skip oracle (every theorem "
+            "keeps a >=512 floor, so the number measures pure reallocation, never triage); "
+            "skip_allowed additionally permits 0 and is a triage+allocation upper bound. "
+            "Actual generated tokens and runtime are reported separately and are not "
+            "interchangeable with the cap"
         ),
     }
 
@@ -305,17 +332,23 @@ def analyze_oracle(records: list[dict]) -> dict:
         },
         "uniform_solved": uniform_solved,
         "uniform_points": uniform_points,
-        "oracle_frontier_breakpoints": frontier,
+        "no_skip_frontier_breakpoints": no_skip_frontier,
+        "skip_allowed_frontier_breakpoints": skip_frontier,
         "required_cap_by_solved_count": {
             "oracle": [
-                {"solved": k, "required_allocated_cap": cumulative[k]}
-                for k in range(len(cumulative))
+                {
+                    "solved": k,
+                    "no_skip_required_cap": no_skip_cumulative[k],
+                    "skip_allowed_required_cap": skip_cumulative[k],
+                }
+                for k in range(len(solvable) + 1)
             ],
             "uniform": uniform_required,
             "note": (
-                "dual frontier for fixed-solved-count reporting: oracle = minimum allocated cap "
-                "solving k theorems under the pathwise hindsight knapsack; uniform = smallest "
-                "uniform budget reaching at least k solved (cap = n * budget)"
+                "fixed-solved-count frontier: no_skip = minimum allocated cap solving k theorems "
+                "with every theorem keeping the 512 floor (PRIMARY); skip_allowed = the same with "
+                "0 allowed (triage); uniform = smallest uniform budget reaching at least k solved "
+                "(cap = n * budget)"
             ),
         },
         "savings": savings,
@@ -367,11 +400,14 @@ def main() -> int:
         f"({result['monotonicity']['monotonic_pct']}%), "
         f"non-monotonic: {result['monotonicity']['non_monotonic']}"
     )
-    print("uniform vs oracle at the same allocated cap:")
+    print("uniform vs oracle at the same allocated cap (no-skip | skip-allowed):")
     for point in result["oracle"]["uniform_points"]:
         print(
-            f"  uniform-{point['budget']}: solved {point['uniform_solved']} -> oracle "
-            f"{point['oracle_solved_at_same_cap']} (+{point['oracle_gain_solved']})"
+            f"  uniform-{point['budget']}: solved {point['uniform_solved']} -> "
+            f"no-skip {point['no_skip_oracle_solved_at_same_cap']} "
+            f"(+{point['no_skip_oracle_gain_solved']}) | "
+            f"skip-allowed {point['skip_allowed_oracle_solved_at_same_cap']} "
+            f"(+{point['skip_allowed_oracle_gain_solved']})"
         )
     print(f"savings: {result['oracle']['savings']}")
     print(f"verifier infra outcomes: {result['verification_health']['infrastructure_outcomes_total']}")

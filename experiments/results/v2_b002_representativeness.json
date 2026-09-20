@@ -1,0 +1,311 @@
+{
+  "artifact_type": "v2_b002_representativeness",
+  "registry_counts": {
+    "statements": 7620,
+    "components": 1706,
+    "components_multi_id": 700,
+    "components_singleton": 1006
+  },
+  "sets": {
+    "full_promptset": {
+      "name": "full_promptset",
+      "n_requested": 7620,
+      "n_with_text": 7620,
+      "missing_text": 0,
+      "data_source": {
+        "synthetic": 5921,
+        "autoformalizer": 1053,
+        "human": 646
+      },
+      "domain_top": {
+        "algebra": 3585,
+        "number": 2240,
+        "inequalities": 1280,
+        "calculus": 289,
+        "negated": 46,
+        "Number": 28,
+        "Algebra": 20,
+        "combinatorics": 20,
+        "AIME": 17,
+        "imo": 11
+      },
+      "formal_chars": {
+        "mean": 289.3,
+        "median": 259.0,
+        "p90": 465
+      },
+      "formal_tokens": {
+        "mean": 130.8,
+        "median": 117.0,
+        "p90": 208
+      },
+      "nl_chars": {
+        "mean": 165.8,
+        "median": 148.0,
+        "p90": 258
+      },
+      "hyp_approx": {
+        "mean": 2.9,
+        "median": 3.0,
+        "p90": 5
+      },
+      "forall": {
+        "mean": 0.4,
+        "median": 0.0,
+        "p90": 2
+      },
+      "arrow": {
+        "mean": 0.3,
+        "median": 0.0,
+        "p90": 1
+      },
+      "lines": {
+        "mean": 6.3,
+        "median": 5.0,
+        "p90": 10
+      },
+      "component": {
+        "singleton_pct": 13.2,
+        "multi_variant_pct": 86.8,
+        "size_mean": 8.47,
+        "size_max": 20,
+        "size_hist": {
+          "10+": 4350,
+          "1": 1006,
+          "5-9": 2252,
+          "2-4": 12
+        },
+        "unique_components": 1706
+      }
+    },
+    "b002_pilot_512": {
+      "name": "b002_pilot_512",
+      "n_requested": 512,
+      "n_with_text": 512,
+      "missing_text": 0,
+      "data_source": {
+        "autoformalizer": 367,
+        "human": 116,
+        "synthetic": 29
+      },
+      "domain_top": {
+        "algebra": 255,
+        "number": 117,
+        "inequalities": 109,
+        "calculus": 23,
+        "ConvexOn.map": 2,
+        "numbertheory": 1,
+        "imo": 1,
+        "exercise": 1,
+        "inequalites": 1,
+        "other": 1
+      },
+      "formal_chars": {
+        "mean": 410.7,
+        "median": 365.0,
+        "p90": 577
+      },
+      "formal_tokens": {
+        "mean": 185.0,
+        "median": 166.5,
+        "p90": 265
+      },
+      "nl_chars": {
+        "mean": 196.7,
+        "median": 167.0,
+        "p90": 314
+      },
+      "hyp_approx": {
+        "mean": 2.8,
+        "median": 2.0,
+        "p90": 6
+      },
+      "forall": {
+        "mean": 0.4,
+        "median": 0.0,
+        "p90": 1
+      },
+      "arrow": {
+        "mean": 0.4,
+        "median": 0.0,
+        "p90": 1
+      },
+      "lines": {
+        "mean": 9.6,
+        "median": 8.0,
+        "p90": 15
+      },
+      "component": {
+        "singleton_pct": 93.8,
+        "multi_variant_pct": 6.2,
+        "size_mean": 1.46,
+        "size_max": 10,
+        "size_hist": {
+          "1": 480,
+          "5-9": 15,
+          "10+": 14,
+          "2-4": 3
+        },
+        "unique_components": 512
+      }
+    },
+    "e023_holdout_128": {
+      "name": "e023_holdout_128",
+      "n_requested": 128,
+      "n_with_text": 128,
+      "missing_text": 0,
+      "data_source": {
+        "synthetic": 111,
+        "autoformalizer": 8,
+        "human": 9
+      },
+      "domain_top": {
+        "algebra": 67,
+        "number": 26,
+        "inequalities": 22,
+        "calculus": 5,
+        "negated": 4,
+        "sum": 1,
+        "AIME": 1,
+        "phifun": 1,
+        "Algebra": 1
+      },
+      "formal_chars": {
+        "mean": 256.7,
+        "median": 224.5,
+        "p90": 399
+      },
+      "formal_tokens": {
+        "mean": 118.3,
+        "median": 108.0,
+        "p90": 186
+      },
+      "nl_chars": {
+        "mean": 156.6,
+        "median": 147.5,
+        "p90": 238
+      },
+      "hyp_approx": {
+        "mean": 2.7,
+        "median": 2.0,
+        "p90": 5
+      },
+      "forall": {
+        "mean": 0.4,
+        "median": 0.0,
+        "p90": 2
+      },
+      "arrow": {
+        "mean": 0.3,
+        "median": 0.0,
+        "p90": 1
+      },
+      "lines": {
+        "mean": 5.9,
+        "median": 5.0,
+        "p90": 9
+      },
+      "component": {
+        "singleton_pct": 8.6,
+        "multi_variant_pct": 91.4,
+        "size_mean": 9.04,
+        "size_max": 20,
+        "size_hist": {
+          "10+": 87,
+          "5-9": 30,
+          "1": 11
+        },
+        "unique_components": 114
+      }
+    },
+    "igr_mechanism_64": {
+      "name": "igr_mechanism_64",
+      "n_requested": 64,
+      "n_with_text": 64,
+      "missing_text": 0,
+      "data_source": {
+        "synthetic": 56,
+        "autoformalizer": 5,
+        "human": 3
+      },
+      "domain_top": {
+        "algebra": 32,
+        "inequalities": 17,
+        "number": 13,
+        "calculus": 1,
+        "Other": 1
+      },
+      "formal_chars": {
+        "mean": 265.8,
+        "median": 250.5,
+        "p90": 404
+      },
+      "formal_tokens": {
+        "mean": 116.7,
+        "median": 113.5,
+        "p90": 177
+      },
+      "nl_chars": {
+        "mean": 152.3,
+        "median": 139.0,
+        "p90": 229
+      },
+      "hyp_approx": {
+        "mean": 2.7,
+        "median": 3.0,
+        "p90": 5
+      },
+      "forall": {
+        "mean": 0.2,
+        "median": 0.0,
+        "p90": 1
+      },
+      "arrow": {
+        "mean": 0.2,
+        "median": 0.0,
+        "p90": 1
+      },
+      "lines": {
+        "mean": 5.8,
+        "median": 5.0,
+        "p90": 9
+      },
+      "component": {
+        "singleton_pct": 10.9,
+        "multi_variant_pct": 89.1,
+        "size_mean": 8.81,
+        "size_max": 18,
+        "size_hist": {
+          "10+": 44,
+          "5-9": 13,
+          "1": 7
+        },
+        "unique_components": 63
+      }
+    }
+  },
+  "eligible_pool": {
+    "statements": 1073,
+    "pct_of_full": 14.1,
+    "multi_variant_pct": 36.3,
+    "component_level": {
+      "components": 728,
+      "multi_variant_components": 45
+    },
+    "full_component_level": {
+      "components": 1706,
+      "multi_variant_components": 700
+    }
+  },
+  "excluded_pool": {
+    "statements": 6547,
+    "pct_of_full": 85.9,
+    "multi_variant_pct": 95.1,
+    "size_hist": {
+      "10+": 4140,
+      "5-9": 2080,
+      "1": 323,
+      "2-4": 4
+    }
+  }
+}

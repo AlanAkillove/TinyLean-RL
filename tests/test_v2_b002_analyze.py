@@ -104,26 +104,34 @@ class TestOracle:
         assert result["min_success_cost_distribution"]["never"] == 1
 
         points = {point["budget"]: point for point in result["uniform_points"]}
-        # n=3; uniform-4096 cap = 12288; oracle solves all solvable (2) with cap >= 2560
+        # n=3; uniform-4096 cap = 12288; both oracles solve all solvable (2)
         assert points[4096]["allocated_cap"] == 3 * 4096
-        assert points[4096]["oracle_solved_at_same_cap"] == 2
-        assert points[4096]["oracle_gain_solved"] == 0
-        # uniform-1024: solved 1; oracle at the same cap 3072 can solve 2 (512 + 2048)
+        assert points[4096]["no_skip_oracle_solved_at_same_cap"] == 2
+        assert points[4096]["no_skip_oracle_gain_solved"] == 0
+        assert points[4096]["skip_allowed_oracle_solved_at_same_cap"] == 2
+        # uniform-1024: solved 1; both oracles at the same cap 3072 solve 2
         assert points[1024]["allocated_cap"] == 3 * 1024
         assert points[1024]["uniform_solved"] == 1
-        assert points[1024]["oracle_solved_at_same_cap"] == 2
-        assert points[1024]["oracle_gain_solved"] == 1
+        assert points[1024]["no_skip_oracle_solved_at_same_cap"] == 2
+        assert points[1024]["no_skip_oracle_gain_solved"] == 1
+        assert points[1024]["skip_allowed_oracle_solved_at_same_cap"] == 2
 
         savings = result["savings"]
         assert savings["uniform_4096_solved"] == 2
-        assert savings["oracle_cap_for_same_solved"] == 2560
+        # no-skip floor: 3*512 + (512-512) + (2048-512) = 3072; skip-allowed: 2560
+        assert savings["primary_no_skip"]["oracle_cap_for_same_solved"] == 3072
+        assert savings["primary_no_skip"]["allocated_cap_savings_pct"] == 75.0
+        assert savings["skip_allowed"]["oracle_cap_for_same_solved"] == 2560
+        assert savings["skip_allowed"]["allocated_cap_savings_pct"] == 79.17
 
     def test_savings_none_when_nothing_solved(self):
         records = [make_record(1, "00000")]
         result = analyze_oracle(records)
         assert result["savings"]["uniform_4096_solved"] == 0
-        assert result["savings"]["oracle_cap_for_same_solved"] is None
-        assert result["savings"]["allocated_cap_savings_pct"] is None
+        assert result["savings"]["primary_no_skip"]["oracle_cap_for_same_solved"] is None
+        assert result["savings"]["primary_no_skip"]["allocated_cap_savings_pct"] is None
+        assert result["savings"]["skip_allowed"]["oracle_cap_for_same_solved"] is None
+        assert result["savings"]["skip_allowed"]["allocated_cap_savings_pct"] is None
 
     def test_required_cap_dual_frontier(self):
         records = [
@@ -134,9 +142,9 @@ class TestOracle:
         result = analyze_oracle(records)
         req = result["required_cap_by_solved_count"]
         assert req["oracle"][:3] == [
-            {"solved": 0, "required_allocated_cap": 0},
-            {"solved": 1, "required_allocated_cap": 512},
-            {"solved": 2, "required_allocated_cap": 2560},
+            {"solved": 0, "no_skip_required_cap": 1536, "skip_allowed_required_cap": 0},
+            {"solved": 1, "no_skip_required_cap": 1536, "skip_allowed_required_cap": 512},
+            {"solved": 2, "no_skip_required_cap": 3072, "skip_allowed_required_cap": 2560},
         ]
         uni = {entry["solved_target"]: entry for entry in req["uniform"]}
         assert uni[1]["uniform_budget"] == 512
@@ -147,8 +155,14 @@ class TestOracle:
     def test_frontier_breakpoints_are_cumulative(self):
         records = [make_record(1, "10000"), make_record(2, "00100")]
         result = analyze_oracle(records)
-        assert result["oracle_frontier_breakpoints"] == [
+        assert result["skip_allowed_frontier_breakpoints"] == [
             {"cap": 0, "solved": 0},
             {"cap": 512, "solved": 1},
+            {"cap": 2560, "solved": 2},
+        ]
+        # no-skip: floor 2*512 = 1024 for both; second theorem adds 2048-512
+        assert result["no_skip_frontier_breakpoints"] == [
+            {"cap": 1024, "solved": 0},
+            {"cap": 1024, "solved": 1},
             {"cap": 2560, "solved": 2},
         ]

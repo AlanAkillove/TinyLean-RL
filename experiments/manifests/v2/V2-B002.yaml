@@ -1,4 +1,4 @@
-status: RUNNING
+status: COMPLETE
 track: B
 
 experiment: V2-B002
@@ -168,3 +168,22 @@ status_note: >
   No other frozen parameter changed; per-trajectory semantics unchanged and
   empirically verified. Helper scripts: concurrency_check / prepare_shards /
   merge_shards / run_b002_sharded.
+
+  Closeout (2026-09-20, owner-approved four-part plan; no GO/NO-GO verdict and
+  no B003 launch in this closeout):
+  (a) infra adjudication: 15 theorems / 75 cells re-verified in clean restarted
+  environments with rebuilt candidates (75/75 sha256 identical) -> 45 confirmed
+  lean_error, 10 resolved-to-lean_error, 20 unresolved (never counted as
+  failures); corrected solved 11/512, sensitivity [11, 19]; artifact
+  experiments/results/v2_b002_adjudication.json.
+  (b) pipeline calibration (diagnostic-only, never a benchmark): identical
+  pipeline on a frozen 64-theorem E023 subset -> 13/64 = 20.3% (E023 theta0
+  record-level 23.4%) => pipeline healthy; B002 is a strict family-unseen
+  hard/OOD pool.
+  (c) representativeness audit: B002 vs full Promptset vs E023 - synthetic
+  5.7% vs 77.7% / 86.7%; singleton components 93.8% vs 13.2% / 8.6%; exclusions
+  consumed 95.1% of multi-variant statements; source x outcome: synthetic
+  31.0%, autoformalizer 0.5%, human 0.0%.
+  (d) oracle split: no-skip (PRIMARY) 86.21% vs skip-allowed 98.44% at equal
+  solved, allocated-cap axis. Final memo: docs/v2/b002_memo.md.
+  Status -> COMPLETE.
