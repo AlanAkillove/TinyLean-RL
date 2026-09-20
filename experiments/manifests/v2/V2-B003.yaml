@@ -1,59 +1,150 @@
+# V2-B003 manifest - design revision 2026-09-20 (owner-constrained finalization,
+# pre-launch). The v1 preregistration (worker commit f4f3199) was created while
+# B002 was running with its results unknown; this revision rewrites the design
+# sections per the owner decision of 2026-09-20 (conditional GO to B003) and the
+# ten owner-constrained design requirements. No generation happened under v1.
 experiment: V2-B003
 title: >
   Multi-seed compute-response + Expected Oracle (family-clean independent
-  evaluation)
+  evaluation; final allocator gate before any decision model)
 status: PREREGISTERED
 created_at_utc: "2026-09-20T04:58:00Z"
+design_revision: "2026-09-20 (pre-launch, owner-constrained; supersedes v1 f4f3199)"
 owner: fly122 (worker/v2-allocator)
 related:
-  - V2-B002 (gated predecessor: pilot compute-response + Hindsight Oracle)
+  - V2-B002 (gated predecessor: pilot compute-response + Hindsight Oracle; closeout accepted 2026-09-20)
+  - docs/v2/b002_memo.md
   - docs/v2/research_plan.md
   - docs/v2/experiment_protocol.md
   - docs/v2/family_leakage_audit.md
 
 launch_gate: >
-  (1) B002 (V2-B002) completes with a GO decision recorded in its decision
-  memo; if B002 is NO-GO this preregistration is abandoned (status -> ABORTED)
-  and no B003 generation happens. (2) The B003 runner/analyzer implementation
-  (scripts/v2_b003_*.py + tests) is committed before launch. After this
-  preregistration no protocol parameter may change without a recorded
-  amendment.
+  (1) B002 closeout accepted by the owner (2026-09-20) and canonically
+  integrated (main2 dc58579). (2) This manifest is committed in worker history.
+  (3) The B003 runner/analyzer implementation (scripts/v2_b003_*.py + tests) is
+  committed before launch. After this revision no protocol parameter may change
+  without a recorded amendment. B003 trains no decision model; it does not
+  authorize B004 (no XGBoost/MLP/encoder/RL training) - reaching B003 results
+  only enables the separate B003->B004 gate below.
 
 dataset:
   evaluation_set_artifact: experiments/manifests/v2/v2_b003_eval_set.json
   component_count: 192
   statements_covered: 293
   provenance: >
-    untouched reserve pool (v2_b002_reserve_pool.json, 216 components);
-    disjoint from V1 / V2-A / V2-B002 content by construction
+    untouched reserve pool (v2_b002_reserve_pool.json, 216 components) after the
+    B002 pilot took its 512; disjoint from V1 / V2-A / V2-B002 content by
+    construction. Selection = lexicographic order of component_id
+    (content-addressed: fc-<sha256(sorted members)[:12]>, shown unbiased in the
+    B002 launch-prep bias check) over the reserve pool; nothing was filtered or
+    reordered by B002 outcome, source, domain, or estimated difficulty.
+  representative: "one deterministic representative per component (same round-trip rule as the B002 pilot)"
   buffer: "24 components (not promotable into the evaluation without a recorded protocol deviation)"
 
-protocol:
+sampling:
+  model: theta0 frozen (models/weights/kimina_distill_0_6b; revision pinned from V2-E001.yaml)
   k_trajectories_per_theorem: 8
   budgets: [512, 1024, 2048, 3072, 4096]
   label_source: prefix_truncation
+  label_rule: >
+    every one of the K=8 independent 4096 trajectories yields B1-PASS prefix
+    labels at 512/1024/2048/3072/4096 by token truncation + extraction +
+    assembly, exactly as in V2-B002.
   generation_path: >
     single-path HF candidate generation (batch=1, n=1, explicit seed,
     temperature 1.0, top_p 1.0, max_new_tokens 4096) - B1-compatible; vLLM is
-    excluded (B1: trajectory identity fails); batch>1 is excluded (B1: the
-    batched path differs from the single path token-for-token).
+    excluded for the canonical dataset (B1: trajectory identity fails);
+    batch>1 is excluded (B1: the batched path differs token-for-token).
   seed_schedule: "gen_seed = 20261001 + rank * 8 + replicate (rank 1..192 in component_id order; replicate 0..7)"
+  sharding: >
+    4 disjoint rank shards (rank % 4 == shard index) run in parallel processes,
+    each still single-path batch=1 with the frozen parameters - the same
+    concurrency semantics verified token-identical 8/8 in the B002 amendment.
   verifier: >
     B0 VerificationSession (server_timeout 60s < client_timeout 90s, canary
-    fail-close, batch_size=1 per-candidate for exact per-prefix runtimes)
+    fail-close, batch_size=1 per-candidate for exact per-prefix runtimes).
+    Infra outcomes (verifier_timeout / verifier_server_error) are MISSING
+    trials and must never be counted as failures.
   engine_exclusions: [vllm, hf_batch_gt1]
 
-analysis:
-  primary:
-    - per-theorem per-budget success probability p_i(b) from K=8 independent trajectories (label = first-success within the budget prefix)
-    - Uniform vs Expected Oracle vs Hindsight Oracle on the allocated max-token cap axis
-    - oracle headroom assessment feeding the B004 decision
-  notes: >
-    B003 trains no decision model (no XGBoost/MLP/frozen-embedding predictor/
-    encoder/RL). Its purpose is to quantify how much headroom an expected-value
-    oracle retains over uniform allocation at the same total allocated cap.
+probability_estimates:
+  per_theorem_budget: [successes k_ib, valid_trials n_ib, p_hat_ib = k_ib / n_ib]
+  valid_trial_definition: >
+    a trial is valid at budget b iff its prefix verdict is a model-outcome
+    status (verified / lean_error / no_extracted_proof / assemble_failed);
+    verifier infra outcomes are missing and excluded from n_ib.
+  monotonicity_forced: false
+  coverage_gate: >
+    primary analysis requires n_ib >= 6 for a theorem-budget cell; cells below
+    the gate are reported as low-coverage and never silently treated as 0.
 
-runtime_expectation: "~1536 trajectories x ~140s single-path ~= 60h plus serial verification (order 60-65h total)"
+oracles:
+  primary_action_space: >
+    No-skip selective-upgrade: b_i in {512,1024,2048,3072,4096} for every
+    theorem (the >=512 floor is kept; measures pure adaptive reallocation,
+    never triage).
+  secondary_action_space: >
+    Skip-allowed triage: additionally b_i = 0 permitted. Reported separately;
+    triage gains are never mixed into the primary allocation gain.
+  plug_in_expected_oracle: >
+    all K=8 estimates -> optimize the expected solved count. Explicitly labeled
+    a finite-sample optimistic upper bound (it uses the same trajectories for
+    fitting and evaluation).
+  cross_fitted_expected_oracle:
+    primary_gate: true
+    split: "fixed 4+4: fold A = replicates 0-3, fold B = replicates 4-7; the split is frozen here and must not be changed after seeing results"
+    procedure: >
+      fold A estimates the response and decides the allocation, fold B
+      independently evaluates it; then B->A swap; report the average of the
+      two folds. Uniform comparators are evaluated symmetrically on the same
+      folds.
+
+uniform_comparisons:
+  total_budgets: [N*512, N*1024, N*2048, N*3072, N*4096]  # N = 192
+  report: >
+    for every budget point: absolute expected solved, absolute gain, relative
+    gain, same-solved allocated-token savings, and theorem-level bootstrap
+    uncertainty. Percentages alone are never the result.
+
+compute_response_analysis:
+  reports:
+    - p_i(4096) difficulty distribution
+    - p_i(4096) - p_i(512) compute sensitivity
+    - marginal gains between adjacent budgets
+    - monotonic / non-monotonic empirical curves
+    - difficulty vs compute-sensitivity correlation
+  purpose: "tests hard != compute-sensitive on the independent set"
+
+b003_to_b004_gate:
+  basis: >
+    the cross-fitted no-skip Expected Oracle only; neither the plug-in oracle
+    nor a single budget point may trigger GO.
+  rules:
+    - "relative gain < 10-15% at multiple realistic budget points AND small absolute gain => NO-GO B004"
+    - "> 30-40% at multiple budget points with substantial absolute gain => strong GO"
+    - "15-30% => only a low-cost heuristic / XGBoost baseline may be considered; MLP is not approved"
+  scope: >
+    conclusions are scoped to the family-unseen hard/OOD pool of B003; no
+    claims about the mixed Promptset distribution.
+
+positioning:
+  b002: >
+    V2-B002 remains a strict family-unseen hard/OOD stress test; its 2.1% must
+    never be generalized to theta0 Promptset success.
+  calibration: >
+    B002 pipeline calibration (diagnostic-only replay of a frozen E023 subset)
+    gave 13/64 = 20.3% vs the historical record-level 23.4% => pipeline healthy.
+
+b004_data_principles_future_note: >
+  Recorded now, NOT implemented in this phase. If B003 is GO: the allocator
+  training corpus need not be limited to the B002 hard tail, and train families
+  need not be unseen by V1/A. The actual requirements are: allocator train
+  families disjoint from B003 / allocator-eval families, and Track C final
+  components disjoint from any A/B training or selection components. A more
+  representative large training set may be built later to recover enough
+  positive examples; do not generate that corpus now.
+
+runtime_expectation: "1536 trajectories (192 x 8) at ~190 s/trajectory on 4 parallel shards ~= 20-21 h"
 
 pinned_artifacts:
   - path: experiments/manifests/v2/v2_b003_eval_set.json
@@ -64,10 +155,12 @@ pinned_artifacts:
     sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
 
 status_note: >
-  Preregistered 2026-09-20 WHILE B002 is running and its results are unknown -
-  the B003 design must not be contaminated by B002 outcomes. The runner
+  v1 preregistered 2026-09-20 while B002 was running and its results unknown;
+  the B002 outcome does not change any frozen parameter above (the owner
+  constraints restate them). v2 (this revision) finalizes the design per the
+  owner decision 2026-09-20 (conditional GO) WITHOUT touching the evaluation
+  set, the sampling semantics, or the seed schedule. The runner
   (scripts/v2_b003_generate.py) and analyzer (scripts/v2_b003_analyze.py) are
-  implemented during the B002 run and committed with tests BEFORE any B003
-  launch; the implementation must not touch the frozen parameters above.
-  Launch additionally requires the B002 GO decision. Failed or aborted runs
-  keep this manifest with their status.
+  implemented and committed with tests BEFORE any B003 launch. Failed or
+  aborted runs keep this manifest with their status. B003 completion stops at
+  the report; no predictor training follows automatically.
