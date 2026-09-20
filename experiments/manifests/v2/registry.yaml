@@ -51,14 +51,30 @@ experiments:
   V2-B002:
     track: B
     owner: fly122
-    status: PREREGISTERED      # launch gate cleared by canonical integration (2026-09-20)
+    status: COMPLETE           # canonical integration 2026-09-20 (closeout accepted by owner)
     manifest: experiments/manifests/v2/V2-B002.yaml
     preregistration_history:
       initial_preregistration: a914bd9
       final_pre_launch_amendment: 0a2c798
-    launch_gate: >
-      Formal launch must occur after 0a2c798 and after this canonical
-      integration; manifest status flips to RUNNING on fly122 at launch.
+      launch: ee8c5ef
+      concurrency_amendment: 95e741d
+      closeout: 224e288
+    result: >
+      512/512 complete in 6h45m (4-shard parallel after the owner-approved
+      concurrency amendment; 8/8 token-identical cross-process equivalence
+      check). Infra adjudication: 15 theorems / 75 cells re-verified in clean
+      environments (75/75 sha256 identical to raw); 45 lean_error confirmed,
+      10 infra resolved-to-lean_error, 20 unresolved kept as missing (never
+      counted as failures). Adjudicated solved 11/512 = 2.1% (sensitivity
+      [11, 19]). Hindsight oracle split (allocated max-token cap): no-skip
+      (PRIMARY) 86.21%, skip-allowed 98.44% - both unattainable upper bounds.
+      Pipeline calibration (diagnostic-only): 13/64 = 20.3% on a frozen E023
+      subset vs historical 23.4% => pipeline healthy. Representativeness:
+      strict family-unseen hard/OOD pool (synthetic 5.7%, singleton 93.8%;
+      source x outcome 31.0% / 0.5% / 0.0% synthetic/autoformalizer/human) -
+      the 2.1% must never be generalized to theta0 Promptset success.
+      Memo: docs/v2/b002_memo.md. Owner decision 2026-09-20: conditional GO
+      to V2-B003 (cross-fitted Expected Oracle primary gate; no B004 yet).
     frozen_artifacts:
       - {path: experiments/manifests/v2/family_component_registry.json, sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024}
       - {path: experiments/manifests/v2/v2_b002_pilot_set.json, sha256: 4c9b8f297203deaae508323cd1cc1340056f3ebd1a8cd5445f5f210da04b3e05}
@@ -70,6 +86,8 @@ experiments:
       components are frozen untouched as the B003 reserve pool.
       vLLM excluded; canonical HF single-candidate path with the B0
       verification session (server timeout 60 s < client 90 s, canary gate).
+      Positioned as a strict family-unseen hard/OOD stress test - not a
+      capability estimate for the full Promptset distribution.
   V2-A001:
     track: A
     owner: fly90
