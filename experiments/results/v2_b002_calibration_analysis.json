@@ -1,0 +1,427 @@
+{
+  "artifact_type": "v2_b002_analysis",
+  "experiment": "V2-B002",
+  "input": {
+    "rollouts": "/home/fly/ZJQ/TinyLean-RL/experiments/results/v2_b002_calibration_rollouts.jsonl",
+    "sha256": "085092eca19d4ab1a1ca7121920fca6aff296e38242f67c4abea43395ac174ac",
+    "n_records": 64
+  },
+  "response_patterns": {
+    "pattern_counts": {
+      "00000": 51,
+      "00001": 4,
+      "00011": 3,
+      "00111": 5,
+      "01111": 1
+    },
+    "unique_patterns": 5,
+    "categories": {
+      "easy_success_at_512": 0,
+      "compute_sensitive": 13,
+      "hopeless_at_4096": 51,
+      "always_success": 0,
+      "never_success": 51,
+      "late_success_ge_3072": 7
+    },
+    "first_success_distribution": {
+      "1024": 1,
+      "2048": 5,
+      "3072": 3,
+      "4096": 4,
+      "never": 51
+    }
+  },
+  "monotonicity": {
+    "monotonic": 64,
+    "non_monotonic": 0,
+    "monotonic_pct": 100.0,
+    "non_monotonic_cases": [],
+    "note": "non-monotonic cases are reported as-is; token-prefix equivalence (V2-B001) does not imply verification monotonicity because extraction/assembly act on decoded text"
+  },
+  "verification_health": {
+    "status_by_budget": {
+      "512": {
+        "lean_error": 64
+      },
+      "1024": {
+        "lean_error": 63,
+        "verified": 1
+      },
+      "2048": {
+        "lean_error": 57,
+        "verified": 6,
+        "verifier_server_error": 1
+      },
+      "3072": {
+        "lean_error": 54,
+        "verified": 9,
+        "verifier_server_error": 1
+      },
+      "4096": {
+        "lean_error": 50,
+        "verified": 13,
+        "verifier_server_error": 1
+      }
+    },
+    "infrastructure_outcomes_total": 3,
+    "verification_runtime_seconds": {
+      "512": {
+        "n": 64,
+        "mean": 0.337,
+        "median": 0.188,
+        "max": 4.716
+      },
+      "1024": {
+        "n": 64,
+        "mean": 0.213,
+        "median": 0.206,
+        "max": 0.589
+      },
+      "2048": {
+        "n": 64,
+        "mean": 3.944,
+        "median": 0.232,
+        "max": 232.886
+      },
+      "3072": {
+        "n": 64,
+        "mean": 4.817,
+        "median": 0.251,
+        "max": 214.979
+      },
+      "4096": {
+        "n": 64,
+        "mean": 5.731,
+        "median": 0.348,
+        "max": 208.137
+      }
+    }
+  },
+  "oracle": {
+    "min_success_cost_distribution": {
+      "512": 0,
+      "1024": 1,
+      "2048": 5,
+      "3072": 3,
+      "4096": 4,
+      "never": 51
+    },
+    "uniform_solved": {
+      "512": 0,
+      "1024": 1,
+      "2048": 6,
+      "3072": 9,
+      "4096": 13
+    },
+    "uniform_points": [
+      {
+        "budget": 512,
+        "allocated_cap": 32768,
+        "uniform_solved": 0,
+        "no_skip_oracle_solved_at_same_cap": 0,
+        "no_skip_oracle_gain_solved": 0,
+        "no_skip_oracle_gain_pct_of_uniform": 0.0,
+        "skip_allowed_oracle_solved_at_same_cap": 12,
+        "skip_allowed_oracle_gain_solved": 12
+      },
+      {
+        "budget": 1024,
+        "allocated_cap": 65536,
+        "uniform_solved": 1,
+        "no_skip_oracle_solved_at_same_cap": 13,
+        "no_skip_oracle_gain_solved": 12,
+        "no_skip_oracle_gain_pct_of_uniform": 1200.0,
+        "skip_allowed_oracle_solved_at_same_cap": 13,
+        "skip_allowed_oracle_gain_solved": 12
+      },
+      {
+        "budget": 2048,
+        "allocated_cap": 131072,
+        "uniform_solved": 6,
+        "no_skip_oracle_solved_at_same_cap": 13,
+        "no_skip_oracle_gain_solved": 7,
+        "no_skip_oracle_gain_pct_of_uniform": 116.67,
+        "skip_allowed_oracle_solved_at_same_cap": 13,
+        "skip_allowed_oracle_gain_solved": 7
+      },
+      {
+        "budget": 3072,
+        "allocated_cap": 196608,
+        "uniform_solved": 9,
+        "no_skip_oracle_solved_at_same_cap": 13,
+        "no_skip_oracle_gain_solved": 4,
+        "no_skip_oracle_gain_pct_of_uniform": 44.44,
+        "skip_allowed_oracle_solved_at_same_cap": 13,
+        "skip_allowed_oracle_gain_solved": 4
+      },
+      {
+        "budget": 4096,
+        "allocated_cap": 262144,
+        "uniform_solved": 13,
+        "no_skip_oracle_solved_at_same_cap": 13,
+        "no_skip_oracle_gain_solved": 0,
+        "no_skip_oracle_gain_pct_of_uniform": 0.0,
+        "skip_allowed_oracle_solved_at_same_cap": 13,
+        "skip_allowed_oracle_gain_solved": 0
+      }
+    ],
+    "no_skip_frontier_breakpoints": [
+      {
+        "cap": 32768,
+        "solved": 0
+      },
+      {
+        "cap": 33280,
+        "solved": 1
+      },
+      {
+        "cap": 34816,
+        "solved": 2
+      },
+      {
+        "cap": 36352,
+        "solved": 3
+      },
+      {
+        "cap": 37888,
+        "solved": 4
+      },
+      {
+        "cap": 39424,
+        "solved": 5
+      },
+      {
+        "cap": 40960,
+        "solved": 6
+      },
+      {
+        "cap": 43520,
+        "solved": 7
+      },
+      {
+        "cap": 46080,
+        "solved": 8
+      },
+      {
+        "cap": 48640,
+        "solved": 9
+      },
+      {
+        "cap": 52224,
+        "solved": 10
+      },
+      {
+        "cap": 55808,
+        "solved": 11
+      },
+      {
+        "cap": 59392,
+        "solved": 12
+      },
+      {
+        "cap": 62976,
+        "solved": 13
+      }
+    ],
+    "skip_allowed_frontier_breakpoints": [
+      {
+        "cap": 0,
+        "solved": 0
+      },
+      {
+        "cap": 1024,
+        "solved": 1
+      },
+      {
+        "cap": 3072,
+        "solved": 2
+      },
+      {
+        "cap": 5120,
+        "solved": 3
+      },
+      {
+        "cap": 7168,
+        "solved": 4
+      },
+      {
+        "cap": 9216,
+        "solved": 5
+      },
+      {
+        "cap": 11264,
+        "solved": 6
+      },
+      {
+        "cap": 14336,
+        "solved": 7
+      },
+      {
+        "cap": 17408,
+        "solved": 8
+      },
+      {
+        "cap": 20480,
+        "solved": 9
+      },
+      {
+        "cap": 24576,
+        "solved": 10
+      },
+      {
+        "cap": 28672,
+        "solved": 11
+      },
+      {
+        "cap": 32768,
+        "solved": 12
+      },
+      {
+        "cap": 36864,
+        "solved": 13
+      }
+    ],
+    "required_cap_by_solved_count": {
+      "oracle": [
+        {
+          "solved": 0,
+          "no_skip_required_cap": 32768,
+          "skip_allowed_required_cap": 0
+        },
+        {
+          "solved": 1,
+          "no_skip_required_cap": 33280,
+          "skip_allowed_required_cap": 1024
+        },
+        {
+          "solved": 2,
+          "no_skip_required_cap": 34816,
+          "skip_allowed_required_cap": 3072
+        },
+        {
+          "solved": 3,
+          "no_skip_required_cap": 36352,
+          "skip_allowed_required_cap": 5120
+        },
+        {
+          "solved": 4,
+          "no_skip_required_cap": 37888,
+          "skip_allowed_required_cap": 7168
+        },
+        {
+          "solved": 5,
+          "no_skip_required_cap": 39424,
+          "skip_allowed_required_cap": 9216
+        },
+        {
+          "solved": 6,
+          "no_skip_required_cap": 40960,
+          "skip_allowed_required_cap": 11264
+        },
+        {
+          "solved": 7,
+          "no_skip_required_cap": 43520,
+          "skip_allowed_required_cap": 14336
+        },
+        {
+          "solved": 8,
+          "no_skip_required_cap": 46080,
+          "skip_allowed_required_cap": 17408
+        },
+        {
+          "solved": 9,
+          "no_skip_required_cap": 48640,
+          "skip_allowed_required_cap": 20480
+        },
+        {
+          "solved": 10,
+          "no_skip_required_cap": 52224,
+          "skip_allowed_required_cap": 24576
+        },
+        {
+          "solved": 11,
+          "no_skip_required_cap": 55808,
+          "skip_allowed_required_cap": 28672
+        },
+        {
+          "solved": 12,
+          "no_skip_required_cap": 59392,
+          "skip_allowed_required_cap": 32768
+        },
+        {
+          "solved": 13,
+          "no_skip_required_cap": 62976,
+          "skip_allowed_required_cap": 36864
+        }
+      ],
+      "uniform": [
+        {
+          "solved_target": 1,
+          "uniform_budget": 1024,
+          "required_allocated_cap": 65536
+        },
+        {
+          "solved_target": 6,
+          "uniform_budget": 2048,
+          "required_allocated_cap": 131072
+        },
+        {
+          "solved_target": 9,
+          "uniform_budget": 3072,
+          "required_allocated_cap": 196608
+        },
+        {
+          "solved_target": 13,
+          "uniform_budget": 4096,
+          "required_allocated_cap": 262144
+        }
+      ],
+      "note": "fixed-solved-count frontier: no_skip = minimum allocated cap solving k theorems with every theorem keeping the 512 floor (PRIMARY); skip_allowed = the same with 0 allowed (triage); uniform = smallest uniform budget reaching at least k solved (cap = n * budget)"
+    },
+    "savings": {
+      "uniform_4096_solved": 13,
+      "uniform_4096_allocated_cap": 262144,
+      "primary_no_skip": {
+        "oracle_cap_for_same_solved": 62976,
+        "allocated_cap_savings_pct": 75.98
+      },
+      "skip_allowed": {
+        "oracle_cap_for_same_solved": 36864,
+        "allocated_cap_savings_pct": 85.94
+      },
+      "note": "savings are in ALLOCATED max-token cap; PRIMARY = no-skip oracle (every theorem keeps a >=512 floor, so the number measures pure reallocation, never triage); skip_allowed additionally permits 0 and is a triage+allocation upper bound. Actual generated tokens and runtime are reported separately and are not interchangeable with the cap"
+    },
+    "hypothetical_actual_compute_by_budget": {
+      "512": {
+        "hypothetical_actual_tokens_if_run_directly": 32768,
+        "hypothetical_generation_seconds": 1520.0
+      },
+      "1024": {
+        "hypothetical_actual_tokens_if_run_directly": 65108,
+        "hypothetical_generation_seconds": 3019.1
+      },
+      "2048": {
+        "hypothetical_actual_tokens_if_run_directly": 126387,
+        "hypothetical_generation_seconds": 5858.5
+      },
+      "3072": {
+        "hypothetical_actual_tokens_if_run_directly": 177781,
+        "hypothetical_generation_seconds": 8243.0
+      },
+      "4096": {
+        "hypothetical_actual_tokens_if_run_directly": 216027,
+        "hypothetical_generation_seconds": 10023.4
+      }
+    },
+    "realized_cost": {
+      "theorems": 64,
+      "generated_tokens_total": 216027,
+      "generation_seconds_total": 10023.4,
+      "verification_seconds_total": 962.7,
+      "wall_clock_note": "realized cost is for the K=1 pilot screening design (one 4096 trajectory per theorem); a deployed adaptive policy would run one direct-budget generation per theorem"
+    }
+  },
+  "created_at_utc": "2026-09-20T08:39:51.767517+00:00",
+  "git_revision": "95e741d889a0dba49d98f175865eeb1a31329ae2",
+  "script": "scripts/v2_b002_analyze.py"
+}

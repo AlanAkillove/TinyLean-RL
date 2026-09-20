@@ -91,7 +91,10 @@ def theorem_seed(rank: int) -> int:
 
 def load_pilot(path: Path) -> dict[str, Any]:
     pilot = json.loads(path.read_text(encoding="utf-8"))
-    if pilot.get("artifact_type") != "v2_b002_pilot_set":
+    # v2_b002_calibration_set is the diagnostic replay input (B002 closeout,
+    # 2026-09-20); pipeline semantics are identical, only the artifact type is
+    # accepted explicitly.
+    if pilot.get("artifact_type") not in ("v2_b002_pilot_set", "v2_b002_calibration_set"):
         raise ValueError(f"{path} is not a v2_b002_pilot_set artifact")
     if pilot.get("theorem_count") != len(pilot["theorems"]):
         raise ValueError("pilot theorem_count does not match len(theorems)")
