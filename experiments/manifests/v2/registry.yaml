@@ -88,6 +88,40 @@ experiments:
       verification session (server timeout 60 s < client 90 s, canary gate).
       Positioned as a strict family-unseen hard/OOD stress test - not a
       capability estimate for the full Promptset distribution.
+  V2-B003:
+    track: B
+    owner: fly122
+    status: COMPLETE           # Track B closeout 2026-09-21 (NO-GO B004 accepted by owner)
+    manifest: experiments/manifests/v2/V2-B003.yaml
+    preregistration_history:
+      initial_preregistration: f4f3199
+      owner_constrained_design_revision: 594b06b
+      launch: 27456b6
+      audit_precommit: 71388da
+      closeout: a493eeb
+    result: >
+      1536/1536 trajectories (192 x K=8) merged (sha256 94f12dc4...; missing=0).
+      Preregistered cross-fitted no-skip gate: S6=185/192 (9 low-coverage
+      cells, all k=0); expected solved flat at 2.042; absolute gains
+      +2.04/+1.54/+1.04 at N*{1024,2048,3072} and NEGATIVE -0.50 at N*4096;
+      9/192 theorems ever solve; 176/185 zero-response; relative gains are
+      rare-event inflated and were not used as the GO basis; full-procedure
+      and conditional bootstrap agree; fold coverage audit passed. Reading:
+      NO-GO B004 (owner accepted 2026-09-21). Terminology (2026-09-21):
+      cross-fitted empirical-response allocator (not an "Oracle").
+      Closeout: docs/v2/track_b_closeout.md; memo: docs/v2/b003_memo.md.
+    frozen_artifacts:
+      - {path: experiments/manifests/v2/v2_b003_eval_set.json, sha256: 75de2fdabb2597aba1ad4be18d1e103bc6bcbdbb31899ac63d27153b82ac1a75}
+  V2-B004:
+    track: B
+    owner: fly122
+    status: NOT RUN — stopped by B003 gate
+    note: >
+      No heuristic / XGBoost / MLP / small encoder was trained and no
+      allocator training corpus was generated: the V2-B003 preregistered
+      cross-fitted gate returned NO-GO (owner accepted 2026-09-21). B004 is
+      not a failed experiment but a formally stopped one; no artifacts exist
+      for this id and none may be fabricated. See docs/v2/track_b_closeout.md.
   V2-A001:
     track: A
     owner: fly90
