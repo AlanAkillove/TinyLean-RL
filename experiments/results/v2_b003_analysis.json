@@ -1,0 +1,622 @@
+{
+  "experiment": "V2-B003",
+  "config": {
+    "budgets": [
+      512,
+      1024,
+      2048,
+      3072,
+      4096
+    ],
+    "folds": {
+      "A": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "B": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "coverage_gate": 6,
+    "skip_allowed_reported_separately": true,
+    "n_theorems": 192,
+    "primary_set_size": 185
+  },
+  "coverage": {
+    "low_coverage_cells": [
+      {
+        "rank": 45,
+        "budget": 4096,
+        "k": 0,
+        "n": 4
+      },
+      {
+        "rank": 71,
+        "budget": 4096,
+        "k": 0,
+        "n": 5
+      },
+      {
+        "rank": 92,
+        "budget": 3072,
+        "k": 0,
+        "n": 5
+      },
+      {
+        "rank": 92,
+        "budget": 4096,
+        "k": 0,
+        "n": 2
+      },
+      {
+        "rank": 114,
+        "budget": 3072,
+        "k": 0,
+        "n": 4
+      },
+      {
+        "rank": 114,
+        "budget": 4096,
+        "k": 0,
+        "n": 4
+      },
+      {
+        "rank": 126,
+        "budget": 4096,
+        "k": 0,
+        "n": 5
+      },
+      {
+        "rank": 131,
+        "budget": 4096,
+        "k": 0,
+        "n": 5
+      },
+      {
+        "rank": 173,
+        "budget": 4096,
+        "k": 0,
+        "n": 5
+      }
+    ],
+    "n_low_coverage_cells": 9,
+    "valid_trials_hist": {
+      "0": 0,
+      "1": 0,
+      "2": 1,
+      "3": 0,
+      "4": 3,
+      "5": 5,
+      "6": 3,
+      "7": 37,
+      "8": 911
+    }
+  },
+  "uniform": {
+    "512": {
+      "expected_solved": 0.0,
+      "fold_values": [
+        0.0,
+        0.0
+      ],
+      "eval_missing_theorems": 0,
+      "alloc_cap_tokens": 94720
+    },
+    "1024": {
+      "expected_solved": 0.0,
+      "fold_values": [
+        0.0,
+        0.0
+      ],
+      "eval_missing_theorems": 0,
+      "alloc_cap_tokens": 189440
+    },
+    "2048": {
+      "expected_solved": 0.5,
+      "fold_values": [
+        0.004054054054054054,
+        0.0013513513513513514
+      ],
+      "eval_missing_theorems": 0,
+      "alloc_cap_tokens": 378880
+    },
+    "3072": {
+      "expected_solved": 1.0,
+      "fold_values": [
+        0.006756756756756757,
+        0.004054054054054054
+      ],
+      "eval_missing_theorems": 0,
+      "alloc_cap_tokens": 568320
+    },
+    "4096": {
+      "expected_solved": 2.5416666666666665,
+      "fold_values": [
+        0.016666666666666666,
+        0.010810810810810811
+      ],
+      "eval_missing_theorems": 0,
+      "alloc_cap_tokens": 757760
+    }
+  },
+  "budget_points": {
+    "512": {
+      "total_budget": 512,
+      "total_cap_tokens": 94720,
+      "plug_in": {
+        "expected_solved": 0.0,
+        "alloc_cap_tokens": 94720,
+        "note": "finite-sample optimistic upper bound (fit and evaluated on the same K=8)",
+        "eval_missing_theorems": 0
+      },
+      "cross_fitted": {
+        "folds": [
+          {
+            "direction": "A_to_B",
+            "eval_value": 0.0,
+            "eval_value_rate": 0.0,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 94720
+          },
+          {
+            "direction": "B_to_A",
+            "eval_value": 0.0,
+            "eval_value_rate": 0.0,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 94720
+          }
+        ],
+        "value": 0.0,
+        "alloc_cap_tokens_mean": 94720.0,
+        "alloc_cap_tokens_per_fold": [
+          94720,
+          94720
+        ],
+        "eval_missing_theorems": 0
+      },
+      "uniform_expected_solved": 0.0,
+      "cross_fitted_gain": {
+        "absolute": 0.0,
+        "relative": null,
+        "gate_reading": "n/a"
+      },
+      "plug_in_gain": {
+        "absolute": 0.0,
+        "relative": null
+      },
+      "savings_cross_fitted": {
+        "uniform_budget_reference": 512,
+        "uniform_cap_tokens": 94720,
+        "oracle_cap_tokens": 94720.0,
+        "allocated_cap_savings_pct": 0.0,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "savings_plug_in": {
+        "uniform_budget_reference": 512,
+        "uniform_cap_tokens": 94720,
+        "oracle_cap_tokens": 94720.0,
+        "allocated_cap_savings_pct": 0.0,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "bootstrap": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "abs_gain_mean": 0.0,
+        "abs_gain_ci95": [
+          0.0,
+          0.0
+        ],
+        "rel_gain_mean": null,
+        "rel_gain_ci95": null,
+        "note": "theorem-level bootstrap; allocation held fixed (evaluation uncertainty, not re-optimization); absolute values are expected solved counts"
+      }
+    },
+    "1024": {
+      "total_budget": 1024,
+      "total_cap_tokens": 189440,
+      "plug_in": {
+        "expected_solved": 2.553571428571429,
+        "alloc_cap_tokens": 123904,
+        "note": "finite-sample optimistic upper bound (fit and evaluated on the same K=8)",
+        "eval_missing_theorems": 0
+      },
+      "cross_fitted": {
+        "folds": [
+          {
+            "direction": "A_to_B",
+            "eval_value": 1.5,
+            "eval_value_rate": 0.008108108108108109,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 117760
+          },
+          {
+            "direction": "B_to_A",
+            "eval_value": 2.583333333333333,
+            "eval_value_rate": 0.013963963963963962,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 116736
+          }
+        ],
+        "value": 2.0416666666666665,
+        "alloc_cap_tokens_mean": 117248.0,
+        "alloc_cap_tokens_per_fold": [
+          117760,
+          116736
+        ],
+        "eval_missing_theorems": 0
+      },
+      "uniform_expected_solved": 0.0,
+      "cross_fitted_gain": {
+        "absolute": 2.0416666666666665,
+        "relative": null,
+        "gate_reading": "n/a"
+      },
+      "plug_in_gain": {
+        "absolute": 2.553571428571429,
+        "relative": null
+      },
+      "savings_cross_fitted": {
+        "uniform_budget_reference": 4096,
+        "uniform_cap_tokens": 757760,
+        "oracle_cap_tokens": 117248.0,
+        "allocated_cap_savings_pct": 84.53,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "savings_plug_in": {
+        "uniform_budget_reference": null,
+        "uniform_cap_tokens": null,
+        "oracle_cap_tokens": 123904.0,
+        "allocated_cap_savings_pct": null,
+        "note": "oracle value exceeds uniform at every budget point"
+      },
+      "bootstrap": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "abs_gain_mean": 2.0416666666666665,
+        "abs_gain_ci95": [
+          0.4979166666666668,
+          3.9177083333333327
+        ],
+        "rel_gain_mean": null,
+        "rel_gain_ci95": null,
+        "note": "theorem-level bootstrap; allocation held fixed (evaluation uncertainty, not re-optimization); absolute values are expected solved counts"
+      }
+    },
+    "2048": {
+      "total_budget": 2048,
+      "total_cap_tokens": 378880,
+      "plug_in": {
+        "expected_solved": 2.553571428571429,
+        "alloc_cap_tokens": 123904,
+        "note": "finite-sample optimistic upper bound (fit and evaluated on the same K=8)",
+        "eval_missing_theorems": 0
+      },
+      "cross_fitted": {
+        "folds": [
+          {
+            "direction": "A_to_B",
+            "eval_value": 1.5,
+            "eval_value_rate": 0.008108108108108109,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 117760
+          },
+          {
+            "direction": "B_to_A",
+            "eval_value": 2.583333333333333,
+            "eval_value_rate": 0.013963963963963962,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 116736
+          }
+        ],
+        "value": 2.0416666666666665,
+        "alloc_cap_tokens_mean": 117248.0,
+        "alloc_cap_tokens_per_fold": [
+          117760,
+          116736
+        ],
+        "eval_missing_theorems": 0
+      },
+      "uniform_expected_solved": 0.5,
+      "cross_fitted_gain": {
+        "absolute": 1.5416666666666665,
+        "relative": 3.083333333333333,
+        "gate_reading": "strong_band (>=30%) - strong GO if reproduced across budget points and absolute gain substantial"
+      },
+      "plug_in_gain": {
+        "absolute": 2.053571428571429,
+        "relative": 4.107142857142858
+      },
+      "savings_cross_fitted": {
+        "uniform_budget_reference": 4096,
+        "uniform_cap_tokens": 757760,
+        "oracle_cap_tokens": 117248.0,
+        "allocated_cap_savings_pct": 84.53,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "savings_plug_in": {
+        "uniform_budget_reference": null,
+        "uniform_cap_tokens": null,
+        "oracle_cap_tokens": 123904.0,
+        "allocated_cap_savings_pct": null,
+        "note": "oracle value exceeds uniform at every budget point"
+      },
+      "bootstrap": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "abs_gain_mean": 1.5416666666666667,
+        "abs_gain_ci95": [
+          0.25,
+          3.1677083333333322
+        ],
+        "rel_gain_mean": 3.083333333333333,
+        "rel_gain_ci95": [
+          0.25,
+          5.75
+        ],
+        "note": "theorem-level bootstrap; allocation held fixed (evaluation uncertainty, not re-optimization); absolute values are expected solved counts"
+      }
+    },
+    "3072": {
+      "total_budget": 3072,
+      "total_cap_tokens": 568320,
+      "plug_in": {
+        "expected_solved": 2.553571428571429,
+        "alloc_cap_tokens": 123904,
+        "note": "finite-sample optimistic upper bound (fit and evaluated on the same K=8)",
+        "eval_missing_theorems": 0
+      },
+      "cross_fitted": {
+        "folds": [
+          {
+            "direction": "A_to_B",
+            "eval_value": 1.5,
+            "eval_value_rate": 0.008108108108108109,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 117760
+          },
+          {
+            "direction": "B_to_A",
+            "eval_value": 2.583333333333333,
+            "eval_value_rate": 0.013963963963963962,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 116736
+          }
+        ],
+        "value": 2.0416666666666665,
+        "alloc_cap_tokens_mean": 117248.0,
+        "alloc_cap_tokens_per_fold": [
+          117760,
+          116736
+        ],
+        "eval_missing_theorems": 0
+      },
+      "uniform_expected_solved": 1.0,
+      "cross_fitted_gain": {
+        "absolute": 1.0416666666666665,
+        "relative": 1.0416666666666665,
+        "gate_reading": "strong_band (>=30%) - strong GO if reproduced across budget points and absolute gain substantial"
+      },
+      "plug_in_gain": {
+        "absolute": 1.5535714285714288,
+        "relative": 1.5535714285714288
+      },
+      "savings_cross_fitted": {
+        "uniform_budget_reference": 4096,
+        "uniform_cap_tokens": 757760,
+        "oracle_cap_tokens": 117248.0,
+        "allocated_cap_savings_pct": 84.53,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "savings_plug_in": {
+        "uniform_budget_reference": null,
+        "uniform_cap_tokens": null,
+        "oracle_cap_tokens": 123904.0,
+        "allocated_cap_savings_pct": null,
+        "note": "oracle value exceeds uniform at every budget point"
+      },
+      "bootstrap": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "abs_gain_mean": 1.0416666666666665,
+        "abs_gain_ci95": [
+          0.0,
+          2.2927083333333322
+        ],
+        "rel_gain_mean": 1.0416666666666663,
+        "rel_gain_ci95": [
+          0.0,
+          6.333333333333332
+        ],
+        "note": "theorem-level bootstrap; allocation held fixed (evaluation uncertainty, not re-optimization); absolute values are expected solved counts"
+      }
+    },
+    "4096": {
+      "total_budget": 4096,
+      "total_cap_tokens": 757760,
+      "plug_in": {
+        "expected_solved": 2.553571428571429,
+        "alloc_cap_tokens": 123904,
+        "note": "finite-sample optimistic upper bound (fit and evaluated on the same K=8)",
+        "eval_missing_theorems": 0
+      },
+      "cross_fitted": {
+        "folds": [
+          {
+            "direction": "A_to_B",
+            "eval_value": 1.5,
+            "eval_value_rate": 0.008108108108108109,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 117760
+          },
+          {
+            "direction": "B_to_A",
+            "eval_value": 2.583333333333333,
+            "eval_value_rate": 0.013963963963963962,
+            "eval_missing_theorems": 0,
+            "alloc_cap_tokens": 116736
+          }
+        ],
+        "value": 2.0416666666666665,
+        "alloc_cap_tokens_mean": 117248.0,
+        "alloc_cap_tokens_per_fold": [
+          117760,
+          116736
+        ],
+        "eval_missing_theorems": 0
+      },
+      "uniform_expected_solved": 2.5416666666666665,
+      "cross_fitted_gain": {
+        "absolute": -0.5,
+        "relative": -0.19672131147540986,
+        "gate_reading": "no_go_band (<15%) - NO-GO B004 if repeated across budget points"
+      },
+      "plug_in_gain": {
+        "absolute": 0.011904761904762307,
+        "relative": 0.004683840749414679
+      },
+      "savings_cross_fitted": {
+        "uniform_budget_reference": 4096,
+        "uniform_cap_tokens": 757760,
+        "oracle_cap_tokens": 117248.0,
+        "allocated_cap_savings_pct": 84.53,
+        "note": "smallest uniform budget whose fold-averaged expected solved covers the oracle value (discrete; conservative)"
+      },
+      "savings_plug_in": {
+        "uniform_budget_reference": null,
+        "uniform_cap_tokens": null,
+        "oracle_cap_tokens": 123904.0,
+        "allocated_cap_savings_pct": null,
+        "note": "oracle value exceeds uniform at every budget point"
+      },
+      "bootstrap": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "abs_gain_mean": -0.5,
+        "abs_gain_ci95": [
+          -1.0,
+          -0.125
+        ],
+        "rel_gain_mean": -0.19672131147540986,
+        "rel_gain_ci95": [
+          -0.5255113636363636,
+          -0.036574346165148416
+        ],
+        "note": "theorem-level bootstrap; allocation held fixed (evaluation uncertainty, not re-optimization); absolute values are expected solved counts"
+      }
+    }
+  },
+  "compute_response": {
+    "p4096_hist_k_of_8": {
+      "0": 176,
+      "1": 4,
+      "2": 1,
+      "3": 2,
+      "4": 2,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    "sensitivity_mean": 0.013803088803088804,
+    "sensitivity_nonzero_count": 9,
+    "marginal_gains": [
+      {
+        "from": 512,
+        "to": 1024,
+        "mean_delta_p": 0.0
+      },
+      {
+        "from": 1024,
+        "to": 2048,
+        "mean_delta_p": 0.002702702702702703
+      },
+      {
+        "from": 2048,
+        "to": 3072,
+        "mean_delta_p": 0.002702702702702703
+      },
+      {
+        "from": 3072,
+        "to": 4096,
+        "mean_delta_p": 0.008397683397683398
+      }
+    ],
+    "monotonic_counts": {
+      "non_decreasing": 185,
+      "non_increasing": 0,
+      "non_monotonic": 0,
+      "note": "empirical K=8 curves; not a claim about true monotonicity"
+    },
+    "correlations": {
+      "pearson_difficulty_sensitivity": 1.0,
+      "spearman_difficulty_sensitivity": 1.0,
+      "note": "tests hard != compute-sensitive"
+    },
+    "difficulty_bins": [
+      {
+        "p4096_range": [
+          0.0,
+          0.125
+        ],
+        "n": 176,
+        "mean_sensitivity": 0.0
+      },
+      {
+        "p4096_range": [
+          0.125,
+          0.25
+        ],
+        "n": 4,
+        "mean_sensitivity": 0.125
+      },
+      {
+        "p4096_range": [
+          0.25,
+          0.5
+        ],
+        "n": 3,
+        "mean_sensitivity": 0.3511904761904762
+      },
+      {
+        "p4096_range": [
+          0.5,
+          0.75
+        ],
+        "n": 2,
+        "mean_sensitivity": 0.5
+      },
+      {
+        "p4096_range": [
+          0.75,
+          0.875
+        ],
+        "n": 0,
+        "mean_sensitivity": null
+      },
+      {
+        "p4096_range": [
+          0.875,
+          1.0
+        ],
+        "n": 0,
+        "mean_sensitivity": null
+      }
+    ]
+  },
+  "gate_summary": {
+    "basis": "cross-fitted no-skip Expected Oracle (primary gate)",
+    "per_budget_relative_gain": {
+      "512": null,
+      "1024": null,
+      "2048": 3.083333333333333,
+      "3072": 1.0416666666666665,
+      "4096": -0.19672131147540986
+    },
+    "informational": "band labels are informational; the GO/NO-GO decision belongs to the owner"
+  }
+}

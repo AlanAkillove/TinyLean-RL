@@ -1,0 +1,235 @@
+{
+  "experiment": "V2-B003",
+  "audit_directive": "owner 2026-09-20: four-point post-run audit before the formal gate reading",
+  "inputs": {
+    "rollouts": "/home/fly/ZJQ/TinyLean-RL/experiments/results/v2_b003_rollouts.jsonl",
+    "rollouts_sha256": "94f12dc44cfc088647797659d7d08e58996f7b92358414b0ffa98125019b3880",
+    "analysis": "/home/fly/ZJQ/TinyLean-RL/experiments/results/v2_b003_analysis.json",
+    "analysis_sha256": "8cff80389fdfa4b389f525605802b4daf953e5a2baeac4c39e98a564b09d8795"
+  },
+  "positioning": {
+    "primary_method": "cross-fitted empirical response Oracle",
+    "description": "uses each theorem's 4 fit-seed outcomes to decide the allocation and the other 4 seeds to evaluate it independently; it remains a non-deployable theorem-specific Oracle. Its role is to test the cross-seed stability of the compute-response signal, not to represent the performance of any future predictor",
+    "is_predictor_performance_claim": false
+  },
+  "fold_coverage": {
+    "bad_cell_n": 3,
+    "half_size": 4,
+    "threshold_share_below_3": 0.05,
+    "per_fold": {
+      "fold_A": {
+        "hist_valid_trials": {
+          "0": 0,
+          "1": 0,
+          "2": 1,
+          "3": 17,
+          "4": 907
+        },
+        "cells": 925,
+        "cells_below_3": 1,
+        "share_below_3": 0.001081081081081081,
+        "share_below_4": 0.01945945945945946
+      },
+      "fold_B": {
+        "hist_valid_trials": {
+          "0": 0,
+          "1": 0,
+          "2": 0,
+          "3": 19,
+          "4": 906
+        },
+        "cells": 925,
+        "cells_below_3": 0,
+        "share_below_3": 0.0,
+        "share_below_4": 0.02054054054054054
+      }
+    },
+    "gate_coverage_status": "coverage-ok",
+    "note": "each half serves as the fit half in one cross-fitting direction and the eval half in the other; missing cells are excluded from n, never counted as 0"
+  },
+  "bootstrap_audit": {
+    "conditional_ci": {
+      "source": "v2_b003_analyze.py bootstrap",
+      "label": "conditional CI",
+      "description": "allocation held fixed after a single fit-half solve; resampling is theorem-level, i.e. component-level in the family-clean design"
+    },
+    "full_procedure": {
+      "512": {
+        "n_boot": 1000,
+        "seed": 20261001,
+        "uniform_budget": 512,
+        "uniform_rate_mean": 0.0,
+        "cf_rate_mean": 0.0,
+        "abs_gain_mean": 0.0,
+        "abs_gain_ci95": [
+          0.0,
+          0.0
+        ],
+        "rel_gain_mean": null,
+        "rel_gain_ci95": null,
+        "wall_seconds": 26.2,
+        "note": "fit-half re-estimation + knapsack re-solve + eval-half re-scoring inside every replicate; theorem=component resampling; the preregistered point estimate is unchanged"
+      },
+      "1024": {
+        "n_boot": 1000,
+        "seed": 20261002,
+        "uniform_budget": 1024,
+        "uniform_rate_mean": 0.0,
+        "cf_rate_mean": 0.01081936936936937,
+        "abs_gain_mean": 2.0015833333333335,
+        "abs_gain_ci95": [
+          0.4979166666666668,
+          3.9593749999999983
+        ],
+        "rel_gain_mean": null,
+        "rel_gain_ci95": null,
+        "wall_seconds": 27.2,
+        "note": "fit-half re-estimation + knapsack re-solve + eval-half re-scoring inside every replicate; theorem=component resampling; the preregistered point estimate is unchanged"
+      },
+      "2048": {
+        "n_boot": 1000,
+        "seed": 20261003,
+        "uniform_budget": 2048,
+        "uniform_rate_mean": 0.002724324324324325,
+        "cf_rate_mean": 0.010937387387387386,
+        "abs_gain_mean": 1.5194166666666664,
+        "abs_gain_ci95": [
+          0.24375000000000036,
+          3.1260416666666657
+        ],
+        "rel_gain_mean": 2.3642259771292027,
+        "rel_gain_ci95": [
+          0.0,
+          5.895833333333332
+        ],
+        "wall_seconds": 30.8,
+        "note": "fit-half re-estimation + knapsack re-solve + eval-half re-scoring inside every replicate; theorem=component resampling; the preregistered point estimate is unchanged"
+      },
+      "3072": {
+        "n_boot": 1000,
+        "seed": 20261004,
+        "uniform_budget": 3072,
+        "uniform_rate_mean": 0.005525675675675676,
+        "cf_rate_mean": 0.011202477477477478,
+        "abs_gain_mean": 1.0502083333333332,
+        "abs_gain_ci95": [
+          0.0,
+          2.4177083333333322
+        ],
+        "rel_gain_mean": 1.3940226750871514,
+        "rel_gain_ci95": [
+          0.0,
+          5.136111111111107
+        ],
+        "wall_seconds": 34.4,
+        "note": "fit-half re-estimation + knapsack re-solve + eval-half re-scoring inside every replicate; theorem=component resampling; the preregistered point estimate is unchanged"
+      },
+      "4096": {
+        "n_boot": 1000,
+        "seed": 20261005,
+        "uniform_budget": 4096,
+        "uniform_rate_mean": 0.013728603603603604,
+        "cf_rate_mean": 0.011043468468468468,
+        "abs_gain_mean": -0.49675,
+        "abs_gain_ci95": [
+          -1.0,
+          -0.125
+        ],
+        "rel_gain_mean": -0.22166217092976653,
+        "rel_gain_ci95": [
+          -0.555952380952381,
+          -0.03368934436350169
+        ],
+        "wall_seconds": 36.3,
+        "note": "fit-half re-estimation + knapsack re-solve + eval-half re-scoring inside every replicate; theorem=component resampling; the preregistered point estimate is unchanged"
+      }
+    }
+  },
+  "headline_scope": "strict family-unseen hard/OOD reserve population (192 components); NOT generalizable to the full Promptset distribution; absolute expected solves and absolute gains are reported alongside relative gains because rare events inflate percentage-only views",
+  "headline_table": [
+    {
+      "uniform_budget": 512,
+      "uniform_expected_solved": 0.0,
+      "cf_oracle_expected_solved": 0.0,
+      "absolute_gain": 0.0,
+      "relative_gain": null,
+      "conditional_ci95_relative_gain": null,
+      "conditional_ci95_absolute_gain": [
+        0.0,
+        0.0
+      ],
+      "savings_allocated_cap_pct": 0.0,
+      "plug_in_expected_solved_reference": 0.0,
+      "n_theorems": 185
+    },
+    {
+      "uniform_budget": 1024,
+      "uniform_expected_solved": 0.0,
+      "cf_oracle_expected_solved": 2.0416666666666665,
+      "absolute_gain": 2.0416666666666665,
+      "relative_gain": null,
+      "conditional_ci95_relative_gain": null,
+      "conditional_ci95_absolute_gain": [
+        0.4979166666666668,
+        3.9177083333333327
+      ],
+      "savings_allocated_cap_pct": 84.53,
+      "plug_in_expected_solved_reference": 2.553571428571429,
+      "n_theorems": 185
+    },
+    {
+      "uniform_budget": 2048,
+      "uniform_expected_solved": 0.5,
+      "cf_oracle_expected_solved": 2.0416666666666665,
+      "absolute_gain": 1.5416666666666665,
+      "relative_gain": 3.083333333333333,
+      "conditional_ci95_relative_gain": [
+        0.25,
+        5.75
+      ],
+      "conditional_ci95_absolute_gain": [
+        0.25,
+        3.1677083333333322
+      ],
+      "savings_allocated_cap_pct": 84.53,
+      "plug_in_expected_solved_reference": 2.553571428571429,
+      "n_theorems": 185
+    },
+    {
+      "uniform_budget": 3072,
+      "uniform_expected_solved": 1.0,
+      "cf_oracle_expected_solved": 2.0416666666666665,
+      "absolute_gain": 1.0416666666666665,
+      "relative_gain": 1.0416666666666665,
+      "conditional_ci95_relative_gain": [
+        0.0,
+        6.333333333333332
+      ],
+      "conditional_ci95_absolute_gain": [
+        0.0,
+        2.2927083333333322
+      ],
+      "savings_allocated_cap_pct": 84.53,
+      "plug_in_expected_solved_reference": 2.553571428571429,
+      "n_theorems": 185
+    },
+    {
+      "uniform_budget": 4096,
+      "uniform_expected_solved": 2.5416666666666665,
+      "cf_oracle_expected_solved": 2.0416666666666665,
+      "absolute_gain": -0.5,
+      "relative_gain": -0.19672131147540986,
+      "conditional_ci95_relative_gain": [
+        -0.5255113636363636,
+        -0.036574346165148416
+      ],
+      "conditional_ci95_absolute_gain": [
+        -1.0,
+        -0.125
+      ],
+      "savings_allocated_cap_pct": 84.53,
+      "plug_in_expected_solved_reference": 2.553571428571429,
+      "n_theorems": 185
+    }
+  ]
+}
