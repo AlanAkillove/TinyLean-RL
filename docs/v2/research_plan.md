@@ -4,9 +4,11 @@
 
 > How can a sub-billion-parameter Lean prover solve more theorems under limited compute?
 
-**Status: V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 PREREGISTERED; TRACK B B1 RUNNING (raw id V2-E001 = alias V2-B001); NO TRACK A/C EXPERIMENT HAS RUN YET.**
+**Status: V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 PREREGISTERED; TRACK B CLOSED (B001-B003 complete; B004 NOT RUN - stopped by the B003 gate, 2026-09-21); TRACK C REDESIGN PENDING A4.**
 
 _(Recorded 2026-09-19 on `main2`. V1 is frozen: see [`legacy_evidence.md`](legacy_evidence.md) and tag `v1-research-freeze-20260919`.)_
+
+_(Amendment 2026-09-21: Track B closed by the V2-B003 preregistered gate - RQ2/RQ3 COMPLETE; RQ4 STOPPED BY PREREGISTERED GATE (predictor not trained); B004 NOT RUN; the original Track C 2x2 design is superseded before launch and Track C will be re-designed after Track A A4. See [`track_b_closeout.md`](track_b_closeout.md).)_
 
 The project runs as **two parallel tracks plus a joint final evaluation** (amendment
 2026-09-19, below):
@@ -41,8 +43,7 @@ Track C — final joint evaluation       (fly90; only after A AND B are done; V2
 - **Track B**: frozen scope unchanged — budget semantics (V2-1), budget-response dataset
   (V2-2), uniform-vs-oracle headroom (V2-3), lightweight allocator (V2-4); independent of
   Track A progress.
-- **Track C**: 2×2 prover × allocation study (V2-5) and final benchmark (V2-6); it does not
-  start before Track A freezes `theta_RL*` and Track B completes.
+- **Track C**: the original 2x2 prover × allocation study (V2-5) is **superseded before launch** (2026-09-21: the Adaptive arm did not pass the B003 gate); the final benchmark (V2-6) remains, and the redesigned Track C (family-clean `theta0 vs theta_RL*` endpoint evaluation) will be separately preregistered after Track A A4.
 - **Cross-track interface**: Track A hands over exactly one artifact — the frozen
   `theta_RL*` (checkpoint + manifest + hashes) at A4; no intermediate checkpoint shuttling.
   Shared interface/schema changes are allowed on both sides, but allocator training and the
@@ -74,6 +75,8 @@ Goal: measure `p_i(b)` per theorem and quantify heterogeneity across theorems �
 allocator would have to exploit. Curves are measured empirically; monotonicity is **not** assumed
 (see [`data_contract.md`](data_contract.md) §5).
 
+**Status (2026-09-21): COMPLETE.** Measured on the family-clean pool (V2-B002 pilot; V2-B003 192 x 8): heterogeneity is extreme - 176/185 theorems show zero response at every budget and 9/192 theorems ever solve (first successes >= 2048). Evidence: `b002_memo.md`, `b003_memo.md`, `track_b_closeout.md`.
+
 ## RQ3 — Oracle allocation headroom (Track B)
 
 For a global budget `B_total`, study
@@ -84,6 +87,8 @@ max  Σ_i p_i(b_i)     subject to     Σ_i b_i ≤ B_total
 
 First compare **uniform allocation** vs **oracle allocation**. If the oracle-vs-uniform headroom is
 small, the adaptive-allocator line may be stopped — it is not forced to continue.
+
+**Status (2026-09-21): COMPLETE.** Hindsight headroom is large (B002: no-skip 86.21% / skip-allowed 98.44% allocated-cap savings) but does NOT transfer: the cross-fitted empirical-response allocator (B003) gained only +1.5 / +1.0 expected solves at N*{2048, 3072} and scored -0.5 below uniform at N*4096 on the strict family-unseen hard subset. The oracle-vs-uniform headroom line is therefore stopped (see `track_b_closeout.md`).
 
 ## RQ4 — Lightweight adaptive allocator (Track B)
 
@@ -106,6 +111,8 @@ Uniform
 
 Avoid introducing a new large router at the start.
 
+**Status (2026-09-21): STOPPED BY PREREGISTERED GATE — predictor not trained.** The B003 gate found no stable cross-seed theorem-level signal (176/185 zero-response; negative full-budget endpoint), so no heuristic / XGBoost / MLP / encoder was trained and no allocator training corpus was generated.
+
 ## RQ5 — RLVR × adaptive inference (main study, Track C)
 
 Final 2×2 design:
@@ -119,6 +126,8 @@ Question: are training-time RL and inference-time allocation complementary?
 
 The official Kimina-Prover-RL-0.6B may serve as an **external reference**, but does not replace the
 main 2×2.
+
+**Status (2026-09-21): 2x2 design superseded before launch** — the Adaptive arm did not pass the B003 gate, so the RL × Adaptive factorial study is not required. A redesigned Track C (family-clean `theta0 vs theta_RL*` endpoint evaluation) will be preregistered separately after Track A A4.
 
 ## Optional extension
 
@@ -136,17 +145,16 @@ prerequisite for the main project line to stand.
 | A | A3 | Checkpoint comparison on a dedicated sealed selection set | preregistered (`V2-A001`; A3-primary of the theorem-role registry) |
 | A | A4 | Freeze `theta_RL*` (checkpoint + hashes + rationale) | not started |
 | B | B0 | Verifier reliability guard (shared infrastructure) | complete; merged into main2 (fly122 commit) |
-| B | B1 | Budget-semantics audit (raw id `V2-E001` = alias `V2-B001`) | RUNNING (fly122) |
-| B | V2-1 | Prefix-vs-direct budget equivalence audit | not started (fly122; B1 is its first stage) |
-| B | V2-2 | Budget-response dataset construction | not started (fly122) |
-| B | V2-3 | Uniform-vs-Oracle headroom study | not started (fly122) |
-| B | V2-4 | Lightweight allocator | not started (fly122) |
-| C | V2-5 | Distill/RLVR × Uniform/Adaptive main study | blocked until A4 + B done |
-| C | V2-6 | External benchmark / MiniF2F final evaluation | blocked until A4 + B done |
+| B | B1 | Budget-semantics audit (raw id `V2-E001` = alias `V2-B001`) | complete (2026-09-20; canonical) |
+| B | V2-1 | Prefix-vs-direct budget equivalence audit | complete via B1 (2026-09-20) |
+| B | V2-2 | Budget-response dataset construction | complete via B002 + B003 (2026-09-21) |
+| B | V2-3 | Uniform-vs-Oracle headroom study | complete via B002 hindsight + B003 cross-fitted (2026-09-21) |
+| B | V2-4 | Lightweight allocator | NOT RUN — stopped by the B003 gate (2026-09-21) |
+| C | V2-5 | Distill/RLVR × Uniform/Adaptive main study | superseded before launch (2026-09-21); Track C redesign pending A4 |
+| C | V2-6 | External benchmark / MiniF2F final evaluation | pending A4 (redesigned Track C will be preregistered separately) |
 | — | V2-X | Optional sequential/bandit extension | optional |
 
-**No Track A/C experiment has run yet; the first B-track experiment (`V2-B001`, raw id `V2-E001`)
-is RUNNING on fly122.** Numbers are assigned at formal (pre-registered) run time; raw
+**No Track A/C experiment has run yet; Track B is closed (B001 -> B003 complete; B004 NOT RUN — stopped by the B003 preregistered gate, 2026-09-21).** Numbers are assigned at formal (pre-registered) run time; raw
 pre-amendment ids stay registered in the [registry](../../experiments/manifests/v2/registry.yaml).
 Theorem-level role assignments (B-train / B-validation / B-test / A-selection /
 C-joint-holdout + B1-audit-reserved) come from the frozen
