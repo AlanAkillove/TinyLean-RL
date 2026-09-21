@@ -7,7 +7,7 @@ experiment: V2-B003
 title: >
   Multi-seed compute-response + Expected Oracle (family-clean independent
   evaluation; final allocator gate before any decision model)
-status: RUNNING
+status: COMPLETE
 created_at_utc: "2026-09-20T04:58:00Z"
 design_revision: "2026-09-20 (pre-launch, owner-constrained; supersedes v1 f4f3199)"
 owner: fly122 (worker/v2-allocator)
@@ -171,3 +171,18 @@ status_note: >
   experiments/results/shards/v2_b003_rollouts.shard{0..3}.jsonl merge into
   experiments/results/v2_b003_rollouts.jsonl; expected ~20-21 h at ~190 s per
   trajectory per shard. Status -> RUNNING.
+
+  Completion + analysis record (2026-09-21): 1536/1536 trajectories merged
+  (sha256 94f12dc4..., missing=0) in ~20h45m. Preregistered cross-fitted
+  no-skip Expected Oracle: primary set S6=185/192 (9 low-coverage cells, all
+  k=0); oracle expected solved flat at 2.042 (absolute gains +2.04/+1.54/+1.04
+  at N*{1024,2048,3072}, NEGATIVE -0.50 at N*4096); pool 9/192 theorems ever
+  solve, 176/185 zero-response. Four-point owner audit: fold coverage
+  0.11%/0.00% of cells below 3/4 valid (gate coverage-ok); bootstrap
+  classified conditional (allocation fixed) with a full-procedure robustness
+  bootstrap (1000 reps) agreeing closely; headline scoped to the strict
+  family-unseen hard/OOD reserve population. Reading: NO-GO recommendation
+  for B004 (absolute effect non-actionable; no cross-seed discriminative
+  power; rare-event inflation; structural zero-response) - the decision
+  belongs to the owner. Memo: docs/v2/b003_memo.md. Status -> COMPLETE (run
+  + preregistered analysis + audit closed; no predictor trained).
