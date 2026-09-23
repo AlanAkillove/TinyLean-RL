@@ -2,7 +2,7 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 (V2-A001) RUNNING; TRACK B B1 COMPLETE (raw id V2-E001 = alias V2-B001) / B002 PREREGISTERED; NO TRACK C EXPERIMENT HAS RUN YET.**
+Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 (V2-A001) IN PROGRESS — INTERRUPTED/RESUMABLE (4/7 models complete; seed1_step60 80/512; completes on fly90 per owner decision 2026-09-23); TRACK B CLOSED (B001 -> B003 COMPLETE, B004 NOT RUN — stopped by the B003 gate; raw id V2-E001 = alias V2-B001); NO TRACK C EXPERIMENT HAS RUN YET.**
 
 V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 

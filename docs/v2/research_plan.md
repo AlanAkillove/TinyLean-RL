@@ -154,7 +154,7 @@ prerequisite for the main project line to stand.
 | C | V2-6 | External benchmark / MiniF2F final evaluation | pending A4 (redesigned Track C will be preregistered separately) |
 | — | V2-X | Optional sequential/bandit extension | optional |
 
-**No Track A/C experiment has run yet; Track B is closed (B001 -> B003 complete; B004 NOT RUN — stopped by the B003 preregistered gate, 2026-09-21).** Numbers are assigned at formal (pre-registered) run time; raw
+**No Track C experiment has run yet; Track A V2-A001 is interrupted-resumable (4/7 models complete; completes on fly90 per owner decision 2026-09-23); Track B is closed (B001 -> B003 complete; B004 NOT RUN — stopped by the B003 preregistered gate, 2026-09-21).** Numbers are assigned at formal (pre-registered) run time; raw
 pre-amendment ids stay registered in the [registry](../../experiments/manifests/v2/registry.yaml).
 Theorem-level role assignments (B-train / B-validation / B-test / A-selection /
 C-joint-holdout + B1-audit-reserved) come from the frozen
