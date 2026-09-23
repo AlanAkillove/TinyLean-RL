@@ -1,0 +1,46 @@
+{
+  "artifact_type": "v3_d001_theta0_reps",
+  "reps_content_sha256": "d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c",
+  "formality": "FORMAL (operator-declared; verify device below == RTX 3080)",
+  "operator_declared_formal": true,
+  "created_at_utc": "2026-09-23T15:21:56.097320+00:00",
+  "host": {
+    "hostname": "ubuntu",
+    "hostname_I": "10.3.25.122 10.201.1.1 10.201.0.1",
+    "nvidia_smi": "name, memory.total [MiB], uuid\nNVIDIA GeForce RTX 3080, 10240 MiB, GPU-e073cec7-1593-c4b5-8da3-d074276248f8",
+    "pwd": "/home/fly/ZJQ/TinyLean-RL",
+    "git_remote": "fly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (fetch)\nfly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (push)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (fetch)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (push)",
+    "git_revision": "41c5730122c7d343fe6fa685a9e2137d2a7cd258",
+    "git_branch": "v3-jev-rl-controller",
+    "torch": "2.7.0+cu126",
+    "cuda_available": true,
+    "device_name": "NVIDIA GeForce RTX 3080"
+  },
+  "model_path": "models/weights/kimina_distill_0_6b",
+  "theta0_weights_sha256_expected": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+  "architecture": {
+    "num_hidden_layers": 28,
+    "hidden_size": 1024,
+    "layer_norm_eps": 1e-06
+  },
+  "pre_registered_layers_0based": [
+    9,
+    18,
+    27
+  ],
+  "pooling": "last non-padding token (batch=1, no padding present)",
+  "rep_dtype": "float32 (heads), backbone forward bf16",
+  "n_unique_statements": 612,
+  "token_lens_min_max": [
+    106,
+    853
+  ],
+  "load_time_s": 3.66,
+  "extract_time_s": 28.38,
+  "peak_vram_gb": 1.525,
+  "seed_dirs": {
+    "seed1": "runs/p3b_pilot/rollout_data",
+    "seed2": "runs/m1_seed2/rollout_data",
+    "seed3": "runs/m1_seed3/rollout_data"
+  }
+}

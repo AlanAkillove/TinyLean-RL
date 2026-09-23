@@ -1,0 +1,330 @@
+{
+  "artifact_type": "v3_d001_results",
+  "status": "OFFLINE PROBE (no RL training performed)",
+  "created_at_utc": "2026-09-23T15:29:13.485408+00:00",
+  "provenance": {
+    "theta0_weights_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "reps_content_sha256": "d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c",
+    "reps_formality": "FORMAL (operator-declared; verify device below == RTX 3080)",
+    "reps_host": {
+      "hostname": "ubuntu",
+      "hostname_I": "10.3.25.122 10.201.1.1 10.201.0.1",
+      "nvidia_smi": "name, memory.total [MiB], uuid\nNVIDIA GeForce RTX 3080, 10240 MiB, GPU-e073cec7-1593-c4b5-8da3-d074276248f8",
+      "pwd": "/home/fly/ZJQ/TinyLean-RL",
+      "git_remote": "fly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (fetch)\nfly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (push)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (fetch)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (push)",
+      "git_revision": "41c5730122c7d343fe6fa685a9e2137d2a7cd258",
+      "git_branch": "v3-jev-rl-controller",
+      "torch": "2.7.0+cu126",
+      "cuda_available": true,
+      "device_name": "NVIDIA GeForce RTX 3080"
+    },
+    "folds_hash": "e0e0d30cfd81aed21d9bda91ae21be5700f644ddf77a198e7729d3fd93ede0d1",
+    "seed": 20260923,
+    "primary_layer": 18,
+    "robust_layers": [
+      9,
+      27
+    ],
+    "b1_features": [
+      "formal_char_count",
+      "formal_line_count",
+      "formal_word_count",
+      "n_paren",
+      "n_binders",
+      "n_commas",
+      "n_quant_syms",
+      "n_arrows",
+      "has_existential",
+      "prompt_token_count",
+      "step_norm",
+      "source=synthetic",
+      "source=autoformalizer",
+      "source=human"
+    ]
+  },
+  "dataset": {
+    "valid_groups": 686,
+    "components": 433,
+    "informative_positives": 104,
+    "prevalence": 0.1516
+  },
+  "stationarity": {
+    "igr_by_step": {
+      "1-10": {
+        "n_groups": 119,
+        "seed1": 0.1,
+        "seed2": 0.1538,
+        "seed3": 0.25,
+        "pooled": 0.1681
+      },
+      "11-20": {
+        "n_groups": 109,
+        "seed1": 0.2222,
+        "seed2": 0.05,
+        "seed3": 0.1212,
+        "pooled": 0.1284
+      },
+      "21-30": {
+        "n_groups": 120,
+        "seed1": 0.225,
+        "seed2": 0.175,
+        "seed3": 0.125,
+        "pooled": 0.175
+      },
+      "31-40": {
+        "n_groups": 114,
+        "seed1": 0.175,
+        "seed2": 0.1351,
+        "seed3": 0.1081,
+        "pooled": 0.1404
+      },
+      "41-50": {
+        "n_groups": 115,
+        "seed1": 0.0811,
+        "seed2": 0.2368,
+        "seed3": 0.15,
+        "pooled": 0.1565
+      },
+      "51-60": {
+        "n_groups": 109,
+        "seed1": 0.1579,
+        "seed2": 0.125,
+        "seed3": 0.129,
+        "pooled": 0.1376
+      }
+    },
+    "repeated_within_seed": {
+      "n_repeated": 16,
+      "always_noninf": 16,
+      "always_inf": 0,
+      "flips": 0
+    },
+    "repeated_cross_seed": {
+      "n_repeated": 62,
+      "always_noninf": 57,
+      "always_inf": 2,
+      "flips": 3
+    },
+    "source_prevalence": {
+      "synthetic": {
+        "n_groups": 270,
+        "prevalence": 0.3444
+      },
+      "autoformalizer": {
+        "n_groups": 230,
+        "prevalence": 0.0304
+      },
+      "human": {
+        "n_groups": 186,
+        "prevalence": 0.0215
+      },
+      "other_or_unknown": {
+        "n_groups": 0,
+        "prevalence": null
+      }
+    }
+  },
+  "B0_prevalence": {
+    "auprc": 0.15534,
+    "auroc": 0.49512,
+    "brier": 0.12862,
+    "ece": 0.02332,
+    "prevalence": 0.1516,
+    "top10_igr": 0.14493,
+    "top10_enrichment": 0.95596,
+    "top20_igr": 0.14599,
+    "top20_enrichment": 0.96294,
+    "top30_igr": 0.14078,
+    "top30_enrichment": 0.92858
+  },
+  "B1_handcrafted": {
+    "auprc": 0.42673,
+    "auroc": 0.83948,
+    "brier": 0.11024,
+    "ece": 0.09539,
+    "prevalence": 0.1516,
+    "top10_igr": 0.47826,
+    "top10_enrichment": 3.15468,
+    "top20_igr": 0.44526,
+    "top20_enrichment": 2.93697,
+    "top30_igr": 0.40777,
+    "top30_enrichment": 2.68969,
+    "chosen_C_by_outer_fold": {
+      "0": {
+        "C": 0.003,
+        "inner_auprc": 0.53809
+      },
+      "1": {
+        "C": 0.003,
+        "inner_auprc": 0.47769
+      },
+      "2": {
+        "C": 0.003,
+        "inner_auprc": 0.48364
+      },
+      "3": {
+        "C": 0.003,
+        "inner_auprc": 0.48769
+      },
+      "4": {
+        "C": 0.01,
+        "inner_auprc": 0.5258
+      }
+    }
+  },
+  "B2_block18_PRIMARY": {
+    "auprc": 0.5728,
+    "auroc": 0.87062,
+    "brier": 0.0877,
+    "ece": 0.03226,
+    "prevalence": 0.1516,
+    "top10_igr": 0.57971,
+    "top10_enrichment": 3.82386,
+    "top20_igr": 0.52555,
+    "top20_enrichment": 3.46659,
+    "top30_igr": 0.42718,
+    "top30_enrichment": 2.81777,
+    "chosen_C_by_outer_fold": {
+      "0": {
+        "C": 0.003,
+        "inner_auprc": 0.55586
+      },
+      "1": {
+        "C": 0.003,
+        "inner_auprc": 0.5832
+      },
+      "2": {
+        "C": 0.003,
+        "inner_auprc": 0.59373
+      },
+      "3": {
+        "C": 0.003,
+        "inner_auprc": 0.544
+      },
+      "4": {
+        "C": 0.01,
+        "inner_auprc": 0.64574
+      }
+    },
+    "delta_auprc_vs_B1": 0.14607
+  },
+  "B2_robustness": {
+    "block9": {
+      "auprc": 0.50179,
+      "auroc": 0.86694,
+      "brier": 0.09434,
+      "ece": 0.02446,
+      "prevalence": 0.1516,
+      "top10_igr": 0.56522,
+      "top10_enrichment": 3.72826,
+      "top20_igr": 0.50365,
+      "top20_enrichment": 3.32215,
+      "top30_igr": 0.41262,
+      "top30_enrichment": 2.72171
+    },
+    "block27": {
+      "auprc": 0.5635,
+      "auroc": 0.87122,
+      "brier": 0.08844,
+      "ece": 0.03586,
+      "prevalence": 0.1516,
+      "top10_igr": 0.65217,
+      "top10_enrichment": 4.30184,
+      "top20_igr": 0.53285,
+      "top20_enrichment": 3.51474,
+      "top30_igr": 0.39806,
+      "top30_enrichment": 2.62565
+    }
+  },
+  "bootstrap": {
+    "B1_auprc": {
+      "lo95": 0.33696,
+      "hi95": 0.5373
+    },
+    "B2p_auprc": {
+      "lo95": 0.46804,
+      "hi95": 0.68272
+    },
+    "B2p_top20_enrichment": {
+      "lo95": 3.02435,
+      "hi95": 3.92865
+    },
+    "B2p_ece": {
+      "lo95": 0.02115,
+      "hi95": 0.05771
+    },
+    "dAUPRC_B2_minus_B1": {
+      "lo95": 0.05096,
+      "hi95": 0.24145
+    },
+    "dBrier_B2_minus_B1": {
+      "lo95": -0.03422,
+      "hi95": -0.01104
+    }
+  },
+  "cross_seed": {
+    "seed1": {
+      "n_test_groups": 231,
+      "n_train_groups": 315,
+      "test_positives": 37,
+      "test_prevalence": 0.16017,
+      "B1_auprc": 0.62881,
+      "B2_auprc": 0.67072,
+      "B2_top20_igr": 0.6087,
+      "B2_beats_B1": true,
+      "B2_top20_above_prevalence": true,
+      "C_B1": 0.03,
+      "C_B2": 0.003
+    },
+    "seed2": {
+      "n_test_groups": 234,
+      "n_train_groups": 285,
+      "test_positives": 34,
+      "test_prevalence": 0.1453,
+      "B1_auprc": 0.37533,
+      "B2_auprc": 0.5032,
+      "B2_top20_igr": 0.46809,
+      "B2_beats_B1": true,
+      "B2_top20_above_prevalence": true,
+      "C_B1": 0.003,
+      "C_B2": 0.003
+    },
+    "seed3": {
+      "n_test_groups": 221,
+      "n_train_groups": 322,
+      "test_positives": 33,
+      "test_prevalence": 0.14932,
+      "B1_auprc": 0.48694,
+      "B2_auprc": 0.47127,
+      "B2_top20_igr": 0.45455,
+      "B2_beats_B1": false,
+      "B2_top20_above_prevalence": true,
+      "C_B1": 0.003,
+      "C_B2": 0.003
+    }
+  },
+  "gate": {
+    "G1_dAUPRC_lower_gt_0": true,
+    "G1_dAUPRC_point": 0.14607,
+    "G1_ci": {
+      "lo95": 0.05096,
+      "hi95": 0.24145
+    },
+    "G2_top20_enrich_point_ge_1.75_and_lower_gt_1": true,
+    "G2_point": 3.46659,
+    "G2_ci": {
+      "lo95": 3.02435,
+      "hi95": 3.92865
+    },
+    "G3_crossseed_folds_ok": "2/3 (need >=2)",
+    "G3_pass": true,
+    "ranking_GO_NO_GO": "GO",
+    "calibration_claim": "calibrated semantic controller (ranking GO + calibration gate pass)"
+  },
+  "compute": {
+    "cpu_fit_time_s": 290.44,
+    "extraction_time_s": 28.38,
+    "peak_vram_gb": 1.525,
+    "model_load_time_s": 3.66
+  }
+}

@@ -25,8 +25,12 @@ experiments:
   V3-D001:
     kind: offline-probe
     owner: fly90 (canonical) / fly122 (formal compute)
-    status: PREREGISTERED        # protocol frozen; formal run not yet executed
+    status: COMPLETE               # formal offline probe run on fly122 2026-09-23; no RL
+    outcome: "GO (G1 & G2 & G3) + calibration claim met; offline only, no RL launched"
     created_at_utc: "2026-09-23"
+    run_completed_utc: "2026-09-23T15:29Z"
+    results: "experiments/manifests/v3/V3-D001_results.json"
+    memo: "docs/v3/V3-D001_memo.md"
     manifest: experiments/manifests/v3/V3-D001.yaml
     preregistration: docs/v3/V3-D001_preregistration.md
     depends_on:
