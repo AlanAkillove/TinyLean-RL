@@ -1,0 +1,274 @@
+{
+  "artifact": "v3_data_audit_stats",
+  "unit_of_analysis": "group (one n=8 GRPO rollout of one theorem at one step)",
+  "split_unit": "component_id (V2 frozen family component)",
+  "n_copied_parsing_assumptions": {
+    "group_regroup_by": "input equality + contiguity",
+    "jsonl_split": "\\n only",
+    "stmt_id_join": "FORMAL_BLOCK_RE + normalize -> statement_id -> component_id"
+  },
+  "per_seed": {
+    "seed1": {
+      "groups": 240,
+      "diag": {
+        "files": 60,
+        "lines": 1920,
+        "unparsable": 0,
+        "irregular_block": 0,
+        "no_formal_block": 0
+      },
+      "base_rate": {
+        "n_groups": 240,
+        "all_fail": 201,
+        "informative": 38,
+        "all_success": 1,
+        "informative_rate": 0.1583,
+        "all_fail_rate": 0.8375,
+        "all_success_rate": 0.0042
+      }
+    },
+    "seed2": {
+      "groups": 240,
+      "diag": {
+        "files": 60,
+        "lines": 1920,
+        "unparsable": 0,
+        "irregular_block": 0,
+        "no_formal_block": 0
+      },
+      "base_rate": {
+        "n_groups": 240,
+        "all_fail": 201,
+        "informative": 36,
+        "all_success": 3,
+        "informative_rate": 0.15,
+        "all_fail_rate": 0.8375,
+        "all_success_rate": 0.0125
+      }
+    },
+    "seed3": {
+      "groups": 240,
+      "diag": {
+        "files": 60,
+        "lines": 1920,
+        "unparsable": 0,
+        "irregular_block": 0,
+        "no_formal_block": 0
+      },
+      "base_rate": {
+        "n_groups": 240,
+        "all_fail": 201,
+        "informative": 36,
+        "all_success": 3,
+        "informative_rate": 0.15,
+        "all_fail_rate": 0.8375,
+        "all_success_rate": 0.0125
+      }
+    }
+  },
+  "structural_diag": {
+    "seed1": {
+      "files": 60,
+      "lines": 1920,
+      "unparsable": 0,
+      "irregular_block": 0,
+      "no_formal_block": 0
+    },
+    "seed2": {
+      "files": 60,
+      "lines": 1920,
+      "unparsable": 0,
+      "irregular_block": 0,
+      "no_formal_block": 0
+    },
+    "seed3": {
+      "files": 60,
+      "lines": 1920,
+      "unparsable": 0,
+      "irregular_block": 0,
+      "no_formal_block": 0
+    }
+  },
+  "pooled_base_rate": {
+    "n_groups": 720,
+    "all_fail": 603,
+    "informative": 110,
+    "all_success": 7,
+    "informative_rate": 0.1528,
+    "all_fail_rate": 0.8375,
+    "all_success_rate": 0.0097
+  },
+  "pooled_base_rate_syserr_censored": {
+    "n_groups": 686,
+    "all_fail": 575,
+    "informative": 104,
+    "all_success": 7,
+    "informative_rate": 0.1516,
+    "all_fail_rate": 0.8382,
+    "all_success_rate": 0.0102
+  },
+  "label_source": {
+    "definition_informative": "0 < sum(score over n=8) < 8",
+    "score_vs_acc_group_label_disagree": 13,
+    "groups_where_score_sum_ne_acc_sum": 36
+  },
+  "within_seed_recurrence": {
+    "seed1": {
+      "distinct_theorems": 227,
+      "theorems_in_gt1_step": 13,
+      "step_count_hist": {
+        "1": 214,
+        "2": 13
+      }
+    },
+    "seed2": {
+      "distinct_theorems": 229,
+      "theorems_in_gt1_step": 10,
+      "step_count_hist": {
+        "1": 219,
+        "2": 9,
+        "3": 1
+      }
+    },
+    "seed3": {
+      "distinct_theorems": 227,
+      "theorems_in_gt1_step": 13,
+      "step_count_hist": {
+        "1": 214,
+        "2": 13
+      }
+    }
+  },
+  "cross_seed_overlap": {
+    "distinct_statement_ids_total": 612,
+    "s1ns2": 27,
+    "s1ns3": 17,
+    "s2ns3": 32,
+    "all_three_stmt": 5,
+    "distinct_components_total": 443,
+    "c1nc2": 66,
+    "c1nc3": 47,
+    "c2nc3": 69,
+    "all_three_comp": 25,
+    "components_in_gt1_seed": 132
+  },
+  "anomalies": {
+    "seed1": {
+      "groups_with_syserr_candidate": 9,
+      "groups_all_syserr": 0,
+      "candidates_syserr": 26,
+      "groups_size_ne_8": 0
+    },
+    "seed2": {
+      "groups_with_syserr_candidate": 6,
+      "groups_all_syserr": 0,
+      "candidates_syserr": 14,
+      "groups_size_ne_8": 0
+    },
+    "seed3": {
+      "groups_with_syserr_candidate": 19,
+      "groups_all_syserr": 1,
+      "candidates_syserr": 63,
+      "groups_size_ne_8": 0
+    },
+    "pooled": {
+      "groups_with_syserr_candidate": 34,
+      "groups_all_syserr": 1,
+      "candidates_syserr": 103,
+      "groups_size_ne_8": 0
+    }
+  },
+  "family_mapping_coverage": {
+    "groups_unmapped_to_statement_id": 0,
+    "groups_unmapped_to_component_id": 0,
+    "distinct_statement_ids": 612,
+    "distinct_components": 443
+  },
+  "family_clean_split": {
+    "total_components_in_scope": 443,
+    "component_group_size_hist": {
+      "1": 287,
+      "2": 90,
+      "3": 36,
+      "4": 15,
+      "5": 8,
+      "6": 5,
+      "7": 1,
+      "8": 1
+    },
+    "largest_components": [
+      [
+        8,
+        "fc-073d93faabe1"
+      ],
+      [
+        7,
+        "fc-761d11255458"
+      ],
+      [
+        6,
+        "fc-be2a419f6771"
+      ],
+      [
+        6,
+        "fc-916a45833413"
+      ],
+      [
+        6,
+        "fc-188237f9b24f"
+      ],
+      [
+        6,
+        "fc-1781eb6bd777"
+      ],
+      [
+        6,
+        "fc-0f948cb965e8"
+      ],
+      [
+        5,
+        "fc-f3ca95083d31"
+      ],
+      [
+        5,
+        "fc-9e88979dcca0"
+      ],
+      [
+        5,
+        "fc-8b32bc498a97"
+      ]
+    ],
+    "proposed_70_15_15": {
+      "train": {
+        "n_components": 310,
+        "n_groups": 504,
+        "all_fail": 425,
+        "informative": 73,
+        "all_success": 6,
+        "informative_rate": 0.1448,
+        "all_fail_rate": 0.8433,
+        "all_success_rate": 0.0119
+      },
+      "dev": {
+        "n_components": 66,
+        "n_groups": 111,
+        "all_fail": 95,
+        "informative": 16,
+        "all_success": 0,
+        "informative_rate": 0.1441,
+        "all_fail_rate": 0.8559,
+        "all_success_rate": 0.0
+      },
+      "test": {
+        "n_components": 67,
+        "n_groups": 105,
+        "all_fail": 83,
+        "informative": 21,
+        "all_success": 1,
+        "informative_rate": 0.2,
+        "all_fail_rate": 0.7905,
+        "all_success_rate": 0.0095
+      }
+    }
+  }
+}
