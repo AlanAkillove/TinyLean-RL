@@ -50,14 +50,14 @@ def sha256(path: Path) -> str:
 
 def git_rev() -> str:
     return subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"],
-                          capture_output=True, text=True).stdout.strip()
+                          capture_output=True, text=True, check=False).stdout.strip()
 
 
 def host_info() -> dict:
     import platform
     try:
-        ip = subprocess.run(["hostname", "-I"], capture_output=True, text=True).stdout.strip()
-    except Exception:
+        ip = subprocess.run(["hostname", "-I"], capture_output=True, text=True, check=False).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
         ip = ""
     return {"hostname": platform.node(), "ip": ip, "role": "fly90 (producer / canonical provenance source)",
             "gpu": "RTX 3090 24GB (this manifest is metadata-only, no GPU used)"}

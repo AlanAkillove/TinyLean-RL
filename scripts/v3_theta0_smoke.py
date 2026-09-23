@@ -1,5 +1,11 @@
-import json, time, torch
+#!/usr/bin/env python3
+"""NON-FORMAL fly90/RTX 3090 theta0 hidden-state feasibility smoke. See note below."""
+
+import json
+import time
 from pathlib import Path
+
+import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 # NON-FORMAL feasibility smoke.
@@ -30,8 +36,8 @@ t0 = time.time()
 model = AutoModelForCausalLM.from_pretrained(mp, torch_dtype=torch.bfloat16, device_map=dev).eval()
 load_gb = torch.cuda.max_memory_allocated() / 1e9 if dev == 'cuda' else 0
 NL = model.config.num_hidden_layers
-print('arch: Qwen3 num_layers=%d hidden=%d | load_time_s=%.1f peak_load_GB=%.2f'
-      % (NL, model.config.hidden_size, time.time() - t0, load_gb))
+print(f'arch: Qwen3 num_layers={NL} hidden={model.config.hidden_size} '
+      f'| load_time_s={time.time() - t0:.1f} peak_load_GB={load_gb:.2f}')
 
 layers_idx = [NL // 3, (2 * NL) // 3, NL - 1]  # early/mid, ~2/3, final (0-based block idx)
 peak = 0
@@ -46,5 +52,5 @@ for e in encs:
         peak = max(peak, torch.cuda.max_memory_allocated())
 print('prompt token lens:', lens)
 print('pre-registered block layers (0-based):', layers_idx, '-> pooled dim:', [v.shape[0] for v in vecs])
-print('3-prompt forward time_s: %.2f | single_forward_peak_GB: %.2f' % (time.time() - t1, peak / 1e9))
-print('hidden vectors: %d layers x %d dims, dtype fp32 for heads' % (len(layers_idx), vecs[0].shape[0]))
+print(f'3-prompt forward time_s: {time.time() - t1:.2f} | single_forward_peak_GB: {peak / 1e9:.2f}')
+print(f'hidden vectors: {len(layers_idx)} layers x {vecs[0].shape[0]} dims, dtype fp32 for heads')

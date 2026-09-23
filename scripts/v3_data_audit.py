@@ -233,7 +233,6 @@ def main() -> int:
     for g in all_groups:
         if g["component_id"]:
             groups_by_comp[g["component_id"]].append(g)
-    comp_inf = {c: sum(1 for g in gs if g["label_score"] == "informative") for c, gs in groups_by_comp.items()}
     comp_n = {c: len(gs) for c, gs in groups_by_comp.items()}
     comps = sorted(groups_by_comp)
     # deterministic component ordering (component_id string) then a 70/15/15 split
@@ -242,7 +241,8 @@ def main() -> int:
         return int(hashlib.sha256(c.encode()).hexdigest()[:8], 16) / 0xFFFFFFFF
     shuffled = sorted(comps, key=bucket)
     n_comp = len(shuffled)
-    n_tr = int(round(0.70 * n_comp)); n_dev = int(round(0.15 * n_comp))
+    n_tr = round(0.70 * n_comp)
+    n_dev = round(0.15 * n_comp)
     split = {"train": shuffled[:n_tr], "dev": shuffled[n_tr:n_tr + n_dev], "test": shuffled[n_tr + n_dev:]}
     split_report = {}
     for name, cs in split.items():
