@@ -244,3 +244,59 @@ def test_load_model_artifact_missing_file(tmp_path, monkeypatch):
         analyzer.load_model_artifact(
             "base", tmp_path / "v2_a001_base.json", [{"statement_id": "stmt-0"}], tmp_path / "set.json"
         )
+
+
+def test_load_family_clusters_maps_and_counts(tmp_path):
+    registry = {
+        "components": [
+            {"component_id": "fc-a", "member_statement_ids": ["s1", "s2", "s9"]},
+            {"component_id": "fc-b", "member_statement_ids": ["s3"]},
+        ]
+    }
+    registry_path = tmp_path / "registry.json"
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+    set_theorems = [{"statement_id": sid} for sid in ["s3", "s1", "s2"]]
+    clusters, info = analyzer.load_family_clusters(set_theorems, registry_path)
+    assert clusters == [[1, 2], [0]]
+    assert info["n_clusters"] == 2
+    assert info["n_theorems"] == 3
+    assert info["unmapped_theorems"] == 0
+    assert info["registry_sha256"]
+
+
+def test_load_family_clusters_counts_unmapped(tmp_path):
+    registry = {"components": [{"component_id": "fc-a", "member_statement_ids": ["s1"]}]}
+    registry_path = tmp_path / "registry.json"
+    registry_path.write_text(json.dumps(registry), encoding="utf-8")
+    _clusters, info = analyzer.load_family_clusters(
+        [{"statement_id": "s1"}, {"statement_id": "s-unknown"}], registry_path
+    )
+    assert info["n_clusters"] == 1
+    assert info["unmapped_theorems"] == 1
+
+
+def test_load_family_clusters_missing_registry(tmp_path):
+    with pytest.raises(analyzer.AnalysisError, match="missing"):
+        analyzer.load_family_clusters([], tmp_path / "nope.json")
+
+
+def test_family_cluster_contrast_pp_fields():
+    counts_a = [4, 3, 2, 1]
+    counts_b = [0, 0, 0, 0]
+    clusters = [[0, 1], [2], [3]]
+    contrast = analyzer.cluster_contrast(counts_a, counts_b, 4, clusters)
+    assert contrast["n_clusters"] == 3
+    assert contrast["n_theorems"] == 4
+    assert contrast["mean_delta"] == pytest.approx((4 + 3 + 2 + 1) / 4 / 4)
+    assert contrast["mean_delta_pp"] == pytest.approx(contrast["mean_delta"] * 100)
+    assert contrast["ci_low_pp"] <= contrast["mean_delta_pp"] <= contrast["ci_high_pp"]
+
+
+def test_real_registry_covers_the_frozen_selection_set():
+    selection_set = json.loads((analyzer.ROOT / analyzer.SET_REL).read_text(encoding="utf-8"))
+    _clusters, info = analyzer.load_family_clusters(
+        selection_set["theorems"], analyzer.ROOT / analyzer.FAMILY_REGISTRY_REL
+    )
+    assert info["unmapped_theorems"] == 0
+    assert info["n_theorems"] == analyzer.EXPECTED_N_THEOREMS
+    assert info["n_clusters"] == 392

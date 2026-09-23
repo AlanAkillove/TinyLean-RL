@@ -26,6 +26,12 @@ lexicographic label. All statistics are theorem-level paired; deltas are kept in
 fraction units internally and reported in percentage points (x100) next to the
 raw values, matching the E018/E019/E023 convention.
 
+Post-hoc (non-decisional): the script additionally reports a family-cluster
+bootstrap over the frozen family-component registry (392 components among the
+512 selection theorems; heuristic only, see family_leakage_audit.md) as
+robustness evidence. It never feeds ``decide``/``classify_outcome`` and cannot
+change the formal selection outcome.
+
 ``decide`` / ``classify_outcome`` / ``theorem_counts_from_records`` are pure and
 unit-tested in ``tests/test_v2_a001_analyze.py``; loading is fail-closed
 (schema, protocol settings and statement alignment are all validated).
@@ -45,6 +51,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from tinylean_rl.evaluation.p3c_stats import (
+    cluster_bootstrap,
     mcnemar_exact,
     paired_bootstrap,
     win_tie_loss,
@@ -86,6 +93,9 @@ EXPECTED_SETTINGS = {
     "seed_group_size": 8,
 }
 MANIFEST_REL = "experiments/manifests/v2/V2-A001.yaml"
+# Frozen family-component registry (post-hoc cluster bootstrap only; the formal
+# rule does not consume this file).
+FAMILY_REGISTRY_REL = "experiments/manifests/v2/family_component_registry.json"
 
 
 class AnalysisError(RuntimeError):
@@ -149,6 +159,64 @@ def paired_deltas(counts_a: list[int], counts_b: list[int], samples_per_theorem:
 def contrast(counts_a: list[int], counts_b: list[int], samples_per_theorem: int) -> dict:
     stats = paired_bootstrap(
         paired_deltas(counts_a, counts_b, samples_per_theorem),
+        n_resamples=BOOTSTRAP_N_RESAMPLES,
+        seed=BOOTSTRAP_SEED,
+        alpha=BOOTSTRAP_ALPHA,
+    )
+    return _stat_pp(stats)
+
+
+def load_family_clusters(
+    set_theorems: list[dict], registry_path: Path
+) -> tuple[list[list[int]], dict]:
+    """Map selection-set theorem indices onto the frozen family components.
+
+    Returns ``(clusters, info)`` with ``clusters[j]`` holding the theorem
+    indices of component ``j``. Post-hoc robustness only; fails closed on a
+    missing registry so the caller can record the block as unavailable.
+    """
+
+    if not registry_path.exists():
+        raise AnalysisError(f"family registry missing: {registry_path}")
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    statement_to_component: dict[str, str] = {}
+    for component in registry.get("components", []):
+        for statement_id in component["member_statement_ids"]:
+            statement_to_component[statement_id] = component["component_id"]
+    by_component: dict[str, list[int]] = {}
+    unmapped: list[int] = []
+    for index, theorem in enumerate(set_theorems):
+        component_id = statement_to_component.get(theorem["statement_id"])
+        if component_id is None:
+            unmapped.append(index)
+        else:
+            by_component.setdefault(component_id, []).append(index)
+    clusters = [indices for _, indices in sorted(by_component.items())]
+    sizes = sorted((len(cluster) for cluster in clusters), reverse=True)
+    info = {
+        "registry_path": str(registry_path),
+        "registry_sha256": file_sha256(registry_path),
+        "n_clusters": len(clusters),
+        "n_theorems": len(set_theorems) - len(unmapped),
+        "cluster_size_max": sizes[0] if sizes else 0,
+        "unmapped_theorems": len(unmapped),
+    }
+    return clusters, info
+
+
+def cluster_contrast(
+    counts_a: list[int],
+    counts_b: list[int],
+    samples_per_theorem: int,
+    clusters: list[list[int]],
+) -> dict:
+    """Family-cluster bootstrap contrast (post-hoc; never feeds the rule)."""
+
+    by_cluster = [
+        [(counts_a[i] - counts_b[i]) / samples_per_theorem for i in cluster] for cluster in clusters
+    ]
+    stats = cluster_bootstrap(
+        by_cluster,
         n_resamples=BOOTSTRAP_N_RESAMPLES,
         seed=BOOTSTRAP_SEED,
         alpha=BOOTSTRAP_ALPHA,
@@ -314,6 +382,29 @@ def main() -> int:
     vs_anchor = {c: contrast(counts[c], counts[ANCHOR], samples) for c in CANDIDATES}
     vs_default = {c: contrast(counts[c], counts[DEFAULT], samples) for c in CANDIDATES}
 
+    # Post-hoc robustness (non-decisional): family-cluster bootstrap over the
+    # frozen family-component registry. Never feeds decide()/classify_outcome().
+    family_block: dict = {
+        "post_hoc": True,
+        "decision_impact": "none - the formal rule uses the theorem-level paired bootstrap only",
+        "methods": ["family_cluster_bootstrap"],
+        "bootstrap_n_resamples": BOOTSTRAP_N_RESAMPLES,
+        "bootstrap_seed": BOOTSTRAP_SEED,
+        "bootstrap_alpha": BOOTSTRAP_ALPHA,
+    }
+    try:
+        clusters, cluster_info = load_family_clusters(set_theorems, ROOT / FAMILY_REGISTRY_REL)
+        family_block["clusters"] = cluster_info
+        family_block["contrasts_vs_anchor"] = {
+            c: cluster_contrast(counts[c], counts[ANCHOR], samples, clusters) for c in CANDIDATES
+        }
+        family_block["contrasts_vs_default"] = {
+            c: cluster_contrast(counts[c], counts[DEFAULT], samples, clusters) for c in CANDIDATES
+        }
+    except (AnalysisError, KeyError, ValueError) as exc:  # post-hoc: fail soft
+        family_block["status"] = "unavailable"
+        family_block["error"] = str(exc)
+
     decision = decide(vs_anchor, vs_default)
     selected = decision["selected"]
     decision["selected_vs_anchor"] = {
@@ -365,6 +456,7 @@ def main() -> int:
         },
         "contrasts_vs_anchor": vs_anchor,
         "contrasts_vs_default": vs_default,
+        "family_cluster_bootstrap": family_block,
         "decision": decision,
         "outcome": outcome,
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
@@ -387,6 +479,13 @@ def main() -> int:
         print(
             f"  {label:>14}: vs theta0 {stat['mean_delta_pp']:+.3f} pp "
             f"[{stat['ci_low_pp']:+.3f}, {stat['ci_high_pp']:+.3f}]"
+        )
+    if "contrasts_vs_anchor" in family_block:
+        fam = family_block["contrasts_vs_anchor"][selected]
+        print(
+            f"[V2-A001] post-hoc family-cluster CI (selected vs theta0): "
+            f"{fam['mean_delta_pp']:+.3f} pp [{fam['ci_low_pp']:+.3f}, {fam['ci_high_pp']:+.3f}] "
+            f"({family_block['clusters']['n_clusters']} clusters; non-decisional)"
         )
     print(f"Output: {out_path}")
     return 0

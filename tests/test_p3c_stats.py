@@ -7,6 +7,7 @@ import pytest
 from tinylean_rl.evaluation.p3c_stats import (
     candidate_metrics,
     classify_candidate,
+    cluster_bootstrap,
     mcnemar_exact,
     paired_bootstrap,
     win_tie_loss,
@@ -118,3 +119,26 @@ def test_mcnemar_exact_known_values():
     assert result["p_value_two_sided"] == pytest.approx(0.0625)
     same = mcnemar_exact([True, False], [True, False])
     assert same["p_value_two_sided"] == 1.0
+
+
+def test_cluster_bootstrap_deterministic_and_bounds():
+    clusters = [[0.25, 0.0], [0.5], [-0.25, 0.0, 0.25]]
+    first = cluster_bootstrap(clusters, n_resamples=500, seed=11)
+    second = cluster_bootstrap(clusters, n_resamples=500, seed=11)
+    assert first == second
+    assert first["n_clusters"] == 3
+    assert first["n_theorems"] == 6
+    assert first["ci_low"] <= first["mean_delta"] <= first["ci_high"]
+
+
+def test_cluster_bootstrap_zero_deltas_have_zero_ci():
+    zeros = cluster_bootstrap([[0.0, 0.0], [0.0]], n_resamples=200, seed=1)
+    assert zeros["ci_low"] == 0.0
+    assert zeros["ci_high"] == 0.0
+
+
+def test_cluster_bootstrap_empty_input():
+    empty = cluster_bootstrap([], n_resamples=10, seed=1)
+    assert empty["n_clusters"] == 0
+    assert empty["ci_low"] == 0.0
+    assert empty["ci_high"] == 0.0

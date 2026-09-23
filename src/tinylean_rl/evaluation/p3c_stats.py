@@ -141,6 +141,58 @@ def paired_bootstrap(
     }
 
 
+def cluster_bootstrap(
+    deltas_by_cluster: Sequence[Sequence[float]],
+    n_resamples: int = 10_000,
+    seed: int = 20260917,
+    alpha: float = 0.05,
+) -> dict:
+    """Percentile bootstrap over clusters (families): resample clusters with
+    replacement, carrying all theorems of a drawn cluster.
+
+    Post-hoc robustness tool (V2-A001 family-cluster bootstrap): the formal
+    selection rule always uses the theorem-level ``paired_bootstrap`` and is
+    never affected by this function's output.
+    """
+
+    if not any(deltas_by_cluster):
+        return {
+            "n_clusters": 0,
+            "n_theorems": 0,
+            "mean_delta": 0.0,
+            "median_delta": 0.0,
+            "ci_low": 0.0,
+            "ci_high": 0.0,
+            "n_resamples": n_resamples,
+            "seed": seed,
+        }
+    rng = random.Random(seed)
+    n_clusters = len(deltas_by_cluster)
+    means = []
+    for _ in range(n_resamples):
+        total = 0.0
+        count = 0
+        for _ in range(n_clusters):
+            cluster = deltas_by_cluster[rng.randrange(n_clusters)]
+            total += sum(cluster)
+            count += len(cluster)
+        means.append(total / count)
+    means.sort()
+    low_index = max(0, round(alpha / 2 * n_resamples) - 1)
+    high_index = min(n_resamples - 1, round((1 - alpha / 2) * n_resamples) - 1)
+    pooled = [delta for cluster in deltas_by_cluster for delta in cluster]
+    return {
+        "n_clusters": n_clusters,
+        "n_theorems": len(pooled),
+        "mean_delta": statistics.fmean(pooled),
+        "median_delta": statistics.median(pooled),
+        "ci_low": means[low_index],
+        "ci_high": means[high_index],
+        "n_resamples": n_resamples,
+        "seed": seed,
+    }
+
+
 def win_tie_loss(baseline: Sequence[int], treatment: Sequence[int]) -> dict:
     """Theorem-level win/tie/loss counts between two checkpoints."""
 
