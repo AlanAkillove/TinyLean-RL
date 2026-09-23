@@ -2,7 +2,9 @@
 
 **V2 research question**: *How can a sub-billion-parameter Lean prover solve more theorems under limited compute?*
 
-Status: **V2-0 COMPLETE; TRACK A A0+A1 COMPLETE / A3 (V2-A001) IN PROGRESS — INTERRUPTED/RESUMABLE (4/7 models complete; seed1_step60 80/512; completes on fly90 per owner decision 2026-09-23); TRACK B CLOSED (B001 -> B003 COMPLETE, B004 NOT RUN — stopped by the B003 gate; raw id V2-E001 = alias V2-B001); NO TRACK C EXPERIMENT HAS RUN YET.**
+Status: **V2 CLOSED — empirical/diagnostic freeze (2026-09-23). TRACK A: V1 RLVR trainability/dynamics evidence COMPLETE; V2-A001 TERMINATED before selection (outputs retained as historical evidence only); A2 NOT RUN; theta_RL* NOT FROZEN. TRACK B: CLOSED — B001 -> B003 COMPLETE; B004 NOT RUN (stopped by the B003 gate); raw id V2-E001 = alias V2-B001. TRACK C: NOT RUN — previous design superseded.**
+
+> **Scope note (2026-09-23):** V2 is frozen as an empirical/diagnostic phase. No further checkpoint selection, adaptive-compute modeling, or confirmatory Track C experiment will be added to V2.
 
 V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-19):
 
@@ -23,7 +25,9 @@ V2 runs as two parallel tracks plus a joint final evaluation (amendment 2026-09-
 | Document | Purpose |
 | --- | --- |
 | [`research_plan.md`](research_plan.md) | V2 main question, RQ1–RQ5, Track A/B/C structure, guardrails |
-| [`track_a_rl_plan.md`](track_a_rl_plan.md) | Track A (RL prover) plan + A1 RL recipe decision memo (V1 evidence synthesis, candidate next steps) |
+| [`track_a_rl_plan.md`](track_a_rl_plan.md) | Track A (RL prover) plan + A1 RL recipe decision memo (V1 evidence synthesis, candidate next steps; inactive - see closeout) |
+| [`v2_closeout.md`](v2_closeout.md) | Final V2 closeout (2026-09-23): data-supported findings only; motivation for the Jev-inspired RL-control direction |
+| [`a001_termination_snapshot.md`](a001_termination_snapshot.md) | V2-A001 termination record: stop time, frozen hashes, retained artifacts; selection_outcome NONE / theta_RL* NOT FROZEN |
 | [`experiment_protocol.md`](experiment_protocol.md) | Frozen protocol: theorem-level splits, decision-model metrics, allocation metrics, primary figures |
 | [`data_contract.md`](data_contract.md) | Planned `budget_response` schema; prefix-truncation vs direct-budget labels; V2-1 calibration; no enforced monotonicity |
 | [`legacy_evidence.md`](legacy_evidence.md) | Index of the frozen V1 evidence (links only; numbers live in the canonical docs/manifests) |

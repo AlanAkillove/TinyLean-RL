@@ -9,9 +9,15 @@
 #
 # Manifests are still created before the run and frozen per their own
 # freeze_rule (see README.md).
+#
+# V2 research freeze (2026-09-23): the V2 exploration formally ended by owner
+# decision. Freeze tag: v2-research-freeze-20260923. Successor work continues
+# outside V2 from branch v3-jev-rl-controller. The entries below are the final
+# V2 record (see docs/v2/v2_closeout.md).
 
 registry:
   amended_at_utc: "2026-09-19"
+  frozen_at_utc: "2026-09-23"        # V2 research freeze; tag v2-research-freeze-20260923
   namespaces:
     V2-A###: {track: A, owner: fly90, scope: "RL prover line ending in frozen theta_RL*"}
     V2-B###: {track: B, owner: fly122, scope: "adaptive compute allocator"}
@@ -125,18 +131,18 @@ experiments:
   V2-A001:
     track: A
     owner: fly90
-    status: PAUSED             # INTERRUPTED - RESUMABLE; launched 2026-09-19T15:52:50Z (systemd user unit v2-a001) from main2 2977f2c
+    status: TERMINATED         # research direction changed before checkpoint selection (owner decision 2026-09-23); not a failure
     note: >
       Checkpoint-selection evaluation on the frozen A3-primary set
       (v2_a001_selection_set.json; set sha256 f429ddd7c628c3ce36b9ee7309c1fc68c819a0e03d20b38f5fd44112d7853e86).
       Seven models x 512 theorems x 4 samples on fly90; preregistration in
-      experiments/manifests/v2/V2-A001.yaml (committed before launch); analysis by
-      scripts/v2_a001_analyze.py applying the R1/R2/R3 selection rule and the
-      freeze-vs-owner-decision outcome rule.
-      INTERRUPTED - RESUMABLE (recorded 2026-09-23): stopped 2026-09-21T23:22:14+08:00
-      by the verifier wedge guard (no activity for >45 min; verifier wedge at ~22:35
-      during seed1_step60 chunk 6). Progress at interruption: base, step10, step20,
-      step30 COMPLETE (512/512 each); seed1_step60 80/512; seed2_step60 0/512;
-      seed3_step60 0/512. No frozen result changed; chunk-level resume supported
-      (seed1_step60 resumes from its 80/512 partial). Owner decision 2026-09-23:
-      V2-A001 completes on fly90 - no cross-host execution, no protocol change.
+      experiments/manifests/v2/V2-A001.yaml (committed before launch); the
+      R1/R2/R3 selection analyzer (scripts/v2_a001_analyze.py) was never executed.
+      History: launched 2026-09-19T15:52:50Z; interrupted 2026-09-21T23:22:14+08:00
+      by the verifier wedge guard (base, step10, step20, step30 COMPLETE at
+      512/512 each; seed1_step60 80/512); resumed 2026-09-23 21:03 and reached
+      seed1_step60 304/512 before a graceful stop 2026-09-23 21:42:35+08:00.
+      V2-A001 was terminated before producing a checkpoint-selection result.
+      Existing completed and partial outputs are retained as historical evidence
+      only and are not used to select a final RL checkpoint. Not a failure.
+      Read-only snapshot: docs/v2/a001_termination_snapshot.md.

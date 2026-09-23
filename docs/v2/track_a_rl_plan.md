@@ -5,6 +5,10 @@ Status: **A0 complete; A1 complete (this memo); A3 preregistered as `V2-A001`
 leakage audit complete 2026-09-20 ([`family_leakage_audit.md`](family_leakage_audit.md)).**
 No training run has been launched; Candidate 2 (the only conditional training run) stays
 dormant.
+
+_(Superseded 2026-09-23: V2 closed as an empirical/diagnostic phase. `V2-A001` was
+terminated before producing a selection result; A2/A4 NOT RUN; `theta_RL*` NOT FROZEN.
+This Track A plan is inactive. See [`v2_closeout.md`](v2_closeout.md).)_
 Track structure: [`research_plan.md`](research_plan.md) (Track A/B/C amendment). V1 evidence
 index: [`legacy_evidence.md`](legacy_evidence.md). Discipline: [`experiment_protocol.md`](experiment_protocol.md),
 [`../dual_server_collaboration.md`](../dual_server_collaboration.md) §6.1,

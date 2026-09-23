@@ -16,7 +16,7 @@
 - Raw outputs remain **gitignored**; manifests record only metadata, hashes and result summaries.
 - Failed / aborted experiments keep their manifest and status — **never delete or rewrite** a manifest
   to hide an outcome.
-- Status values: `TEMPLATE` (skeleton only) · `PREREGISTERED` · `RUNNING` · `PAUSED` · `ABORTED` · `COMPLETE`.
+- Status values: `TEMPLATE` (skeleton only) · `PREREGISTERED` · `RUNNING` · `PAUSED` · `ABORTED` · `COMPLETE` · `TERMINATED` (closed for a non-technical reason, e.g. a research-direction change; outputs are retained as historical evidence only).
 
 ## Layout
 
