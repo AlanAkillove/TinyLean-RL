@@ -1,0 +1,45 @@
+# Canonical V3 experiment registry.
+#
+# V3 namespace (owner directive 2026-09-23, branch v3-jev-rl-controller):
+#   V3-D###  offline decision-probe experiments (rollout data -> frozen theta0
+#            representations -> shallow calibrated heads; NO RL training).
+#   V3-R###  RL-intervention experiments, created ONLY after a D### passes its
+#            frozen GO gate AND the owner authorizes the next stage.
+# V2 (V2-A/B/C) and V1 (E###) identifiers are never reused. V2 is frozen.
+#
+# This file is append-only for experiment entries. A manifest is created and
+# committed BEFORE its run and frozen per its own freeze_rule (see README.md
+# and each experiment's *_preregistration.md).
+
+registry:
+  created_at_utc: "2026-09-23"
+  namespaces:
+    V3-D###: {kind: offline-probe, default-host: fly122, scope: "informative-group decision probes on frozen V1 rollouts"}
+    V3-R###: {kind: rl-intervention, default-host: fly90, scope: "controller-guided RL sampling (gated behind a D### GO + owner authorization)"}
+  research_question: >
+    Can a lightweight Jev-inspired calibrated decision model predict which Lean
+    theorems will produce reward-informative RLVR (GRPO) groups, and can that
+    signal later improve RLVR sample efficiency?
+
+experiments:
+  V3-D001:
+    kind: offline-probe
+    owner: fly90 (canonical) / fly122 (formal compute)
+    status: PREREGISTERED        # protocol frozen; formal run not yet executed
+    created_at_utc: "2026-09-23"
+    manifest: experiments/manifests/v3/V3-D001.yaml
+    preregistration: docs/v3/V3-D001_preregistration.md
+    depends_on:
+      - V3-0 data/provenance audit (commit 0377745, docs/v3/data_audit.md)
+      - rollout-source hash manifest (commit bafdc92, experiments/manifests/v3/v1_rollout_sources.json)
+      - nested fold manifest (experiments/manifests/v3/v3_d001_folds.json)
+    authorizes_next: >
+      A GO on the G1-G3 ranking gate authorizes the owner to CONSIDER V3-R001;
+      it does NOT itself launch any RL. §20 step 14: STOP and report the owner.
+    note: >
+      Offline informative-group decision probe: nested family-grouped CV over the
+      686 valid V1 rollout groups; B0 prevalence / B1 handcrafted difficulty /
+      B2 frozen theta0 block-18 last-token representation (primary) + block 9/27
+      (robustness); L2 logistic heads; family-component bootstrap; GO/NO-GO frozen
+      as G1 (dAUPRC CI>0) & G2 (top-20 enrichment>=1.75 & CI lo>1.0) & G3 (cross-seed
+      2/3). B3 MLP NOT AUTHORIZED. No new RL, no new rollouts.

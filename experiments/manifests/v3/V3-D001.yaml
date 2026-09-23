@@ -1,0 +1,180 @@
+# V3-D001 experiment manifest - PREREGISTRATION (frozen before any test outcome).
+# Machine-readable encoding of docs/v3/V3-D001_preregistration.md and owner
+# directive V3-D001 sections 0-21. No protocol parameter may change after
+# outcomes are seen without a recorded, owner-approved amendment.
+experiment: V3-D001
+title: >
+  Offline informative-group decision probe - can a frozen theta0 representation +
+  tiny calibrated head predict reward-informative GRPO groups beyond a handcrafted
+  difficulty baseline, under family-clean nested CV?
+kind: offline-probe
+status: PREREGISTERED            # formal run not yet executed
+created_at_utc: "2026-09-23"
+owner: "fly90 canonical / fly122 formal compute"
+branch: v3-jev-rl-controller
+
+freeze_rule: >
+  Committed at §20 step 7, BEFORE representation extraction (step 8) and any model
+  fitting (step 9). Labels, features, layers, folds, seeds, gate thresholds and
+  calibration-claim criteria are frozen now. Post-outcome edits are prohibited;
+  §20 step 14 = STOP and report the owner, launch no RL either way.
+
+constraints:
+  no_new_rl_training: true
+  no_new_rollout_generation: true
+  b3_mlp: NOT_AUTHORIZED        # even if B2 GOs; report owner first
+  do_not_modify: [V2 frozen manifests/results, V2-A001, Track B allocator]
+  formal_host: "fly122 / RTX 3080 10GB (fly90 artifacts are NON-FORMAL)"
+  no_representative_mixing_across_backbone_hashes: true
+
+data:
+  rollout_source_manifest: experiments/manifests/v3/v1_rollout_sources.json   # commit bafdc92
+  source_seeds: [seed1, seed2, seed3]
+  groups_total: 720
+  groups_infra_censored_excluded: 34
+  groups_valid_primary: 686
+  components: 433
+  unit_of_observation: "one reconstructed n=8 group (theorem x step x seed)"
+  repeated_theorem_policy: "each group a Bernoulli observation; all copies share the family fold; reps cached per unique prompt"
+  labels:
+    primary: {name: y_score, rule: "1 iff 0 < sum(score_j) < 8", may_be_replaced_by_acc: false}
+    secondary_sensitivity: {name: y_acc, rule: "1 iff 0 < sum(acc_j) < 8", use: "verifier-vs-reward frontier only; never primary"}
+  censoring_policy: "strict complete-group: drop any group with >=1 '# System Error:' candidate"
+  secondary_partial_identifiability: "count-only; never enters primary train/eval"
+  provenance_hashes:
+    theta0_weights_sha256: 34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2
+    theta0_config_sha256:    f823a08cdadbe0e04ae184b6ea55a75bbabef8499151a170e90e01972d742ba5
+    dataset_parquet_sha256:  68f33cee8d4d69479069117880be096fbfebb01af8c46cee0e54201fb28e1750
+    family_registry_sha256:  f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
+
+evaluation_design:
+  name: "nested family-grouped cross-validation (single 70/15/15 split cancelled)"
+  group_unit: family_component_id
+  outer_folds: 5
+  inner_folds: 4
+  seed: 20260923
+  fold_manifest: experiments/manifests/v3/v3_d001_folds.json
+  folds_hash: e0e0d30cfd81aed21d9bda91ae21be5700f644ddf77a198e7729d3fd93ede0d1
+  implementation: "deterministic numpy StratifiedGroupKFold equivalent (sklearn absent on fly122; sanctioned by owner §3)"
+  hard_constraints:
+    - "outer_train_components ∩ outer_test_components = ∅"
+    - "inner_train_components ∩ inner_dev_components = ∅"
+  primary_evaluation_surface: "686 out-of-fold predictions (each from a model that never saw its family)"
+  folds_may_change_after_outcomes: false
+  tests: [tests/test_v3_d001_lib.py, tests/test_v3_d001_folds.py]
+
+baselines:
+  B0_prevalence:
+    description: "per outer fold p̂ = mean(y) on outer-train; constant on outer-test; calibration/Brier null"
+  B1_handcrafted:
+    role: "serious difficulty-proxy baseline, not a straw man"
+    model: L2_logistic_regression
+    class_weight: none        # calibration preserved
+    input_scope: "statement-only; NO rollout/verifier/reward signal"
+    features:
+      - formal_char_count
+      - formal_line_count
+      - formal_word_count
+      - n_paren
+      - n_binders
+      - n_commas
+      - n_quant_syms
+      - n_arrows
+      - has_existential
+      - prompt_token_count     # exact theta0-tokenized prompt length, single deterministic source
+      - step_norm              # normalized training step in [0,1]
+      - source=synthetic
+      - source=autoformalizer
+      - source=human
+    feature_extractor_may_change_after_outcomes: false
+  B2_representation_probe_PRIMARY:
+    role: "main Jev-inspired method"
+    backbone: "Kimina-Prover-Distill-0.6B theta0 (frozen; sha256 above)"
+    backbone_parameters_updated: none
+    primary_layer: 18          # ~2/3 depth, frozen before outcomes
+    pooling: "last non-padding token"
+    representation_dim: 1024
+    design: "concatenate [h_block18(x), step_norm] -> R^1025"
+    model: L2_logistic_regression
+    forbidden_inputs: [seed_id, reward_history, verifier_result, rollout_output, current_group_reward, future_success_information]
+    robustness_layers: [9, 27]
+    robustness_usage: "answer 'does signal depend on depth?' ONLY"
+    may_not: ["cherry-pick best layer on outer-test", "concat 9+18+27 and re-declare main method", "scan all 28 layers", "mean pooling in formal main table"]
+  B3_tiny_mlp: NOT_AUTHORIZED
+
+fitting:
+  standardization: "z-score fit on outer-train only; recomputed inside each inner split (no leakage)"
+  solver: "Newton/IRLS L2 logistic, ridge on non-bias weights, max_iter=50, tol=1e-7, intercept unpenalized"
+  c_selection:
+    method: "inner family-grouped CV within the outer-training partition only"
+    criterion: "maximize mean inner AUPRC across the 4 inner folds"
+    grid: [0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0]
+    tie_break: "smaller (more regularized) C"
+  blas_threads_capped: "implementation performance only; numerics unchanged"
+
+calibration:
+  output: "raw logistic probability is the primary calibrated output"
+  fit_post_hoc_calibration: false        # no isotonic / Platt / temperature
+  report: [brier, ece_equal_mass_10bins, reliability_curve, prevalence]
+
+metrics:
+  primary: AUPRC
+  secondary: [AUROC, Brier, ECE]
+  enrichment: "top-k informative-group IGR and enrichment ratio = selected IGR / overall prevalence"
+  enrichment_fracs: [0.10, 0.20, 0.30]
+
+uncertainty:
+  method: "family-component bootstrap (NOT group-row)"
+  replicates: 10000
+  seed: 20260923
+  paired_ci_reported_for: ["dAUPRC(B2-B1)", "top20_enrichment(B2)", "dBrier(B2-B1)"]
+
+cross_seed_generalization:
+  role: "secondary robustness"
+  folds: [{train: [seed1, seed2], test: seed3}, {train: [seed1, seed3], test: seed2}, {train: [seed2, seed3], test: seed1}]
+  family_isolation: "remove every training group whose component_id overlaps a test component"
+  inference_level: "point estimates + bootstrap CIs; no per-fold significance required"
+
+stationarity_diagnostics:   # descriptive only; may NOT retune the model or representation
+  A_igr_vs_step: "step bins 1-10,11-20,21-30,31-40,41-50,51-60 per seed + pooled"
+  B_repeated_label_consistency: "within-seed and cross-seed repeats: always-noninf / always-inf / flips"
+  C_source_x_label: "prevalence for synthetic / autoformalizer / human (+ other)"
+
+go_no_go_gate:               # FROZEN (owner §14); judged B2 block-18 vs B1 on the OOF surface
+  any_fail_means: "NO-GO expensive RL intervention; may NOT be rescued by changing layer/MLP/label"
+  G1: {metric: "dAUPRC = AUPRC(B2)-AUPRC(B1)", requirement: "family-component bootstrap 95% CI lower bound > 0"}
+  G2: {metric: "B2 top-20% enrichment", requirement: "point >= 1.75x pooled prevalence AND bootstrap 95% CI lower bound > 1.0x"}
+  G3: {metric: "family-isolated cross-seed", requirement: "in >= 2/3 held-out-seed folds: AUPRC(B2)>AUPRC(B1) AND top20 IGR > fold prevalence"}
+  ranking_go: "G1 AND G2 AND G3"
+calibration_claim:           # judged separately (owner §15)
+  additionally_requires: ["Brier(B2) <= Brier(B1)", "ECE(B2) <= 0.10"]
+  if_ranking_go_and_calibration_pass: "calibrated semantic controller"
+  if_ranking_go_calibration_fail: "rank-based theorem sampler ONLY (no calibration claim)"
+
+compute:
+  extraction: "GPU (fly122 3080): ~612 unique prompts, batch=1 forward, output_hidden_states=True, bf16 0.6B; <10GB expected; fresh 1-3 prompt smoke re-establishes formal timing"
+  fitting: "CPU (fly122): shallow logistic + nested CV + bootstrap"
+  stop_and_report_if: "a future formal RL intervention cannot preserve the logical recipe on 10GB"
+
+scripts:
+  library: scripts/v3_d001_lib.py
+  fold_builder: scripts/v3_d001_folds.py
+  extraction: scripts/v3_d001_extract.py
+  fit_eval: scripts/v3_d001_run.py
+  results_artifact: "runs/v3_d001/v3_d001_results.json (host-local; only hashes/provenance committed)"
+
+execution_order:
+  - "1 verify host"
+  - "2 commit V3-0 audit (done 0377745)"
+  - "3 commit rollout-source hash manifest (done bafdc92)"
+  - "4 write protocol/manifest (THIS)"
+  - "5 freeze nested folds (done: v3_d001_folds.json)"
+  - "6 tests + lint"
+  - "7 commit preregistration"
+  - "8 extract theta0 reps (fly122)"
+  - "9 fit B0/B1/B2 nested grouped CV"
+  - "10 component bootstrap"
+  - "11 cross-seed robustness"
+  - "12 write memo"
+  - "13 classify GO/NO-GO by G1-G3"
+  - "14 STOP (no RL either way; report owner)"
