@@ -85,8 +85,9 @@ artifact is shared: control passes weights `w ≡ 1`, treatment passes `w_i(t) =
 
 Documented fidelity caveat: V1 used torch's `RandomSampler` (a shuffled pass over the 24,418 rows, i.e.
 *without* replacement within an epoch). A weight-driven multinomial draws *with* replacement, so the
-control arm is **not byte-identical to V1's index sequence**. At 4 draws/step and `H ≤ 30` the expected
-number of duplicate draws over a whole arm is ≤ 0.2 of ~100, and the pre-flight test in §10 item 10.2 must show
+control arm is **not byte-identical to V1's index sequence**. The expected number of repeated index *pairs*
+over a whole control arm is `n(n−1)/2K` with `K = 24 418`, i.e. **0.20 at `H = 25`** (100 draws) and
+**0.29 at `H = 30`** (120 draws) — far below one duplicate per arm. The pre-flight test in §10 item 10.2 must show
 the control arm's row distribution is statistically indistinguishable from V1's. Keeping one sampler
 implementation for both arms is preferred over "exact V1 indices for control / different algorithm for
 treatment", which would confound sampler *code* with the intervention.
