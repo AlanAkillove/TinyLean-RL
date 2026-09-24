@@ -1,0 +1,523 @@
+{
+  "artifact_type": "v3_r001_deployment_pool_audit",
+  "status": "AUDIT COMPLETE \u2014 read-only; no rollout, no RL, no model weights loaded (tokenizer only)",
+  "created_at_utc": "2026-09-24T05:26:07.778186+00:00",
+  "authorized_by": "owner directive 2026-09-24 \u00a74 (audit deployment pool semantics BEFORE preregistration, with code-level evidence)",
+  "host": {
+    "hostname": "fly",
+    "nproc": 64,
+    "git_revision": "5ddd3f215c04724a6c130cb7cb2bb9871e31645d"
+  },
+  "question": "Is V1's theorem-sampling unit a parquet row, a statement_id, or a deduplicated prompt? The old draft asserted 'uniform over 24,418 rows' without proof.",
+  "answer": {
+    "true_training_sampling_unit": "row",
+    "unit_definition": "one ROW of the HF dataframe loaded from data.train_files, after maybe_filter_out_long_prompts; positional access self.dataframe[item]",
+    "sampled_population_rows": 24246,
+    "sampled_population_unique_statements": 7613,
+    "on_disk_rows": 24418,
+    "on_disk_unique_statements": 7620,
+    "rows_dropped_by_the_1024_token_filter": 172,
+    "statements_with_zero_exposure_probability": 7,
+    "statement_ids_with_zero_exposure": [
+      "1e9cd838-5e02-43ce-984d-5783fb22c61c",
+      "4863ecd7-28b6-4c24-adad-77c2ab03c0a9",
+      "7d811b62-971b-4061-8a04-9b90aab2fcb9",
+      "ba45703c-7696-48ad-b979-08a39adcc3b8",
+      "bdd54c61-6e51-412a-800d-5b01f1db51c6",
+      "f60354d7-2f43-48ec-922f-e06c7b3d583b",
+      "f80f8392-9077-463c-88f4-e4fc3e99bd08"
+    ],
+    "duplicates_are_byte_identical_prompts": true,
+    "distinct_content_rows_in_parquet": 7620,
+    "per_statement_probability": "P(s) = surviving_rows(s) / sampled_population_rows, i.e. MULTIPLICITY-WEIGHTED, not uniform over statements",
+    "sampler": "verl create_rl_sampler -> torch RandomSampler (data.shuffle=True, data.sampler.class_path=None): one shuffled pass WITHOUT replacement",
+    "draws_per_step": 4,
+    "sequences_per_step": 32,
+    "rows_consumed_per_seed_run": 240,
+    "verdict_for_r001": "V3-R001's prospective unit is one unique statement_id, which IS the canonical prompt here (duplicate rows are byte-identical), so 'unique statement_id' and 'deduplicated prompt' coincide exactly and no choice between them has to be made. What must NOT be assumed is uniformity: the historical pool the controller was fit on is multiplicity-weighted over the 1024-token-filtered rows."
+  },
+  "code_evidence": {
+    "all_citations_verified_verbatim": true,
+    "citations": [
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 135,
+        "expected": "dataframe = datasets.load_dataset(\"parquet\", data_files=parquet_file)[\"train\"]",
+        "found": true,
+        "exact_line": true,
+        "text": "dataframe = datasets.load_dataset(\"parquet\", data_files=parquet_file)[\"train\"]"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 137,
+        "expected": "self.dataframe: datasets.Dataset = datasets.concatenate_datasets(dataframes)",
+        "found": true,
+        "exact_line": true,
+        "text": "self.dataframe: datasets.Dataset = datasets.concatenate_datasets(dataframes)"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 139,
+        "expected": "print(f\"dataset len: {len(self.dataframe)}\")",
+        "found": true,
+        "exact_line": true,
+        "text": "print(f\"dataset len: {len(self.dataframe)}\")"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 141,
+        "expected": "self.dataframe = self.maybe_filter_out_long_prompts(self.dataframe)",
+        "found": true,
+        "exact_line": true,
+        "text": "self.dataframe = self.maybe_filter_out_long_prompts(self.dataframe)"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 143,
+        "expected": "def maybe_filter_out_long_prompts(self, dataframe: datasets.Dataset = None):",
+        "found": true,
+        "exact_line": true,
+        "text": "def maybe_filter_out_long_prompts(self, dataframe: datasets.Dataset = None):"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 145,
+        "expected": "if self.filter_overlong_prompts:",
+        "found": true,
+        "exact_line": true,
+        "text": "if self.filter_overlong_prompts:"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 175,
+        "expected": "lambda doc: doc2len(doc) <= self.max_prompt_length,",
+        "found": true,
+        "exact_line": true,
+        "text": "lambda doc: doc2len(doc) <= self.max_prompt_length,"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 180,
+        "expected": "print(f\"filter dataset len: {len(dataframe)}\")",
+        "found": true,
+        "exact_line": true,
+        "text": "print(f\"filter dataset len: {len(dataframe)}\")"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 193,
+        "expected": "return len(self.dataframe)",
+        "found": true,
+        "exact_line": true,
+        "text": "return len(self.dataframe)"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py",
+        "line": 220,
+        "expected": "row_dict: dict = self.dataframe[item]",
+        "found": true,
+        "exact_line": true,
+        "text": "row_dict: dict = self.dataframe[item]"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/main_ppo.py",
+        "line": 366,
+        "expected": "elif data_config.shuffle:",
+        "found": true,
+        "exact_line": true,
+        "text": "elif data_config.shuffle:"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/main_ppo.py",
+        "line": 369,
+        "expected": "sampler = RandomSampler(data_source=dataset, generator=train_dataloader_generator)",
+        "found": true,
+        "exact_line": true,
+        "text": "sampler = RandomSampler(data_source=dataset, generator=train_dataloader_generator)"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py",
+        "line": 528,
+        "expected": "self.train_dataloader = StatefulDataLoader(",
+        "found": true,
+        "exact_line": true,
+        "text": "self.train_dataloader = StatefulDataLoader("
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py",
+        "line": 530,
+        "expected": "batch_size=self.config.data.get(\"gen_batch_size\", self.config.data.train_batch_size),",
+        "found": true,
+        "exact_line": true,
+        "text": "batch_size=self.config.data.get(\"gen_batch_size\", self.config.data.train_batch_size),"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py",
+        "line": 532,
+        "expected": "drop_last=True,",
+        "found": true,
+        "exact_line": true,
+        "text": "drop_last=True,"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py",
+        "line": 534,
+        "expected": "sampler=train_sampler,",
+        "found": true,
+        "exact_line": true,
+        "text": "sampler=train_sampler,"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py",
+        "line": 1185,
+        "expected": "gen_batch = gen_batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)",
+        "found": true,
+        "exact_line": true,
+        "text": "gen_batch = gen_batch.repeat(repeat_times=self.config.actor_rollout_ref.rollout.n, interleave=True)"
+      },
+      {
+        "path": "third_party/kimina-prover-rl/recipe/kimina_prover_rl/prepare_data.py",
+        "line": 52,
+        "expected": "\"index\": sample[\"statement_id\"],",
+        "found": true,
+        "exact_line": true,
+        "text": "\"index\": sample[\"statement_id\"],"
+      }
+    ]
+  },
+  "verl_tree": {
+    "verl_repo": "third_party/kimina-prover-rl",
+    "git_head": "e16b605e8186614c685875c9b57eb19e841b521a",
+    "matches_pinned_commit": true,
+    "dirty_paths_in_verl_repo": [],
+    "note": "third_party/kimina-prover-rl is its own git checkout; the pin is checked against THIS repo's HEAD, not the outer TinyLean-RL HEAD.",
+    "files_sha256": {
+      "third_party/kimina-prover-rl/recipe/kimina_prover_rl/prepare_data.py": "3e9559174c76835321898751a8ee91841fd18acb7af240c15de60b1362bfdd13",
+      "third_party/kimina-prover-rl/verl/trainer/main_ppo.py": "c26955af4d89998dc5fa4337ad36289efce5501f50f0dc41465f962ea46d92fa",
+      "third_party/kimina-prover-rl/verl/trainer/ppo/ray_trainer.py": "984e00cecb334e5b5ef59541af036a038c5876b65632baeeb82f90fe9257341d",
+      "third_party/kimina-prover-rl/verl/utils/dataset/rl_dataset.py": "fb6ba8d0f21d6e29d409b5c18e8792a7d83bf9a46024894665ceb96005f77bff"
+    }
+  },
+  "installed_verl": {
+    "imported_verl_package_dir": "third_party/kimina-prover-rl/verl",
+    "is_the_third_party_tree": true,
+    "stderr": null
+  },
+  "launch_config_re_read_from_v1_logs": {
+    "seed1": {
+      "dataset_len_printed": [
+        244,
+        24418
+      ],
+      "filter_dataset_len_printed": [
+        244,
+        24246
+      ],
+      "train_dataloader_size": [
+        6061
+      ],
+      "resolved_data_config": {
+        "shuffle": "True",
+        "sampler_class_path": null,
+        "sampler_class_name": null,
+        "train_batch_size": 4,
+        "gen_batch_size_key_present": false,
+        "max_prompt_length": 1024,
+        "max_response_length": 4096,
+        "filter_overlong_prompts": "True",
+        "dataloader_num_workers": 0,
+        "truncation": "error",
+        "custom_dataset_class": "NuminaRLDataset",
+        "train_files": [
+          "/home/fly/ZJQ/TinyLean-RL/data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet"
+        ],
+        "data_seed_key_present": false,
+        "data_seed_value": null
+      },
+      "train_files_is_the_audited_parquet": true
+    },
+    "seed2": {
+      "dataset_len_printed": [
+        244,
+        24418
+      ],
+      "filter_dataset_len_printed": [
+        244,
+        24246
+      ],
+      "train_dataloader_size": [
+        6061
+      ],
+      "resolved_data_config": {
+        "shuffle": "True",
+        "sampler_class_path": null,
+        "sampler_class_name": null,
+        "train_batch_size": 4,
+        "gen_batch_size_key_present": false,
+        "max_prompt_length": 1024,
+        "max_response_length": 4096,
+        "filter_overlong_prompts": "True",
+        "dataloader_num_workers": 0,
+        "truncation": "error",
+        "custom_dataset_class": "NuminaRLDataset",
+        "train_files": [
+          "/home/fly/ZJQ/TinyLean-RL/data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet"
+        ],
+        "data_seed_key_present": true,
+        "data_seed_value": 20260918
+      },
+      "train_files_is_the_audited_parquet": true
+    },
+    "seed3": {
+      "dataset_len_printed": [
+        244,
+        24418
+      ],
+      "filter_dataset_len_printed": [
+        244,
+        24246
+      ],
+      "train_dataloader_size": [
+        6061
+      ],
+      "resolved_data_config": {
+        "shuffle": "True",
+        "sampler_class_path": null,
+        "sampler_class_name": null,
+        "train_batch_size": 4,
+        "gen_batch_size_key_present": false,
+        "max_prompt_length": 1024,
+        "max_response_length": 4096,
+        "filter_overlong_prompts": "True",
+        "dataloader_num_workers": 0,
+        "truncation": "error",
+        "custom_dataset_class": "NuminaRLDataset",
+        "train_files": [
+          "/home/fly/ZJQ/TinyLean-RL/data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet"
+        ],
+        "data_seed_key_present": true,
+        "data_seed_value": 20260919
+      },
+      "train_files_is_the_audited_parquet": true
+    }
+  },
+  "log_config_keys_checked": [
+    "shuffle",
+    "sampler",
+    "train_batch_size",
+    "max_prompt_length",
+    "filter_overlong_prompts",
+    "dataloader_num_workers",
+    "truncation"
+  ],
+  "pool_measurements": {
+    "train_parquet": "data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet",
+    "raw_parquet": "data/raw/kimina_promptset/data/train-00000-of-00001.parquet",
+    "rows_on_disk": 24418,
+    "unique_statement_ids": 7620,
+    "distinct_content_rows": 7620,
+    "statements_with_more_than_one_distinct_prompt_text": 0,
+    "multiplicity_min_mean_max": [
+      1,
+      3.20446,
+      54
+    ],
+    "multiplicity_histogram": {
+      "1": 5099,
+      "4": 1001,
+      "5": 3,
+      "6": 823,
+      "7": 24,
+      "8": 99,
+      "9": 470,
+      "18": 1,
+      "24": 1,
+      "36": 3,
+      "42": 2,
+      "48": 23,
+      "54": 71
+    },
+    "tokenizer_filter": {
+      "tokenizer_path": "models/weights/kimina_distill_0_6b",
+      "rule": "len(tokenizer.apply_chat_template(prompt, add_generation_prompt=True)) <= data.max_prompt_length",
+      "distinct_prompt_texts_tokenized": 7620,
+      "prompt_token_length_min": 102,
+      "prompt_token_length_max": 2365
+    },
+    "v1_validation_slice": {
+      "rel_path": "data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/test.parquet",
+      "rows": 244,
+      "unique_statement_ids": 244,
+      "overlaps_train_statements": 0,
+      "row_count_appears_in_v1_logs": true,
+      "note": "The 244-statement slice V1 used as data.val_files is a DISJOINT id space from the 7,620-statement train pool, so it can never contribute R001 candidates directly - but its family components can still overlap the train pool, which is why owner \u00a75 requires excluding holdout-touched components from the clean pool."
+    }
+  },
+  "realized_v1_exposure": {
+    "unique_statements_in_reconstructed_rollouts": 612,
+    "groups_reconstructed": 720,
+    "mean_multiplicity_of_realized_statements": 11.31536,
+    "pool_mean_multiplicity": 3.20446,
+    "per_seed_unique_statements": {
+      "seed1": 227,
+      "seed2": 229,
+      "seed3": 227
+    },
+    "cross_seed_statement_overlap": {
+      "seed1~seed2": {
+        "intersection": 27,
+        "jac": 0.0629,
+        "union": 429
+      },
+      "seed1~seed3": {
+        "intersection": 17,
+        "jac": 0.0389,
+        "union": 437
+      },
+      "seed2~seed3": {
+        "intersection": 32,
+        "jac": 0.0755,
+        "union": 424
+      }
+    },
+    "statements_with_any_historical_label": 612,
+    "labelled_share_of_filtered_pool_statements": 0.0804,
+    "realized_per_step_shape": {
+      "steps_observed": 180,
+      "groups_per_step": {
+        "4": 180
+      },
+      "distinct_prompt_rows_per_step": {
+        "4": 180
+      },
+      "sequences_per_step_if_n_is_8": {
+        "32": 180
+      },
+      "steps_with_a_repeated_statement_inside_the_same_step": 0,
+      "note": "build_records gives one record per (seed, step, statement) group with its n=8 candidates, so groups_per_step counts prompt ROWS per step and a step with distinct < groups would mean the same theorem drawn twice in one batch."
+    },
+    "note": "build_records() is the same reconstruction V3-D001 used for its 720 groups / 686 valid groups / 588 labelled statements."
+  },
+  "sampler_reconstruction": {
+    "performed": true,
+    "filtered_rows_used": 24246,
+    "draws_expected_per_seed": 240,
+    "seeds_tested": 3,
+    "seeds_where_set_matches": 3,
+    "seeds_where_batching_matches": 3,
+    "steps_compared_total": 180,
+    "seeds_where_strict_unsorted_sequence_matches": 0,
+    "seeds_where_realized_equals_sorted_replay": 3,
+    "data_seed_note": "seed1=absent->default 1; seed2=20260918; seed3=20260919",
+    "per_seed": {
+      "seed1": {
+        "data_seed_configured": false,
+        "data_seed_used_in_replay": 1,
+        "realized_groups": 240,
+        "replay_set_equals_realized_set": true,
+        "replay_sequence_equals_realized_sequence": false,
+        "replay_first_batch_equals_realized_first_batch": false,
+        "every_step_holds_the_same_4_theorems": true,
+        "steps_compared": 60,
+        "realized_sequence_equals_sorted_replay": true,
+        "realized_steps_in_order": [
+          1,
+          2,
+          3
+        ],
+        "replay_statements_step1": [
+          "66949ddf-73df-4b66-8ec9-74eb3e612b8b",
+          "046ad2d7-8c80-4ed0-aee4-64e486cf4be7",
+          "b4c18311-d08f-463a-b903-2eb389e74a09",
+          "6331c7c6-03bf-4112-a507-74b64d158593"
+        ],
+        "realized_statements_step1": [
+          "046ad2d7-8c80-4ed0-aee4-64e486cf4be7",
+          "6331c7c6-03bf-4112-a507-74b64d158593",
+          "66949ddf-73df-4b66-8ec9-74eb3e612b8b",
+          "b4c18311-d08f-463a-b903-2eb389e74a09"
+        ],
+        "extra_in_replay_not_realized": [],
+        "extra_in_realized_not_replay": []
+      },
+      "seed2": {
+        "data_seed_configured": true,
+        "data_seed_used_in_replay": 20260918,
+        "realized_groups": 240,
+        "replay_set_equals_realized_set": true,
+        "replay_sequence_equals_realized_sequence": false,
+        "replay_first_batch_equals_realized_first_batch": false,
+        "every_step_holds_the_same_4_theorems": true,
+        "steps_compared": 60,
+        "realized_sequence_equals_sorted_replay": true,
+        "realized_steps_in_order": [
+          1,
+          2,
+          3
+        ],
+        "replay_statements_step1": [
+          "a2c51870-2ed9-4d0c-8d62-f4c03fa95276",
+          "c8a7d8af-ad13-42ae-abf8-2b021cb7f787",
+          "121709b5-02d7-40f7-a4d7-8d051793ceff",
+          "d35cd8e0-aa9f-4d5c-aa3a-d5e1cefa02ba"
+        ],
+        "realized_statements_step1": [
+          "121709b5-02d7-40f7-a4d7-8d051793ceff",
+          "a2c51870-2ed9-4d0c-8d62-f4c03fa95276",
+          "c8a7d8af-ad13-42ae-abf8-2b021cb7f787",
+          "d35cd8e0-aa9f-4d5c-aa3a-d5e1cefa02ba"
+        ],
+        "extra_in_replay_not_realized": [],
+        "extra_in_realized_not_replay": []
+      },
+      "seed3": {
+        "data_seed_configured": true,
+        "data_seed_used_in_replay": 20260919,
+        "realized_groups": 240,
+        "replay_set_equals_realized_set": true,
+        "replay_sequence_equals_realized_sequence": false,
+        "replay_first_batch_equals_realized_first_batch": false,
+        "every_step_holds_the_same_4_theorems": true,
+        "steps_compared": 60,
+        "realized_sequence_equals_sorted_replay": true,
+        "realized_steps_in_order": [
+          1,
+          2,
+          3
+        ],
+        "replay_statements_step1": [
+          "9bd21605-6afc-485e-969a-f40635fa9e33",
+          "92e980bc-8859-4716-b6ae-ee7a48079cf6",
+          "97c9aed8-c03e-4d96-81bb-53ad0c775bd7",
+          "5db736b1-25e5-460d-89c3-4fd89de08719"
+        ],
+        "realized_statements_step1": [
+          "5db736b1-25e5-460d-89c3-4fd89de08719",
+          "92e980bc-8859-4716-b6ae-ee7a48079cf6",
+          "97c9aed8-c03e-4d96-81bb-53ad0c775bd7",
+          "9bd21605-6afc-485e-969a-f40635fa9e33"
+        ],
+        "extra_in_replay_not_realized": [],
+        "extra_in_realized_not_replay": []
+      }
+    }
+  },
+  "implications_for_r001": [
+    "The old draft's denominators were wrong: it used the on-disk 24418 rows / 7620 statements as the deployment population, while the sampler saw the filtered 24246 rows / 7613 statements.",
+    "Statements whose every row exceeds max_prompt_length have exposure probability EXACTLY 0 (7 of them). They can never appear in any historical label, so a model fit on V1 rollouts has never been asked about them - and they are only legitimate R001 test theorems if R001 can actually generate them, i.e. under the same 1024-token rule.",
+    "Because V1 sampled rows, the labelled set over-represents high-multiplicity statements: mean pool multiplicity is 3.204 rows/statement, and the mean multiplicity of the 612 statements V1 actually rolled out is 11.315. A controller fit on those labels is fit under a multiplicity-weighted marginal, so applying it UNIFORMLY over a clean statement pool (owner \u00a77) is a covariate shift that R001 must state, not hide.",
+    "Row-unit sampling with RandomSampler is WITHOUT replacement within an epoch; at 4 draws/step over the filtered population a repeat inside one step is essentially impossible, which is why V1's own batches never contained duplicate theorems.",
+    "SAMPLER ACCOUNT REPRODUCES HISTORY: for every seed tested, V1's realized 240 prompt rows are exactly the first 240 of randperm(filtered_len, generator=manual_seed(data.get('seed', 1))) mapped through the filtered row order (3/3 set matches), AND every step holds the same 4 theorems (3/3 seeds, 180 steps). The only residual difference is the ORDER OF THEOREMS INSIDE a step, which is an artifact of build_records() sorting each step's groups rather than anything the trainer did (seeds where the realized sequence equals the within-step-sorted replay: 3/3). The row-unit RandomSampler is therefore an empirical, bit-exact account of V1 and not merely a reading of its source, so R001's uniform-over-clean-statements draw is a genuine change of measure rather than a guess about what V1 did."
+  ],
+  "corrections_to_the_archived_draft": [
+    "docs/v3/archive/V3-R001-training-draft_SUPERSEDED.md and experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json use the on-disk pool (24,418 / 7,620) as the deployment population; the sampled population is the token-filtered one. Every ROW-LEVEL diagnostic in that artifact (pool multiplicities, scored_statement_share_of_pool_rows, the row-level ESS/entropy block, TRIAL_DRAWS weights) is therefore computed on an unsamplable population and does not transfer to a future sampler. The archived draft is not edited (frozen history); this file is the record.",
+    "scripts/v3_r001_offline_freeze.py compares the RAW parquet against prepare_data.py's output and concludes nothing was dropped. That comparison cannot see RLHFDataset.maybe_filter_out_long_prompts, which is where the long prompts are lost."
+  ],
+  "prohibitions_respected": [
+    "no RL optimizer update",
+    "no rollout generated",
+    "no 10 GB smoke",
+    "no new controller task",
+    "no frozen artifact modified"
+  ]
+}

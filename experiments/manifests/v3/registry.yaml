@@ -183,6 +183,38 @@ amendments:
       reused for a different design without an amendment like this one, and V1 (E###) / V2 (V2-A/B/C)
       identifiers remain out of scope.
 
+prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
+                                             # must exist BEFORE the new V3-R001 preregistration is
+                                             # written. Read-only; none of them launches a rollout.
+  V3-R001-deployment-pool-audit:
+    kind: read-only-data-audit
+    title: Deployment Pool Semantics of the V1 Promptset (what theorem unit did V1 actually sample?)
+    status: COMPLETE                          # §17 step 3, 2026-09-24
+    created_at_utc: "2026-09-24"
+    script: scripts/v3_r001_pool_audit.py
+    result: experiments/manifests/v3/V3-R001_deployment_pool_audit.json
+    narrative: docs/v3/V3-R001_deployment_pool_audit.md
+    finding: >
+      The unit is the parquet ROW of the 1024-token-FILTERED dataframe (24,246 rows / 7,613 unique
+      statement_ids), not the on-disk 24,418 / 7,620 that the archived draft inherited. Duplicate rows
+      of a statement are byte-identical prompts, so "unique statement_id" and "deduplicated prompt"
+      coincide exactly and the owner's preferred prospective unit is well-defined. The induced
+      distribution over theorems is MULTIPLICITY-WEIGHTED, not uniform (mean 3.20 rows/statement in the
+      pool, 11.33 among the 612 statements V1 actually rolled out), so a uniform draw over a clean
+      statement pool is a change of measure that R001 must register as a covariate-shift limitation.
+      7 statements have exposure probability exactly 0 and can never carry a historical label.
+    sampler_replay: >
+      The account is replay-confirmed, not merely read from source: re-drawing
+      torch.randperm(24246, generator=manual_seed(data.get("seed",1)))[:240] over the filtered row
+      order reproduces, for all three seeds (data.seed 1 / 20260918 / 20260919, the last two read from
+      the run logs), exactly the 240 prompt rows V1 realized AND the same 4-theorem composition in each
+      of the 180 steps. The only residual difference is within-step order, which is an artifact of
+      build_records() sorting each step's group.
+    labels_only_from: "V1 rollout reconstruction (v3_d001_lib.build_records), read-only"
+    authorizes_next: >
+      Nothing beyond §17 step 4 (building the family-clean prospective pool from these definitions).
+      It does not launch a rollout, does not authorize RL, and does not modify any frozen artifact.
+
 experiments_appended:
   V3-R001-training-draft:                    # KEY RENAMED 2026-09-24: the V3-R001 id was vacated and
                                              # reassigned to the prospective family-clean validation.
