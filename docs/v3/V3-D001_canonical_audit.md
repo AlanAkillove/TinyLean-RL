@@ -12,6 +12,16 @@ Frozen inputs consumed unchanged: `experiments/manifests/v3/V3-D001.yaml`,
 `docs/v3/V3-D001_preregistration.md`, `experiments/manifests/v3/v3_d001_folds.json`,
 `experiments/manifests/v3/V3-D001_results.json`, `runs/v3_d001/theta0_reps.npz`
 
+> **Headline, stated up front.** No leakage was found — the frozen numbers reproduce bit-identically and all
+> 24 preprocessing checks pass, so `D001_FINAL_STATUS` remains **CANONICAL_GO** and the frozen G1–G3 gate is
+> unchanged. The one substantive change comes from **A3**: once fold re-partition, inner-CV C reselection and
+> refit variability are propagated (1000 full-procedure replicates), the ΔAUPRC(B2 − B1) interval
+> **widens from [0.051, 0.241] to [−0.025, 0.237] and includes 0** (952/1000 replicates positive, one-sided
+> p = 0.048). The top-20 enrichment arm instead holds in **1000/1000** replicates. So the evidence that
+> survives procedure uncertainty is *"the representation finds informative groups at enrichment far above
+> prevalence"*; the evidence that does not, at two-sided 95 %, is *"and better than the handcrafted
+> difficulty features"*. See §A3 and the claim qualification in §A5.
+
 ---
 
 ## 0. Reproduction first (precondition for every A-item)
@@ -161,7 +171,62 @@ replicate seeds are `20260924 … 20260923 + N`, so fly122's 500-rep set is a **
 of the fly90 1000-rep set, and whichever lands first is a complete answer at the frozen floor while the
 other turns the shared 500 seeds into a cross-node replication of the level-2 procedure.
 
-⟪A3 RESULTS INSERT — pending the in-flight artifact⟫
+### A3 result — 1000 replicates, committed
+
+Artifact `experiments/manifests/v3/V3-D001_fullproc_bootstrap.json` (sha256 `5e6697ca…`, 525 KB, from
+`runs/v3_d001/v3_d001_fullproc_boot.json`): **1000 requested / 1000 valid / 0 dropped**, fly90, 40
+single-threaded workers, 13 825 s wall (08:15 → 12:08 +08:00), mean 548.7 s wall per replicate
+(4.34 reps/min). The in-flight estimate above was ≈1.9× pessimistic — a freshly spawned replicate process on
+a saturated 2-NUMA box gets worse placement than the steady-state workers, so the probe's marginal cost was
+not representative. Recorded rather than rewritten.
+
+**The full-procedure interval is wider and it crosses zero.**
+
+| Quantity | frozen level-1 (fixed OOF, 10 k reps) | **level-2 full procedure (1000 reps)** |
+|---|---|---|
+| ΔAUPRC point | 0.14607 | reference recomputed inside this run = **0.14607** (`matches_committed: true`); bootstrap mean **0.10869**, median 0.10800 |
+| ΔAUPRC 95 % interval | [0.05096, 0.24145] — **excludes 0** | **[−0.02504, 0.23679] — includes 0** |
+| interval width | 0.19049 | 0.26183 (**+37 %**) |
+| sign consistency | — | **952 / 1000** replicates with ΔAUPRC > 0 (48 ≤ 0); one-sided p = **0.048** |
+| B2 top-20 enrichment | 3.46659, CI [3.02435, 3.92865] | CI **[2.79858, 3.87505]**; **1000 / 1000** replicates ≥ 1.75 *and* > 1.0; smallest single replicate **2.4546** |
+| Δ top-20 enrichment (B2 − B1) | — | CI [−0.09932, 1.08192]; 939 / 1000 > 0 |
+| ΔBrier (B2 − B1) | — | CI [−0.02963, +0.00415]; 943 / 1000 < 0 (one-sided p 0.057) |
+
+**Reading, stated as the negative result it partly is.**
+
+1. **G1's margin was procedure-uncertainty-limited, and the level-1 interval understated it.** Propagating
+   fold re-partition + inner-CV C reselection + Newton refit widens the interval by 37 % and moves the lower
+   bound from +0.051 to −0.025. `ΔAUPRC > 0` survives as a *directional* statement at one-sided 5 %
+   (p = 0.048, and only just) and does **not** survive a two-sided 95 % interval.
+2. **The frozen gate is not re-opened** (owner directive; see the counterfactual below). The GO stands as
+   preregistered on the statistic that was preregistered.
+3. **What is robust is enrichment, not ranking accuracy.** B2's absolute top-20 informative-group enrichment
+   clears the frozen 1.75 bar in *every one* of 1000 full-procedure replicates, worst case 2.4546. The
+   *B2-minus-B1 difference* in enrichment is not robust (CI includes 0). So "the frozen representation
+   identifies informative groups at a rate far above prevalence" survives level 2; "it does so *better than
+   the handcrafted difficulty features*" is the part level 2 cannot support at 95 %.
+4. **The calibration claim is directional, not two-sided-significant.** ΔBrier is negative in 94.3 % of
+   replicates (0.0877 vs 0.11024 on the original sample) but its 95 % interval reaches +0.0042.
+5. **The frozen point estimate sits on the favourable side of its own resampling distribution.** The
+   bootstrap mean is 0.10869 against a reference of 0.14607 — a bias of **−0.03738**, with **71.2 %** of
+   replicates below the reported value. Not an error (a with-replacement bootstrap of a
+   1025-feature/104-positive model is expected to shift down as folds become unbalanced), but it means the
+   headline ΔAUPRC is an optimistic draw, not a median.
+
+**The interval really does move the design, not just the labels.** All 1000 replicates self-attest
+`folds_rebuilt: true` and `C_reselected: true`. Resampled evaluation surfaces span 610–756 rows (orig. 686),
+253–293 unique family components (orig. 433 — a component is drawn ~38 % of the time), 75–139 positives
+(orig. 104) and prevalence 0.11241–0.20182 (orig. 0.1516; median of replicates 0.15041).
+
+**Code provenance of this artifact.** `host.git_revision` reads **1f15c8e**, but that field is sampled when
+the artifact is *written*, not when the run started, so it certifies nothing about the executed blob — the
+run loaded a pre-lint working tree (launched 08:15, before `bab2104` at 08:50). The certificate is instead
+that the run **re-derives the frozen numbers from scratch inside itself**: B1 0.42673, B2 0.5728,
+ΔAUPRC 0.14607, `matches_committed: true`. Independently, the three replicate seeds shared with the
+earlier fly122 pre-lint run are **bit-identical across nodes on every compared field**
+(ΔAUPRC 0.13811 / 0.11443 / 0.16276, plus B1/B2 AUPRC, both top-20 enrichments, ΔBrier, prevalence, `n_rows`,
+`n_unique_components`, `positives`). fly122's 500-replicate run of the same seed prefix is still in flight
+and will extend that replication from 3 seeds to 500.
 
 **Cross-node determinism and lint-invariance of the procedure (measured).** The same script was run with
 `--reps 3 --workers 3` on fly122 (from committed `bab2104`, pre-lint) and on fly90 (working tree with this
@@ -178,8 +243,12 @@ numbers. It is *not* a gate and it did not re-open G1–G3. Two honesty notes ab
 artifact field `comparison_to_frozen_claim.gate_outcome_changed` is a **hard-coded structural constant**
 (`False` at `scripts/v3_d001_fullproc_boot.py:236`), not a measurement — by the owner's directive this run
 *cannot* change the gate, so quoting that field as a result would be circular. The informative statement is
-the explicit **counterfactual** (⟪A3 COUNTERFACTUAL — computed at fill time⟫): if the level-2 interval *had*
-been the gating statistic, would G1 still have passed? Second, both in-flight runs loaded their code from
+the explicit **counterfactual, now computed: had the level-2 interval been the preregistered gating
+statistic, G1 would have FAILED** (lower bound −0.02504 ≤ 0, vs the frozen +0.05096 > 0), while **G2 would
+have passed unchanged and more strongly** (B2 top-20 enrichment lower bound 2.79858 > 1.0 and point
+1000/1000 ≥ 1.75). G3 is untouched by the bootstrap — it is a per-seed-fold direction check, not an
+interval. So the conjunctive GO would have become "enrichment-only GO": the ranking-accuracy arm is the one
+that does not survive procedure uncertainty. Second, both in-flight runs loaded their code from
 working trees that predate the lint edits (`bab2104` was committed 08:50 while fly90 launched 08:15; fly122
 checked out `78cdc45` at 02:50 UTC, after its 02:35 UTC launch), so git alone cannot certify the exact blob
 each run executed. That gap is closed empirically rather than asserted: each artifact re-derives the
@@ -208,9 +277,22 @@ git; the audit's own numbers derive from the hashed reps artifact, not from a re
 
 ```
 D001_CANONICAL_AUDIT:      reproduction PASS · A1 complete · LEAKAGE_AUDIT PASS (24/24) · A4 PASS (5/5)
+                            A3 COMPLETE (1000/1000 replicates, committed)
 D001_FINAL_STATUS:         CANONICAL_GO            (offline probe; gate GO G1^G2^G3 + calibration criteria met)
-permitted_claim:           "Frozen Kimina representations contain family-generalizable signal for predicting
-                            reward-informative RLVR groups beyond handcrafted difficulty features."
+                            CANONICAL_GO with the A3 qualification below — the frozen gate is unchanged, but
+                            the level-2 interval does not support one of the three arms at two-sided 95 %.
+permitted_claim (owner-frozen wording, unchanged):
+  "Frozen Kimina representations contain family-generalizable signal for predicting reward-informative RLVR
+   groups beyond handcrafted difficulty features."
+claim_qualification_from_A3 (added by this audit; narrowing, not relaxing):
+  - robust under the full-procedure bootstrap: high top-20 informative-group enrichment of B2, relative to
+    prevalence (1000/1000 replicates >= 1.75, worst replicate 2.4546).
+  - NOT robust at two-sided 95 %: the "beyond handcrafted difficulty features" clause. Delta-AUPRC(B2-B1)
+    has a level-2 interval of [-0.02504, 0.23679] (one-sided p = 0.048); the Delta-enrichment and Delta-Brier
+    intervals also include 0. Direction is consistent in 95.2 % / 93.9 % / 94.3 % of replicates respectively.
+  - proposed narrower wording, for the owner to accept or reject, not adopted here:
+    "Frozen Kimina representations contain family-generalizable signal that identifies reward-informative
+     RLVR groups at enrichment far above prevalence."
 NOT permitted (unchanged): "controller improves RL" · "controller improves theorem proving" ·
                             "controller saves compute"   -> these require V3-R001 / V3-R002 evidence
 launched_or_modified:      nothing. No RL, no rollouts, no fold/C/layer/label change, no V2 touch.
@@ -218,9 +300,10 @@ launched_or_modified:      nothing. No RL, no rollouts, no fold/C/layer/label ch
 
 **What this audit changed: nothing about the frozen outcome.** It added (i) the complete per-fold cross-seed
 table with the exclusion cost and the split of the G3 rule into its two conditions, (ii) an active
-leakage-probe suite, (iii) a level-2 full-procedure bootstrap as a width robustness check, and (iv) a
-provenance/sanity pass over the representation artifact. G1–G3, the GO, the calibration claim, the fold
-manifest, the label definition and the primary layer are byte-identical to what was reported on 2026-09-23.
+leakage-probe suite, (iii) a level-2 full-procedure bootstrap, which turned out to *weaken* one arm of the
+frozen claim, and (iv) a provenance/sanity pass over the representation artifact. G1–G3, the GO, the
+calibration claim, the fold manifest, the label definition and the primary layer are byte-identical to what
+was reported on 2026-09-23.
 
 ### Residual weaknesses a reader should weigh (disclosed, not fixed by this audit)
 
@@ -228,9 +311,13 @@ manifest, the label definition and the primary layer are byte-identical to what 
   B2-driven sampler is effectively a synthetic-oversampler. The probe shows the signal generalizes across
   *families*, not across *sources*.
 - **G3 direction is not uniform.** 2/3 on AUPRC; −0.0157 on the seed-3 holdout (33 positives).
-- **Small positive count.** 104 positives. The committed level-1 interval is a *prediction-level* interval
-  and therefore does not carry fold-partition or C-selection variability; the level-2 A3 interval quantifies
-  how much that omission understated procedure uncertainty (numbers above, 1000-rep artifact).
+- **Small positive count, and the headline number is an optimistic draw.** 104 positives. The committed
+  level-1 interval is a *prediction-level* interval and carries neither fold-partition nor C-selection
+  variability. The level-2 A3 run (1000 replicates, committed) shows what that omitted: the ΔAUPRC interval
+  **widens from [0.051, 0.241] to [−0.025, 0.237] and crosses zero**, and the bootstrap mean (0.10869) sits
+  0.037 *below* the reported point estimate, with 71.2 % of replicates below it. The frozen G1 verdict is
+  unchanged by directive; the *strength* of the ranking-accuracy evidence is weaker than the committed
+  interval implies, and a reader should treat ΔAUPRC = 0.146 as a favourable draw rather than a central value.
 - **Uncalibrated for deployment drift.** Everything is off-policy on V1 rollouts under a fixed theta0; the
   deployment controller's `step_norm` input is the only online quantity and the fitted `q(t)` surface is
   nearly flat in it.

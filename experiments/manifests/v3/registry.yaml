@@ -76,14 +76,50 @@ amendments:
         full-procedure variant (resample components -> rebuild grouped folds -> reselect inner-C
         -> refit -> regenerate OOF -> recompute) is reported alongside it. It is robustness
         evidence and CANNOT alter the frozen G1-G3 gate.
+      A3_result:                              # 1000/1000 replicates valid, artifact sha256 5e6697ca...
+        delta_AUPRC_ci95_percentile: [-0.02504, 0.23679]     # INCLUDES 0 (frozen level-1: [0.05096, 0.24145])
+        delta_AUPRC_bootstrap_mean: 0.10869
+        delta_AUPRC_bootstrap_median: 0.10800
+        reference_recomputed_in_run: 0.14607        # == committed; matches_committed true
+        bootstrap_bias_vs_reference: -0.03738       # 71.2% of replicates below the reported point estimate
+        sign_consistency_fraction_delta_gt_0: 0.952 # 48/1000 replicates <= 0
+        one_sided_p_delta_le_0: 0.048
+        width_level1: 0.19049
+        width_level2: 0.26183                       # +37%
+        B2_top20_enrichment_ci95: [2.79858, 3.87505]
+        B2_top20_enrichment_ge_1p75_fraction: 1.0   # 1000/1000; worst replicate 2.4546
+        delta_top20_enrichment_ci95: [-0.09932, 1.08192]   # includes 0
+        delta_brier_ci95: [-0.02963, 0.00415]              # includes 0; 94.3% negative
+        counterfactual_if_level2_had_been_the_gating_statistic: >
+          G1 would have FAILED (lower bound -0.02504 <= 0); G2 would have PASSED and more
+          strongly; G3 is unaffected (per-seed direction check, not an interval). The
+          conjunctive GO would therefore have been an enrichment-only GO.
+        attestation: "1000/1000 replicates record folds_rebuilt=true and C_reselected=true; resampled surfaces 610-756 rows, 253-293 unique components, 75-139 positives, prevalence 0.11241-0.20182"
+        provenance_note: >
+          host.git_revision (1f15c8e) is sampled at artifact-WRITE time and certifies nothing about
+          the executed blob (the run loaded a pre-lint working tree at 08:15, before bab2104).
+          Certification is instead internal: the run re-derives B1 0.42673 / B2 0.5728 from raw
+          artifacts (matches_committed=true), and the 3 replicate seeds shared with the fly122
+          pre-lint run are bit-identical across nodes on every compared field.
+        structural_constant_warning: >
+          comparison_to_frozen_claim.gate_outcome_changed is hard-coded False in the script
+          (scripts/v3_d001_fullproc_boot.py:236) and must NOT be cited as a measurement.
       A4_representation: "PASS 5/5 (theta0 weight sha verified locally; extraction never touched labels; repeated groups share representation only)"
       A5_cross_node: >
         Audit reproduced bit-identically on fly90 (RTX 3090) and fly122 (RTX 3080, formal node)
         across two git revisions; the only differing field is the recorded audit git revision.
-    status: CANONICAL_GO
+    status: CANONICAL_GO            # unchanged: LEAKAGE_AUDIT PASS + provenance complete
     permitted_claim: >
       Frozen Kimina representations contain family-generalizable signal for predicting
       reward-informative RLVR groups beyond handcrafted difficulty features.
+    permitted_claim_qualification: >
+      Added by A3 and binding on how the claim above may be used. The "beyond handcrafted difficulty
+      features" clause is directional-only: level-2 intervals for dAUPRC, d(top20 enrichment) and
+      dBrier all include 0 (one-sided p = 0.048 / 0.061 / 0.057). What IS robust to the full-procedure
+      bootstrap is B2's absolute top-20 informative-group enrichment relative to prevalence
+      (1000/1000 replicates >= 1.75). Recommended narrower wording, pending owner decision:
+      "Frozen Kimina representations contain family-generalizable signal that identifies
+      reward-informative RLVR groups at enrichment far above prevalence."
     not_permitted: ["controller improves RL", "controller improves theorem proving", "controller saves compute"]
 
 experiments_appended:
@@ -103,13 +139,20 @@ experiments_appended:
     single_difference: "theorem sampling distribution (uniform control vs decision-guided treatment)"
     frozen_controller: "B2 recipe, no online retraining; weights sha256 dc0c24ed523a1dd4..."
     frozen_sampler: "P(i|t) prop. epsilon* + q_i(t)^alpha*, alpha*=1.0 epsilon*=0.0, STOCHASTIC (no top-k)"
-    horizon: {optimizer_steps_per_arm: 25, seeds: 2, arms: 2, est_gpu_hours: 5.6}
+    horizon: {optimizer_steps_per_arm: 25, seeds: 2, arms: 2, est_gpu_hours: 3.8}   # 4 runs x 25 steps x 136 s serial = 13600 s
+    a3_consequence_for_this_draft: >
+      V3-D001 A3 weakens the "beyond handcrafted difficulty features" novelty clause, NOT this
+      trial's estimand: R001 compares decision-guided sampling against a UNIFORM control, and the
+      quantity that survived the full-procedure bootstrap is exactly B2's absolute top-20
+      informative-group enrichment (1000/1000 replicates >= 1.75). The offline +19.447 pp uplift
+      prediction is therefore untouched by A3, while the claim that it beats a handcrafted
+      difficulty sampler is not yet supported at two-sided 95 % and must not be assumed by R001.
     gate: "R1 realized-IGR permutation test + R2 informative-groups/GPU-hour + R3 no coverage collapse + R4 no pathology; Pass@k explicitly excluded"
     power_floor: "80% power at H=25 requires a true uplift >= 13.06 pp; offline prediction +19.447 pp [13.463, 26.243]"
     required_before_formal_run:
       - "B7 non-scientific 10 GB memory-compatibility smoke on fly122 (n=8 / effective batch / reward / optimizer semantics preserved; gradient checkpointing + CPU optimizer offload + activation memory optimization are the only allowed levers)"
-      - owner authorization of decisions D-a..D-e
-    blocking_owner_decisions: [D-a, D-b, D-c, D-d, D-e]
+      - owner authorization of decisions D-a..D-g
+    blocking_owner_decisions: [D-a, D-b, D-c, D-d, D-e, D-f, D-g]
     authorizes_next: >
       Only a mechanism GO on the frozen R1-R4 gate opens a DISCUSSION of V3-R002. Any
       other outcome is STOP-and-report. This entry does not launch training.

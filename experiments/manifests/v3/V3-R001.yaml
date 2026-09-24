@@ -22,6 +22,7 @@ depends_on:
   V3-D001:
     gate: "GO (G1 & G2 & G3) + calibration claim, offline level only"
     canonical_audit: "CANONICAL_GO (LEAKAGE_AUDIT 24/24 PASS, A4 5/5, reproduced bit-identically on fly90 and fly122)"
+    canonical_audit_A3: "1000-rep full-procedure bootstrap committed: B2 top-20 enrichment robust (1000/1000 >= 1.75), but delta-AUPRC vs B1 level-2 CI [-0.025, 0.237] includes 0. This trial's estimand is treatment-vs-UNIFORM, so it rests on the arm that survived; it must NOT be described as beating a handcrafted difficulty sampler."
     d001_results: experiments/manifests/v3/V3-D001_results.json
     offline_freeze: experiments/manifests/v3/V3-R001_offline_freeze.json
     prereg_commit: 41c5730
@@ -45,7 +46,7 @@ constraints:
   effective_batch_semantics: frozen
   reward_normalization: frozen
   sampling_semantics: frozen            # only the theorem DISTRIBUTION may differ between arms
-  raw_rollout_git: "hashes/provenance only; the ~126 MB raw rollout_data is never committed"
+  raw_rollout_git: "hashes/provenance only; the raw V1 rollout_data (3 seed dirs, 180 files, 128,866,550 bytes = 122.9 MiB) is never committed"
 
 # ---------------------------------------------------------------- B1/B2/B3 controller
 controller:
@@ -148,7 +149,7 @@ horizon:
   draws_per_arm: 100
   candidate_rollouts_per_arm: 800
   estimated_wall_h_on_3090: 3.8         # at V1's measured 136 s/step
-  estimated_gpu_hours: 5.6              # 4 runs
+  estimated_gpu_hours: 3.8              # 4 runs serial on one card = 4*25*136 s = 13600 s; was 5.6, which had no basis
   basis: "historical per-step IGR variance, pooled over 3 V1 runs x 60 steps = 180 values"
   pooled_mean_IGR: 0.15278
   pooled_sd_per_step_IGR: 0.18571
@@ -220,6 +221,8 @@ preflight:
 
 open_risks:
   - "support/estimand gap: predicted uplift computable on 27% of pool rows only"
+  - "epsilon*=0 creates literal zero support: 12/588 labelled theorems already have q=0 (artifact starved_statement_fraction=0.02041), and q is UNDEFINED for the 72.6% of pool rows never labelled -> an undefined-as-zero implementation collapses the treatment arm's effective pool, which the frozen labelled-support diagnostics cannot detect"
+  - "ESS constraint denominator is ambiguous in the frozen artifact: ESS_fraction_of_pool=0.36799 divides by 588 statements, not by 24418 pool rows (there it is 0.0089, below the 3% bar)"
   - "source concentration: informative class is ~90% synthetic, so the treatment partly acts as source reweighting"
   - "non-stationarity / use-up: q was fit on a moving policy's rollouts"
   - "coverage vs density tension: flattening to protect coverage lowers the predicted IGR"
@@ -227,14 +230,16 @@ open_risks:
 
 owner_decisions_pending:
   D-a: "confirm alpha*=1.0, epsilon*=0.0 as frozen by SS5 (or direct the alternative rule)"
-  D-b: "confirm H=25 and 2 seeds x 2 arms (~5.6 GPU-h), or 1 seed (~2.8 GPU-h, weaker R1)"
+  D-b: "confirm H=25 and 2 seeds x 2 arms (~3.8 GPU-h serial), or 1 seed (~1.9 GPU-h, weaker R1)"
   D-c: "confirm fly90 hosts the formal arms and fly122 only the memory smoke"
   D-d: "confirm R1 as significance-only, or add an absolute floor (observed uplift >= 13.06 pp)"
   D-e: "confirm the prompt pool stays the full 24,418-row pool"
+  D-f: "decide, before launch and after reading the SS10.3 full-pool diagnostics, how to handle literal zero support under epsilon*=0 (positive floor vs pool restriction vs accepting the starvation and stating it in the gate); SS14 risk 8"
+  D-g: "state the intended denominator for the ESS >= 3% constraint: 588 labelled statements (as evaluated, 36.8%) or 24,418 pool rows (as named, 0.89%, which would FAIL)"
 
 prohibited:
   - MLP / new layer sweep / mean-pooling optimization / new backbone
   - TinyJev / Kev models, Track B allocator, candidate ranker, repair controller
-  - any formal RL run without owner authorization of D-a..D-e
+  - any formal RL run without owner authorization of D-a..D-g
   - deterministic top-k sampling
   - online retraining of the controller

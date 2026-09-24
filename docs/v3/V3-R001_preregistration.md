@@ -47,9 +47,16 @@ sampling-mechanism question.
 
 V3-D001 (offline, 686 valid V1 rollout groups, 433 family components, nested family-grouped CV) came out
 **GO** on G1∧G2∧G3 with the calibration criteria met, and the canonical audit classifies it
-`CANONICAL_GO` (reproduction bit-identical; `LEAKAGE_AUDIT: PASS` 24/24; provenance 5/5).
+`CANONICAL_GO` (reproduction bit-identical; `LEAKAGE_AUDIT: PASS` 24/24; provenance 5/5; A3 committed).
+The A3 consequence for this draft is specific: the full-procedure bootstrap **kept** B2's absolute top-20 enrichment
+(1000/1000 replicates ≥ 1.75, worst 2.4546) but **lost** the two-sided ΔAUPRC-against-B1 claim
+(level-2 CI [−0.02504, 0.23679], one-sided p = 0.048). R001's estimand is treatment-vs-**uniform**, which
+depends on the surviving arm; nothing in this trial may be framed as "beats a handcrafted difficulty
+sampler", and no B1 comparison arm is added on that account (a new baseline after seeing D001 outcomes
+would be exactly the post-hoc move the owner forbade).
 
-The one permitted claim carried into R001 is unchanged:
+The owner-frozen claim wording is carried into R001 **with the A3 qualification attached** (it is not
+silently relaxed, and it is not silently dropped — see §A5 of the audit doc):
 
 > *Frozen Kimina representations contain family-generalizable signal for predicting reward-informative
 > RLVR groups beyond handcrafted difficulty features.*
@@ -135,10 +142,11 @@ declared before any RL data existed:
 * **objective:** maximize the multiplicity-weighted OOF-predicted treated IGR (an off-policy estimate on
   the 686 labelled groups);
 * **ties:** toward the larger `epsilon` (flatter = safer);
-* **anti-collapse constraints, evaluated at row level and expressed RELATIVE TO THE CONTROL ARM'S OWN
-  ROW-LEVEL DISTRIBUTION:** normalized sampling entropy ≥ 0.85 · statement-uniform, ESS ≥ 3 % of the pool,
-  max theorem sampling probability ≤ 2 × control's, expected distinct family components per batch ≥
-  0.9 × control's.
+* **anti-collapse constraints, five of them, evaluated at row level and expressed RELATIVE TO THE CONTROL
+  ARM'S OWN ROW-LEVEL DISTRIBUTION:** normalized sampling entropy ≥ 0.85 · ESS ≥ 3 % of the samplable
+  support (see the denominator note in §5.1) · max theorem sampling probability ≤ 2 × control's ·
+  expected distinct family components **per batch** ≥ 0.9 × control's · expected distinct family components
+  **over the whole trial** ≥ 0.8 × control's.
 
 Why control-relative: pool row multiplicity spans 1…54 (median 6 among labelled statements), so the
 **uniform control arm itself** already concentrates ~4.8× relative to statement-uniform. An absolute cap
@@ -149,14 +157,17 @@ doing what the control already does. (An earlier draft of this freeze used an ab
 
 ### 5.1 Frozen numeric values
 
-From `experiments/manifests/v3/V3-R001_offline_freeze.json` (offline freeze run
-`2026-09-24T01:08:59Z`, 653.6 s, fly90; 31 of 35 grid pairs feasible). No RL data existed at any point in
-this computation.
+From `experiments/manifests/v3/V3-R001_offline_freeze.json` (offline freeze
+`2026-09-24T01:08:59Z`, 653.6 s; 31 of 35 grid pairs feasible). No RL data existed at any point in
+this computation. *The artifact records no execution host*, so the node this ran on is a workflow fact
+(the dev node, fly90) rather than something the artifact certifies — noted because §10.1's reps-artifact
+content hash is what actually pins the input.
 
 | Quantity | Value |
 |---|---|
-| `alpha*`, `epsilon*` | **1.0, 0.0** (`P(i\|t) ∝ q_i(t)`, no floor — feasible because `epsilon=0` still leaves `min_group_probability` = 5.1e-5 > 0, so no theorem has zero support) |
-| row-level diagnostics (588 labelled statements carrying 433 family components) | ESS **216.379** = 36.80 % of pool · normalized entropy **0.90944** · max theorem sampling probability **1.9561 ×** the control's · expected distinct family components per batch **3.9408** (0.9952 × control's 3.9599) · expected distinct components over the trial **68.667** vs control 74.444 → trial coverage ratio **0.9224** |
+| `alpha*`, `epsilon*` | **1.0, 0.0** (`P(i\|t) ∝ q_i(t)`, **no floor**). Consequence, stated plainly: with `epsilon=0` a statement whose `q` is exactly 0 gets probability **exactly 0**. The freeze artifact's own `starved_statement_fraction = 0.02041` says **12 of the 588 labelled theorems are in that state**, so "no theorem has zero support" is **false** for this pick; what holds is that every *family component* retains positive support (`min_group_probability` = 5.113e-5 over the 433 components). A floor (`epsilon > 0`) is the mechanism that would restore zero-support theorems, and the tie-break rule toward larger `epsilon` did not select one — see §14 risks 8 and 9. |
+| row-level diagnostics (**support = the 588 labelled statements, weighted by their pool row multiplicity**; `K_units = 588` in the artifact's own `row_level` block) | ESS **216.379** · normalized entropy **0.90944** · max theorem sampling probability **1.9561 ×** the control's · expected distinct family components per batch **3.9408** (0.9952 × control's 3.9599) · expected distinct components over the trial **68.667** vs control 74.444 → trial coverage ratio **0.9224** |
+| ⚠ denominator caveat | the artifact field is named `ESS_fraction_of_pool` = 0.36799, but its denominator is `K_units = 588` (labelled statements), **not** the 24 418-row pool. Against the pool rows the same ESS is **0.89 %**, which would *fail* the ≥ 3 % constraint. The constraint as frozen and evaluated is "≥ 3 % of the samplable support actually used by the treatment distribution"; if the owner intends it pool-relative, that is a different constraint and §10.3 must re-run it that way before launch. |
 | controller `q` reference numbers | max prob over *statement-uniform* would read 9.2993, of which 4.754 is the pool's own multiplicity (hence the control-relative rule, §5) |
 | OOF-predicted treated IGR | record-level **0.42913** · multiplicity-weighted **0.22704** |
 | control (uniform) realized IGR on the same labelled set | record-level **0.1516** · multiplicity-weighted **0.03257** |
@@ -192,8 +203,11 @@ and it is tight in the wrong direction if the true effect is smaller than the of
 argues is likely, since the offline number is an upper bound.
 
 **Proposed horizon `H = 25` optimizer steps per arm** (owner range 20–30), i.e. 100 theorem draws and
-800 candidate rollouts per arm; 4 runs (2 seeds × 2 arms) ≈ 3.8 h wall on one RTX 3090 at V1's measured
-136 s/step, ≈ 5.6 GPU-hours. `H` is frozen here and is **not** to be extended after seeing data (§10).
+800 candidate rollouts per arm; 4 runs (2 seeds × 2 arms) run serially on one card = 4 × 25 × 136 s =
+13 600 s ≈ **3.8 h wall ≈ 3.8 GPU-hours** at V1's measured 136 s/step (`p3b_pilot.yaml` mean, median 138,
+range 78–245; `p3_0_complete.yaml` total 136.4). If instead the two arms of a seed are co-resident on the
+24 GB card the wall time shrinks but GPU-hours do not, and per-step time must be re-measured rather than
+assumed. `H` is frozen here and is **not** to be extended after seeing data (§10).
 
 ---
 
@@ -264,7 +278,7 @@ falsification of D001, and the report must say so in those words.
 |---|---|---|
 | 10.1 | **theta0 representations for the entire prompt pool** (7,620 unique statements, block 18, last non-padding token, same extractor `v3_d001_extract.py`, weights hash `34e6e630…`) — R001 cannot score what it has never encoded. ≈6 min GPU (612 prompts took 28.4 s, peak 1.53 GB) | content hash recorded; 100 % of pool rows have a `q_i(t)`; the 612 already-extracted statements are **bit-identical** to the frozen D001 artifact |
 | 10.2 | Sampler module + unit tests | control (`w ≡ 1`) reproduces the row-multiplicity prior and is statistically indistinguishable from V1's `RandomSampler` draws; weights normalized over rows; deterministic given the recorded seed; `sampler.update()` called once per optimizer step; `dataloader_num_workers = 0` (required by verl's `create_rl_sampler` hook) |
-| 10.3 | **Full-pool** sampling diagnostics with the frozen `alpha*, epsilon*` | the §5 constraints hold on the 24,418-row pool (not only on the labelled 588-statement support); numbers written to the launch manifest before step 1 |
+| 10.3 | **Full-pool** sampling diagnostics with the frozen `alpha*, epsilon*` | the §5 constraints hold on the 24,418-row pool (not only on the labelled 588-statement support); **every §5 number is reported twice, once over the pool rows and once over the 588-statement support, with the denominator named**, and the count of rows with *exactly zero* sampling probability is reported explicitly (§14 risk 8); numbers written to the launch manifest before step 1 |
 | 10.4 | Frozen config diff between arms | `git diff` shows exactly the sampler weight source differing; the diff is committed |
 | 10.5 | Memory compatibility smoke (§11) | done on fly122, non-scientific, result recorded |
 | 10.6 | Commit this file + `V3-R001.yaml` + the freeze manifest, **before** the first rollout | registry entry `PREREGISTERED / NOT LAUNCHED`; git rev pinned in the run manifest |
@@ -361,13 +375,28 @@ real effect from no effect, and V3 sampling work stops.**
 6. **10 GB vs 24 GB host tension (§11)** — unresolved between owner B7 and `dual_server_collaboration.md`.
 7. **Controller provenance.** seed1's V1 data is a stitched E017+E019 run (`data_audit.md` risk R4): fine
    for pooled training data, not re-runnable — the trial inherits this as a provenance footnote only.
+8. **`epsilon* = 0` creates literal zero support.** A theorem with `q = 0` is then unreachable, and the
+   frozen artifact already shows 12 of 588 labelled theorems (2.041 %) in that state. On the deployment
+   pool the exposure is much larger: `q` is *undefined* for the 72.6 % of pool rows whose statement has
+   never been labelled, and any implementation that treats "undefined" as `q = 0` turns the treatment arm
+   into a sampler over ~6 679 of 24 418 rows while the control samples all of them. That is a coverage
+   collapse of precisely the kind gate R3 forbids, and the frozen diagnostics cannot detect it because
+   they were computed on the labelled support. Mitigations, in order of preference: (a) §10.1 gives every
+   pool statement a real `q`, then (b) §10.3 re-runs the diagnostics over all 24 418 rows and counts
+   zero-probability rows explicitly, and (c) if the zero-support fraction is material, the owner decides
+   between a positive floor and restricting the pool — **before** launch, as a documented amendment, not
+   by tuning `epsilon` after seeing RL outcomes.
+9. **The ESS constraint's denominator is ambiguous in the frozen artifact.** `ESS_fraction_of_pool`
+   = 0.36799 divides by the 588 labelled statements, not by the 24 418-row pool (where the same ESS is
+   0.89 %, i.e. below the 3 % bar). Whichever reading the owner intends, §10.3 must report both numbers
+   under their explicit denominators rather than inherit the field name.
 
 ---
 
 ## 15. Owner decision points (needed before this draft can become `PREREGISTERED`)
 
 * **D-a** confirm `alpha*, epsilon*` as frozen by §5 (or direct the alternative rule).
-* **D-b** confirm `H = 25` and 2 seeds × 2 arms (~5.6 GPU-h on fly90), or 1 seed (~2.8 GPU-h, weaker R1).
+* **D-b** confirm `H = 25` and 2 seeds × 2 arms (≈ 3.8 GPU-h on fly90, serial), or 1 seed (≈ 1.9 GPU-h, weaker R1).
 * **D-c** confirm fly90 hosts the formal arms and fly122 only the memory smoke (§11).
 * **D-d** confirm R1 as significance-only, or add an absolute effect floor (e.g. "and observed uplift ≥
   **13.06** pp" — the 80 %-power MDE at `H = 25`, §6/§8), which converts an underpowered null into a cleaner
@@ -375,6 +404,13 @@ real effect from no effect, and V3 sampling work stops.**
 * **D-e** confirm the prompt pool stays the full 24,418-row pool (in §13's spirit: restricting it to the
   labelled support would make the treated arm sample theorems the controller was trained on, i.e. in-sample
   — the full pool is what makes R001 an out-of-sample test of the controller).
+* **D-f** decide how literal zero support under `epsilon* = 0` is handled, **after** reading the §10.3
+  full-pool diagnostics and **before** launch: a positive floor, a restricted pool, or accepting the
+  starvation and writing it into the gate (§14 risk 8). This must not be settled by tuning `epsilon` after
+  RL outcomes exist.
+* **D-g** state the intended denominator of the `ESS ≥ 3 %` constraint — 588 labelled statements (as the
+  freeze actually evaluated it, 36.8 %) or 24,418 pool rows (as its field name claims, 0.89 %, which would
+  **fail**) (§14 risk 9).
 
 ---
 
