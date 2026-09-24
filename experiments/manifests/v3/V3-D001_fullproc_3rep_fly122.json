@@ -1,0 +1,168 @@
+{
+  "artifact_type": "v3_d001_full_procedure_component_bootstrap",
+  "status": "POST-HOC ROBUSTNESS ONLY \u2014 does NOT modify the frozen V3-D001 gate or committed result",
+  "created_at_utc": "2026-09-24T01:02:57.820877+00:00",
+  "host": {
+    "hostname": "ubuntu",
+    "nproc": 16,
+    "workers": 3,
+    "blas_threads_per_worker": "1",
+    "git_revision": "bab2104f2d226300a767ad94229796e8319eba09"
+  },
+  "classification_of_committed_ci": {
+    "kind": "fixed-OOF-prediction family-component bootstrap (evaluation-level)",
+    "resamples": "family components, holding out-of-fold predictions, folds and C fixed",
+    "propagates": "label-sampling variability only",
+    "does_not_propagate": [
+      "nested fold-partition variability",
+      "inner-CV C reselection",
+      "Newton refit variability"
+    ],
+    "committed_dAUPRC_ci": {
+      "lo95": 0.05096,
+      "hi95": 0.24145
+    }
+  },
+  "procedure": {
+    "unit": "family component (433 in the frozen valid set)",
+    "resampling": "components drawn with replacement, all rows of a drawn component carried",
+    "per_rep": [
+      "rebuild outer 5 grouped folds (seed 20260923)",
+      "rebuild inner 4 grouped folds per outer fold (seed 20260923+1000+f)",
+      "reselect C on inner family-grouped CV (grid + AUPRC criterion + tie->smaller C)",
+      "refit B1 (14 handcrafted) and B2 (block-18 theta0 rep + step) L2 logistic",
+      "regenerate OOF predictions on the bootstrap sample",
+      "recompute dAUPRC, top-20 enrichment pair, dBrier"
+    ],
+    "rep_seeds": "20260924 .. 20260926 (deterministic)",
+    "n_rep_requested": 3,
+    "n_rep_valid": 3,
+    "n_rep_dropped": 0,
+    "seed_range": [
+      20260924,
+      20260926
+    ]
+  },
+  "reference_original_sample": {
+    "B1_auprc": 0.42673,
+    "B2_auprc": 0.5728,
+    "delta_auprc": 0.14607,
+    "B2_top20_enrichment": 3.46659,
+    "delta_top20_enrichment": 0.52962,
+    "delta_brier": -0.02254,
+    "committed_B1_auprc": 0.42673,
+    "committed_B2_auprc": 0.5728,
+    "committed_delta_auprc": 0.14607,
+    "matches_committed": true
+  },
+  "full_procedure_results": {
+    "full_procedure_delta_AUPRC_bootstrap_mean": 0.13843,
+    "full_procedure_delta_AUPRC_median": 0.13811,
+    "full_procedure_delta_AUPRC_ci95_percentile": [
+      0.11561,
+      0.16153
+    ],
+    "sign_consistency_fraction_delta_gt_0": 1.0,
+    "n_reps_delta_le_0": 0,
+    "bootstrap_p_value_delta_le_0_one_sided": 0.0,
+    "B2_auprc_ci95": [
+      0.48446,
+      0.5473
+    ],
+    "B1_auprc_ci95": [
+      0.34841,
+      0.40903
+    ],
+    "B2_top20_enrichment_ci95": [
+      3.01892,
+      3.57196
+    ],
+    "B2_top20_enrichment_point_ge_1.75_fraction": 1.0,
+    "delta_top20_enrichment_ci95": [
+      0.66449,
+      0.98981
+    ],
+    "delta_brier_ci95": [
+      -0.01642,
+      -0.01057
+    ],
+    "delta_brier_fraction_negative": 1.0,
+    "median_prevalence_of_bootstrap_samples": 0.15449
+  },
+  "comparison_to_frozen_claim": {
+    "frozen_G1": true,
+    "frozen_dAUPRC_ci_lower": 0.05096,
+    "full_procedure_ci_lower": 0.11561,
+    "full_procedure_ci_upper": 0.16153,
+    "width_frozen_ci": 0.19049,
+    "width_full_procedure_ci": 0.04592,
+    "full_procedure_ci_wider_than_frozen": false,
+    "sign_agreement_with_frozen_G1": true,
+    "gate_outcome_changed": false,
+    "reading": "the frozen GO/NO-GO classification is taken from the committed fixed-OOF bootstrap and stands as preregistered; this variant only states how much procedure uncertainty it understated"
+  },
+  "timing": {
+    "total_s": 250.6,
+    "mean_s_per_rep": 244.01,
+    "throughput_reps_per_min": 0.72
+  },
+  "per_rep": [
+    {
+      "seed_rep": 20260924,
+      "ok": true,
+      "n_rows": 712,
+      "n_unique_components": 273,
+      "prevalence": 0.15449,
+      "positives": 110,
+      "B1_auprc": 0.41115,
+      "B2_auprc": 0.54926,
+      "delta_auprc": 0.13811,
+      "B1_top20_enrichment": 2.59821,
+      "B2_top20_enrichment": 3.60102,
+      "delta_top20_enrichment": 1.00282,
+      "B2_top20_enrichment_ge_1.75": true,
+      "delta_brier": -0.01659,
+      "C_reselected": true,
+      "folds_rebuilt": true,
+      "seconds": 249.28
+    },
+    {
+      "seed_rep": 20260925,
+      "ok": true,
+      "n_rows": 710,
+      "n_unique_components": 277,
+      "prevalence": 0.1493,
+      "positives": 106,
+      "B1_auprc": 0.36867,
+      "B2_auprc": 0.48311,
+      "delta_auprc": 0.11443,
+      "B1_top20_enrichment": 2.35849,
+      "B2_top20_enrichment": 3.01887,
+      "delta_top20_enrichment": 0.66038,
+      "B2_top20_enrichment_ge_1.75": true,
+      "delta_brier": -0.01043,
+      "C_reselected": true,
+      "folds_rebuilt": true,
+      "seconds": 250.51
+    },
+    {
+      "seed_rep": 20260926,
+      "ok": true,
+      "n_rows": 645,
+      "n_unique_components": 272,
+      "prevalence": 0.15659,
+      "positives": 101,
+      "B1_auprc": 0.34734,
+      "B2_auprc": 0.5101,
+      "delta_auprc": 0.16276,
+      "B1_top20_enrichment": 2.27723,
+      "B2_top20_enrichment": 3.0198,
+      "delta_top20_enrichment": 0.74257,
+      "B2_top20_enrichment_ge_1.75": true,
+      "delta_brier": -0.01316,
+      "C_reselected": true,
+      "folds_rebuilt": true,
+      "seconds": 232.23
+    }
+  ]
+}

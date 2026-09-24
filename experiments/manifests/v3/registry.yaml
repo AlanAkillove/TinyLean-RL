@@ -47,3 +47,75 @@ experiments:
       (robustness); L2 logistic heads; family-component bootstrap; GO/NO-GO frozen
       as G1 (dAUPRC CI>0) & G2 (top-20 enrichment>=1.75 & CI lo>1.0) & G3 (cross-seed
       2/3). B3 MLP NOT AUTHORIZED. No new RL, no new rollouts.
+
+# ---------------------------------------------------------------------------
+# Append-only amendments. Entries above are never edited or reused; later
+# methodological findings are recorded here against the frozen experiment id.
+amendments:
+  - id: V3-D001-canonical-audit
+    applies_to: V3-D001
+    created_at_utc: "2026-09-24"
+    kind: post-hoc-methodological-audit        # frozen gate and committed numbers untouched
+    authorized_by: "owner directive 2026-09-24 Part A (A1-A5)"
+    scripts: [scripts/v3_d001_audit.py, scripts/v3_d001_fullproc_boot.py]
+    artifacts:
+      audit_fly90:  experiments/manifests/v3/V3-D001_canonical_audit_fly90.json
+      audit_fly122: experiments/manifests/v3/V3-D001_canonical_audit_fly122.json
+      fullproc_bootstrap: experiments/manifests/v3/V3-D001_fullproc_bootstrap.json   # A3, 1000 reps
+      fullproc_3rep_fly122: experiments/manifests/v3/V3-D001_fullproc_3rep_fly122.json  # cross-node determinism
+      memo: docs/v3/V3-D001_canonical_audit.md
+    findings:
+      A1_cross_seed: >
+        G3 = 2/3 on the frozen conjunctive rule (NOT 3/3 same-direction). delta-AUPRC signs
+        are +/+/- (seed3 -0.01567); top20-IGR-above-fold-prevalence and B2>B1 on top20 are
+        both 3/3. Mean delta-AUPRC 0.05137, median 0.0419.
+      A2_leakage: "PASS 24/24, incl. bit-identical C/mu/sd/w/p under held-out feature scramble and label flip for B1 and B2 in all 5 outer folds"
+      A3_full_procedure_bootstrap: >
+        The committed dAUPRC CI [0.0510, 0.2415] is a fixed-OOF-prediction (evaluation-level)
+        family-component bootstrap; it propagates label-sampling variability only. A post-hoc
+        full-procedure variant (resample components -> rebuild grouped folds -> reselect inner-C
+        -> refit -> regenerate OOF -> recompute) is reported alongside it. It is robustness
+        evidence and CANNOT alter the frozen G1-G3 gate.
+      A4_representation: "PASS 5/5 (theta0 weight sha verified locally; extraction never touched labels; repeated groups share representation only)"
+      A5_cross_node: >
+        Audit reproduced bit-identically on fly90 (RTX 3090) and fly122 (RTX 3080, formal node)
+        across two git revisions; the only differing field is the recorded audit git revision.
+    status: CANONICAL_GO
+    permitted_claim: >
+      Frozen Kimina representations contain family-generalizable signal for predicting
+      reward-informative RLVR groups beyond handcrafted difficulty features.
+    not_permitted: ["controller improves RL", "controller improves theorem proving", "controller saves compute"]
+
+experiments_appended:
+  V3-R001:
+    kind: rl-intervention
+    title: Decision-Guided RLVR Mechanism Trial
+    status: PREREGISTERED-DRAFT / NOT-LAUNCHED     # owner Part B: draft only, do not launch
+    created_at_utc: "2026-09-24"
+    manifest: experiments/manifests/v3/V3-R001.yaml
+    preregistration: docs/v3/V3-R001_preregistration.md
+    offline_freeze: experiments/manifests/v3/V3-R001_offline_freeze.json
+    freeze_script: scripts/v3_r001_offline_freeze.py
+    question: >
+      Does D001-guided theorem sampling increase the realized density of informative GRPO
+      groups under a fixed RL compute budget? (mechanism only; not capability)
+    depends_on: [V3-D001 (GO + calibration claim), V3-D001-canonical-audit (CANONICAL_GO)]
+    single_difference: "theorem sampling distribution (uniform control vs decision-guided treatment)"
+    frozen_controller: "B2 recipe, no online retraining; weights sha256 dc0c24ed523a1dd4..."
+    frozen_sampler: "P(i|t) prop. epsilon* + q_i(t)^alpha*, alpha*=1.0 epsilon*=0.0, STOCHASTIC (no top-k)"
+    horizon: {optimizer_steps_per_arm: 25, seeds: 2, arms: 2, est_gpu_hours: 5.6}
+    gate: "R1 realized-IGR permutation test + R2 informative-groups/GPU-hour + R3 no coverage collapse + R4 no pathology; Pass@k explicitly excluded"
+    power_floor: "80% power at H=25 requires a true uplift >= 13.06 pp; offline prediction +19.447 pp [13.463, 26.243]"
+    required_before_formal_run:
+      - "B7 non-scientific 10 GB memory-compatibility smoke on fly122 (n=8 / effective batch / reward / optimizer semantics preserved; gradient checkpointing + CPU optimizer offload + activation memory optimization are the only allowed levers)"
+      - owner authorization of decisions D-a..D-e
+    blocking_owner_decisions: [D-a, D-b, D-c, D-d, D-e]
+    authorizes_next: >
+      Only a mechanism GO on the frozen R1-R4 gate opens a DISCUSSION of V3-R002. Any
+      other outcome is STOP-and-report. This entry does not launch training.
+    note: >
+      Drafted under owner Part B. Prohibited and NOT done here: MLP, layer sweep,
+      mean-pooling change, new backbone, TinyJev/Kev, Track B allocator, candidate
+      ranker, repair controller, any formal RL run. epsilon*/alpha* were frozen from the
+      D001 OOF distribution only - never from RL outcomes.
+

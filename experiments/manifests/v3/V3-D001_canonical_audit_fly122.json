@@ -1,0 +1,722 @@
+{
+  "artifact_type": "v3_d001_canonical_audit",
+  "status": "POST-HOC CANONICAL METHODOLOGICAL AUDIT (frozen gate untouched; no RL performed)",
+  "created_at_utc": "2026-09-24T01:02:56.839502+00:00",
+  "audit_scope": [
+    "R_reproduction",
+    "A1_cross_seed_full",
+    "A2_leakage_audit",
+    "A4_representation_sanity",
+    "A5_classification"
+  ],
+  "formal_run_provenance_reference": {
+    "theta0_weights_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "reps_content_sha256": "d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c",
+    "reps_formality": "FORMAL (operator-declared; verify device below == RTX 3080)",
+    "reps_host": {
+      "hostname": "ubuntu",
+      "hostname_I": "10.3.25.122 10.201.1.1 10.201.0.1",
+      "nvidia_smi": "name, memory.total [MiB], uuid\nNVIDIA GeForce RTX 3080, 10240 MiB, GPU-e073cec7-1593-c4b5-8da3-d074276248f8",
+      "pwd": "/home/fly/ZJQ/TinyLean-RL",
+      "git_remote": "fly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (fetch)\nfly90\tssh://fly@10.3.25.90/home/fly/ZJQ/TinyLean-RL (push)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (fetch)\norigin\thttps://github.com/AlanAkillove/TinyLean-RL.git (push)",
+      "git_revision": "41c5730122c7d343fe6fa685a9e2137d2a7cd258",
+      "git_branch": "v3-jev-rl-controller",
+      "torch": "2.7.0+cu126",
+      "cuda_available": true,
+      "device_name": "NVIDIA GeForce RTX 3080"
+    },
+    "folds_hash": "e0e0d30cfd81aed21d9bda91ae21be5700f644ddf77a198e7729d3fd93ede0d1",
+    "seed": 20260923,
+    "primary_layer": 18,
+    "robust_layers": [
+      9,
+      27
+    ],
+    "b1_features": [
+      "formal_char_count",
+      "formal_line_count",
+      "formal_word_count",
+      "n_paren",
+      "n_binders",
+      "n_commas",
+      "n_quant_syms",
+      "n_arrows",
+      "has_existential",
+      "prompt_token_count",
+      "step_norm",
+      "source=synthetic",
+      "source=autoformalizer",
+      "source=human"
+    ]
+  },
+  "host": {
+    "hostname": "ubuntu",
+    "nproc": 16,
+    "ip": "10.3.25.122 10.201.1.1 10.201.0.1",
+    "git_revision": "bab2104f2d226300a767ad94229796e8319eba09",
+    "git_branch": "v3-jev-rl-controller",
+    "worktree_dirty": false,
+    "blas_threads": "4"
+  },
+  "R_reproduction_vs_committed": {
+    "checks": [
+      {
+        "check": "R.reproduce_metric_surface[B1_handcrafted]",
+        "pass": true,
+        "mismatches": {},
+        "n_fields": 11
+      },
+      {
+        "check": "R.reproduce_metric_surface[B2_block18_PRIMARY]",
+        "pass": true,
+        "mismatches": {},
+        "n_fields": 11
+      },
+      {
+        "check": "R.reproduce_metric_surface[B2_robustness_block9]",
+        "pass": true,
+        "mismatches": {},
+        "n_fields": 11
+      },
+      {
+        "check": "R.reproduce_metric_surface[B2_robustness_block27]",
+        "pass": true,
+        "mismatches": {},
+        "n_fields": 11
+      },
+      {
+        "check": "R.reproduce_dataset",
+        "pass": true,
+        "mismatches": {}
+      },
+      {
+        "check": "R.reproduce_gate_inputs",
+        "pass": true,
+        "recomputed_delta_auprc": 0.14607,
+        "committed_delta_auprc": 0.14607,
+        "recomputed_top20_enrichment": 3.46659,
+        "committed_top20_enrichment": 3.46659,
+        "recomputed_G3": "2/3",
+        "committed_G3": "2/3 (need >=2)",
+        "committed_ranking": "GO",
+        "note": "frozen gate fields are compared, never recomputed-and-substituted"
+      },
+      {
+        "check": "R.reproduce_cross_seed_shared_fields",
+        "pass": true,
+        "mismatches": {}
+      }
+    ],
+    "all_pass": true,
+    "committed_results_sha256_of_file": "5ef0c0dfc2f6816dbee6cd69647a18d445ebcddd3d733b2aff37b51d01aef5bf"
+  },
+  "A1_cross_seed_full": {
+    "per_fold": {
+      "seed1": {
+        "train_seeds": [
+          "seed2",
+          "seed3"
+        ],
+        "n_test_groups": 231,
+        "n_test_components": 195,
+        "n_train_groups_before_family_exclusion": 455,
+        "n_groups_dropped_by_family_exclusion": 140,
+        "n_train_groups_after_family_exclusion": 315,
+        "n_train_components": 238,
+        "train_positives": 49,
+        "train_prevalence": 0.15556,
+        "test_positives": 37,
+        "test_prevalence": 0.16017,
+        "top20_k_groups": 46,
+        "B1_auprc": 0.62881,
+        "B2_auprc": 0.67072,
+        "delta_auprc_B2_minus_B1": 0.0419,
+        "B1_top20_igr": 0.56522,
+        "B2_top20_igr": 0.6087,
+        "B1_top20_enrichment": 3.52879,
+        "B2_top20_enrichment": 3.80024,
+        "auprc_direction_B2_gt_B1": true,
+        "top20_igr_gt_fold_prevalence": true,
+        "B2_top20_igr_gt_B1_top20_igr": true,
+        "G3_fold_criterion_met_frozen_rule": true,
+        "C_B1": 0.03,
+        "C_B2": 0.003,
+        "family_disjoint_train_test": true
+      },
+      "seed2": {
+        "train_seeds": [
+          "seed1",
+          "seed3"
+        ],
+        "n_test_groups": 234,
+        "n_test_components": 203,
+        "n_train_groups_before_family_exclusion": 452,
+        "n_groups_dropped_by_family_exclusion": 167,
+        "n_train_groups_after_family_exclusion": 285,
+        "n_train_components": 230,
+        "train_positives": 39,
+        "train_prevalence": 0.13684,
+        "test_positives": 34,
+        "test_prevalence": 0.1453,
+        "top20_k_groups": 47,
+        "B1_auprc": 0.37533,
+        "B2_auprc": 0.5032,
+        "delta_auprc_B2_minus_B1": 0.12787,
+        "B1_top20_igr": 0.40426,
+        "B2_top20_igr": 0.46809,
+        "B1_top20_enrichment": 2.78223,
+        "B2_top20_enrichment": 3.22153,
+        "auprc_direction_B2_gt_B1": true,
+        "top20_igr_gt_fold_prevalence": true,
+        "B2_top20_igr_gt_B1_top20_igr": true,
+        "G3_fold_criterion_met_frozen_rule": true,
+        "C_B1": 0.003,
+        "C_B2": 0.003,
+        "family_disjoint_train_test": true
+      },
+      "seed3": {
+        "train_seeds": [
+          "seed1",
+          "seed2"
+        ],
+        "n_test_groups": 221,
+        "n_test_components": 182,
+        "n_train_groups_before_family_exclusion": 465,
+        "n_groups_dropped_by_family_exclusion": 143,
+        "n_train_groups_after_family_exclusion": 322,
+        "n_train_components": 251,
+        "train_positives": 53,
+        "train_prevalence": 0.1646,
+        "test_positives": 33,
+        "test_prevalence": 0.14932,
+        "top20_k_groups": 44,
+        "B1_auprc": 0.48694,
+        "B2_auprc": 0.47127,
+        "delta_auprc_B2_minus_B1": -0.01567,
+        "B1_top20_igr": 0.36364,
+        "B2_top20_igr": 0.45455,
+        "B1_top20_enrichment": 2.43526,
+        "B2_top20_enrichment": 3.04408,
+        "auprc_direction_B2_gt_B1": false,
+        "top20_igr_gt_fold_prevalence": true,
+        "B2_top20_igr_gt_B1_top20_igr": true,
+        "G3_fold_criterion_met_frozen_rule": false,
+        "C_B1": 0.003,
+        "C_B2": 0.003,
+        "family_disjoint_train_test": true
+      }
+    },
+    "summary": {
+      "n_folds": 3,
+      "folds_meeting_frozen_G3_rule": 2,
+      "G3_rule": ">= 2/3 folds with AUPRC(B2)>AUPRC(B1) AND top20 IGR > fold prevalence (frozen owner \u00a714)",
+      "G3_pass": true,
+      "criteria_split": {
+        "auprc_direction_positive": 2,
+        "top20_igr_above_fold_prevalence": 3,
+        "B2_top20_igr_above_B1_top20_igr": 3,
+        "both_frozen_conditions": 2
+      },
+      "delta_auprc_sign_by_fold": {
+        "seed1": "+",
+        "seed2": "+",
+        "seed3": "-"
+      },
+      "delta_auprc_mean": 0.05137,
+      "delta_auprc_median": 0.0419,
+      "delta_auprc_min": -0.01567,
+      "honest_reading": "G3 is 2/3 on the frozen conjunctive rule; the AUPRC direction is NOT 3/3 (one fold is negative) while top20-IGR-above-prevalence IS 3/3. Reported as 2/3."
+    }
+  },
+  "A2_leakage_audit": {
+    "checks": [
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B1_handcrafted,outer_fold0]",
+        "pass": true,
+        "n_train_groups": 548,
+        "n_test_groups": 138,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B1_handcrafted,outer_fold1]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B1_handcrafted,outer_fold2]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 347,
+        "test_components": 86,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B1_handcrafted,outer_fold3]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 347,
+        "test_components": 86,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B1_handcrafted,outer_fold4]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.01,
+        "C_after_feature_scramble": 0.01,
+        "C_after_label_flip": 0.01,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B2_block18,outer_fold0]",
+        "pass": true,
+        "n_train_groups": 548,
+        "n_test_groups": 138,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B2_block18,outer_fold1]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B2_block18,outer_fold2]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 347,
+        "test_components": 86,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B2_block18,outer_fold3]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 347,
+        "test_components": 86,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.003,
+        "C_after_feature_scramble": 0.003,
+        "C_after_label_flip": 0.003,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.all_preprocessing_outer_train_local[B2_block18,outer_fold4]",
+        "pass": true,
+        "n_train_groups": 549,
+        "n_test_groups": 137,
+        "train_components": 346,
+        "test_components": 87,
+        "scaler_stats_unchanged_by_test_feature_scramble": true,
+        "chosen_C_unchanged": true,
+        "C_base": 0.01,
+        "C_after_feature_scramble": 0.01,
+        "C_after_label_flip": 0.01,
+        "fitted_weights_unchanged": true,
+        "max_abs_weight_drift": 0.0,
+        "oof_predictions_unchanged_by_label_flip": true,
+        "max_abs_prediction_drift": 0.0
+      },
+      {
+        "check": "A2.B0_prevalence_baseline_is_outer_train_local",
+        "pass": true,
+        "per_fold_train_prevalence": [
+          0.15146,
+          0.15118,
+          0.15118,
+          0.15301,
+          0.15118
+        ],
+        "pooled_prevalence": 0.1516,
+        "any_fold_equals_pooled": false
+      },
+      {
+        "check": "A2.inner_CV_keyed_strictly_within_outer_train",
+        "pass": true,
+        "per_fold": {
+          "fold0": {
+            "inner_keyed_components": 346,
+            "outer_train_components": 346,
+            "outer_test_components": 87,
+            "inner_keys_overlapping_outer_test": 0
+          },
+          "fold1": {
+            "inner_keyed_components": 346,
+            "outer_train_components": 346,
+            "outer_test_components": 87,
+            "inner_keys_overlapping_outer_test": 0
+          },
+          "fold2": {
+            "inner_keyed_components": 347,
+            "outer_train_components": 347,
+            "outer_test_components": 86,
+            "inner_keys_overlapping_outer_test": 0
+          },
+          "fold3": {
+            "inner_keyed_components": 347,
+            "outer_train_components": 347,
+            "outer_test_components": 86,
+            "inner_keys_overlapping_outer_test": 0
+          },
+          "fold4": {
+            "inner_keyed_components": 346,
+            "outer_train_components": 346,
+            "outer_test_components": 87,
+            "inner_keys_overlapping_outer_test": 0
+          }
+        }
+      },
+      {
+        "check": "A2.family_component_hard_disjointness",
+        "pass": true,
+        "every_component_single_outer_fold": true,
+        "components_per_fold": [
+          87,
+          87,
+          86,
+          86,
+          87
+        ],
+        "sum_components_per_fold": 433,
+        "n_components": 433
+      },
+      {
+        "check": "A2.design_matrices_independent_of_all_label_fields",
+        "pass": true,
+        "b1_bitwise_identical": true,
+        "b2_bitwise_identical": {
+          "block18": true,
+          "block9": true,
+          "block27": true
+        },
+        "perturbation": "y_score, y_acc, n_pos_score, n_pos_acc, n_infra_candidates all replaced by junk before featurization; designs must be bit-identical"
+      },
+      {
+        "check": "A2.source_encoding_is_frozen_level_onehot_no_target_signal",
+        "pass": true,
+        "all_B1_feature_names_declared_in_frozen_manifest": true,
+        "n_B1_features": 14,
+        "frozen_feature_order_matches_code": true,
+        "onehot_values": [
+          0.0,
+          1.0
+        ],
+        "max_active_source_levels": 1.0,
+        "records_with_no_known_source": 0,
+        "frozen_levels": [
+          "synthetic",
+          "autoformalizer",
+          "human"
+        ],
+        "note": "levels fixed in the frozen manifest before fitting; no frequency/target/mean-encoding"
+      },
+      {
+        "check": "A2.training_step_normalization_is_deterministic_and_label_free",
+        "pass": true,
+        "formula": "step_norm = rollout_step / 60 (frozen STEPS; no per-seed or per-fold rescaling)",
+        "is_last_B2_column": {
+          "block18": true,
+          "block9": true,
+          "block27": true
+        },
+        "unique_steps": 60,
+        "note": "known at deployment time (trainer step counter); carries no reward/verifier information"
+      },
+      {
+        "check": "A2.B2_input_surface_is_frozen_representation_plus_step_only",
+        "pass": true,
+        "design_ncols": {
+          "block18": 1025,
+          "block9": 1025,
+          "block27": 1025
+        },
+        "expected": 1025,
+        "forbidden_inputs_absent": [
+          "seed_id",
+          "raw_step_index_as_category",
+          "reward",
+          "score_sum",
+          "acc",
+          "verifier_output",
+          "group_size",
+          "n_pos_score",
+          "any_rollout_statistic"
+        ],
+        "note": "columns 0..1023 are the theta0 block last-token vector, column 1024 is step_norm"
+      },
+      {
+        "check": "A2.no_class_weight_or_resampling_in_fit_or_selection",
+        "pass": true,
+        "objective": "min  sum_i NLL(p_i, y_i)  +  (1/(2C)) ||w_{1:}||^2   (bias unpenalized)",
+        "Newton_ITRLS": "deterministic full-batch IRLS, max_iter=50, tol=1e-7, no stochasticity"
+      },
+      {
+        "check": "A2.C_grid_criterion_tiebreak_match_frozen_manifest",
+        "pass": true,
+        "C_grid": [
+          0.003,
+          0.01,
+          0.03,
+          0.1,
+          0.3,
+          1.0,
+          3.0,
+          10.0
+        ],
+        "criterion": "max mean inner AUPRC across the 4 inner folds of outer-train",
+        "tie_break": "strict-improvement update -> ties keep the smaller C",
+        "chosen_C_B1_by_fold": {
+          "fold0": 0.003,
+          "fold1": 0.003,
+          "fold2": 0.003,
+          "fold3": 0.003,
+          "fold4": 0.01
+        },
+        "chosen_C_B2p_by_fold": {
+          "fold0": 0.003,
+          "fold1": 0.003,
+          "fold2": 0.003,
+          "fold3": 0.003,
+          "fold4": 0.01
+        },
+        "selection_sees_only_inner_folds_of_outer_train": true
+      },
+      {
+        "check": "A2.topk_enrichment_denominator_is_evaluation_label_mean",
+        "pass": true,
+        "reported_top20_enrichment": 3.46659,
+        "recomputed_from_unrounded_values": 3.46659,
+        "pooled_OOF_prevalence": 0.1516,
+        "note": "evaluation-side denominator only; never fed to any fit (the fitted B0 baseline uses the outer-TRAIN prevalence, see A2.B0 check)"
+      },
+      {
+        "check": "A2.primary_label_is_y_score_never_acc",
+        "pass": true,
+        "positives_y_score": 104,
+        "positives_y_acc": 93,
+        "groups_where_labels_differ": 13
+      },
+      {
+        "check": "A2.folds_frozen_before_any_outcome_and_reproducible",
+        "pass": true,
+        "recomputed_fold_map_bit_identical_to_committed_manifest": true,
+        "fold_manifest_commit_count": 1,
+        "fold_manifest_first_commit_utc": "2026-09-23T23:17:49+08:00",
+        "fold_blob_unchanged_since_preregistration": true,
+        "preregistration_commit_utc": "2026-09-23T23:17:49+08:00",
+        "results_commit_utc": "2026-09-23T23:35:00+08:00",
+        "folds_hash": "e0e0d30cfd81aed21d9bda91ae21be5700f644ddf77a198e7729d3fd93ede0d1",
+        "seeds": {
+          "outer_folds": 5,
+          "inner_folds": 4,
+          "fold_seed": 20260923
+        }
+      },
+      {
+        "check": "A2.cross_seed_train_test_family_isolation",
+        "pass": true,
+        "per_fold": {
+          "seed1": {
+            "shared_components_train_test": 0,
+            "n_train_components": 238,
+            "n_test_components": 195,
+            "groups_dropped_by_exclusion": 140
+          },
+          "seed2": {
+            "shared_components_train_test": 0,
+            "n_train_components": 230,
+            "n_test_components": 203,
+            "groups_dropped_by_exclusion": 167
+          },
+          "seed3": {
+            "shared_components_train_test": 0,
+            "n_train_components": 251,
+            "n_test_components": 182,
+            "groups_dropped_by_exclusion": 143
+          }
+        }
+      },
+      {
+        "check": "A2.committed_bootstrap_is_fixed_OOF_prediction_level",
+        "pass": true,
+        "resamples": "family components -> row indices of the ALREADY COMPUTED OOF prediction vector",
+        "refits_model_per_rep": false,
+        "reselects_C_per_rep": false,
+        "rebuilds_folds_per_rep": false,
+        "consequence": "does not propagate model-fitting / fold-partition variability; hence the post-hoc full-procedure component bootstrap (A3) reported separately",
+        "full_procedure_script": "scripts/v3_d001_fullproc_boot.py"
+      }
+    ],
+    "n_checks": 24,
+    "n_failed": 0,
+    "failed_checks": [],
+    "LEAKAGE_AUDIT": "PASS"
+  },
+  "A4_representation_sanity": {
+    "checks": [
+      {
+        "check": "A4.theta0_backbone_is_the_frozen_checkpoint",
+        "pass": true,
+        "expected": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+        "local_model_file_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+        "local_model_file_present": true,
+        "frozen_in": [
+          "docs/v3/V3-D001_preregistration.md",
+          "experiments/manifests/v3/V3-D001.yaml",
+          "scripts/v3_d001_extract.py"
+        ]
+      },
+      {
+        "check": "A4.reps_artifact_is_the_fly122_formal_extraction",
+        "pass": true,
+        "recomputed_content_sha256": "d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c",
+        "committed_content_sha256": "d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c",
+        "formality": "FORMAL (operator-declared; verify device below == RTX 3080)",
+        "device": "NVIDIA GeForce RTX 3080",
+        "formal_host_git_revision": "41c5730122c7d343fe6fa685a9e2137d2a7cd258",
+        "audit_host_git_revision": "bab2104f2d226300a767ad94229796e8319eba09",
+        "note": "this audit re-derives every number from that exact artifact; the audit itself may execute on either node because the pipeline is pure numpy + the frozen reps file (verified bit-identical)"
+      },
+      {
+        "check": "A4.one_representation_per_statement_computed_once",
+        "pass": true,
+        "reps_rows": 612,
+        "unique_statement_ids": 612,
+        "statements_in_valid_groups": 588,
+        "statements_in_all_720_groups": 612,
+        "groups_scanned": 720,
+        "keyed_by": "statement_id only (not seed, not step, not label)",
+        "computed_in_one_pass": "single no_grad forward per statement, layer indices pre-registered"
+      },
+      {
+        "check": "A4.extraction_path_never_reads_labels",
+        "pass": true,
+        "prompt_text_byte_identical_across_all_copies": true,
+        "statements_observed_with_both_labels_in_valid_set": 3,
+        "representation_bit_identical_for_those_statements": true,
+        "extractor_inputs": "tokenizer(prompt text) -> bf16 forward -> hidden_states[layer+1][-1 token]",
+        "label_fields_used_by_extractor": "none"
+      },
+      {
+        "check": "A4.block18_primary_was_pre_registered_not_outcome_selected",
+        "pass": true,
+        "layers_in_artifact": [
+          9,
+          18,
+          27
+        ],
+        "primary": 18,
+        "robustness": [
+          9,
+          27
+        ],
+        "pre_registration_rule": "primary = int(2/3 x num_hidden_layers) of the loaded config; robustness = int(1/3 x NL) and NL-1 (asserted equal at extraction time)",
+        "extraction_refuses_mismatched_backbone": "scripts/v3_d001_extract.py derives [NL//3, 2NL//3, NL-1] and aborts unless it equals [9, 18, 27]",
+        "gate_code_reads_only_primary_layer": true,
+        "auprc_by_layer": {
+          "block18": 0.5728,
+          "block9": 0.50179,
+          "block27": 0.5635
+        },
+        "robust_layers_used_in_gate": false,
+        "note": "block 18 was fixed a priori from depth fractions; blocks 9/27 are reported but enter no gate"
+      }
+    ],
+    "all_pass": true
+  },
+  "A5_classification": {
+    "reproduction_pass": true,
+    "leakage_audit": "PASS",
+    "provenance_complete": true,
+    "frozen_gate_recomputed_identically": true,
+    "D001_CANONICAL": "CANONICAL_GO",
+    "note": "A3 (full-procedure component bootstrap) is reported in runs/v3_d001/v3_d001_fullproc_boot.json. It is post-hoc robustness and cannot alter G1-G3."
+  },
+  "timing": {
+    "nested_cv_and_cross_seed_s": 423.7,
+    "total_s": 726.7
+  }
+}

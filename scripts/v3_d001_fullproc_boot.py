@@ -30,8 +30,8 @@ import os
 import subprocess
 import sys
 import time
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 for _v in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
     os.environ.setdefault(_v, "1")          # per-worker: solve is single-thread optimal here
@@ -41,8 +41,8 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, os.path.join(ROOT, "scripts"))
 
-import v3_d001_run as R                     # noqa: E402  (env guard must precede numpy)
-from v3_d001_lib import (                   # noqa: E402
+import v3_d001_run as R
+from v3_d001_lib import (
     average_precision,
     brier,
     build_records,
@@ -66,8 +66,8 @@ def build_shared():
                 for i, s in enumerate(z["statement_ids"])}
     y, comps, _seeds, Xb1, Xb2 = R.build_designs(records, prompts, reps_map)
     uniq = np.unique(comps)
-    G.update(dict(y=y, comps=comps, Xb1=Xb1, Xb2=Xb2[R.PRIMARY_LAYER],
-                  uniq=uniq, comp_rows={c: np.where(comps == c)[0] for c in uniq}))
+    G.update({"y": y, "comps": comps, "Xb1": Xb1, "Xb2": Xb2[R.PRIMARY_LAYER],
+              "uniq": uniq, "comp_rows": {c: np.where(comps == c)[0] for c in uniq}})
 
 
 def rebuild_folds(ys, cs):
@@ -108,7 +108,7 @@ def run_rep(seed_rep: int) -> dict:
     e1, e2 = _enrich2(ys, oof1), _enrich2(ys, oof2)
     return {
         "seed_rep": seed_rep, "ok": True,
-        "n_rows": int(len(rows)), "n_unique_components": int(len(np.unique(cs))),
+        "n_rows": len(rows), "n_unique_components": len(np.unique(cs)),
         "prevalence": round(prev, 5),
         "positives": int(ys.sum()),
         "B1_auprc": round(float(ap1), 5), "B2_auprc": round(float(ap2), 5),
@@ -139,10 +139,10 @@ def main() -> int:
 
     build_shared()
     y = G["y"]
-    committed = json.loads(open(ROOT / args.committed).read())
+    committed = json.loads((ROOT / args.committed).read_text())
 
     # reference: the original (non-resampled) nested-CV point estimate, recomputed here
-    folds = json.loads(open(ROOT / "experiments/manifests/v3/v3_d001_folds.json").read())
+    folds = json.loads((ROOT / "experiments/manifests/v3/v3_d001_folds.json").read_text())
     outer = np.array([folds["component_outer_fold"][c] for c in G["comps"]], dtype=int)
     oof1, _ = R.nested_oof(G["Xb1"], y, G["comps"], outer, folds["inner_fold_by_outer"], N_OUTER)
     oof2, _ = R.nested_oof(G["Xb2"], y, G["comps"], outer, folds["inner_fold_by_outer"], N_OUTER)

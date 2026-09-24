@@ -219,7 +219,7 @@ def prompt_text_by_statement():
     sid_map = LIB._load_statement_map(ROOT, R.DATASET)
     seen: dict = {}
     n_groups = 0
-    for seed, rel in LIB.SEED_DIRS.items():
+    for rel in LIB.SEED_DIRS.values():
         for fp in sorted((ROOT / rel).glob("*.jsonl"), key=lambda p: int(p.stem)):
             recs = [json.loads(l) for l in fp.read_text(encoding="utf-8").split("\n") if l.strip()]
             i = 0
@@ -286,7 +286,7 @@ def main() -> int:
     for tag, got, exp in surfaces:
         repro.append(_chk(f"R.reproduce_metric_surface[{tag}]", not _diff(got, exp),
                           mismatches=_diff(got, exp), n_fields=len(got)))
-    got_ds = {"valid_groups": len(records), "components": int(len(set(comps))),
+    got_ds = {"valid_groups": len(records), "components": len(set(comps)),
               "informative_positives": int(y.sum()), "prevalence": round(float(y.mean()), 5)}
     repro.append(_chk("R.reproduce_dataset", not _diff(got_ds, committed["dataset"]), mismatches=_diff(got_ds, committed["dataset"])))
     n_g3 = sum(v["G3_fold_criterion_met_frozen_rule"] for v in xs.values())
@@ -341,7 +341,7 @@ def main() -> int:
     a2.append(_chk("A2.family_component_hard_disjointness", dis_outer and sum(sizes) == len(set(comps)),
                    every_component_single_outer_fold=dis_outer,
                    components_per_fold=sizes, sum_components_per_fold=int(sum(sizes)),
-                   n_components=int(len(set(comps)))))
+                   n_components=len(set(comps))))
 
     _, _, _, Xb1j, Xb2j = R.build_designs(junk_label_fields(records), prompts, reps_map)
     a2.append(_chk("A2.design_matrices_independent_of_all_label_fields",
@@ -359,7 +359,7 @@ def main() -> int:
                    and float(onehot.sum(axis=1).max()) <= 1.0 and float(onehot.sum(axis=1).min()) >= 0.0,
                    all_B1_feature_names_declared_in_frozen_manifest=b1_declared,
                    n_B1_features=int(Xb1.shape[1]), frozen_feature_order_matches_code=list(R.B1_FEATURES) == list(LIB.B1_FEATURES),
-                   onehot_values=sorted(set(float(v) for v in np.unique(onehot))),
+                   onehot_values=sorted({float(v) for v in np.unique(onehot)}),
                    max_active_source_levels=float(onehot.sum(axis=1).max()),
                    records_with_no_known_source=int((onehot.sum(axis=1) == 0).sum()),
                    frozen_levels=src_levels,
@@ -373,7 +373,7 @@ def main() -> int:
                    and bool(np.array_equal(Xb1[:, LIB.B1_NUMERIC.index("step_norm")], step_norm)),
                    formula="step_norm = rollout_step / 60 (frozen STEPS; no per-seed or per-fold rescaling)",
                    is_last_B2_column={f"block{L}": bool(np.array_equal(Xb2[L][:, -1], step_norm)) for L in R.LAYERS},
-                   unique_steps=int(len(set(steps.tolist()))),
+                   unique_steps=len(set(steps.tolist())),
                    note="known at deployment time (trainer step counter); carries no reward/verifier information"))
 
     a2.append(_chk("A2.B2_input_surface_is_frozen_representation_plus_step_only",
@@ -436,7 +436,7 @@ def main() -> int:
                    preregistration_commit_utc=_git("log", "-1", "--format=%aI", pre_reg_commit),
                    results_commit_utc=_git("log", "-1", "--format=%aI", "--", COMMITTED),
                    folds_hash=folds["folds_hash"],
-                   seeds=dict(outer_folds=n_outer, inner_folds=int(folds["n_inner"]), fold_seed=SEED)))
+                   seeds={"outer_folds": n_outer, "inner_folds": int(folds["n_inner"]), "fold_seed": SEED}))
 
     a2.append(_chk("A2.cross_seed_train_test_family_isolation",
                    all(v["family_disjoint_train_test"] for v in xs.values()),

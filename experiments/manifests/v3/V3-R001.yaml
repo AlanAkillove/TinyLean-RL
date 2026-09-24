@@ -1,0 +1,240 @@
+# V3-R001 experiment manifest - PREREGISTRATION DRAFT.
+# Machine-readable encoding of docs/v3/V3-R001_preregistration.md and owner
+# directive 2026-09-24 Part B (B1-B7).
+#
+# NOT LAUNCHED. Drafted by the agent under Part B ("DRAFT ONLY - do not launch");
+# execution requires an explicit owner authorization of decisions D-a..D-e (SS15).
+# Nothing in this file constitutes permission to start RL training.
+experiment: V3-R001
+title: Decision-Guided RLVR Mechanism Trial
+kind: rl-intervention
+status: PREREGISTERED-DRAFT / NOT-LAUNCHED
+created_at_utc: "2026-09-24"
+owner: "fly90 canonical / fly122 memory-smoke only (see host_note)"
+branch: v3-jev-rl-controller
+
+research_question: >
+  Does D001-guided theorem sampling increase the realized density of informative
+  GRPO groups under a fixed RL compute budget? Mechanism only - this question does
+  NOT ask whether final proving capability improves.
+
+depends_on:
+  V3-D001:
+    gate: "GO (G1 & G2 & G3) + calibration claim, offline level only"
+    canonical_audit: "CANONICAL_GO (LEAKAGE_AUDIT 24/24 PASS, A4 5/5, reproduced bit-identically on fly90 and fly122)"
+    d001_results: experiments/manifests/v3/V3-D001_results.json
+    offline_freeze: experiments/manifests/v3/V3-R001_offline_freeze.json
+    prereg_commit: 41c5730
+  note: >
+    A D001 GO licenses the owner to CONSIDER this trial; it does not launch it. No
+    capability claim transfers from D001 to R001 in either direction.
+
+host_note: >
+  Owner SS13 of docs/dual_server_collaboration.md designates fly122 (RTX 3080, 10 GB)
+  as the formal eval node, but B7 requires a 10 GB memory-compatibility smoke there
+  while the 24 GB fly90 (RTX 3090) is the only node that can hold the original recipe
+  with headroom. Resolution proposed and awaiting owner decision D-c: fly90 hosts the
+  formal arms, fly122 runs the non-scientific memory smoke only.
+
+constraints:
+  draft_only: true                      # owner Part B: "do not launch R001"
+  no_capability_claim: true
+  b3_mlp: NOT_AUTHORIZED
+  do_not_modify: [V2 frozen manifests/results, V2-A001, Track B allocator]
+  n_candidates_per_theorem: 8           # frozen; may not change to fit memory
+  effective_batch_semantics: frozen
+  reward_normalization: frozen
+  sampling_semantics: frozen            # only the theorem DISTRIBUTION may differ between arms
+  raw_rollout_git: "hashes/provenance only; the ~126 MB raw rollout_data is never committed"
+
+# ---------------------------------------------------------------- B1/B2/B3 controller
+controller:
+  recipe: "frozen B2: theta0 block-18 last-token rep (1024-d) + step_norm -> L2 logistic (Newton)"
+  fit_on: "ALL 686 V1 seed1/2/3 valid groups (rollout history only; no reward/verifier input)"
+  online_retraining: NONE               # frozen for the whole trial; no incremental refit
+  retraining_during_trial: prohibited
+  C_selection: {grid: [0.003, 0.01, 0.03, 0.1, 0.3, 1.0, 3.0, 10.0],
+                criterion: "mean inner family-grouped AUPRC over 4 folds, ties -> smaller C",
+                selected_C: 0.003, mean_inner_auprc: 0.61047}
+  standardization: "mean/std of the 686-group fit set, stored with the weights"
+  weights_sha256: dc0c24ed523a1dd4ca63ef19848419a0d3c65a934d59d902a27fa858a513589a
+  theta0_weights_sha256: 34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2
+  representation: precomputed once per unique statement; only the step scalar varies per step
+  step_feature_semantics: "step_norm = elapsed optimizer updates / 60; a <=30-step trial stays inside the fitted support"
+  step_sensitivity_mean_abs_q_shift: 0.00106     # q(t) effectively time-stationary within the trial
+  sanity: {deployment_recipe_oof_auprc: 0.5728, committed_d001_oof_auprc: 0.5728,
+           B1_reference_auprc: 0.42673, in_sample_auprc_descriptive_only: 0.78446}
+
+# ---------------------------------------------------------------- B3 sampler (STOCHASTIC)
+sampler:
+  form: "w_i(t) = epsilon + q_i(t)^alpha ;  P(i|t) = w_i / sum_j w_j"
+  deterministic_top_k: FORBIDDEN
+  unit: "prompt-pool ROW (multiplicity-preserving), not distinct statement"
+  alpha_star: 1.0
+  epsilon_star: 0.0
+  frozen_by: "offline informative-value grid search on D001 OOF predictions ONLY"
+  grid: {alpha: [0.25, 0.5, 1.0, 2.0, 4.0], epsilon: [0.0, 0.01, 0.025, 0.05, 0.1, 0.2, 0.4],
+         n_pairs: 35, n_feasible: 31}
+  objective: "maximise the multiplicity-weighted OOF-predicted treated IGR"
+  tie_rule: "toward the larger epsilon (flatter, safer)"
+  forbidden_inputs_to_freeze: [any RL outcome, any Pass@k, any reward from a candidate run, any retune after R001 data exists]
+  constraints:
+    min_ESS_fraction_of_pool: 0.03
+    min_normalized_entropy: 0.85
+    max_prob_over_control: 2.0          # control-RELATIVE, see rationale
+    min_family_coverage_ratio: 0.90
+    min_trial_family_coverage_ratio: 0.80
+  constraint_rationale: >
+    Pool row multiplicity spans 1..54, which already makes the UNIFORM control arm
+    concentrate 4.754x relative to statement-uniform. An absolute cap therefore grades
+    the pool's copy structure rather than controller-induced concentration and forbids
+    the treatment for doing what the control already does. An earlier draft used an
+    absolute 5x cap (7/35 feasible, best row-level uplift +5.0 pp); it was corrected
+    to the control-relative form BEFORE any RL outcome existed.
+  diagnostics_at_freeze:
+    row_level: {ESS: 216.379, ESS_fraction_of_pool: 0.36799, normalized_entropy: 0.90944,
+                max_sampling_probability: 0.01581506, max_prob_over_uniform: 9.2993,
+                max_prob_over_control: 1.9561, top10_probability_mass: 0.11884,
+                expected_distinct_groups_per_batch: 3.9408,
+                expected_distinct_groups_over_trial: 68.667,
+                fraction_of_groups_never_drawn_over_trial: 0.84142,
+                min_group_probability: 0.00005113}
+    control_row_level_reference: {ESS: 190.061, normalized_entropy: 0.88791,
+                                  max_prob_over_uniform: 4.754,
+                                  expected_distinct_groups_over_trial: 74.444,
+                                  min_group_probability: 0.00014972}
+    ratios_vs_control: {max_prob: 1.9561, entropy: 1.0242, per_batch_coverage: 0.9952,
+                        trial_coverage: 0.9224}
+  sensitivity_alternative_objective:
+    record_level_pick: {alpha: 2.0, epsilon: 0.025, treated_IGR_record_level: 0.44781,
+                        uplift_pp_multiplicity_weighted: 15.081, agrees_with_frozen_pick: false}
+    note: reported, never used; shows the objective choice materially affects the pick
+
+# ---------------------------------------------------------------- B4 arms (single difference)
+arms:
+  control: {name: uniform, sampler: "w_i(t) identically 1 over the same filtered prompt pool"}
+  treatment: {name: decision_guided, sampler: "epsilon*=0.0 + q_i(t)^alpha*=1.0"}
+  theorems_per_step: 4
+  candidates_per_theorem: 8
+  identical_everywhere_else:
+    - model / theta0 backbone and weights
+    - n=8 candidates per theorem, effective batch size
+    - optimizer and LR schedule
+    - GRPO / Dr.GRPO flags, advantage and reward normalization
+    - max response length, temperature, top_p
+    - verifier and scoring pipeline
+    - total optimizer steps and wall-clock budget
+  only_differences: theorem sampling distribution
+  seed_strategy: "2 seeds x 2 arms, both arms sharing the same seed list"
+
+# ---------------------------------------------------------------- pool
+pool:
+  raw_pool_rows: 24418
+  raw_pool_unique_statements: 7620
+  processed_pool_rows: 24418
+  processed_pool_unique_statements: 7620
+  multiplicity_identical_raw_vs_processed: true
+  multiplicity_min_median_max: [1, 1, 54]
+  scored_statements_present_in_pool: 588
+  scored_statement_share_of_pool_rows: 0.27353
+  scored_statement_multiplicity_min_median_max: [1, 6, 54]
+  support_gap_note: >
+    Informativeness labels exist for only 27.4% of pool rows and are NEGATIVELY related
+    to multiplicity, so no offline quantity pins the trial's absolute realized IGR.
+
+# ---------------------------------------------------------------- B5 horizon / budget
+horizon:
+  optimizer_steps_per_arm: 25           # owner range 20-30; FROZEN, no extension after data
+  draws_per_arm: 100
+  candidate_rollouts_per_arm: 800
+  estimated_wall_h_on_3090: 3.8         # at V1's measured 136 s/step
+  estimated_gpu_hours: 5.6              # 4 runs
+  basis: "historical per-step IGR variance, pooled over 3 V1 runs x 60 steps = 180 values"
+  pooled_mean_IGR: 0.15278
+  pooled_sd_per_step_IGR: 0.18571
+  cluster_unit: training_step
+  se_of_difference_at_H25: 0.05253
+  mde_80pct_power_pp: {H15: 16.862, H20: 14.603, H25: 13.061, H30: 11.923, H40: 10.326, H60: 8.431}
+  steps_for_80pct_power_by_uplift_pp: {5: 171, 10: 43, 15: 19, 20: 11, 26: 7}
+
+# ---------------------------------------------------------------- B6 gate
+gate:
+  evaluated_on: "pooled 2-seed data, once, at the frozen horizon"
+  pass_rule: "all four of R1-R4; any failure -> STOP, report owner, no V3-R002 discussion"
+  excludes: [minif2F, fixed-set Pass@k, final reward level, any capability metric]
+  R1_mechanism:
+    claim: "treated realized IGR clearly exceeds uniform"
+    test: "one-sided step-cluster permutation test, arm labels permuted across steps within seed,
+           >=10000 permutations, permutation seed frozen in the run manifest, alpha=0.05"
+    and: "both seeds point the same direction (a reversing seed is a FAIL, not a wash)"
+  R2_efficiency:
+    claim: "informative groups per GPU-hour improved"
+    test: "treated > control on the measured ratio, same direction in both seeds"
+    measured: [wall time per arm, candidate count per arm, token count per arm]
+  R3_no_coverage_collapse:
+    claim: "the treatment did not narrow the curriculum"
+    test: "treated unique family components >= 0.8 x control over the trial; realized per-step
+           normalized sampling entropy >= 0.85 of the designed value in >=90% of steps"
+  R4_no_pathology:
+    claim: "arms are comparable as learning problems"
+    test: "verifier error rate not worse than control; format-failure and truncation within control
+           +/- declared tolerance; all grad-norms finite; no zero-advantage-all-steps stall"
+  predeclared_power_floor: >
+    At H=25, 80% power requires a true uplift of 13.06 pp. The offline-predicted uplift is
+    19.447 pp [13.463, 26.243]. An underpowered null is reported as a POWER statement in those
+    words, never as a falsification of D001.
+
+endpoints:
+  primary: "realized IGR per arm = fraction of valid groups with 0 < sum(score) < 8, pooled over seeds, plus difference"
+  secondary:
+    - informative groups per 1000 candidates / per 1000 response tokens / per GPU-hour
+    - mean reward per step; all-fail fraction; all-success fraction
+    - realized vs designed sampling entropy; unique theorems; unique family components
+    - IGR by step bin (1-5 / 6-12 / 13-19 / 20-25) and per-arm trend  # curriculum-collapse check
+    - source composition per arm (synthetic / autoformalizer / human)  # reported as a MEDIATOR, not hidden
+    - response length, truncation, format failure, verifier error, grad-norm finiteness
+    - per-step q_i(t) quantiles of drawn theorems (drift off the fitted support)
+  label: "score (never acc) - owner SS1"
+
+# ---------------------------------------------------------------- B7 10 GB compatibility
+memory_compatibility_smoke:
+  status: REQUIRED-BEFORE-FORMAL-R001
+  node: fly122                      # RTX 3080, 10240 MiB
+  classification: non-scientific    # result is NOT an experiment outcome
+  must_preserve: [n=8, effective batch, sampling semantics, reward normalization/semantics, optimizer semantics]
+  allowed_lesvers:
+    - gradient checkpointing
+    - CPU optimizer-state offload
+    - activation memory optimization
+  stop_and_report_owner_if: "any change to n, effective batch, sampling semantics or reward normalization is needed to fit 10 GB"
+
+preflight:
+  before_formal_run:
+    - extract theta0 block-18 reps for the FULL pool (7620 unique statements) and verify hash
+    - unit-test the sampler against the frozen analytic diagnostics on a small pool
+    - run full-pool sampler diagnostics; confirm constraints hold on the real pool, not only the labelled support
+    - diff control vs treatment configs; assert exactly one difference (the sampler)
+    - memory smoke on fly122 (B7)
+    - commit the frozen preregistration and this manifest BEFORE launch
+    - record rollout provenance manifest (hashes only)
+
+open_risks:
+  - "support/estimand gap: predicted uplift computable on 27% of pool rows only"
+  - "source concentration: informative class is ~90% synthetic, so the treatment partly acts as source reweighting"
+  - "non-stationarity / use-up: q was fit on a moving policy's rollouts"
+  - "coverage vs density tension: flattening to protect coverage lowers the predicted IGR"
+  - "objective-dependence of the freeze: record-level and multiplicity-weighted objectives pick different (alpha, epsilon)"
+
+owner_decisions_pending:
+  D-a: "confirm alpha*=1.0, epsilon*=0.0 as frozen by SS5 (or direct the alternative rule)"
+  D-b: "confirm H=25 and 2 seeds x 2 arms (~5.6 GPU-h), or 1 seed (~2.8 GPU-h, weaker R1)"
+  D-c: "confirm fly90 hosts the formal arms and fly122 only the memory smoke"
+  D-d: "confirm R1 as significance-only, or add an absolute floor (observed uplift >= 13.06 pp)"
+  D-e: "confirm the prompt pool stays the full 24,418-row pool"
+
+prohibited:
+  - MLP / new layer sweep / mean-pooling optimization / new backbone
+  - TinyJev / Kev models, Track B allocator, candidate ranker, repair controller
+  - any formal RL run without owner authorization of D-a..D-e
+  - deterministic top-k sampling
+  - online retraining of the controller

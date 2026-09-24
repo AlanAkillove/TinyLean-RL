@@ -88,32 +88,44 @@ CONSTRAINTS = {
                                            # at ~4.8x statement-uniform, so an absolute cap measures the
                                            # pool's copy structure, not controller-induced concentration.
     "min_family_coverage_ratio": 0.90,     # expected distinct components per batch >= 0.9 x control
+    "min_trial_family_coverage_ratio": 0.80,  # distinct components EVER drawn across the whole trial
+                                              # (TRIAL_DRAWS prompts) >= 0.8 x control
 }
+TRIAL_DRAWS = 100                          # proposed H=25 steps x 4 prompts/step; frozen with H
 
 
-def sampler_diagnostics(w, group_of, multiplicity, batch: int) -> dict:
+def sampler_diagnostics(w, group_of, multiplicity, batch: int, n_draws: int = 0) -> dict:
     """Multinomial (with-replacement) sampler diagnostics from unnormalised weights."""
     ww = np.asarray(w, dtype=float)
     if multiplicity is not None:
         ww = ww * np.asarray(multiplicity, dtype=float)
     p = ww / ww.sum()
     keep = p > 0
-    K = int(len(p))
+    K = len(p)
     ent = float(-(p[keep] * np.log(p[keep])).sum())
     uniq_g, inv = np.unique(group_of, return_inverse=True)
     pg = np.bincount(inv, weights=p, minlength=len(uniq_g))
-    return {"K_units": K, "n_groups": int(len(uniq_g)),
-            "ESS": round(1.0 / float((p ** 2).sum()), 3),
-            "ESS_fraction_of_pool": round(1.0 / float((p ** 2).sum()) / K, 5),
-            "entropy_nats": round(ent, 5),
-            "normalized_entropy": round(ent / math.log(K), 5) if K > 1 else None,
-            "max_sampling_probability": round(float(p.max()), 8),
-            "max_prob_over_uniform": round(float(p.max() * K), 4),
-            "top10_probability_mass": round(float(np.sort(p)[::-1][:10].sum()), 5),
-            "expected_distinct_groups_per_batch": round(
-                float((1.0 - np.power(1.0 - pg, batch)).sum()), 4),
-            "expected_distinct_units_per_batch": round(
-                float((1.0 - np.power(1.0 - p, batch)).sum()), 4)}
+    out = {"K_units": K, "n_groups": len(uniq_g),
+           "ESS": round(1.0 / float((p ** 2).sum()), 3),
+           "ESS_fraction_of_pool": round(1.0 / float((p ** 2).sum()) / K, 5),
+           "entropy_nats": round(ent, 5),
+           "normalized_entropy": round(ent / math.log(K), 5) if K > 1 else None,
+           "max_sampling_probability": round(float(p.max()), 8),
+           "max_prob_over_uniform": round(float(p.max() * K), 4),
+           "top10_probability_mass": round(float(np.sort(p)[::-1][:10].sum()), 5),
+           "expected_distinct_groups_per_batch": round(
+               float((1.0 - np.power(1.0 - pg, batch)).sum()), 4),
+           "expected_distinct_units_per_batch": round(
+               float((1.0 - np.power(1.0 - p, batch)).sum()), 4)}
+    if n_draws:
+        # per-batch coverage barely moves at 4 draws/step; the quantity that matters for a
+        # whole trial is how many family components are EVER drawn in H x batch prompts.
+        out["expected_distinct_groups_over_trial"] = round(
+            float((1.0 - np.power(1.0 - pg, n_draws)).sum()), 4)
+        out["fraction_of_groups_never_drawn_over_trial"] = round(
+            float(np.power(1.0 - pg, n_draws).mean()), 5)
+        out["min_group_probability"] = round(float(pg.min()), 8)
+    return out
 
 
 def wmean(w, v) -> float:
@@ -208,8 +220,11 @@ def main() -> int:
                 "effectively time-stationary inside a <=30-step trial"}
 
     # ---- 3. (alpha, epsilon) freeze ----------------------------------------------------
-    uni_stmt = sampler_diagnostics(np.ones(len(stmt_ids)), stmt_comp, None, B_THEOREMS_PER_STEP)
-    uni_row = sampler_diagnostics(np.ones(len(stmt_ids)), stmt_comp, mult_stmt, B_THEOREMS_PER_STEP)
+    uni_stmt = sampler_diagnostics(np.ones(len(stmt_ids)), stmt_comp, None, B_THEOREMS_PER_STEP,
+                                   n_draws=TRIAL_DRAWS)
+    uni_row = sampler_diagnostics(np.ones(len(stmt_ids)), stmt_comp, mult_stmt, B_THEOREMS_PER_STEP,
+                                  n_draws=TRIAL_DRAWS)
+    p_ctrl_row = (mult_stmt / mult_stmt.sum())
     yf = y.astype(float)
     base_row = wmean(mult_rec, yf)
     rows = []
@@ -217,18 +232,25 @@ def main() -> int:
         for eps in EPS_GRID:
             wrec = eps + np.clip(oofB2, 1e-9, 1.0) ** alpha
             wstmt = eps + np.clip(q_mid, 1e-9, 1.0) ** alpha
-            theorem = sampler_diagnostics(wstmt, stmt_comp, None, B_THEOREMS_PER_STEP)
-            rowlevel = sampler_diagnostics(wstmt, stmt_comp, mult_stmt, B_THEOREMS_PER_STEP)
+            theorem = sampler_diagnostics(wstmt, stmt_comp, None, B_THEOREMS_PER_STEP,
+                                          n_draws=TRIAL_DRAWS)
+            rowlevel = sampler_diagnostics(wstmt, stmt_comp, mult_stmt, B_THEOREMS_PER_STEP,
+                                           n_draws=TRIAL_DRAWS)
             igr_row = wmean(wrec * mult_rec, yf)
+            p_treat_row = (wstmt * mult_stmt) / float((wstmt * mult_stmt).sum())
+            trial_cov_ratio = (rowlevel["expected_distinct_groups_over_trial"]
+                               / uni_row["expected_distinct_groups_over_trial"])
             feasible = all([
                 rowlevel["ESS_fraction_of_pool"] >= CONSTRAINTS["min_ESS_fraction_of_pool"],
                 rowlevel["normalized_entropy"] >= CONSTRAINTS["min_normalized_entropy"],
                 rowlevel["max_sampling_probability"]
                 <= CONSTRAINTS["max_prob_over_control"] * uni_row["max_sampling_probability"],
                 rowlevel["expected_distinct_groups_per_batch"]
-                >= CONSTRAINTS["min_family_coverage_ratio"] * uni_row["expected_distinct_groups_per_batch"]])
+                >= CONSTRAINTS["min_family_coverage_ratio"] * uni_row["expected_distinct_groups_per_batch"],
+                trial_cov_ratio >= CONSTRAINTS["min_trial_family_coverage_ratio"]])
             rows.append({"alpha": alpha, "epsilon": eps, "feasible": bool(feasible),
                          "oof_treated_IGR_record_level": round(wmean(wrec, yf), 5),
+                         "oof_uplift_pp_record_level": round(100 * (wmean(wrec, yf) - float(yf.mean())), 3),
                          "oof_treated_IGR_multiplicity_weighted": round(igr_row, 5),
                          "oof_uplift_pp_multiplicity_weighted": round(100 * (igr_row - base_row), 3),
                          "theorem_level": theorem, "row_level": rowlevel,
@@ -237,6 +259,9 @@ def main() -> int:
                              / uni_row["max_sampling_probability"], 4),
                          "entropy_ratio_vs_control": round(
                              rowlevel["entropy_nats"] / uni_row["entropy_nats"], 4),
+                         "trial_coverage_ratio_vs_control": round(trial_cov_ratio, 4),
+                         "starved_statement_fraction": round(
+                             float((p_treat_row < 0.1 * p_ctrl_row).mean()), 5),
                          "coverage_ratio_vs_uniform": round(
                              rowlevel["expected_distinct_groups_per_batch"]
                              / uni_row["expected_distinct_groups_per_batch"], 4)})
@@ -257,13 +282,15 @@ def main() -> int:
            "agrees_with_frozen_pick": bool(alt_r["alpha"] == pick["alpha"]
                                            and alt_r["epsilon"] == pick["epsilon"])}
     a_star, e_star = pick["alpha"], pick["epsilon"]
-    wn = (e_star + np.clip(oofB2, 1e-9, 1.0) ** a_star) * mult_rec
+    wflat = e_star + np.clip(oofB2, 1e-9, 1.0) ** a_star
+    wn = wflat * mult_rec
     wn = wn / wn.sum()
+    # two COHERENT contrasts: each arm's treated/control pair shares one denominator family
     lo, hi, _ = component_bootstrap(
         records, np.zeros(len(y)), lambda idx: wmean(wn[idx], yf[idx]) - wmean(mult_rec[idx], yf[idx]),
         n_rep=args.bootstrap_reps, seed=SEED)
     lo_rec, hi_rec, _ = component_bootstrap(
-        records, np.zeros(len(y)), lambda idx: wmean(wn[idx], yf[idx]) - float(y[idx].mean()),
+        records, np.zeros(len(y)), lambda idx: wmean(wflat[idx], yf[idx]) - float(y[idx].mean()),
         n_rep=args.bootstrap_reps, seed=SEED)
 
     # ---- 4. power analysis -------------------------------------------------------------
@@ -281,7 +308,7 @@ def main() -> int:
     pooled = np.concatenate(series)
     power = {
         "unit_of_inference": "training step (cluster of 4 groups / 32 candidates) - the historical unit",
-        "historical_basis": {"runs": list(per_run), "pooled_steps": int(len(pooled)),
+        "historical_basis": {"runs": list(per_run), "pooled_steps": len(pooled),
                              "pooled_mean_IGR": round(float(pooled.mean()), 5),
                              "pooled_sd_of_per_step_IGR": round(float(pooled.std(ddof=1)), 5),
                              "per_run": per_run},
@@ -331,7 +358,7 @@ def main() -> int:
                           "substitute for the OOF predictions used to freeze (alpha, epsilon)",
         },
         "pool": pool,
-        "oof_q_distribution": {"n_records": int(len(oofB2)), "mean": round(float(oofB2.mean()), 5),
+        "oof_q_distribution": {"n_records": len(oofB2), "mean": round(float(oofB2.mean()), 5),
                                "quantiles_p05_p25_p50_p75_p95": [
                                    round(float(v), 5) for v in np.quantile(oofB2, [.05, .25, .5, .75, .95])],
                                "min_max": [round(float(oofB2.min()), 5), round(float(oofB2.max()), 5)],
@@ -341,6 +368,7 @@ def main() -> int:
         "grid_search": {"alpha_grid": ALPHA_GRID, "epsilon_grid": EPS_GRID,
                         "objective": "maximise the multiplicity-weighted OOF-predicted treated IGR",
                         "constraints": CONSTRAINTS,
+                        "trial_draws_assumed_for_coverage": TRIAL_DRAWS,
                         "constraint_rationale": (
                             "anti-collapse constraints are measured RELATIVE TO THE CONTROL ARM's own "
                             "row-level distribution, because pool row multiplicity (1..54) already makes "
@@ -360,8 +388,14 @@ def main() -> int:
                      "uniform_realized_IGR_multiplicity_weighted": round(base_row, 5),
                      "uplift_pp_ci95_component_bootstrap_multiplicity_weighted": [round(100 * lo, 3),
                                                                                  round(100 * hi, 3)],
+                     "uplift_definition_multiplicity_weighted":
+                         "treated row-weighted mean minus control row-weighted mean, both over the SAME "
+                         "labelled statements with the same multiplicity weights (coherent contrast)",
                      "uplift_pp_ci95_component_bootstrap_record_level": [round(100 * lo_rec, 3),
                                                                         round(100 * hi_rec, 3)],
+                     "uplift_definition_record_level":
+                         "treated mean under w = epsilon + q^alpha minus the equal-weight 686-group mean "
+                         "(the D001 realized prevalence); no multiplicity enters either side",
                      "caveat": "an off-policy estimate on the 686 V1 groups, not a guarantee: the treated arm "
                                "also changes which groups are informative as it learns"},
         "power_analysis": power,
