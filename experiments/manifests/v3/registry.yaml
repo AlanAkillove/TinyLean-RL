@@ -130,16 +130,18 @@ amendments:
     status: CANONICAL_GO_WITH_QUALIFICATION   # owner decision 2026-09-24 §1: LEAKAGE_AUDIT PASS +
                                              # provenance complete, but the claim is narrowed (see below)
     permitted_claim: >
-      Wording of record (owner 2026-09-24 §1, supersedes the earlier "beyond handcrafted difficulty
-      features" formulation, which is RETIRED as an unconditional main claim):
-      "Frozen Kimina representations contain family-generalizable signal that prospectively motivates
-      prediction of reward-informative RLVR groups, with strong enrichment over prevalence."
-      Retrospective-accurate variant (use when the sentence describes the offline probe itself, since
-      the current evidence is retrospective): "Frozen Kimina representations contain
-      family-generalizable signal that identifies reward-informative RLVR groups at enrichment far
-      above prevalence."
-      Mandatory accompanying limitation: "The average advantage over handcrafted difficulty features
-      is positive, but its full-procedure two-sided 95% interval includes zero."
+      Wording of record (owner decision 2026-09-24 §14, FINAL; it supersedes both the earlier "beyond
+      handcrafted difficulty features" formulation and the "prospectively motivates prediction" variant
+      proposed by the auditor on 2026-09-24 - the latter is kept below only because deleting the history
+      of a claim would be worse than recording it):
+      "Frozen Kimina representations contain family-generalizable signal that identifies
+      reward-informative RLVR groups at enrichment far above prevalence."
+      Mandatory accompanying limitation, verbatim as accepted: "Their average advantage over
+      handcrafted difficulty features is positive, but the full-procedure two-sided 95% interval
+      includes zero."
+      Why the owner's wording is the retrospective-accurate one: D001's evidence is a retrospective
+      probe on historical rollouts, so no D001 sentence may assert prospective validity - that
+      question is exactly what V3-R001 is preregistered to test and is still open.
     reporting_rule: >
       Binding. Whenever the B2-vs-B1 advantage is stated, BOTH intervals must be reported together:
       level-1 fixed-OOF dAUPRC +0.14607 [0.05096, 0.24145] AND level-2 full-procedure
@@ -152,7 +154,8 @@ amendments:
       dBrier all include 0 (one-sided p = 0.048 / 0.061 / 0.057). What IS robust to the full-procedure
       bootstrap is B2's absolute top-20 informative-group enrichment relative to prevalence
       (1000/1000 replicates >= 1.75). The narrower wording above was adopted by the owner on
-      2026-09-24 and is now the wording of record; the prospective variant is what V3-R001 tests.
+      2026-09-24 (§14) and is the wording of record; prospective validity is not claimed here at all,
+      it is the open question V3-R001 is preregistered to answer.
     not_permitted: ["controller improves RL", "controller improves theorem proving", "controller saves compute"]
 
   - id: V3-R001-id-reassignment-and-host-policy

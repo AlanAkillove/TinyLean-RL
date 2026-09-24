@@ -289,15 +289,19 @@ D001_CANONICAL_AUDIT:      reproduction PASS · A1 complete · LEAKAGE_AUDIT PAS
 D001_FINAL_STATUS:         CANONICAL_GO_WITH_QUALIFICATION     (owner decision 2026-09-24 §1; supersedes the
                             auditor-proposed CANONICAL_GO + qualification, which said the same thing)
                             frozen gate UNCHANGED: G1^G2^G3 = GO + calibration criteria, not re-opened
-main_claim (wording of record):
-  "Frozen Kimina representations contain family-generalizable signal that prospectively motivates
-   prediction of reward-informative RLVR groups, with strong enrichment over prevalence."
-retrospective_wording (accurate for the D001 result as computed):
+main_claim (wording of record, owner decision §14 — FINAL):
   "Frozen Kimina representations contain family-generalizable signal that identifies reward-informative
    RLVR groups at enrichment far above prevalence."
-limitation (must accompany either wording):
-  "The average advantage over handcrafted difficulty features is positive, but its full-procedure
+limitation (must accompany it, verbatim as accepted):
+  "Their average advantage over handcrafted difficulty features is positive, but the full-procedure
    two-sided 95 % interval includes zero."
+superseded_wordings (kept so the history of the claim is visible, not for use):
+  "…family-generalizable signal that **prospectively motivates prediction** of reward-informative RLVR
+   groups, with strong enrichment over prevalence." — the auditor's proposal, RETIRED by owner §14:
+   D001's evidence is retrospective, so no D001 sentence may assert prospective validity. That is
+   R001's open question.
+  "…signal that identifies reward-informative RLVR groups **beyond what a difficulty feature already
+   knows**." — RETIRED earlier, by A3.
 reporting_rule:
   both intervals are reported together — fixed-OOF  dAUPRC +0.146  CI [+0.051, +0.241]
                                          full-procedure  mean +0.109  CI [-0.025, +0.237]

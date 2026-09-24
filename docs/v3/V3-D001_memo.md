@@ -20,14 +20,17 @@ full-procedure (level-2, 1000):  mean  ΔAUPRC +0.109   CI [-0.025, +0.237]
 ```
 
 Therefore the sentence in *Bottom line* below — "carry informative signal **beyond** what a difficulty/source
-proxy already knows" — is **no longer the claim of record**. Approved wording:
+proxy already knows" — is **no longer the claim of record**. Wording of record, as finally accepted by the
+owner on 2026-09-24 (§14):
 
-* Main: *Frozen Kimina representations contain family-generalizable signal that prospectively motivates
-  prediction of reward-informative RLVR groups, with strong enrichment over prevalence.*
-* Accurate for this **retrospective** result: *Frozen Kimina representations contain family-generalizable
-  signal that identifies reward-informative RLVR groups at enrichment far above prevalence.*
-* Limitation, to be carried with it: *The average advantage over handcrafted difficulty features is
-  positive, but its full-procedure two-sided 95 % interval includes zero.*
+* Main claim: *Frozen Kimina representations contain family-generalizable signal that identifies
+  reward-informative RLVR groups at enrichment far above prevalence.*
+* Mandatory qualification, carried with it in every use: *Their average advantage over handcrafted
+  difficulty features is positive, but the full-procedure two-sided 95 % interval includes zero.*
+* Retired here, and the reason it retired: *…signal that **prospectively motivates prediction** of
+  reward-informative RLVR groups…* was the auditor's proposal; D001's evidence is retrospective, so no
+  D001 sentence may assert prospective validity. Whether the frozen controller predicts prospectively is
+  precisely the open question V3-R001 is preregistered to answer, and R001 has not been launched.
 
 The one-sided replicate-sign statement (952/1000, p = 0.048) may be reported in the appendix but **must not
 be used as the headline significance statement**. Everything else in this memo is unchanged and remains the
