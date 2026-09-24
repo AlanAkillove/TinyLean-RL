@@ -136,17 +136,32 @@ what a shallow 1025-feature / 104-positive model is sensitive to.
 4. **refit** B1 and B2(block18) and **regenerate** out-of-fold predictions;
 5. recompute ΔAUPRC = AUPRC(B2) − AUPRC(B1) on the resampled evaluation surface.
 
-**Status of the 1000-rep run (recorded while in flight).** `runs/v3_d001/v3_d001_fullproc_boot.json` is
-produced by a single end-of-run write, so partial replicate sets are not recoverable. As of
-2026-09-24T10:45+08:00 the run (launched 08:15 from the pre-lint tree, 40 workers) has consumed ≈325 000
-CPU-seconds. Direct measurement of one replicate under the same load costs >15 min wall, i.e. the
-40-way-contended throughput is ≈0.044 reps/s and **completion is ≈4 h out** (≈40 % done, estimated from
-that throughput). The frozen
-3-rep cross-node run (below) is reported in the meantime; it is enough to establish determinism and the
-*direction* of the width change, but its percentile interval is only a min/max of 3 values and **must not**
-be quoted as an interval estimate.
+**Status of the in-flight runs (recorded while in flight, re-measured 2026-09-24T11:45+08:00).** Each
+artifact is produced by a single end-of-run write, so partial replicate sets are not recoverable. Two
+runs are in flight:
 
-⟪A3 RESULTS INSERT — pending the 1000-rep artifact⟫
+| Run | Launched | Reps / workers | Measured state at 11:45 |
+|---|---|---|---|
+| fly90 `runs/v3_d001/v3_d001_fullproc_boot.json` | 08:15 | 1000 / 40 | 3 h 44 m elapsed, 40 workers each `nlwp = 1`, aggregate CPU 515 300 core-s → **95.9 % of 40 cores**, ≈535 reps done, ≈3.4 h remaining |
+| fly122 `runs/v3_d001/v3_d001_fullproc_500rep_fly122.json` | 02:35 UTC | 500 / 15 | 1 h 09 m elapsed, 15 workers `nlwp = 1`, 52 100 core-s → ≈84–93 % utilization; ETA band 1.5–6 h (wider, because 15 threads share 8 physical cores and the marginal per-rep cost there is not directly measurable without stealing a core) |
+
+The per-rep cost on fly90 is a **direct measurement, not an extrapolation**: a single-replicate probe
+(`--reps 1 --workers 1`) launched alongside the 40-worker run consumed **≥ 1 046 core-seconds without
+finishing**, against 765 s/rep mean for this machine's lighter-load 3-rep reference and 244 s/rep on
+fly122 uncontended. That is the basis of the ≈0.040 reps/s figure above. The probe was then killed: it
+occupies one of 40 cores and its remaining information value is exhausted.
+
+*Rejected accelerations, with reasons.* Reducing fly90's worker count cannot remove a BLAS thread
+explosion that does not exist (all workers are single-threaded) and would discard ≈535 completed
+replicates, since nothing is written until the run ends; float32 / GPU / eigen-decomposition re-use would
+change rounding and break the bit-identical recovery of the committed B1/B2 AUPRC that makes this variant
+comparable to the frozen gate; no third host exists and both nodes are saturated; and dropping below
+500 replicates violates the frozen 500–1000 range. The overlap between the two runs is not waste:
+replicate seeds are `20260924 … 20260923 + N`, so fly122's 500-rep set is a **deterministic prefix subset**
+of the fly90 1000-rep set, and whichever lands first is a complete answer at the frozen floor while the
+other turns the shared 500 seeds into a cross-node replication of the level-2 procedure.
+
+⟪A3 RESULTS INSERT — pending the in-flight artifact⟫
 
 **Cross-node determinism and lint-invariance of the procedure (measured).** The same script was run with
 `--reps 3 --workers 3` on fly122 (from committed `bab2104`, pre-lint) and on fly90 (working tree with this
@@ -159,7 +174,17 @@ edits are numerically inert. The fly122 run also re-derives the reference sample
 (`matches_committed: true`, ΔAUPRC 0.14607 == committed 0.14607).
 
 Rule respected: this is a **robustness statement about interval width**, reported alongside the frozen
-numbers. It is *not* a gate, it did not re-open G1–G3, and `gate_outcome_changed = false`.
+numbers. It is *not* a gate and it did not re-open G1–G3. Two honesty notes about that status. First, the
+artifact field `comparison_to_frozen_claim.gate_outcome_changed` is a **hard-coded structural constant**
+(`False` at `scripts/v3_d001_fullproc_boot.py:236`), not a measurement — by the owner's directive this run
+*cannot* change the gate, so quoting that field as a result would be circular. The informative statement is
+the explicit **counterfactual** (⟪A3 COUNTERFACTUAL — computed at fill time⟫): if the level-2 interval *had*
+been the gating statistic, would G1 still have passed? Second, both in-flight runs loaded their code from
+working trees that predate the lint edits (`bab2104` was committed 08:50 while fly90 launched 08:15; fly122
+checked out `78cdc45` at 02:50 UTC, after its 02:35 UTC launch), so git alone cannot certify the exact blob
+each run executed. That gap is closed empirically rather than asserted: each artifact re-derives the
+non-resampled reference sample and reports `matches_committed` against the committed B1/B2 AUPRC, and the
+500 shared replicate seeds can be compared byte-for-byte across nodes.
 
 ---
 
