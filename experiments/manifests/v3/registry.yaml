@@ -183,6 +183,30 @@ amendments:
       reused for a different design without an amendment like this one, and V1 (E###) / V2 (V2-A/B/C)
       identifiers remain out of scope.
 
+  - id: V3-D001-a3-cross-host-replication
+    applies_to: [V3-D001]
+    created_at_utc: "2026-09-24"
+    kind: robustness-replication              # re-runs an ALREADY-COMPUTED post-hoc bootstrap on a
+                                              # second machine; nothing re-interpreted, no gate touched
+    authorized_by: "carries out owner §1's instruction to report both intervals honestly"
+    artifact: experiments/manifests/v3/V3-D001_fullproc_500rep_fly122.json
+    artifact_sha256: 5e7e117f28424e616a14ad47319b8ea5f7043b4f21af8c1ce11555c5d9990215
+    changes:
+      - >
+        The level-2 (full-procedure) interval that §1 requires to be reported alongside the fixed-OOF
+        interval now has an independent replication on the formal node: 500 replicates on fly122
+        (16 cores, 15 workers) give dAUPRC mean +0.11118, 95% CI [-0.02427, +0.23934], sign
+        consistency 0.958, against the committed fly90 1000-rep run's mean +0.10869 and CI
+        [-0.02504, +0.23679]. Different machine, different core count, different replicate count, same
+        conclusion to the third decimal, and the same reference-sample point estimates (0.42673 /
+        0.57280 / +0.14607) reproduced exactly.
+      - >
+        Both replications agree on what is and is not established: B2's absolute top-20 enrichment CI
+        [2.793, 3.882] with 1.000 of replicates at or above 1.75 (the claim that stands), and a
+        delta-vs-B1 interval that includes 0 (the claim that does not). The frozen V3-D001 gate
+        outcome is unchanged (gate_outcome_changed: false); this is post-hoc robustness only.
+      - "Not permitted on the strength of either replication: 'controller improves RL', 'improves theorem proving', 'saves compute'."
+
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is
                                              # written. Read-only; none of them launches a rollout.
@@ -312,6 +336,91 @@ prepreregistration_audits:                   # owner directive 2026-09-24 §17 s
       §17 step 6 (write the new V3-R001 preregistration, whose GO gate is now frozen from a known
       design level rather than chosen after the fact). It authorizes no rollout, no GPU work, no sample
       draw, and no RL.
+
+  V3-R001-prescoring-freeze:
+    kind: frozen-theta0-forward-pass-and-predict-freeze   # NOT a rollout: no generation, no verifier,
+                                                          # no label, no gradient, no optimizer step
+    title: Prospective Controller Predictions and Sample Frozen for Every Owner-Selectable (reading, N)
+    status: COMPLETE / FROZEN_BEFORE_ANY_OUTCOME / OWNER_DECISION_REQUIRED_ON_READING_AND_N
+    created_at_utc: "2026-09-24"
+    authorized_by: "owner directive 2026-09-24 §6, §7, §10, §11 and §17 step 7"
+    scripts: [scripts/v3_r001_extract.py, scripts/v3_r001_prescore.py]
+    tests: tests/test_v3_r001_extract_prescore.py
+    result: experiments/manifests/v3/V3-R001_predictions.json
+    result_sha256: 070e933d8e45cbec416099a563dd2298e96f9ab1ae25b189b46c43de98de3602
+    host: "fly122 / RTX 3080 (owner §16: the formal node), torch 2.7.0+cu126, numpy 1.26.4"
+    reps_provenance:
+      candidate_theta0_reps_sha256: 5580536029bfde817d2465f5eba89ba22892d06c8b0073292a3b5ff32ce6ca04
+      historical_reference_sha256: d0c6b7b211d779e12ea22ca8a6c33808934760c8c74bb90ecf781efa909ecf4c  # V3-D001's own FORMAL reps
+      statement_ids_sha256: 59303b55ce7a948baa42a0fc893117f1306efad5f8691139f527bdcbb29d80b0
+      recipe_identity: "8/8 re-forwarded D001 statements BIT-EXACT vs the committed formal reps (worst cosine 1.0, worst relative-L2 difference 0.0, same engine); 612/612 historical rollout input strings reproduced byte-identically by the prompt reconstruction; checkpoint hash equals the frozen theta0 sha"
+      compute: "251 statements, 12.33 s extraction, 1.59 GB peak VRAM on the 3080, prompt tokens 123-1010"
+      raw_reps: "runs/v3_r001/theta0_reps.npz stays gitignored on the host; only hashes and provenance are committed"
+    frozen_protocol_replication: >
+      Re-running V3-D001's own per-fold selection here reproduces ALL 5 folds' chosen C and inner CV
+      AUPRC in BOTH arms, bit-equal to the committed D001 artifact (the script exits if any fold
+      differs). Deployment C = 0.003 for B2 and B1; the ensemble per-fold C is 0.003 for folds 0-3 and
+      0.01 for fold 4, exactly D001's frozen values. Without this, "the frozen controller" would be a
+      phrase rather than a checkable object.
+    owner_6_outcome: >
+      251/251 family-clean candidates carry a usable q_i = P(informative | theorem_i, step_norm=0) in
+      both arms, plus the OOF-fold-ensemble robustness score; zero missing, zero outside [0,1]. No
+      theorem is 'undefined because it has never been rolled out', which is exactly what §6 forbids.
+      q_B2 range over the union: 0.002-0.9439.
+    no_refit: "coefficients fitted ONCE on D001's 686 historical labelled groups; nothing about R001 enters the fit; no further fitting happens afterwards"
+    step_norm_note: >
+      0.0 for every candidate (owner §6's pre-update / initial-policy condition). The fit data's
+      step_norm spans 0.0167-1.00, so 0.0 sits just below that support; both heads are linear in the
+      features and 0.0 is the SAME value for every candidate, so it moves the absolute q level, not the
+      ranking that §9's statistics depend on. Recorded in the artifact as a caveat, not hidden.
+    pre_outcome_source_concentration:        # measured on frozen q and frozen source labels ONLY, so
+                                             # it is available NOW - which is why the stratified test
+                                             # is designed before any label exists (§11, §14)
+      top20pct_block_of_the_251_union: "B2: 50 synthetic / 0 autoformalizer / 0 human; B1 identical"
+      mean_q_B2_by_source: {synthetic: 0.44743, autoformalizer: 0.03230, human: 0.03122}
+      consequence: >
+        The pooled top-20% enrichment test is confounded with source by construction: a controller
+        that merely ranks 'synthetic' would pass it. Owner §11's source audit is therefore NOT a
+        robustness appendix - the preregistration carries a WITHIN-STRATUM test as a co-primary, and
+        any stratum whose expected positives cannot reach 80% power at ANY coherent enrichment is
+        reported as descriptive, never as a null result.
+      best_powered_cell: "consumed_only N=128 -> 45 synthetic, m=9, realized level 0.0229, MDE 2.16, power 0.971 at E=2.5, 1.000 at E=3.47; pi sensitivity 0.3444/0.25/0.20/0.15 -> MDE 2.16/2.53/2.82/3.23"
+      unreachable_cells: "autoformalizer (58 theorems, pi=0.0304, m=12, 0.36 expected positives): even the maximum coherent enrichment 1/f=4.8 gives power 0.5445; human (25, pi=0.0215, m=5, 0.11 expected): 0.0927 at the ceiling - both undetectable, so descriptive only"
+      caveat: "V1's per-source prevalence was measured on theorems V1 chose to re-draw up to 54 times, so 0.3444 is an optimistic anchor; the sensitivity column, not that single number, carries the design"
+    samples_frozen_now:                      # every (reading, N) the pool can supply, hashed BEFORE any
+                                             # outcome; the owner's choice cannot have followed a result
+      owner_literal_N56: 4b2dfceb02e6bb2207940fcd6178a88732f78b4d9c794b3a57d43929854c05ab
+      owner_literal_N64: a9d23c721d2783a7db911f9b30a4a4f0a84853ab03baab917191ea5165386447
+      owner_literal_N86: eef260a4974d9b3464b3d1d0c24789cf494607f9f2aea9e7f9952edd2e2177fb
+      owner_literal_wider_v1_N56: 268ff34f31caa270a708a81121eeb6f2794c31609809a5641defc3312d1f00ba
+      consumed_only_N56: b70009c4257faa1f0d813694d9486900eadb6392edfd1b3a9daa9bab985e1c4e
+      consumed_only_N64: abbbf36832ce638bd31163f8a362a4787b76facc2476d06b5713b54d93e2c0d9
+      consumed_only_N86: 38582a900d003575e06f58cabc80aaf54d6014d53804db22c6a529d3e7e7ba13
+      consumed_only_N128: 0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451
+      consumed_only_N192: 49eaabb76640bf238826f9ff85abacd48378fd68b0796157aaa68729fbb1dd8d
+      consumed_only_N221: 9aa88ab646fc09b1c8979d75eb2ec556ee044e44540458388039271766a50f9c
+    sample_structure: >
+      One theorem per family component (which is also what makes the power computation exact), drawn
+      by ordering components on SHA256("<seed>|<component_id>") and taking the first N - a uniform
+      permutation with no library-RNG or PYTHONHASHSEED dependence, so "fixed before the result" stays
+      independently checkable. Candidates are nested prefixes across N within a reading, so choosing a
+      larger N never reshuffles a smaller sample. The two readings with capacity 0
+      (owner_literal_all_reservations_honored, registry_labels_maximal) draw nothing and say so.
+    cross_engine_reassurance: >
+      The same prescore run on fly90's NON-FORMAL RTX 3090 reps differs from this formal fly122
+      artifact by max |delta q_B2| = 0.0294 while the top-50 of the 251-candidate union is IDENTICAL
+      (50/50 overlap) and every sample_sha256 matches. The bf16 cross-GPU noise that the extraction
+      recipe check exists to expose does not move the ranking that §9 depends on; the formal artifact
+      remains the only one that may be used, and the NON-FORMAL run cannot be written into
+      experiments/manifests/ even by accident (the script refuses).
+    inputs_read_only: [experiments/manifests/v3/V3-D001_results.json, experiments/manifests/v3/V3-D001_theta0_reps_meta.json,
+                       experiments/manifests/v3/v3_d001_folds.json, experiments/manifests/v3/V3-R001_family_clean_pool.json,
+                       experiments/manifests/v3/V3-R001_power.json, experiments/manifests/v2/family_component_registry.json]
+    authorizes_next: >
+      §17 steps 6/8/9 (write, test/lint and commit the V3-R001 preregistration) and then STOP: the
+      rollout itself still requires the owner's launch authorization, and the owner must still name
+      the reading and N (both of which are already frozen for every option). This entry authorizes no
+      rollout, no verifier call, no generation and no RL.
 
 experiments_appended:
   V3-R001-training-draft:                    # KEY RENAMED 2026-09-24: the V3-R001 id was vacated and
