@@ -262,6 +262,57 @@ prepreregistration_audits:                   # owner directive 2026-09-24 §17 s
       §17 step 5 (power analysis for the feasible N under each reading). It authorizes no rollout, no
       sample draw, and no change to any frozen V2 artifact.
 
+  V3-R001-power-analysis:
+    kind: read-only-design-computation
+    title: Exact Prospective Power of the R001 Block Test, Computed Before the Gate Was Written
+    status: COMPLETE / OWNER_DECISION_REQUIRED_ON_POOL_READING_AND_N
+    created_at_utc: "2026-09-24"
+    script: scripts/v3_r001_power.py
+    tests: tests/test_v3_r001_power.py
+    result: experiments/manifests/v3/V3-R001_power.json
+    narrative: docs/v3/V3-R001_power.md
+    method: >
+      Because §7 draws one theorem per family component, the analyzed units are independent and §9's
+      statistic (informative theorems inside a frozen top-f block) is a two-cell comparison: given k
+      positives among N, the count inside a block of size m is Hypergeometric(N,k,m) under H0, so the
+      alpha=0.05 critical value is EXACT and power is a closed-form convolution of two Binomials.
+      No simulation, no bootstrap. Effects beyond E <= 1/f are incoherent and are refused rather than
+      priced. Cross-checked against scipy's one-sided Fisher exact on every (k,x) table for N=60 and
+      against a 60k-replicate Monte Carlo at four design points.
+    finding: >
+      Minimum detectable top-20% enrichment at 80% power (exact): N=56 -> 3.83 at the predicted pi,
+      N=86 -> 3.31, N=128 -> 2.33 (pi 0.14), N=192 -> 2.45, N=221 -> 2.32. Against D001's own measured
+      B2 top-20% enrichment of 3.467, the pool readings are NOT equivalent designs:
+      owner_literal_wider_v1 (56 families, pi 0.0894) puts 0.98 expected positives in the selected
+      block, has power 0.69 at the effect already observed and would need N=76 -> usable: false, i.e.
+      that reading makes R001 descriptive, not a test. owner_literal (86, pi 0.0936) has power 0.86 and
+      needs 71 -> usable with zero margin. consumed_only (221, pi 0.1395) has power ~1.0 and needs 39
+      -> comfortable, and its N=128 sub-sample still detects enrichment >= 2.33.
+    discreteness_warning: >
+      The exact test's realized size is NOT 0.05 at these sample sizes; it is the largest reachable
+      level below it (0.005-0.034 across the grid, 0.0274 for the recommended N=128 top-20% design at
+      pi=0.14), so power is a step function of (N,m) and non-monotone in N. Any gate must name N and
+      the block fraction, not just "p < 0.05".
+    censoring_tax: "§8 keeps infra-censored groups missing, costing ~4.7%: N=128 analyzes as ~122."
+    delta_auprc_verdict: >
+      The B2-vs-B1 comparison is unpowered at every feasible R001 size: D001's 433-component
+      full-procedure CI was already [-0.025,+0.237], and 1/sqrt(n) scaling gives half-widths of 0.364
+      (N=56) / 0.241 (N=128) / 0.183 (N=221), none of which excludes zero even if the true delta equals
+      D001's point estimate. Owner §14 leaves this requirement to be "decided by power, not forced", so
+      the frozen gate MUST NOT require B2 > B1 significance; B1 remains the zero-extra-GPU reported
+      comparator of §10 with its interval and the honest reading that the interval covers zero.
+    recommendation: >
+      N=128 from the consumed_only pool (221 clean families), which requires the owner to release Track
+      C's never-rolled-out reservation that §5 names as an exclusion. The alternative - the strict
+      56-family pool - is legitimate only if preregistered as a descriptive enrichment estimate. This is
+      an owner signature, not an engineering choice; no families were reclaimed here.
+    inputs_read_only: [experiments/manifests/v3/V3-D001_results.json,
+                       experiments/manifests/v3/V3-R001_family_clean_pool.json]
+    authorizes_next: >
+      §17 step 6 (write the new V3-R001 preregistration, whose GO gate is now frozen from a known
+      design level rather than chosen after the fact). It authorizes no rollout, no GPU work, no sample
+      draw, and no RL.
+
 experiments_appended:
   V3-R001-training-draft:                    # KEY RENAMED 2026-09-24: the V3-R001 id was vacated and
                                              # reassigned to the prospective family-clean validation.
