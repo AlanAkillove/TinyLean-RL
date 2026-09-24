@@ -7,6 +7,41 @@ Formal run: 2026-09-23 on **fly122 / RTX 3080** (§20 step 8–11) · Reported t
 
 ---
 
+## Claim amendment (2026-09-24, owner review) — supersedes the "beyond" sentence below
+
+Status after the canonical audit: **`CANONICAL_GO_WITH_QUALIFICATION`**. The frozen gate verdict is
+unchanged (G1 ∧ G2 ∧ G3 = GO, calibration criteria met, nothing re-opened), but the *strength* of one arm
+changed once a 1000-replicate **full-procedure** family-component bootstrap was added (fold re-partition +
+inner-CV C reselection + refit propagated, not just label resampling):
+
+```
+fixed-OOF (frozen, level-1):     ΔAUPRC +0.146   CI [+0.051, +0.241]
+full-procedure (level-2, 1000):  mean  ΔAUPRC +0.109   CI [-0.025, +0.237]
+```
+
+Therefore the sentence in *Bottom line* below — "carry informative signal **beyond** what a difficulty/source
+proxy already knows" — is **no longer the claim of record**. Approved wording:
+
+* Main: *Frozen Kimina representations contain family-generalizable signal that prospectively motivates
+  prediction of reward-informative RLVR groups, with strong enrichment over prevalence.*
+* Accurate for this **retrospective** result: *Frozen Kimina representations contain family-generalizable
+  signal that identifies reward-informative RLVR groups at enrichment far above prevalence.*
+* Limitation, to be carried with it: *The average advantage over handcrafted difficulty features is
+  positive, but its full-procedure two-sided 95 % interval includes zero.*
+
+The one-sided replicate-sign statement (952/1000, p = 0.048) may be reported in the appendix but **must not
+be used as the headline significance statement**. Everything else in this memo is unchanged and remains the
+historical record of what was preregistered and what was computed.
+
+**Scope of the supersession** — the retired phrasing also appears, as history, in the *Bottom line*
+paragraph, in the §21 template's `recommendation:` line ("beyond a handcrafted difficulty baseline") and in
+the *One-line status*; each of those is superseded by the wording above. The original
+`docs/v3/V3-D001_preregistration.md` (commit `41c5730`) and `experiments/manifests/v3/V3-D001.yaml` keep
+their pre-A3 hypothesis text untouched on purpose: a frozen preregistration is never edited after the
+outcome, so read those as "what was asked", and this amendment as "what may now be claimed".
+
+---
+
 ## Bottom line
 
 The pre-registered ranking gate **G1 ∧ G2 ∧ G3 = GO**, and the calibration criteria (§15)

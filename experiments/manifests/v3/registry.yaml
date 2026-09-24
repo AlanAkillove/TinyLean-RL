@@ -15,7 +15,15 @@ registry:
   created_at_utc: "2026-09-23"
   namespaces:
     V3-D###: {kind: offline-probe, default-host: fly122, scope: "informative-group decision probes on frozen V1 rollouts"}
-    V3-R###: {kind: rl-intervention, default-host: fly90, scope: "controller-guided RL sampling (gated behind a D### GO + owner authorization)"}
+    V3-R###: {kind: rollout-validation-then-rl-intervention, default-host: fly122,
+              scope: "V3-R001 = prospective family-clean validation (frozen-theta0 rollouts, NO optimizer update); a real RL intervention would be a LATER id (R002+), gated behind R001 + owner authorization"}
+  host_policy: >
+    Owner directive 2026-09-24 §16: fly122 (RTX 3080, 10 GB) is the V3 FORMAL compute node;
+    fly90 (RTX 3090, 24 GB) is ARCHIVE-ONLY (canonical artifacts, long CPU jobs, no formal
+    results). Do not auto-switch a formal experiment back to fly90 because of a memory
+    problem. If a future RL run cannot preserve the logical recipe on fly122: STOP, report
+    the owner, and the owner decides between renting a >=24 GB GPU and terminating.
+    (The earlier `default-host: fly90` for V3-R### predates this directive and is superseded.)
   research_question: >
     Can a lightweight Jev-inspired calibrated decision model predict which Lean
     theorems will produce reward-informative RLVR (GRPO) groups, and can that
@@ -57,6 +65,17 @@ amendments:
     created_at_utc: "2026-09-24"
     kind: post-hoc-methodological-audit        # frozen gate and committed numbers untouched
     authorized_by: "owner directive 2026-09-24 Part A (A1-A5)"
+    owner_decision_2026_09_24:
+      received: >
+        Owner review of the canonical audit (2026-09-24, 17 sections). Accepted: the pre-registered
+        GO stands and the frozen gate is NOT re-opened. Changed: the main claim is narrowed to the
+        wording of record below, both intervals must always be reported together, the one-sided
+        p = 0.048 may not headline, and the status becomes CANONICAL_GO_WITH_QUALIFICATION.
+        Also decided there: the previous V3-R001 RL-training draft is NOT approved (kept as a
+        historical DRAFT / NOT-LAUNCHED design doc, no longer the next experiment); the 10 GB
+        training smoke is not run; the next formal V3 experiment is the prospective family-clean
+        validation documented under V3-R001 (rewrite); fly122 is formal compute, fly90 archive-only.
+      scripts_untouched: "scripts/v3_d001_audit.py keeps emitting mechanical CANONICAL_GO (repro & leak & A4); the owner status is a claim-strength decision recorded here, not a recomputation."
     scripts: [scripts/v3_d001_audit.py, scripts/v3_d001_fullproc_boot.py]
     artifacts:
       audit_fly90:  experiments/manifests/v3/V3-D001_canonical_audit_fly90.json
@@ -108,18 +127,32 @@ amendments:
       A5_cross_node: >
         Audit reproduced bit-identically on fly90 (RTX 3090) and fly122 (RTX 3080, formal node)
         across two git revisions; the only differing field is the recorded audit git revision.
-    status: CANONICAL_GO            # unchanged: LEAKAGE_AUDIT PASS + provenance complete
+    status: CANONICAL_GO_WITH_QUALIFICATION   # owner decision 2026-09-24 §1: LEAKAGE_AUDIT PASS +
+                                             # provenance complete, but the claim is narrowed (see below)
     permitted_claim: >
-      Frozen Kimina representations contain family-generalizable signal for predicting
-      reward-informative RLVR groups beyond handcrafted difficulty features.
+      Wording of record (owner 2026-09-24 §1, supersedes the earlier "beyond handcrafted difficulty
+      features" formulation, which is RETIRED as an unconditional main claim):
+      "Frozen Kimina representations contain family-generalizable signal that prospectively motivates
+      prediction of reward-informative RLVR groups, with strong enrichment over prevalence."
+      Retrospective-accurate variant (use when the sentence describes the offline probe itself, since
+      the current evidence is retrospective): "Frozen Kimina representations contain
+      family-generalizable signal that identifies reward-informative RLVR groups at enrichment far
+      above prevalence."
+      Mandatory accompanying limitation: "The average advantage over handcrafted difficulty features
+      is positive, but its full-procedure two-sided 95% interval includes zero."
+    reporting_rule: >
+      Binding. Whenever the B2-vs-B1 advantage is stated, BOTH intervals must be reported together:
+      level-1 fixed-OOF dAUPRC +0.14607 [0.05096, 0.24145] AND level-2 full-procedure
+      +0.10869 (mean) [-0.02504, 0.23679]. The one-sided replicate-sign statement
+      (952/1000 replicates > 0, p = 0.048) is appendix material only and must NOT be used as the
+      headline significance statement.
     permitted_claim_qualification: >
       Added by A3 and binding on how the claim above may be used. The "beyond handcrafted difficulty
       features" clause is directional-only: level-2 intervals for dAUPRC, d(top20 enrichment) and
       dBrier all include 0 (one-sided p = 0.048 / 0.061 / 0.057). What IS robust to the full-procedure
       bootstrap is B2's absolute top-20 informative-group enrichment relative to prevalence
-      (1000/1000 replicates >= 1.75). Recommended narrower wording, pending owner decision:
-      "Frozen Kimina representations contain family-generalizable signal that identifies
-      reward-informative RLVR groups at enrichment far above prevalence."
+      (1000/1000 replicates >= 1.75). The narrower wording above was adopted by the owner on
+      2026-09-24 and is now the wording of record; the prospective variant is what V3-R001 tests.
     not_permitted: ["controller improves RL", "controller improves theorem proving", "controller saves compute"]
 
 experiments_appended:

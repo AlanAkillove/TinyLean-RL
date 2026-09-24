@@ -13,14 +13,22 @@ Frozen inputs consumed unchanged: `experiments/manifests/v3/V3-D001.yaml`,
 `experiments/manifests/v3/V3-D001_results.json`, `runs/v3_d001/theta0_reps.npz`
 
 > **Headline, stated up front.** No leakage was found — the frozen numbers reproduce bit-identically and all
-> 24 preprocessing checks pass, so `D001_FINAL_STATUS` remains **CANONICAL_GO** and the frozen G1–G3 gate is
-> unchanged. The one substantive change comes from **A3**: once fold re-partition, inner-CV C reselection and
-> refit variability are propagated (1000 full-procedure replicates), the ΔAUPRC(B2 − B1) interval
+> 24 preprocessing checks pass, so the auditors' mechanical verdict field stays **CANONICAL_GO** and the
+> frozen G1–G3 gate is unchanged. The one substantive change comes from **A3**: once fold re-partition,
+> inner-CV C reselection and refit variability are propagated (1000 full-procedure replicates), the
+> ΔAUPRC(B2 − B1) interval
 > **widens from [0.051, 0.241] to [−0.025, 0.237] and includes 0** (952/1000 replicates positive, one-sided
 > p = 0.048). The top-20 enrichment arm instead holds in **1000/1000** replicates. So the evidence that
 > survives procedure uncertainty is *"the representation finds informative groups at enrichment far above
 > prevalence"*; the evidence that does not, at two-sided 95 %, is *"and better than the handcrafted
 > difficulty features"*. See §A3 and the claim qualification in §A5.
+>
+> **Owner decision of 2026-09-24 (§1), now binding:** the final status is
+> **`CANONICAL_GO_WITH_QUALIFICATION`** and the wording of record in §A5 replaces the "beyond handcrafted
+> difficulty features" phrasing. Note that the mechanical `D001_CANONICAL` field in the two audit JSONs and
+> in `scripts/v3_d001_audit.py:545` deliberately still computes `CANONICAL_GO`: it encodes the auditor rule
+> *reproduction ∧ leakage ∧ A4*, not the owner's claim-strength decision. Do **not** "fix" the script — the
+> committed JSONs must keep re-producing the same string.
 
 ---
 
@@ -278,32 +286,37 @@ git; the audit's own numbers derive from the hashed reps artifact, not from a re
 ```
 D001_CANONICAL_AUDIT:      reproduction PASS · A1 complete · LEAKAGE_AUDIT PASS (24/24) · A4 PASS (5/5)
                             A3 COMPLETE (1000/1000 replicates, committed)
-D001_FINAL_STATUS:         CANONICAL_GO            (offline probe; gate GO G1^G2^G3 + calibration criteria met)
-                            CANONICAL_GO with the A3 qualification below — the frozen gate is unchanged, but
-                            the level-2 interval does not support one of the three arms at two-sided 95 %.
-permitted_claim (owner-frozen wording, unchanged):
-  "Frozen Kimina representations contain family-generalizable signal for predicting reward-informative RLVR
-   groups beyond handcrafted difficulty features."
-claim_qualification_from_A3 (added by this audit; narrowing, not relaxing):
-  - robust under the full-procedure bootstrap: high top-20 informative-group enrichment of B2, relative to
-    prevalence (1000/1000 replicates >= 1.75, worst replicate 2.4546).
-  - NOT robust at two-sided 95 %: the "beyond handcrafted difficulty features" clause. Delta-AUPRC(B2-B1)
-    has a level-2 interval of [-0.02504, 0.23679] (one-sided p = 0.048); the Delta-enrichment and Delta-Brier
-    intervals also include 0. Direction is consistent in 95.2 % / 93.9 % / 94.3 % of replicates respectively.
-  - proposed narrower wording, for the owner to accept or reject, not adopted here:
-    "Frozen Kimina representations contain family-generalizable signal that identifies reward-informative
-     RLVR groups at enrichment far above prevalence."
+D001_FINAL_STATUS:         CANONICAL_GO_WITH_QUALIFICATION     (owner decision 2026-09-24 §1; supersedes the
+                            auditor-proposed CANONICAL_GO + qualification, which said the same thing)
+                            frozen gate UNCHANGED: G1^G2^G3 = GO + calibration criteria, not re-opened
+main_claim (wording of record):
+  "Frozen Kimina representations contain family-generalizable signal that prospectively motivates
+   prediction of reward-informative RLVR groups, with strong enrichment over prevalence."
+retrospective_wording (accurate for the D001 result as computed):
+  "Frozen Kimina representations contain family-generalizable signal that identifies reward-informative
+   RLVR groups at enrichment far above prevalence."
+limitation (must accompany either wording):
+  "The average advantage over handcrafted difficulty features is positive, but its full-procedure
+   two-sided 95 % interval includes zero."
+reporting_rule:
+  both intervals are reported together — fixed-OOF  dAUPRC +0.146  CI [+0.051, +0.241]
+                                         full-procedure  mean +0.109  CI [-0.025, +0.237]
+  the strong "beyond handcrafted difficulty features" phrasing is RETIRED as an unconditional main claim,
+  and the one-sided replicate-sign statement (952/1000, p = 0.048) is appendix material only and must
+  NOT be used as the headline significance statement.
 NOT permitted (unchanged): "controller improves RL" · "controller improves theorem proving" ·
                             "controller saves compute"   -> these require V3-R001 / V3-R002 evidence
 launched_or_modified:      nothing. No RL, no rollouts, no fold/C/layer/label change, no V2 touch.
 ```
 
-**What this audit changed: nothing about the frozen outcome.** It added (i) the complete per-fold cross-seed
-table with the exclusion cost and the split of the G3 rule into its two conditions, (ii) an active
-leakage-probe suite, (iii) a level-2 full-procedure bootstrap, which turned out to *weaken* one arm of the
-frozen claim, and (iv) a provenance/sanity pass over the representation artifact. G1–G3, the GO, the
-calibration claim, the fold manifest, the label definition and the primary layer are byte-identical to what
-was reported on 2026-09-23.
+**What this audit changed: nothing about the frozen outcome; one thing about the claim.** It added (i) the
+complete per-fold cross-seed table with the exclusion cost and the split of the G3 rule into its two
+conditions, (ii) an active leakage-probe suite, (iii) a level-2 full-procedure bootstrap, which turned out to
+*weaken* one arm of the frozen claim, and (iv) a provenance/sanity pass over the representation artifact.
+G1–G3, the GO, the calibration claim, the fold manifest, the label definition and the primary layer are
+byte-identical to what was reported on 2026-09-23; the memo's original "beyond what a difficulty/source
+proxy already knows" sentence is now superseded by the amendment block at the top of
+`docs/v3/V3-D001_memo.md` rather than deleted.
 
 ### Residual weaknesses a reader should weigh (disclosed, not fixed by this audit)
 
