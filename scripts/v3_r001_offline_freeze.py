@@ -1,7 +1,20 @@
 #!/usr/bin/env python3
-"""V3-R001 preregistration support — OFFLINE controller freeze, sampler diagnostics, power analysis.
+"""[ARCHIVED] V3-R001 training-draft support — OFFLINE controller freeze, sampler diagnostics, power.
 
-Everything here is computed from V1 history and the frozen V3-D001 offline probe. It launches no
+PROVENANCE ONLY. This script belongs to the *archived* V3-R001 RL-training draft
+(docs/v3/archive/V3-R001-training-draft_SUPERSEDED.md), which the owner did NOT approve on
+2026-09-24 (§2). Its logic is kept unmodified so that
+experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json stays re-derivable.
+Two of its outputs are permanently abandoned and must not be reused:
+  * the (alpha, epsilon) sampler freeze - epsilon* = 0 gives zero sampling probability to theorems
+    with q = 0 (the artifact's own starved_statement_fraction = 0.02041) and leaves q undefined for
+    unlabelled pool rows; owner §13 abandons it in favour of a uniform-mixture policy.
+  * every ROW-LEVEL diagnostic - the pool here is the on-disk parquet (24,418 rows / 7,620
+    statements), but the real sampled population is the 1024-token-filtered one (24,246 rows /
+    7,613 statements; 172 rows dropped, 7 statements with every row dropped). Verified in the
+    deployment-pool audit of 2026-09-24; see docs/v3/V3-R001_deployment_pool_audit.md.
+
+Everything below is computed from V1 history and the frozen V3-D001 offline probe. It launches no
 training, generates no rollouts and touches no RL code path. Its purpose is to let the V3-R001
 protocol be FROZEN before any RL outcome exists, as the owner directive requires:
 
@@ -23,7 +36,9 @@ MULTIPLICITY:
   * row-level     : each theorem weighted by its pool multiplicity (what the sampler realises)
 The freeze selects on the row-level objective, since that is the deployment measure.
 
-Output: experiments/manifests/v3/V3-R001_offline_freeze.json  (+ runs/v3_r001/oof_cache.npz)
+Output: experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json
+        (+ runs/v3_r001/oof_cache.npz) -- the committed copy was moved to archive/ on 2026-09-24,
+        and OUT below points at that new location; the JSON *contents* are unchanged.
 """
 
 from __future__ import annotations
@@ -61,7 +76,7 @@ from v3_d001_lib import (
 
 FOLDS = "experiments/manifests/v3/v3_d001_folds.json"
 COMMITTED = "experiments/manifests/v3/V3-D001_results.json"
-OUT = "experiments/manifests/v3/V3-R001_offline_freeze.json"
+OUT = "experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json"
 RL_POOL_RAW = "data/raw/kimina_promptset/data/train-00000-of-00001.parquet"
 RL_POOL_PROCESSED = "data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet"
 DYNAMICS = {"seed1": "experiments/results/e019_dynamics.json",

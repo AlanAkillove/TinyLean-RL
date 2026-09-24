@@ -155,20 +155,60 @@ amendments:
       2026-09-24 and is now the wording of record; the prospective variant is what V3-R001 tests.
     not_permitted: ["controller improves RL", "controller improves theorem proving", "controller saves compute"]
 
+  - id: V3-R001-id-reassignment-and-host-policy
+    applies_to: [V3-R001-training-draft, registry]
+    created_at_utc: "2026-09-24"
+    kind: namespace-and-policy-amendment       # no experiment was run; nothing re-computed
+    authorized_by: "owner directive 2026-09-24 §2, §3, §13, §15, §16, §17"
+    changes:
+      - >
+        V3-R001 is REASSIGNED from the RL-training draft to "V3-R001 - Prospective Family-Clean
+        Validation of the Informative-Group Controller": a frozen-theta0 ROLLOUT experiment that
+        measures whether the already-frozen controller transfers to previously unseen theorem
+        families. It contains NO optimizer update, so it is not an rl-intervention; a real RL
+        intervention becomes V3-R002 or later.
+      - >
+        The training draft is ARCHIVED at docs/v3/archive/ and experiments/manifests/v3/archive/
+        with status DRAFT / NOT-LAUNCHED / SUPERSEDED, kept (not deleted) as a historical design
+        record, with the owner's six reasons recorded on the entry. Its offline-freeze artifact moved
+        with it; contents byte-identical, only the path changed.
+      - "epsilon = 0 samplers are permanently abandoned (owner §13): any future guided sampler must give P(i) > 0 to every eligible theorem; a uniform-mixture policy is preferred over an epsilon hack."
+      - "Host policy: fly122 = V3 formal compute node, fly90 = archive-only (see registry.host_policy)."
+      - >
+        Prohibited until the new V3-R001 completes (owner §15): RL optimizer training, the 10 GB
+        training smoke, offload experiments, MLP, new layers, mean pooling, TinyJev/Kev, a new
+        controller task, Track B, candidate ranking, repair policy.
+    provenance_of_the_id_space: >
+      V3-D### = offline decision probes. V3-R### = rollout/RL-side experiments. Identifiers are never
+      reused for a different design without an amendment like this one, and V1 (E###) / V2 (V2-A/B/C)
+      identifiers remain out of scope.
+
 experiments_appended:
-  V3-R001:
+  V3-R001-training-draft:                    # KEY RENAMED 2026-09-24: the V3-R001 id was vacated and
+                                             # reassigned to the prospective family-clean validation.
+                                             # Renamed rather than deleted - owner §2 says keep it as a
+                                             # historical design doc, and nothing here was ever executed.
     kind: rl-intervention
     title: Decision-Guided RLVR Mechanism Trial
-    status: PREREGISTERED-DRAFT / NOT-LAUNCHED     # owner Part B: draft only, do not launch
+    status: ARCHIVED-DRAFT / NOT-LAUNCHED / SUPERSEDED   # owner review 2026-09-24 §2: not approved
     created_at_utc: "2026-09-24"
-    manifest: experiments/manifests/v3/V3-R001.yaml
-    preregistration: docs/v3/V3-R001_preregistration.md
-    offline_freeze: experiments/manifests/v3/V3-R001_offline_freeze.json
+    archived_at_utc: "2026-09-24"
+    manifest: experiments/manifests/v3/archive/V3-R001-training-draft_SUPERSEDED.yaml
+    preregistration: docs/v3/archive/V3-R001-training-draft_SUPERSEDED.md
+    offline_freeze: experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json
     freeze_script: scripts/v3_r001_offline_freeze.py
+    superseded_by: V3-R001 (prospective family-clean validation)
+    owner_reasons_for_not_approving:        # 2026-09-24 §2
+      - "D001 B1-superiority arm carries full-procedure uncertainty (A3 level-2 dAUPRC CI includes 0)"
+      - "frozen sampler support bug: epsilon*=0 assigns probability exactly 0 to q=0 theorems (starved_statement_fraction 0.02041 = 12/588) and q is undefined for unlabelled pool rows; epsilon=0 scheme PERMANENTLY ABANDONED (owner §13)"
+      - "deployment pool semantics were never frozen: 'uniform over 24,418 rows' was inherited, not proven from trainer source (later resolved by the deployment-pool audit: unit IS row, but the sampled population is the 1024-token-filtered 24,246 rows / 7,613 statements)"
+      - "source concentration (informative groups ~90% synthetic) shifts the training distribution"
+      - "10 GB RL training on fly122 unresolved; the 10 GB memory smoke is explicitly NOT to be run"
+      - "no need to take the training cost first - a cheaper prospective validation comes first"
     question: >
       Does D001-guided theorem sampling increase the realized density of informative GRPO
       groups under a fixed RL compute budget? (mechanism only; not capability)
-    depends_on: [V3-D001 (GO + calibration claim), V3-D001-canonical-audit (CANONICAL_GO)]
+    depends_on: [V3-D001 (GO + calibration claim), V3-D001-canonical-audit (CANONICAL_GO_WITH_QUALIFICATION)]
     single_difference: "theorem sampling distribution (uniform control vs decision-guided treatment)"
     frozen_controller: "B2 recipe, no online retraining; weights sha256 dc0c24ed523a1dd4..."
     frozen_sampler: "P(i|t) prop. epsilon* + q_i(t)^alpha*, alpha*=1.0 epsilon*=0.0, STOCHASTIC (no top-k)"
@@ -183,12 +223,13 @@ experiments_appended:
     gate: "R1 realized-IGR permutation test + R2 informative-groups/GPU-hour + R3 no coverage collapse + R4 no pathology; Pass@k explicitly excluded"
     power_floor: "80% power at H=25 requires a true uplift >= 13.06 pp; offline prediction +19.447 pp [13.463, 26.243]"
     required_before_formal_run:
-      - "B7 non-scientific 10 GB memory-compatibility smoke on fly122 (n=8 / effective batch / reward / optimizer semantics preserved; gradient checkpointing + CPU optimizer offload + activation memory optimization are the only allowed levers)"
-      - owner authorization of decisions D-a..D-g
+      - "[WITHDRAWN 2026-09-24 §2 - DO NOT RUN] B7 non-scientific 10 GB memory-compatibility smoke on fly122. It was a precondition of a run that is not approved; running it now would spend formal-node time on a superseded design."
+      - "[MOOT] owner authorization of decisions D-a..D-g"
     blocking_owner_decisions: [D-a, D-b, D-c, D-d, D-e, D-f, D-g]
     authorizes_next: >
-      Only a mechanism GO on the frozen R1-R4 gate opens a DISCUSSION of V3-R002. Any
-      other outcome is STOP-and-report. This entry does not launch training.
+      NOTHING. This draft authorizes no run and no smoke. Per owner §15, a real RL intervention may
+      only be discussed as V3-R002 or later, and only after the prospective family-clean V3-R001
+      succeeds and the owner decides.
     note: >
       Drafted under owner Part B. Prohibited and NOT done here: MLP, layer sweep,
       mean-pooling change, new backbone, TinyJev/Kev, Track B allocator, candidate

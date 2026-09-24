@@ -1,16 +1,33 @@
+# [ARCHIVED / SUPERSEDED] V3-R001 training-draft manifest - NEVER APPROVED, NEVER LAUNCHED.
+# Archived by owner review 2026-09-24 §2. The V3-R001 identifier is REASSIGNED to
+# "V3-R001 - Prospective Family-Clean Validation of the Informative-Group Controller"
+# (experiments/manifests/v3/V3-R001.yaml, a frozen-theta0 ROLLOUT experiment with NO optimizer
+# update). The RL intervention encoded below would, if ever authorized, be numbered V3-R002+.
+# See docs/v3/archive/V3-R001-training-draft_SUPERSEDED.md for the six owner reasons
+# (D001 B1-superiority uncertainty; epsilon=0 zero-support bug; unfrozen deployment pool
+# semantics; source concentration; unresolved 10 GB training; no reason to take training cost first).
+# Paths inside this file refer to the ARCHIVED draft, not to the new R001.
+#
+# Original header follows.
 # V3-R001 experiment manifest - PREREGISTRATION DRAFT.
-# Machine-readable encoding of docs/v3/V3-R001_preregistration.md and owner
+# Machine-readable encoding of docs/v3/archive/V3-R001-training-draft_SUPERSEDED.md and owner
 # directive 2026-09-24 Part B (B1-B7).
 #
 # NOT LAUNCHED. Drafted by the agent under Part B ("DRAFT ONLY - do not launch");
 # execution requires an explicit owner authorization of decisions D-a..D-e (SS15).
 # Nothing in this file constitutes permission to start RL training.
-experiment: V3-R001
+experiment: V3-R001-training-draft          # id vacated 2026-09-24; V3-R001 is now the prospective validation
 title: Decision-Guided RLVR Mechanism Trial
 kind: rl-intervention
-status: PREREGISTERED-DRAFT / NOT-LAUNCHED
+status: ARCHIVED-DRAFT / NOT-LAUNCHED / SUPERSEDED
 created_at_utc: "2026-09-24"
+archived_at_utc: "2026-09-24"
 owner: "fly90 canonical / fly122 memory-smoke only (see host_note)"
+host_note: >
+  SUPERSEDED by owner directive 2026-09-24 §16: fly122 (RTX 3080, 10 GB) is the V3 formal compute
+  node and fly90 (RTX 3090, 24 GB) is archive-only. Do not auto-switch a formal experiment to
+  fly90 because of a memory problem; if the logical recipe cannot be kept on fly122, the rule is
+  STOP -> report owner -> owner decides (rent >= 24 GB GPU, or terminate).
 branch: v3-jev-rl-controller
 
 research_question: >
@@ -24,7 +41,7 @@ depends_on:
     canonical_audit: "CANONICAL_GO (LEAKAGE_AUDIT 24/24 PASS, A4 5/5, reproduced bit-identically on fly90 and fly122)"
     canonical_audit_A3: "1000-rep full-procedure bootstrap committed: B2 top-20 enrichment robust (1000/1000 >= 1.75), but delta-AUPRC vs B1 level-2 CI [-0.025, 0.237] includes 0. This trial's estimand is treatment-vs-UNIFORM, so it rests on the arm that survived; it must NOT be described as beating a handcrafted difficulty sampler."
     d001_results: experiments/manifests/v3/V3-D001_results.json
-    offline_freeze: experiments/manifests/v3/V3-R001_offline_freeze.json
+    offline_freeze: experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json
     prereg_commit: 41c5730
   note: >
     A D001 GO licenses the owner to CONSIDER this trial; it does not launch it. No

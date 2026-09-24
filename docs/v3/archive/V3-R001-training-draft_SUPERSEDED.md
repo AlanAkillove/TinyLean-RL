@@ -1,8 +1,52 @@
+# [ARCHIVED / SUPERSEDED] Decision-Guided RLVR Mechanism Trial
+
+> **Status: `DRAFT / NOT LAUNCHED` — archived 2026-09-24 by owner review §2. This design was NOT
+> approved and is NO LONGER the next experiment. Kept on purpose as the historical record of a design
+> that was drafted, audited and then superseded; nothing here was ever executed (no training, no
+> rollout, no verifier call, no GPU job) and nothing here may be run without a fresh owner decision.**
+>
+> **The `V3-R001` identifier has been vacated and reassigned.** It now names
+> **V3-R001 — Prospective Family-Clean Validation of the Informative-Group Controller**
+> (`docs/v3/V3-R001_preregistration.md`), a frozen-θ0 *rollout* experiment with **no optimizer update**.
+> Where this file says "R001" it means the old draft; where the new preregistration says "R001" it means
+> the prospective validation. The RL intervention sketched below would, if the owner ever authorizes it,
+> be numbered from **V3-R002** onward — not R001.
+>
+> **Owner reasons for not approving this draft (2026-09-24 §2), recorded verbatim in substance:**
+> 1. D001's B1-superiority arm now carries material full-procedure uncertainty (A3: level-2 ΔAUPRC CI
+>    [−0.025, 0.237] includes 0), so the novelty premise this trial leaned on is qualified.
+> 2. The frozen sampler had a **support bug**: with `epsilon* = 0`, theorems with `q = 0` get probability
+>    exactly 0 (the offline freeze's own `starved_statement_fraction = 0.02041`, i.e. 12 of 588 labelled
+>    theorems), and `q` is *undefined* for the 72.6 % of pool rows that were never labelled. Permanently
+>    abandoned in favour of a uniform-mixture policy with guaranteed positive support (§13).
+> 3. **Deployment pool semantics were never frozen** — "uniform over 24,418 rows" was inherited, not
+>    proven from the trainer source, so the control arm of this trial was not a defined object.
+> 4. **Source concentration**: informative groups are ~90 % synthetic, so a guided sampler shifts the
+>    training distribution in a way the offline probe never evaluated.
+> 5. **10 GB RL training on fly122 is unresolved** (θ0 fits; the optimizer state does not) and the
+>    10 GB compatibility smoke was explicitly NOT to be run.
+> 6. **No need to take the training cost first** — a cheaper, cleaner prospective validation of the
+>    controller exists, and it must succeed before any intervention is considered.
+>
+> Scientific content that SURVIVES archiving and is reused by the new R001: the informative-group label
+> definition, the frozen D001 controller/`q` recipe, the level-1 vs level-2 bootstrap discipline, the
+> power analysis machinery, and the two corrections recorded in §5.1/§6 (the exact duplicate-draw bound
+> and the 3.8 h GPU-hour basis, which replaced an unsupported 5.6 h).
+>
+> Anything below this banner is **as-drafted on 2026-09-24, before the owner review**, including the
+> `CANONICAL_GO` and "beyond handcrafted difficulty features" wording that §1 of the review has since
+> superseded (`CANONICAL_GO_WITH_QUALIFICATION`).
+
+---
+
+# [original draft text begins here]
+
 # V3-R001 — Decision-Guided RLVR Mechanism Trial
 
-> **Status: `PREREGISTRATION-DRAFT` — authored for owner review. NOT LAUNCHED. NO RL RUN.**
+> **Status at drafting time: `PREREGISTRATION-DRAFT` — authored for owner review. NOT LAUNCHED. NO RL RUN.**
 > Nothing in this document has been executed: no training, no rollout, no verifier call, no GPU job.
 > Authorization to run requires an explicit owner GO on this file plus the §10 pre-flight checklist.
+> *(Superseded — see the archive banner above.)*
 
 ```yaml
 experiment: V3-R001
@@ -13,7 +57,7 @@ branch: v3-jev-rl-controller
 default_host: fly90 (RTX 3090 24 GB)          # registry V3-R### default
 depends_on:
   - V3-D001 = CANONICAL_GO (docs/v3/V3-D001_canonical_audit.md)
-  - offline freeze  experiments/manifests/v3/V3-R001_offline_freeze.json
+  - offline freeze  experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json
 question: >
   Does D001-guided theorem sampling increase the realized density of informative
   GRPO groups under a fixed RL compute budget?
@@ -108,7 +152,7 @@ treatment", which would confound sampler *code* with the intervention.
 * **Fit set:** **all 686 V1 seed1/2/3 valid groups** (history only). No rollout, reward, verifier or
   trial data enters it. `C` selected by the identical inner family-grouped AUPRC criterion on that fit
   set (selected `C = 0.003`, mean inner AUPRC 0.610).
-* **Artifact:** weights + standardizer persisted in `V3-R001_offline_freeze.json`
+* **Artifact:** weights + standardizer persisted in `experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json`
   (`controller.weights_mu_sd`, `controller.weights_sha256`) and hashed into the run manifest at launch.
 * **Deployment score:** `q_i(t) = P(informative | theorem i, step_norm(t))`. The theorem representation is
   **precomputed once** for the whole pool before launch; **only the scalar `step_norm` changes between
@@ -136,7 +180,7 @@ P(i|t) = w_i(t) / Σ_j w_j(t)             b_t ~ Multinomial(4, P(·|t))    WITHO
 
 `epsilon` and `alpha` are **frozen offline** from the D001 out-of-fold prediction distribution and the
 prompt-pool structure — never swept on RL outcomes (owner B3). The offline search is in
-`experiments/manifests/v3/V3-R001_offline_freeze.json` (`grid_search`, 5 × 7 = 35 pairs). Rules, all
+`experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json` (`grid_search`, 5 × 7 = 35 pairs). Rules, all
 declared before any RL data existed:
 
 * **objective:** maximize the multiplicity-weighted OOF-predicted treated IGR (an off-policy estimate on
@@ -157,7 +201,7 @@ doing what the control already does. (An earlier draft of this freeze used an ab
 
 ### 5.1 Frozen numeric values
 
-From `experiments/manifests/v3/V3-R001_offline_freeze.json` (offline freeze
+From `experiments/manifests/v3/archive/V3-R001-training-draft_offline_freeze.json` (offline freeze
 `2026-09-24T01:08:59Z`, 653.6 s; 31 of 35 grid pairs feasible). No RL data existed at any point in
 this computation. *The artifact records no execution host*, so the node this ran on is a workflow fact
 (the dev node, fly90) rather than something the artifact certifies — noted because §10.1's reps-artifact
