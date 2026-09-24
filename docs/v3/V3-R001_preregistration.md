@@ -429,5 +429,6 @@ R001 outcome, because none exists.
 - [x] every candidate scored with a q, no refit, D001 protocol replication 5/5
 - [x] nine alternative samples marked DESIGN-ONLY / NEVER ANALYZE
 - [x] reserve marked SEALED
-- [ ] **preregistration commit present on `origin/v3-jev-rl-controller`**
+- [x] **preregistration commit present on `origin/v3-jev-rl-controller`** — checked after the push of
+      the commit that contains this file, verified with `git ls-remote` (remote == local HEAD)
 - [ ] **owner's explicit launch authorization** ← currently withheld

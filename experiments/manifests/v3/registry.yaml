@@ -624,9 +624,10 @@ experiments_appended:
       offloading experiment and no 10 GB training smoke (NOT AUTHORIZED, decision 15).
     not_a_gate: "B2 > B1 significance - unpowered by construction (decision 10); B1 stays the zero-extra-GPU comparator with its interval"
     required_before_launch:
-      - "[x] preregistration, gate, formal sample and sealed reserve committed"
-      - "[x] tests and lint green (331 passed, ruff clean)"
-      - "[ ] this commit present on origin/v3-jev-rl-controller"
+      - "[x] preregistration, gate, formal sample and sealed reserve committed (d9874d3)"
+      - "[x] tests and lint green (345 passed, ruff clean)"
+      - "[x] this preregistration present on origin/v3-jev-rl-controller - verified with
+             git ls-remote after the push, remote == local HEAD"
       - "[ ] owner's explicit launch authorization - WITHHELD"
       - "[ ] scripts/v3_r001_rollout.py and scripts/v3_r001_analyze.py written and tested (not yet authored)"
     authorizes_next: >
