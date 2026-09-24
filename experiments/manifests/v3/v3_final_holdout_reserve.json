@@ -1,0 +1,523 @@
+{
+  "artifact_type": "v3_final_holdout_reserve",
+  "status": "SEALED",
+  "provenance": "bytes are a pure function of the frozen pool, the frozen predictions and the draw rule; no wall-clock, host or git field, so the sha256 pinned in registry.yaml is re-checkable on any host by re-running. Freeze time, host and commit live in registry.yaml and in the preregistration commit, not here.",
+  "purpose": "future final family-clean capability evaluation",
+  "authorized_by": "owner decisions 2026-09-24 \u00a72 and \u00a713",
+  "reading": "consumed_only",
+  "n_components": 93,
+  "membership_rule": {
+    "how": "the 221-component consumed_only pool MINUS the frozen N=128 formal sample",
+    "consequence": "membership is the complement of a uniform hash-ordered permutation, so it cannot have been chosen by q value, by difficulty, or by any outcome (owner decision 2)",
+    "formal_sample_sha256": "0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451"
+  },
+  "seal": {
+    "forbidden_uses": [
+      "R001 rollout (not one generation of a reserve theorem)",
+      "controller fitting of any kind, now or later",
+      "sampler tuning, including the lambda diagnostics",
+      "power tuning, or any revision of the gate",
+      "R001 analysis, including any post-hoc stratification or robustness check",
+      "future hyperparameter or checkpoint selection",
+      "changing reserve membership on the basis of q values"
+    ],
+    "mechanical_guards": [
+      "no R001 script reads this manifest except to assert disjointness",
+      "the analysis script refuses any sample member whose component_id is in this list",
+      "membership is hash-committed, so a later edit is detectable"
+    ],
+    "disclosed_limitation": "q values for these components exist in the already-committed V3-R001_predictions.json, because owner \u00a76 required scoring every candidate theorem before any outcome. The seal therefore binds USE, not existence: no R001 decision, gate, ranking or reserve membership may be derived from them.",
+    "if_r001_stops": "the reserve stays sealed and available for a final external/confirmatory evaluation of the paper, per owner decision 13"
+  },
+  "source_distribution": {
+    "autoformalizer": 43,
+    "human": 17,
+    "synthetic": 33
+  },
+  "membership_hashes": {
+    "component_ids_sha256": "d7430ac7fc38dce67d47e356b6eba441814a2698d51e2ce26754a8994f457c6d",
+    "statement_ids_sha256": "b10c23f20e07e8bc84358d97357b6c02da62902f1e2892767126239c2f2e876a",
+    "pool_hash_of_this_reading": "72b5bd4922e70d4a79e28470b7f34e86026cd341315b0e50232018553364fd5a",
+    "disjoint_from_formal_sample_components": true,
+    "disjoint_from_formal_sample_statements": true,
+    "formal_plus_reserve_equals_pool": true
+  },
+  "what_is_recorded": "component and statement ids plus hashes and the source label only. No q values are copied here, and none are needed: the seal is about not using them.",
+  "components": [
+    {
+      "component_id": "fc-082e9c34dd7f",
+      "statement_id": "5dae6f26-a1a7-403e-959c-a8c7f5bfb13d",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-0af2ac41fb57",
+      "statement_id": "14645b24-68ba-4375-b626-01d88a2a6533",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-0c431faa8d32",
+      "statement_id": "acc4f568-04bc-4f9a-9385-61c9c410d925",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-0e2b37d7c7ef",
+      "statement_id": "1be7251a-4d1f-4e6b-8441-74fdc058631a",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-11c5c655b27f",
+      "statement_id": "38c37edf-9cdb-4ab4-ba19-fd7cad60bff1",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-1242a1332443",
+      "statement_id": "ad7eb2e4-1729-4a67-afc9-1c2d03c27291",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-15671e0f3686",
+      "statement_id": "ba08b8e1-834d-4dd1-abf9-831bfdaa1740",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-15b6a5b40037",
+      "statement_id": "7fc1b15c-003d-4e51-a7eb-e3598cf11ff2",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-1c9e7c20e220",
+      "statement_id": "d3a12439-3e48-4b8b-92dd-f8f4c85eb2d9",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-1fdaf1849efe",
+      "statement_id": "1529e564-523e-4927-9fea-628842b75d7a",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-20a45773c5d6",
+      "statement_id": "096cff86-1ed7-4ef8-90f3-0ec815c049da",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-224bc440c8a2",
+      "statement_id": "04985766-dac0-49cd-a372-bf374dcfc941",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-2581e0676d94",
+      "statement_id": "4400a684-417b-4af4-91eb-7f7fff84d833",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-2735a8014aa5",
+      "statement_id": "1758cf96-34b9-4488-8a34-feeb29034bdc",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-2cd226dd8cf3",
+      "statement_id": "097af1c5-940b-4997-b26d-fedf9c2d7d47",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-2dc3a27e6041",
+      "statement_id": "3262a684-9691-4336-a45b-d8f551783274",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-3a6ae4938f34",
+      "statement_id": "fe156351-b6e1-4445-83bd-e8232bef34db",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-3db3db16742a",
+      "statement_id": "1e930c2a-2b49-4954-bece-bb07d66e8013",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-3db7a76845b0",
+      "statement_id": "c9627e7c-8f10-4166-af26-c16d31511eaf",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-3ebca785b895",
+      "statement_id": "8cc9c598-ddc6-446d-a688-f64235806a3b",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-404df4d99cc3",
+      "statement_id": "14cc6db1-bc58-4a60-825f-4706e32e70ba",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-424634b6e7b1",
+      "statement_id": "28a1341a-682a-48ed-99d8-ace28b744cf2",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-4268276528bd",
+      "statement_id": "31c5f262-238a-41a1-9f96-ac5a975b37a6",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-43220e6d9dfb",
+      "statement_id": "155300d4-1e9f-4d68-9420-9e71e87906b2",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-45bd8d3ea95f",
+      "statement_id": "4a0f7292-488d-4529-8585-d2d5762c0cf8",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-45d34b07a39b",
+      "statement_id": "156455b1-f3a8-42d2-9e90-c65d36bac7b8",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-49624f14ed16",
+      "statement_id": "0fa768e1-5216-4fc3-a29f-13659d8ff158",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-4dc44167aa86",
+      "statement_id": "1894194f-843d-49be-b722-c5adc54722b1",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-502014501d71",
+      "statement_id": "ff176706-f476-403d-96b9-2673cda003fd",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-518c3d2b5ff7",
+      "statement_id": "0fce9a9a-1ae1-4f53-a3ad-027499e53124",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-521ccf7d4d75",
+      "statement_id": "fcbae5f6-7651-4635-8f77-7f7c677ed449",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-5239641af35d",
+      "statement_id": "d05fbbcd-a5f5-440e-869b-04df868547ad",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-545cb3aae105",
+      "statement_id": "5ab73ce1-6d8d-4248-954a-108b11411d45",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-5549b1bb4d85",
+      "statement_id": "471d2405-44b2-4ab6-a2b2-ce97e47638d6",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-5baeacb11dfe",
+      "statement_id": "07f8476c-d534-4710-a732-3a38eb9dd9f6",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-5dbf438b07a2",
+      "statement_id": "59cb2eaf-505b-4cc7-a6cf-a3bee91c2de0",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-5e2dd2414fdc",
+      "statement_id": "eb2f03d5-85a9-4015-8543-a0d17f97c427",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-63cc2d335ce9",
+      "statement_id": "30f8a393-776f-4f89-b81f-a412ab63fcb8",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-64049bdf382a",
+      "statement_id": "26f457db-8136-4957-bbde-ac43342aa7d0",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-64e1980f75f9",
+      "statement_id": "07995b5b-9e0c-4732-adaa-51dc4c7d901a",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-662082770925",
+      "statement_id": "076caaa6-90fe-4b00-8a8f-ecdb94049dea",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-669baa2b7244",
+      "statement_id": "14ac0ce5-c384-428d-996d-947a7914e44d",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-67844e7a07cf",
+      "statement_id": "12b45636-7257-4f1f-88cc-c795cbf0ed01",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-67e7343403f0",
+      "statement_id": "dc058922-12e5-41ae-871d-158b6614292e",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-69006ef2d32f",
+      "statement_id": "429efadd-2cfd-41b0-becb-6a2b1d838ab0",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-6f5a4dcee477",
+      "statement_id": "19bc9bb1-39a6-4729-992a-21b2075f9af0",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-70015ef9781f",
+      "statement_id": "a5c4af79-85af-4408-8db3-136f2afcaf35",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-726789bc42e2",
+      "statement_id": "b1f449e3-99f8-4e6a-ae7e-df1d6a5202cc",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-751c3220e9d2",
+      "statement_id": "9ab6d5e1-2e5f-48ff-9e37-e3f7bf6ebe59",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-7736996ae77a",
+      "statement_id": "026138f8-dd4e-489e-bec6-8e3a3242db7e",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-7c2ad3059225",
+      "statement_id": "13e2139f-73d2-48cd-ba09-f127e4b49059",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-7ed20ae2755e",
+      "statement_id": "7766d731-f5f0-4815-9f77-9b98c249e819",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-7fd593efcac4",
+      "statement_id": "467b7ed2-1e0b-4de8-adc9-0f253caa1c2a",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-818e56eb7fae",
+      "statement_id": "15ad0245-6b1c-4459-af63-32ee3bce7665",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-83540ceb5551",
+      "statement_id": "324b04ef-e6c7-4c01-86d7-fdf71dadc923",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-84cabcbe4490",
+      "statement_id": "268529d8-c03c-45c4-b7ef-6fa018c92145",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-8c2ae977b73f",
+      "statement_id": "0fd626bc-e55d-4da5-9dc8-e5bb1f9c8f92",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-937b6b8bb580",
+      "statement_id": "adb8aefd-2a68-4b65-a050-c48eec3e8fae",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-9ac0f12cce7e",
+      "statement_id": "03491864-f051-45d7-b019-4b54d99fe878",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-9eb6e8eaa01b",
+      "statement_id": "fb0dd0ab-ee8e-4732-88c1-b23c4b0a1b4e",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-a54401146eef",
+      "statement_id": "061099d2-bf10-4dda-a484-8c012eb855f3",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-a791161b37b8",
+      "statement_id": "e338f0af-74fa-49bf-9a08-b52168c8601a",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-a89e7b0bc165",
+      "statement_id": "0e020447-e247-4e21-aff0-a0b0c3634c0a",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-ab09bd86c36f",
+      "statement_id": "0a925ca4-edbf-41d6-b2b6-edde6a6f6730",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-ac21fed2e9d8",
+      "statement_id": "ede0c2a3-5253-4a14-818c-8550e49f8cf2",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-ad473ebc9295",
+      "statement_id": "050c19a8-7575-437a-9a6d-4bb3f78b4129",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-ad56c39d5e3c",
+      "statement_id": "fed25184-2b9b-4d8b-9fd8-07f0fc5930f3",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-adc9557cd1d8",
+      "statement_id": "a2cb4eeb-dfe6-4802-8ead-e6553b1f95c4",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-b9f88e4d717d",
+      "statement_id": "05941938-b6c9-42f4-8e1b-2304efbe3db8",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-bb665059b830",
+      "statement_id": "18476a97-d578-4ed1-a3da-6a729d628f60",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-bd973234c2a1",
+      "statement_id": "57615de7-15a9-4008-aa0d-21f351deba33",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-c50fad365a85",
+      "statement_id": "0af42ed2-795c-437e-bf57-32ab8004077d",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-c6419e9463cc",
+      "statement_id": "9d896970-9919-4996-b84b-cd044145ebe4",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-cbc7619fca1c",
+      "statement_id": "93954e27-0817-45d3-ad11-ce997ad795e1",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-cd85522758cc",
+      "statement_id": "00c9992d-9b09-4f5f-814f-2459f340265a",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-d4590e5fcbf8",
+      "statement_id": "3f49080f-3874-4a75-8147-84468a680dea",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-d5e40eb25be6",
+      "statement_id": "0b0a0f86-6465-487f-8ab7-648287567729",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-d6c834d26dd8",
+      "statement_id": "0d13ffd9-4faa-4731-ac5e-e47764d77ad6",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-ddb0ebc79f5e",
+      "statement_id": "0ddfc451-8893-40e4-95e5-85aeecc1feea",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-dfd7d2c3dc1f",
+      "statement_id": "d5813a83-e790-48bc-adec-dc580543cd40",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-e33d50393fe3",
+      "statement_id": "2f61e27d-1271-4a47-9c59-470217739c55",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-e51b4e553e7a",
+      "statement_id": "2ce5cb3b-7997-4f62-b9b2-333e47fffa03",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-ea5c24fbb055",
+      "statement_id": "16932d18-2efd-4265-9e4d-4415c9ccf721",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-f7dde289d525",
+      "statement_id": "0a836445-6346-4d1f-9377-1aedcdadac32",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-f8aabb8e5a15",
+      "statement_id": "3342c9e6-9d94-4932-ae0d-40003fb98ed0",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-f8f585a726b7",
+      "statement_id": "192c00f5-7c42-4b65-9622-3cb20355b18a",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-f9ca5f1f35ec",
+      "statement_id": "0f82e9b5-22d3-42a4-b223-201e3da8281a",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-f9d0b4c3b9f6",
+      "statement_id": "16fa1bf8-7bfb-4a60-95dc-86b495755414",
+      "source": "synthetic"
+    },
+    {
+      "component_id": "fc-fb0f46626d2b",
+      "statement_id": "b0f8b4a3-687e-4d2f-a9a2-5aab04b60282",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-fdeb5c340cec",
+      "statement_id": "276dc6db-0af5-4894-a1c1-716f844360e8",
+      "source": "human"
+    },
+    {
+      "component_id": "fc-fe91887f6015",
+      "statement_id": "88486893-b9ec-4747-bcc6-854f9b48ed0c",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-fec29726ef03",
+      "statement_id": "b06bbcca-5149-4561-ad1b-1b34665ced88",
+      "source": "autoformalizer"
+    },
+    {
+      "component_id": "fc-ffd71cb34558",
+      "statement_id": "b7054700-403c-45f8-8716-553075667612",
+      "source": "human"
+    }
+  ],
+  "inputs_read_only": [
+    "experiments/manifests/v3/V3-R001_family_clean_pool.json",
+    "experiments/manifests/v3/V3-R001_predictions.json",
+    "experiments/manifests/v3/v3_r001_formal_sample.json"
+  ],
+  "prohibitions_respected": [
+    "no generation, no verifier outcome, no reward observation, no training",
+    "no checkpoint or hyperparameter selection touched these families",
+    "no membership change based on q values"
+  ]
+}

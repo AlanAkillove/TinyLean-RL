@@ -1,0 +1,497 @@
+{
+  "artifact_type": "v3_r001_frozen_gate",
+  "status": "FROZEN_BEFORE_ANY_OUTCOME \u2014 the gate, its boundaries, its attainable level and the outcome taxonomy are committed before a single R001 rollout exists",
+  "provenance": "bytes are a pure function of the frozen pool, predictions, formal sample and power artifacts; no wall-clock, host or git field, so the sha256 pinned in registry.yaml is re-checkable on any host by re-running",
+  "authorized_by": "owner decisions 2026-09-24 \u00a73-\u00a712 on top of directive \u00a714 and \u00a717 step 6",
+  "question_pooled": "Does the frozen D001 controller, scored before any outcome, enrich reward-informative groups in the top 20% of previously unseen families?",
+  "question_within_synthetic": "Or is the pooled effect mainly source routing -- does the controller retain enrichment WITHIN the synthetic stratum? (co-primary, owner decision 6)",
+  "design": {
+    "reading": "consumed_only",
+    "N_nominal": 128,
+    "top_fraction": 0.2,
+    "top_block_size": 26,
+    "one_theorem_per_component": true,
+    "formal_sample_sha256": "0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451",
+    "formal_sample_manifest": "experiments/manifests/v3/v3_r001_formal_sample.json"
+  },
+  "pooled_gate": {
+    "P1": {
+      "test": "exact one-sided conditional Hypergeometric(N_analyzed, k_observed, m): reject iff p <= 0.05, i.e. iff the block count reaches the frozen critical function",
+      "N_nominal": 128,
+      "m_top20": 26,
+      "pi_design_anchor": 0.1391,
+      "k_at_the_design_anchor": 18,
+      "reject_if_block_positives_at_least": 7,
+      "implied_enrichment_at_the_boundary": 1.915,
+      "attainable_alpha_unconditional_at_pi": 0.0274,
+      "conditional_level_at_the_anchor_k": 0.0419,
+      "nominal_alpha": 0.05,
+      "min_detectable_enrichment_at_80pct_power": 2.3324,
+      "expected_positives_in_block_under_the_alternative": 8.44,
+      "boundary_table": [
+        {
+          "k_total_positives": 2,
+          "reject_if_block_positives_at_least": 2,
+          "implied_enrichment_at_the_boundary": 4.923,
+          "exact_p_at_the_boundary": 0.03999,
+          "conditional_level_at_this_k": 0.03999
+        },
+        {
+          "k_total_positives": 3,
+          "reject_if_block_positives_at_least": 3,
+          "implied_enrichment_at_the_boundary": 4.923,
+          "exact_p_at_the_boundary": 0.00762,
+          "conditional_level_at_this_k": 0.00762
+        },
+        {
+          "k_total_positives": 4,
+          "reject_if_block_positives_at_least": 3,
+          "implied_enrichment_at_the_boundary": 3.692,
+          "exact_p_at_the_boundary": 0.02626,
+          "conditional_level_at_this_k": 0.02626
+        },
+        {
+          "k_total_positives": 5,
+          "reject_if_block_positives_at_least": 4,
+          "implied_enrichment_at_the_boundary": 3.938,
+          "exact_p_at_the_boundary": 0.00601,
+          "conditional_level_at_this_k": 0.00601
+        },
+        {
+          "k_total_positives": 6,
+          "reject_if_block_positives_at_least": 4,
+          "implied_enrichment_at_the_boundary": 3.282,
+          "exact_p_at_the_boundary": 0.01548,
+          "conditional_level_at_this_k": 0.01548
+        },
+        {
+          "k_total_positives": 7,
+          "reject_if_block_positives_at_least": 4,
+          "implied_enrichment_at_the_boundary": 2.813,
+          "exact_p_at_the_boundary": 0.031,
+          "conditional_level_at_this_k": 0.031
+        },
+        {
+          "k_total_positives": 8,
+          "reject_if_block_positives_at_least": 5,
+          "implied_enrichment_at_the_boundary": 3.077,
+          "exact_p_at_the_boundary": 0.00878,
+          "conditional_level_at_this_k": 0.00878
+        },
+        {
+          "k_total_positives": 9,
+          "reject_if_block_positives_at_least": 5,
+          "implied_enrichment_at_the_boundary": 2.735,
+          "exact_p_at_the_boundary": 0.01692,
+          "conditional_level_at_this_k": 0.01692
+        },
+        {
+          "k_total_positives": 10,
+          "reject_if_block_positives_at_least": 5,
+          "implied_enrichment_at_the_boundary": 2.462,
+          "exact_p_at_the_boundary": 0.029,
+          "conditional_level_at_this_k": 0.029
+        },
+        {
+          "k_total_positives": 11,
+          "reject_if_block_positives_at_least": 5,
+          "implied_enrichment_at_the_boundary": 2.238,
+          "exact_p_at_the_boundary": 0.04555,
+          "conditional_level_at_this_k": 0.04555
+        },
+        {
+          "k_total_positives": 12,
+          "reject_if_block_positives_at_least": 6,
+          "implied_enrichment_at_the_boundary": 2.462,
+          "exact_p_at_the_boundary": 0.01568,
+          "conditional_level_at_this_k": 0.01568
+        },
+        {
+          "k_total_positives": 13,
+          "reject_if_block_positives_at_least": 6,
+          "implied_enrichment_at_the_boundary": 2.272,
+          "exact_p_at_the_boundary": 0.02495,
+          "conditional_level_at_this_k": 0.02495
+        },
+        {
+          "k_total_positives": 14,
+          "reject_if_block_positives_at_least": 6,
+          "implied_enrichment_at_the_boundary": 2.11,
+          "exact_p_at_the_boundary": 0.03739,
+          "conditional_level_at_this_k": 0.03739
+        },
+        {
+          "k_total_positives": 15,
+          "reject_if_block_positives_at_least": 7,
+          "implied_enrichment_at_the_boundary": 2.297,
+          "exact_p_at_the_boundary": 0.01345,
+          "conditional_level_at_this_k": 0.01345
+        },
+        {
+          "k_total_positives": 16,
+          "reject_if_block_positives_at_least": 7,
+          "implied_enrichment_at_the_boundary": 2.154,
+          "exact_p_at_the_boundary": 0.02051,
+          "conditional_level_at_this_k": 0.02051
+        },
+        {
+          "k_total_positives": 17,
+          "reject_if_block_positives_at_least": 7,
+          "implied_enrichment_at_the_boundary": 2.027,
+          "exact_p_at_the_boundary": 0.0299,
+          "conditional_level_at_this_k": 0.0299
+        },
+        {
+          "k_total_positives": 18,
+          "reject_if_block_positives_at_least": 7,
+          "implied_enrichment_at_the_boundary": 1.915,
+          "exact_p_at_the_boundary": 0.04191,
+          "conditional_level_at_this_k": 0.04191
+        },
+        {
+          "k_total_positives": 19,
+          "reject_if_block_positives_at_least": 8,
+          "implied_enrichment_at_the_boundary": 2.073,
+          "exact_p_at_the_boundary": 0.01635,
+          "conditional_level_at_this_k": 0.01635
+        },
+        {
+          "k_total_positives": 20,
+          "reject_if_block_positives_at_least": 8,
+          "implied_enrichment_at_the_boundary": 1.969,
+          "exact_p_at_the_boundary": 0.0234,
+          "conditional_level_at_this_k": 0.0234
+        },
+        {
+          "k_total_positives": 21,
+          "reject_if_block_positives_at_least": 8,
+          "implied_enrichment_at_the_boundary": 1.875,
+          "exact_p_at_the_boundary": 0.03245,
+          "conditional_level_at_this_k": 0.03245
+        },
+        {
+          "k_total_positives": 22,
+          "reject_if_block_positives_at_least": 8,
+          "implied_enrichment_at_the_boundary": 1.79,
+          "exact_p_at_the_boundary": 0.04374,
+          "conditional_level_at_this_k": 0.04374
+        },
+        {
+          "k_total_positives": 23,
+          "reject_if_block_positives_at_least": 9,
+          "implied_enrichment_at_the_boundary": 1.926,
+          "exact_p_at_the_boundary": 0.01797,
+          "conditional_level_at_this_k": 0.01797
+        },
+        {
+          "k_total_positives": 24,
+          "reject_if_block_positives_at_least": 9,
+          "implied_enrichment_at_the_boundary": 1.846,
+          "exact_p_at_the_boundary": 0.02474,
+          "conditional_level_at_this_k": 0.02474
+        },
+        {
+          "k_total_positives": 25,
+          "reject_if_block_positives_at_least": 9,
+          "implied_enrichment_at_the_boundary": 1.772,
+          "exact_p_at_the_boundary": 0.03324,
+          "conditional_level_at_this_k": 0.03324
+        },
+        {
+          "k_total_positives": 26,
+          "reject_if_block_positives_at_least": 9,
+          "implied_enrichment_at_the_boundary": 1.704,
+          "exact_p_at_the_boundary": 0.04368,
+          "conditional_level_at_this_k": 0.04368
+        },
+        {
+          "k_total_positives": 27,
+          "reject_if_block_positives_at_least": 10,
+          "implied_enrichment_at_the_boundary": 1.823,
+          "exact_p_at_the_boundary": 0.01855,
+          "conditional_level_at_this_k": 0.01855
+        },
+        {
+          "k_total_positives": 28,
+          "reject_if_block_positives_at_least": 10,
+          "implied_enrichment_at_the_boundary": 1.758,
+          "exact_p_at_the_boundary": 0.0249,
+          "conditional_level_at_this_k": 0.0249
+        },
+        {
+          "k_total_positives": 29,
+          "reject_if_block_positives_at_least": 10,
+          "implied_enrichment_at_the_boundary": 1.698,
+          "exact_p_at_the_boundary": 0.03275,
+          "conditional_level_at_this_k": 0.03275
+        },
+        {
+          "k_total_positives": 30,
+          "reject_if_block_positives_at_least": 10,
+          "implied_enrichment_at_the_boundary": 1.641,
+          "exact_p_at_the_boundary": 0.04229,
+          "conditional_level_at_this_k": 0.04229
+        },
+        {
+          "k_total_positives": 31,
+          "reject_if_block_positives_at_least": 11,
+          "implied_enrichment_at_the_boundary": 1.747,
+          "exact_p_at_the_boundary": 0.01833,
+          "conditional_level_at_this_k": 0.01833
+        },
+        {
+          "k_total_positives": 32,
+          "reject_if_block_positives_at_least": 11,
+          "implied_enrichment_at_the_boundary": 1.692,
+          "exact_p_at_the_boundary": 0.02417,
+          "conditional_level_at_this_k": 0.02417
+        },
+        {
+          "k_total_positives": 33,
+          "reject_if_block_positives_at_least": 11,
+          "implied_enrichment_at_the_boundary": 1.641,
+          "exact_p_at_the_boundary": 0.03133,
+          "conditional_level_at_this_k": 0.03133
+        },
+        {
+          "k_total_positives": 34,
+          "reject_if_block_positives_at_least": 11,
+          "implied_enrichment_at_the_boundary": 1.593,
+          "exact_p_at_the_boundary": 0.03998,
+          "conditional_level_at_this_k": 0.03998
+        },
+        {
+          "k_total_positives": 35,
+          "reject_if_block_positives_at_least": 12,
+          "implied_enrichment_at_the_boundary": 1.688,
+          "exact_p_at_the_boundary": 0.01751,
+          "conditional_level_at_this_k": 0.01751
+        },
+        {
+          "k_total_positives": 36,
+          "reject_if_block_positives_at_least": 12,
+          "implied_enrichment_at_the_boundary": 1.641,
+          "exact_p_at_the_boundary": 0.02279,
+          "conditional_level_at_this_k": 0.02279
+        },
+        {
+          "k_total_positives": 37,
+          "reject_if_block_positives_at_least": 12,
+          "implied_enrichment_at_the_boundary": 1.597,
+          "exact_p_at_the_boundary": 0.02925,
+          "conditional_level_at_this_k": 0.02925
+        },
+        {
+          "k_total_positives": 38,
+          "reject_if_block_positives_at_least": 12,
+          "implied_enrichment_at_the_boundary": 1.555,
+          "exact_p_at_the_boundary": 0.03702,
+          "conditional_level_at_this_k": 0.03702
+        },
+        {
+          "k_total_positives": 39,
+          "reject_if_block_positives_at_least": 12,
+          "implied_enrichment_at_the_boundary": 1.515,
+          "exact_p_at_the_boundary": 0.04625,
+          "conditional_level_at_this_k": 0.04625
+        },
+        {
+          "k_total_positives": 40,
+          "reject_if_block_positives_at_least": 13,
+          "implied_enrichment_at_the_boundary": 1.6,
+          "exact_p_at_the_boundary": 0.02096,
+          "conditional_level_at_this_k": 0.02096
+        }
+      ],
+      "expected": {
+        "n": 128,
+        "source_counts": {
+          "autoformalizer": 58,
+          "human": 25,
+          "synthetic": 45
+        },
+        "predicted_prevalence_pi": 0.1391,
+        "expected_positives": 17.8,
+        "how_computed": "V1's per-source informative rate applied to this sample's own source mix; a DESIGN anchor for power, not a measurement of R001"
+      },
+      "recomputation_rule": "the test is evaluated on the ANALYZED set: N_analyzed and m = round(0.20 * N_analyzed) enter the SAME frozen functions, so infra-censoring shrinks the design without changing the rule"
+    },
+    "P2": {
+      "statistic": "enrichment = (informative among the top-20% block) / (informative among the analyzed sample)",
+      "point_estimate_floor": 1.5,
+      "interval": "10000 reps, resample family components with replacement, seed 20260924, 2.5/97.5 percentile",
+      "require_ci_lower_bound_above": 1.0,
+      "pass_rule": "P1 AND P2 (both required; owner decision 8)"
+    }
+  },
+  "within_synthetic_gate": {
+    "S1": {
+      "stratum": "synthetic",
+      "n": 45,
+      "m_top20": 9,
+      "pi_from_V1_synthetic_rate": 0.3444,
+      "k_at_the_design_anchor": 15,
+      "reject_if_block_positives_at_least": 6,
+      "implied_enrichment_at_the_boundary": 2.0,
+      "attainable_alpha_unconditional_at_pi": 0.0229,
+      "conditional_level_at_the_anchor_k": 0.0263,
+      "min_detectable_enrichment_at_80pct_power": 2.1617,
+      "identifiable": true,
+      "ranking_rule": "rank WITHIN the synthetic stratum by the frozen q_B2; the source label itself never enters the ranking (owner decision 9)",
+      "if_unidentifiable": "INCONCLUSIVE-BY-DATA for this co-primary, never a FAIL and never a silent fallback to the pooled result (owner decision 9)",
+      "expected": {
+        "n": 45,
+        "source_counts": {
+          "autoformalizer": 0,
+          "human": 0,
+          "synthetic": 45
+        },
+        "predicted_prevalence_pi": 0.3444,
+        "expected_positives": 15.5,
+        "how_computed": "V1's per-source informative rate applied to this sample's own source mix; a DESIGN anchor for power, not a measurement of R001"
+      },
+      "pre_outcome_confounding_evidence": {
+        "B2": {
+          "synthetic": 50,
+          "autoformalizer": 0,
+          "human": 0
+        },
+        "B1": {
+          "synthetic": 50,
+          "autoformalizer": 0,
+          "human": 0
+        }
+      }
+    },
+    "S2": {
+      "point_estimate_floor": 1.5,
+      "interval": "same component bootstrap restricted to the synthetic stratum; with one theorem per component the component and theorem resamples coincide, which is stated rather than left to be discovered",
+      "require_ci_lower_bound_above": 1.0,
+      "pass_rule": "S1 AND S2"
+    }
+  },
+  "co_primary_note": "Outcome A requires the pooled AND the within-synthetic gate. The stratification is not a robustness appendix: the pre-outcome diagnostic shows both arms' top-20% block of the whole candidate union is 50/50 synthetic, so a pooled pass alone cannot license a beyond-source claim.",
+  "not_a_gate": {
+    "b2_vs_b1_significance": {
+      "status": "NOT A GATE",
+      "reported_instead": "AUPRC_B2, AUPRC_B1, AUPRC_prevalence and the B2-B1 delta with its component-bootstrap CI, on the identical sample at zero extra GPU",
+      "reason": "No feasible N gets the B2-vs-B1 delta anywhere near significance: D001 was already inconclusive at 433 components, and R001's whole pool is 56-221 families. So \u00a714's optional clause resolves the documented way - the gate must NOT require B2 > B1 significance, because that requirement is unpowered by construction and would manufacture a NO-GO regardless of whether the controller works prospectively.",
+      "interpretation_rule": "if B1 ~= B2 prospectively that is NOT read as a controller failure; the reading turns on the pooled vs within-synthetic contrast (owner decision 11)"
+    }
+  },
+  "inconclusive_by_data": {
+    "min_analyzed_positives": 5,
+    "min_analyzed_fraction_of_N_nominal": 0.8,
+    "censoring_rule": "an infra-censored group stays missing/excluded and is NOT counted all-fail (owner decision 5); D001's measured censoring rate was 0.04722, so ~122 of 128 analyze",
+    "never_permitted": "switching to another candidate sample, re-drawing, re-ranking, re-fitting or re-defining the label rule"
+  },
+  "sampler_diagnostics": {
+    "purpose": "offline estimand diagnostics ONLY (owner decision 12): no two-arm sampling happens in R001 and no lambda is selected on R001 results",
+    "formula": "P_lambda(i) = (1-lambda)/N + lambda * q_i / sum(q)",
+    "positivity_invariant": "P_lambda(i) > 0 for every eligible theorem, asserted in code",
+    "epsilon_zero": "PERMANENTLY ABANDONED (owner directive \u00a713)",
+    "metrics_reported": [
+      "expected_IGR",
+      "effective_sample_size",
+      "entropy_bits",
+      "max_probability",
+      "min_probability"
+    ],
+    "lambda_grid": [
+      0.5,
+      0.8
+    ],
+    "values": {
+      "lambda=0.5": {
+        "lambda": 0.5,
+        "n": 128,
+        "min_probability": 0.0039529975705053875,
+        "max_probability": 0.02354343182084218,
+        "expected_IGR": null,
+        "expected_IGR_note": "= sum_i P(i) * y_i, computable only once the rollout labels exist; None here because no outcome exists yet",
+        "effective_sample_size": 85.883,
+        "entropy_bits": 6.7096,
+        "uniform_ess": 128.0,
+        "policy_weights_sha256": "9049064aac6f2a0731c5b82ed4a26812eec4e886a573601204e0cbebcce4c720"
+      },
+      "lambda=0.8": {
+        "lambda": 0.8,
+        "n": 128,
+        "min_probability": 0.0016372961128086189,
+        "max_probability": 0.03298199091334749,
+        "expected_IGR": null,
+        "expected_IGR_note": "= sum_i P(i) * y_i, computable only once the rollout labels exist; None here because no outcome exists yet",
+        "effective_sample_size": 56.752,
+        "entropy_bits": 6.2787,
+        "uniform_ess": 128.0,
+        "policy_weights_sha256": "ce8448cf8c82913922afc16521ebeadef82c8c8222f871de4819a2462af77f44"
+      }
+    }
+  },
+  "candidate_samples_never_to_analyze": {
+    "consumed_only|N=192": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "49eaabb76640bf238826f9ff85abacd48378fd68b0796157aaa68729fbb1dd8d",
+      "N": 192
+    },
+    "consumed_only|N=221": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "9aa88ab646fc09b1c8979d75eb2ec556ee044e44540458388039271766a50f9c",
+      "N": 221
+    },
+    "consumed_only|N=56": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "b70009c4257faa1f0d813694d9486900eadb6392edfd1b3a9daa9bab985e1c4e",
+      "N": 56
+    },
+    "consumed_only|N=64": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "abbbf36832ce638bd31163f8a362a4787b76facc2476d06b5713b54d93e2c0d9",
+      "N": 64
+    },
+    "consumed_only|N=86": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "38582a900d003575e06f58cabc80aaf54d6014d53804db22c6a529d3e7e7ba13",
+      "N": 86
+    },
+    "owner_literal_wider_v1|N=56": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "268ff34f31caa270a708a81121eeb6f2794c31609809a5641defc3312d1f00ba",
+      "N": 56
+    },
+    "owner_literal|N=56": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "4b2dfceb02e6bb2207940fcd6178a88732f78b4d9c794b3a57d43929854c05ab",
+      "N": 56
+    },
+    "owner_literal|N=64": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "a9d23c721d2783a7db911f9b30a4a4f0a84853ab03baab917191ea5165386447",
+      "N": 64
+    },
+    "owner_literal|N=86": {
+      "status": "DESIGN-ONLY / NEVER ANALYZE",
+      "sample_sha256": "eef260a4974d9b3464b3d1d0c24789cf494607f9f2aea9e7f9952edd2e2177fb",
+      "N": 86
+    }
+  },
+  "outcome_taxonomy": {
+    "A_GO-SEMANTIC": "pooled gate PASS and within-synthetic gate PASS -- the controller retains prospective ranking signal inside the dominant source stratum, so the pooled enrichment is not merely source routing. The only outcome under which the owner may consider V3-R002 decision-guided RL.",
+    "B_SOURCE-DRIVEN-ONLY": "pooled gate PASS and within-synthetic gate FAIL -- prospective enrichment exists but current evidence cannot separate it from source-level routing. A valid result; no expensive RL intervention.",
+    "C_NO-GO": "pooled gate FAIL -- the controller did not enrich informative groups on unseen families prospectively. The Jev-inspired RL intervention line stops.",
+    "D_INCONCLUSIVE-BY-DATA": "the sample could not carry the test: analyzed positives below 5, or fewer than 80% of N_nominal survived the verifier. NOT a NO-GO, and not a licence to switch to another candidate sample."
+  },
+  "prohibitions_respected": [
+    "no rollout, no generation, no verifier call, no label read",
+    "no RL optimizer step, no gradient, no training",
+    "the 10 GB training smoke remains NOT AUTHORIZED and was not run",
+    "no V2 frozen artifact modified; the Track C release is recorded as V3 provenance only",
+    "no gate component chosen after seeing an outcome; every threshold is owner-decided"
+  ],
+  "inputs_read_only": [
+    "experiments/manifests/v3/V3-R001_family_clean_pool.json",
+    "experiments/manifests/v3/V3-R001_predictions.json",
+    "experiments/manifests/v3/v3_r001_formal_sample.json",
+    "experiments/manifests/v3/V3-R001_power.json"
+  ]
+}

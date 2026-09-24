@@ -207,6 +207,39 @@ amendments:
         outcome is unchanged (gate_outcome_changed: false); this is post-hoc robustness only.
       - "Not permitted on the strength of either replication: 'controller improves RL', 'improves theorem proving', 'saves compute'."
 
+  - id: V2-track-C-reservation-release
+    applies_to: "V2 (frozen), as seen from V3-R001"
+    created_at_utc: "2026-09-24"
+    kind: governance-change-in-reservation-status        # NOT a data reuse, NOT a V2 edit
+    authorized_by: "owner decisions 2026-09-24 §1 - V3 prospective contamination definition = consumed_only"
+    owner_statement_verbatim: >
+      V2 Track C reserved families were released by owner for V3 because Track C was never executed
+      and no outcomes from those families were observed. This is a governance change in reservation
+      status, not a reuse of previously evaluated data.
+    evidence_track_c_never_executed:
+      - "no V2-C### experiment id exists anywhere under experiments/ or docs/: the V2 registry carries exactly six entries (E001, B001, B002, B003, B004, A001), and Track C appears only as the namespace declaration V2-C### {track: C, owner: fly90, scope: joint prover x allocation evaluation}."
+      - "docs/v2/a001_termination_snapshot.md:84 records 'Track C: NOT RUN'."
+      - "docs/v2/README.md:7 freezes V2 with 'No further checkpoint selection, adaptive-compute modeling, or confirmatory Track C experiment will be added to V2.'"
+      - "the frozen pool artifact classifies the carve-out itself as reserved-never-used (usage_classes.c_joint_holdout), and its marginal-cost table reports that not excluding it returns 221 candidates."
+    what_changed: >
+      The V3 pool reading used for prospective eligibility moved from the strict literal §5 reading
+      (owner_literal_wider_v1, 56 family components) to consumed_only (221 components), which admits
+      the families that Track C had reserved but never touched. The owner's stated reason is empirical:
+      reservation without generation, verification, reward, training or selection leaves nothing to
+      contaminate. This is the difference between a descriptive 56-theorem study and a powered test
+      (docs/v3/V3-R001_power.md §3: 0.98 expected positives in the selected block at 56, power 0.69).
+    what_did_not_change: >
+      Zero V2 artifacts. No V2 manifest, result, registry entry, freeze package or family-component
+      registry was edited, and no V2 conclusion was restated. The release lives only in V3 provenance
+      (this entry plus the formal-sample manifest), so V2 remains reproducible exactly as frozen. The
+      other four pool readings and their hashes are retained unchanged as evidence of what the choice
+      was worth, including the two that yield 0 components.
+    capacity_freedom_it_removes: >
+      Releasing Track C is the ONLY reason N=128 exists at all: every reading that also honors the
+      never-executed reservations has capacity 56 or 0. It was the owner's signature, not an
+      engineering choice, and no family was reclaimed silently for sample size (§5's prohibition).
+
+
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is
                                              # written. Read-only; none of them launches a rollout.
@@ -422,6 +455,87 @@ prepreregistration_audits:                   # owner directive 2026-09-24 §17 s
       the reading and N (both of which are already frozen for every option). This entry authorizes no
       rollout, no verifier call, no generation and no RL.
 
+  V3-R001-formal-sample-and-final-reserve:
+    kind: design-freeze                                  # CPU-only derivation from committed inputs
+    title: "The 221 clean families allocated: 128 to R001, 93 sealed for the V3 final evaluation"
+    status: FROZEN - no rollout, no generation, no verifier call, no label
+    created_at_utc: "2026-09-24"
+    authorized_by: "owner decisions 2026-09-24 §2, §3, §4, §13"
+    scripts: [scripts/v3_r001_sample_freeze.py, scripts/v3_r001_gate.py]
+    artifacts:
+      formal_sample: experiments/manifests/v3/v3_r001_formal_sample.json
+      formal_sample_sha256: 7b4371e1f8211c41c3e158f8a9201f28948d29befc9a8462ae5f843c851d3d88
+      final_reserve: experiments/manifests/v3/v3_final_holdout_reserve.json
+      final_reserve_sha256: b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568
+      gate: experiments/manifests/v3/V3-R001_gate.json
+      gate_sha256: b308038093e7260f7f15d774a7f428d1f913e2555e7f885b9b88d9102452a3fc
+      preregistration: docs/v3/V3-R001_preregistration.md
+      reproducibility: >
+        All three artifacts carry no wall-clock, host or git field: their bytes are a pure function
+        of the committed pool + predictions + power artifacts, so re-running either script on any
+        machine reproduces the sha256 pinned above. An earlier revision embedded created_at/git_revision
+        and therefore could not be re-hash-verified; that is fixed here, before any outcome exists, and
+        the change touches provenance formatting only - no sample, block, gate or hash of the frozen
+        design changed. Freeze time and host are recorded in this registry entry and in the commit.
+    host_note: >
+      Produced on fly90 from committed inputs only (pool + predictions + power artifacts), which is
+      permissible under §16 because it performs no compute and touches no GPU: the content is a pure
+      deterministic derivation and nothing in the bytes depends on the machine. Every
+      quantity that R001 will be judged on is host-independent and hash-pinned. The rollout itself is
+      bound to fly122.
+    allocation:
+      pool_components: 221
+      r001_formal_sample: 128                            # owner decision 4; N=192 rejected
+      final_reserve_sealed: 93
+      component_disjoint: true
+      statement_disjoint: true
+      union_equals_pool: true                            # all three asserted in code, not declared
+      formal_source_mix: "58 autoformalizer / 25 human / 45 synthetic"
+      reserve_source_mix: "43 autoformalizer / 17 human / 33 synthetic"
+    identity_with_the_power_sample: >
+      Owner decision 3 removes the selection: the formal sample IS the exact consumed_only|N=128 draw
+      that §14's power calculation used. scripts/v3_r001_sample_freeze.py recomputes the draw through
+      the same frozen draw_components/sha used at freeze time and refuses to write anything unless
+      three hashes equal the committed ones - sample
+      0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451, q_B2 vector
+      d83f0bbae694f27c0769c6d15ce40f8d36850531bb1c347ab034201cef8e15bb, q_B1 vector
+      3d1fd616ac69a0b52f397f10d0ce060023d20e339f19934a39c8130203349c59. The manifest records the
+      recomputed and committed values side by side.
+    frozen_hashes:
+      sample_sha256: 0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451
+      top20_block_sha256: d5791fd52b80e899b563f2048b3d22d2ec560dc4cbc554e928774a5441fcd629
+      formal_component_ids_sha256: 840d1dbb7e277c26d40521c8287b5585ca1798535914cd14e31a01f6bce1e8da
+      formal_statement_ids_sha256: 05e161adbcbee3a9257530822b33683a47c4b83a287a571f5bbabc7603565227
+      reserve_component_ids_sha256: d7430ac7fc38dce67d47e356b6eba441814a2698d51e2ce26754a8994f457c6d
+      reserve_statement_ids_sha256: b10c23f20e07e8bc84358d97357b6c02da62902f1e2892767126239c2f2e876a
+      consumed_only_pool_hash: 72b5bd4922e70d4a79e28470b7f34e86026cd341315b0e50232018553364fd5a
+    reserve_seal: >
+      SEALED, purpose "future final family-clean capability evaluation" (owner decision 13). Forbidden:
+      R001 rollout, controller fitting, sampler tuning, power tuning, R001 analysis including post-hoc
+      stratification, future hyperparameter or checkpoint selection, and any membership change based on
+      q values. Membership is pool MINUS the frozen draw, i.e. the complement of a uniform hash-ordered
+      permutation, so it cannot have been chosen by q or by difficulty. Disclosed limitation, recorded
+      rather than smoothed over: q values for the reserve DO exist in V3-R001_predictions.json because
+      owner §6 required scoring every candidate before any outcome, so the seal binds USE, not
+      existence - and the guards are mechanical (scripts/v3_r001_gate.py refuses to emit a gate over a
+      sample that touches a sealed component). If V3 stops at R001 the reserve stays sealed and usable
+      for a final confirmatory evaluation.
+    never_analyze: >
+      The other nine frozen candidate samples are recorded in the gate artifact as
+      "DESIGN-ONLY / NEVER ANALYZE" with their hashes (owner decision 3). Whatever the result, no
+      sample switch, no re-draw, no re-ranking, no re-fit.
+    gate_frozen_here: >
+      Pooled: P1 exact one-sided conditional Hypergeometric test at the frozen top-20% block
+      (N=128, m=26, design anchor pi=0.1391, k~18 => reject iff x >= 7, enrichment >= 1.915) whose
+      REAL attainable level is 0.0274 unconditional / 0.0419 conditional at the anchor, not a nominal
+      0.05; AND P2 top-20 enrichment >= 1.5 with a 10k-rep component-bootstrap CI (seed 20260924)
+      lower bound above 1.0. Within-synthetic co-primary: n=45, m=9, pi=0.3444, k~15 => reject iff
+      x >= 6 (enrichment >= 2.00), attainable 0.0229, MDE at 80% power 2.1617. MDE80 pooled 2.3324.
+      Outcomes: A GO-SEMANTIC (both), B SOURCE-DRIVEN-ONLY (pooled only), C NO-GO (pooled fails),
+      D INCONCLUSIVE-BY-DATA (fewer than 5 analyzed positives, or N_analyzed < 0.8 x 128, or the
+      synthetic co-primary unidentifiable). B2 > B1 significance is explicitly NOT a gate.
+    tests: tests/test_v3_r001_gate_freeze.py            # 78 passed: identity, partition, seal, boundary-vs-p equivalence, taxonomy, positivity invariant, document-vs-artifact drift, pinned-file-hash re-verifiability
+
 experiments_appended:
   V3-R001-training-draft:                    # KEY RENAMED 2026-09-24: the V3-R001 id was vacated and
                                              # reassigned to the prospective family-clean validation.
@@ -475,3 +589,53 @@ experiments_appended:
       ranker, repair controller, any formal RL run. epsilon*/alpha* were frozen from the
       D001 OOF distribution only - never from RL outcomes.
 
+  V3-R001:                                             # the prospective validation, per owner rewrite
+    kind: prospective-family-clean-validation           # NOT RL training: frozen theta0, no optimizer
+    title: Prospective Family-Clean Validation of the Informative-Group Controller
+    status: PREREGISTERED / NOT-LAUNCHED                # owner launch authorization still withheld
+    created_at_utc: "2026-09-24"
+    host: "fly122 (RTX 3080, 10 GB) - owner §16 and decision 16; not moved to fly90's 3090"
+    preregistration: docs/v3/V3-R001_preregistration.md
+    gate: experiments/manifests/v3/V3-R001_gate.json
+    formal_sample: experiments/manifests/v3/v3_r001_formal_sample.json
+    final_reserve: experiments/manifests/v3/v3_final_holdout_reserve.json
+    controller_predictions_frozen: experiments/manifests/v3/V3-R001_predictions.json
+    depends_on: [V3-D001 (CANONICAL_GO_WITH_QUALIFICATION), V3-R001-deployment-pool-audit,
+                 V3-R001-family-clean-pool, V3-R001-power, V3-R001-prescoring-freeze,
+                 V3-R001-formal-sample-and-final-reserve, V2-track-C-reservation-release]
+    questions_co_primary:
+      pooled: "Does the frozen D001 controller enrich reward-informative groups in the top 20% of previously unseen theorem families?"
+      within_synthetic: "Or is the pooled effect mainly source routing - does enrichment survive WITHIN the synthetic stratum?"
+    design:
+      N_nominal: 128
+      sampling_unit: "one family component -> one deterministic theorem representative (one theorem per family)"
+      top_fraction_confirmatory: 0.20                   # top-10 and top-30 reported, descriptive only
+      block_size_m: 26
+      n_generations: 1024                               # 128 theorems x n=8
+      label: "y_i = 1 iff 0 < sum_j score_ij < 8; score is primary and never swapped for acc"
+      censoring: "infra-censored groups stay missing/excluded (D001 policy), never forced to all-fail"
+    rollout_protocol: "theta0 Kimina-Distill-0.6B, vLLM 0.9.1, n=8, temperature 1.0, top_p 1.0, max_response 4096, max_model_len 5120, gpu_memory_utilization 0.85, chunk_theorems 16, seed_base 20260924 with the canonical n=8 schedule, canonical Lean 4 verifier (120 s timeout, batch 4, workers 4)"
+    estimated_compute: >
+      E023's measured fly122 theta0 pass anchors it: 2.177 s generation + 2.636 s verification per
+      candidate => ~38.5 s per n=8 group => N=128 ~ 1.4 GPU-hours, ~3.41M tokens, reported as a
+      1-3.5 GPU-hour band because n=4 -> n=8 scaling is an assumption, verification has historically
+      ranged 1.0-7.4 s per candidate, and vLLM preallocates by gpu_memory_utilization (E023 peaked at
+      9,202 MiB of 10,240), so KV pressure lengthens time rather than breaking feasibility. No
+      offloading experiment and no 10 GB training smoke (NOT AUTHORIZED, decision 15).
+    not_a_gate: "B2 > B1 significance - unpowered by construction (decision 10); B1 stays the zero-extra-GPU comparator with its interval"
+    required_before_launch:
+      - "[x] preregistration, gate, formal sample and sealed reserve committed"
+      - "[x] tests and lint green (331 passed, ruff clean)"
+      - "[ ] this commit present on origin/v3-jev-rl-controller"
+      - "[ ] owner's explicit launch authorization - WITHHELD"
+      - "[ ] scripts/v3_r001_rollout.py and scripts/v3_r001_analyze.py written and tested (not yet authored)"
+    authorizes_next: >
+      NOTHING by itself. R001 may run only on the owner's explicit launch instruction after reading
+      this preregistration. Its result selects one of four outcomes (A GO-SEMANTIC, B
+      SOURCE-DRIVEN-ONLY, C NO-GO, D INCONCLUSIVE-BY-DATA), and only outcome A lets the owner consider
+      V3-R002 decision-guided RL. No RL training, no 10 GB smoke, no MLP, no new layer, no mean
+      pooling, no Track B, no candidate ranker, no repair policy is authorized here.
+    note: >
+      Prohibited and NOT done: any generation, verifier call, optimizer step, sample switch after an
+      outcome, gate change after labels, lambda selection on R001 results, epsilon = 0 (permanently
+      abandoned). Raw rollout data is never committed - hashes and provenance only.
