@@ -434,18 +434,42 @@ def test_poisson_upper_quantile_is_the_smallest_k_crossing_the_level() -> None:
 
 
 def test_frozen_ceiling_clears_the_worst_observed_density_projection() -> None:
+    """The projection is checked from the committed artifact; the archive is re-read where it lives.
+
+    ``runs/`` is gitignored, so the V3-R001 archive that the projection was computed from exists
+    only on the host it was archived to. The frozen numbers themselves live in
+    ``v4_p001_verifier_plan.json``, so the consistency checks below read that artifact everywhere,
+    and the archive recomputation runs only when the archive is present.
+    """
+    projection = v4_manifest("v4_p001_verifier_plan.json")["projection"]
+    assert projection["v4_worst_case_verifications"] == V4_WORST_CASE_VERIFICATIONS
+    assert projection["poisson_999_worst_density"] == 173
+    assert projection["frozen_ceiling"] == CEILING_ROUNDING == 192
+    assert projection["chosen_basis"] == ("worst observed execution density, Poisson 99.9% upper "
+                                          "bound, rounded up")
+    assert CEILING_ROUNDING > projection["poisson_999_worst_density"]
+    # a per-theorem cap below the arm count would censor a theorem that is merely unlucky
+    assert V4_MAX_ARMS_PER_THEOREM == 3
+    assert V4_MAX_ARMS_PER_THEOREM < CEILING_ROUNDING < V4_WORST_CASE_VERIFICATIONS
+
+
+def test_the_archived_v3_executions_reproduce_the_frozen_projection() -> None:
+    """Recompute the projection from the V3-R001 archive where it exists (the §11 archive host)."""
     executions = read_executions()
+    if not executions:
+        pytest.skip("the V3-R001 archive is not on this host: runs/ is gitignored and the archive "
+                    "was copied to the coordination node; the frozen projection is checked from "
+                    "the committed artifact by the test above")
     assert len(executions) == 3  # deduplicated by run_id: two aborted, one complete
     candidates = sum(e["candidates_generated"] for e in executions)
     recoveries = sum(e["recoveries_attempted"] for e in executions)
     assert (candidates, recoveries) == (1024, 47)
     worst = max(executions, key=lambda e: e["recoveries_attempted"] / e["candidates_generated"])
-    bound = poisson_upper_quantile(worst["recoveries_attempted"] / worst["candidates_generated"] * V4_WORST_CASE_VERIFICATIONS, 0.999)
-    assert bound == 173
-    assert CEILING_ROUNDING > bound
-    # a per-theorem cap below the arm count would censor a theorem that is merely unlucky
-    assert V4_MAX_ARMS_PER_THEOREM == 3
-    assert V4_MAX_ARMS_PER_THEOREM < CEILING_ROUNDING < V4_WORST_CASE_VERIFICATIONS
+    bound = poisson_upper_quantile(
+        worst["recoveries_attempted"] / worst["candidates_generated"] * V4_WORST_CASE_VERIFICATIONS,
+        0.999)
+    assert bound == v4_manifest("v4_p001_verifier_plan.json")["projection"][
+        "poisson_999_worst_density"]
 
 
 
