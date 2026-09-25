@@ -7,15 +7,15 @@
   "formal_candidates_generated": 0,
   "formal_verifier_calls": 0,
   "validated_commit": {
-    "sha": "71d7304a15e342e54587d3a7d4c1ab1c1eb76ecc",
-    "short": "71d7304a1",
-    "subject": "v4: make the archived-execution projection check host-conditional",
+    "sha": "19a8d91fe4a49f76992c6c4c893cf612a7d85a41",
+    "short": "19a8d91fe",
+    "subject": "v4: check the second-stage artifacts, not the raw directory, in the dry run",
     "branch": "v3-jev-rl-controller"
   },
   "host": {
     "hostname": "ubuntu",
     "ips": "10.3.25.122 10.201.1.1 10.201.0.1 10.202.0.1",
-    "git_revision": "71d7304a15e342e54587d3a7d4c1ab1c1eb76ecc",
+    "git_revision": "19a8d91fe4a49f76992c6c4c893cf612a7d85a41",
     "branch": "v3-jev-rl-controller",
     "status_porcelain": "",
     "gpu_names": "NVIDIA GeForce RTX 3080",
@@ -27,8 +27,8 @@
     "executable": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python",
     "version": "3.12.14"
   },
-  "duration_seconds": 615.4,
-  "when_utc": "2026-09-25T12:47:04.626903+00:00",
+  "duration_seconds": 698.0,
+  "when_utc": "2026-09-25T15:45:57.239342+00:00",
   "frozen_design": {
     "n_frozen_checks": 50,
     "n_frozen_checks_failed": 0,
@@ -291,7 +291,7 @@
       "verified": true,
       "status": "verified",
       "detail": "",
-      "seconds": 0.11,
+      "seconds": 0.12,
       "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
       "uses_formal_theorem": false,
       "budget_s": 600.0
@@ -436,62 +436,62 @@
   },
   "runner": {
     "screening_dry_run": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/empty",
       "exit_code": 0,
-      "seconds": 30.6,
+      "seconds": 30.24,
       "stdout_tail": "        \"screens_needed_for_128_at_this_rate\": 410,\n        \"within_frozen_budget\": true,\n        \"within_pool_capacity\": true\n      }\n    }\n  },\n  \"screening_order_hash\": \"ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15\",\n  \"screening_seed_hash\": \"2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51\",\n  \"pool_hash\": \"7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c\",\n  \"frozen_settings_sha256\": \"f650a128c5093abfe62054b0eb62d9d20c0bda8cb07aee3eed14fa0eabfd3f39\"\n}\n[V4-P001] DRY RUN COMPLETE: llm.load_called=false generate_called=false model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 formal_raw_result_files_created=0",
       "stderr_tail": ""
     },
     "launch_interlock": {
       "screening": {
-        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/empty",
         "exit_code": 3,
-        "seconds": 0.74,
+        "seconds": 0.76,
         "stdout_tail": "",
         "stderr_tail": "[ABORT BEFORE GENERATION] --stage screening generates formal candidates and is gated: pass --i-have-owner-launch-authorization only if the owner has authorized this exact V4-P001 formal launch. The execution package ends with V4_FORMAL_SCREENING_AUTHORIZED: NO and V4_SECOND_STAGE_AUTHORIZED: NO, so no authorization exists yet."
       },
       "second": {
-        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/empty",
         "exit_code": 3,
-        "seconds": 0.74,
+        "seconds": 0.73,
         "stdout_tail": "",
         "stderr_tail": "[ABORT BEFORE GENERATION] --stage second generates formal candidates and is gated: pass --i-have-owner-launch-authorization only if the owner has authorized this exact V4-P001 formal launch. The execution package ends with V4_FORMAL_SCREENING_AUTHORIZED: NO and V4_SECOND_STAGE_AUTHORIZED: NO, so no authorization exists yet."
       }
     },
     "freeze_without_a_cohort": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/empty",
       "exit_code": 3,
-      "seconds": 5.39,
-      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T123649Z/empty",
-      "stderr_tail": "[ABORT BEFORE GENERATION] /tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_screening_raw.jsonl does not exist; this stage may only run after a completed --stage screening"
+      "seconds": 5.38,
+      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T153419Z/empty",
+      "stderr_tail": "[ABORT BEFORE GENERATION] /tmp/v4_p001_dry_run_20260925T153419Z/empty/v4_p001_screening_raw.jsonl does not exist; this stage may only run after a completed --stage screening"
     },
     "synthetic_freeze": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/synthetic",
       "exit_code": 0,
-      "seconds": 31.3,
-      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T123649Z/synthetic\n[V4-P001] cohort: 128 primary semantic failures from 128 screens (0 screened after the cohort closed)\n[V4-P001] error categories: {'verified': 0, 'elaboration_type_mismatch': 22, 'unsolved_goals': 22, 'tactic_failure': 21, 'unknown_identifier': 21, 'typeclass_synthesis': 21, 'other_semantic_lean_failure': 21, 'syntax_parser': 0, 'format_no_code': 0, 'timeout_resource': 0, 'infra': 0}\n[V4-P001] derangement: version=v4-derange-1 mapping_sha256=05b389bdf6dce170... same_category_rate=1.0 fallback_count=0 donor_reuse=0 token_difference={'n': 128, 'min': 0, 'median': 0, 'p90': 0, 'p95': 0, 'p99': 0, 'max': 0, 'mean': 0.0}\n[V4-P001] plan: 512 candidates, prompt tokens by arm {'A_FRESH_RETRY': 783, 'B_SELF_REVISION': 824, 'C_VERIFIER_REPAIR': 843, 'D_MISMATCHED_DIAGNOSTIC': 843} (max), arm_schedule_hash=9e090325ac19cf54... balance={'A_FRESH_RETRY': [32, 32, 32, 32], 'B_SELF_REVISION': [32, 32, 32, 32], 'C_VERIFIER_REPAIR': [32, 32, 32, 32], 'D_MISMATCHED_DIAGNOSTIC': [32, 32, 32, 32]}\n[V4-P001] wrote /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_primary_cohort.json, /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_diagnostic_derangement.json, /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_second_stage_plan.json (second_stage_candidates_generated = 0)\n[V4-P001] STOP BEFORE SECOND-STAGE GENERATION by design (owner §12). Next: --stage validate.",
+      "seconds": 31.54,
+      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T153419Z/synthetic\n[V4-P001] cohort: 128 primary semantic failures from 128 screens (0 screened after the cohort closed)\n[V4-P001] error categories: {'verified': 0, 'elaboration_type_mismatch': 22, 'unsolved_goals': 22, 'tactic_failure': 21, 'unknown_identifier': 21, 'typeclass_synthesis': 21, 'other_semantic_lean_failure': 21, 'syntax_parser': 0, 'format_no_code': 0, 'timeout_resource': 0, 'infra': 0}\n[V4-P001] derangement: version=v4-derange-1 mapping_sha256=05b389bdf6dce170... same_category_rate=1.0 fallback_count=0 donor_reuse=0 token_difference={'n': 128, 'min': 0, 'median': 0, 'p90': 0, 'p95': 0, 'p99': 0, 'max': 0, 'mean': 0.0}\n[V4-P001] plan: 512 candidates, prompt tokens by arm {'A_FRESH_RETRY': 783, 'B_SELF_REVISION': 824, 'C_VERIFIER_REPAIR': 843, 'D_MISMATCHED_DIAGNOSTIC': 843} (max), arm_schedule_hash=9e090325ac19cf54... balance={'A_FRESH_RETRY': [32, 32, 32, 32], 'B_SELF_REVISION': [32, 32, 32, 32], 'C_VERIFIER_REPAIR': [32, 32, 32, 32], 'D_MISMATCHED_DIAGNOSTIC': [32, 32, 32, 32]}\n[V4-P001] wrote /tmp/v4_p001_dry_run_20260925T153419Z/synthetic/V4-P001_primary_cohort.json, /tmp/v4_p001_dry_run_20260925T153419Z/synthetic/V4-P001_diagnostic_derangement.json, /tmp/v4_p001_dry_run_20260925T153419Z/synthetic/V4-P001_second_stage_plan.json (second_stage_candidates_generated = 0)\n[V4-P001] STOP BEFORE SECOND-STAGE GENERATION by design (owner §12). Next: --stage validate.",
       "stderr_tail": ""
     },
     "synthetic_screening_rows": 128,
     "synthetic_marker": "SYNTHETIC-DRY-RUN",
     "synthetic_boundary_artifacts": {
       "V4-P001_primary_cohort.json": {
-        "sha256": "ccafee5998b630ab4ed156c2e518005ded886e6215ad4498afc0bda7e12d09e1",
+        "sha256": "100ff49159e339599f04f1bbed186bae8bbe216d54d0100103ab1f786a6611d4",
         "second_stage_candidates_generated": 0
       },
       "V4-P001_diagnostic_derangement.json": {
-        "sha256": "ffbc612b96d747291e417eb36f15b4687803325371883b4755e60e4fdce410d7",
+        "sha256": "a68694d7bef711bf7a9d658685c9bc8cfcdcf7e5b464b6a8d4737a0ff558d106",
         "second_stage_candidates_generated": 0
       },
       "V4-P001_second_stage_plan.json": {
-        "sha256": "38c5d2a9abf173e26f5c078e3f8831dfaac6c6f5834f6fb1e62a24e48019c881",
+        "sha256": "d678c8aeee7697289d5b85e94276667fed6a1ef3c3724a9f0bec300fd34abd0a",
         "second_stage_candidates_generated": 0
       }
     },
     "synthetic_validate": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage validate --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage validate --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/synthetic",
       "exit_code": 0,
-      "seconds": 31.78,
+      "seconds": 31.58,
       "stdout_tail": "  [PASS] arm_d_uses_the_derangement_donor\n  [PASS] context_fits_all_arms\n  [PASS] second_stage_seeds_are_the_frozen_stream\n  [PASS] second_stage_seeds_are_unique_and_disjoint_from_screening\n  [PASS] arm_order_is_the_frozen_schedule\n  [PASS] arm_schedule_is_position_balanced\n  [PASS] plan_candidate_count\n  [PASS] hash_chain\n  [PASS] sealed_reserve_untouched\n  [PASS] frozen_design_checks_all_pass\n[V4-P001] boundary validation: 29 checks, 0 failed -> PASS\n[V4-P001] the boundary is frozen and valid. It does not authorize anything: the second stage needs the owner's authorization.",
       "stderr_tail": ""
     },
@@ -533,25 +533,47 @@
       "second_stage_candidates_generated": 0
     },
     "synthetic_second_dry_run": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/synthetic",
       "exit_code": 0,
-      "seconds": 31.68,
-      "stdout_tail": "    120,\n    121,\n    122,\n    123,\n    124,\n    125,\n    126,\n    127,\n    128\n  ]\n}\n[V4-P001] DRY RUN COMPLETE: llm.load_called=false generate_called=false model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 formal_raw_result_files_created=false",
+      "seconds": 31.65,
+      "stdout_tail": "    120,\n    121,\n    122,\n    123,\n    124,\n    125,\n    126,\n    127,\n    128\n  ]\n}\n[V4-P001] DRY RUN COMPLETE: llm.load_called=false generate_called=false model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 formal_raw_result_files_created=false theorems_planned=128 candidates_planned=512 surface_formal_statements=128 candidate_assembly_validated=True",
       "stderr_tail": ""
     },
     "synthetic_second_dry_run_standalone": {
       "mode": "DRY_RUN",
       "n_candidates": 512,
       "theorems_to_run_count": 128,
-      "theorems_to_run_is_the_whole_cohort": true
+      "theorems_to_run_is_the_whole_cohort": true,
+      "candidate_assembly_n_failed": 0
+    },
+    "synthetic_second_dry_run_assembly": {
+      "theorems": 128,
+      "n_failed": 0,
+      "counts": {
+        "surface_statements_available": 128,
+        "formal_statements_nonempty": 128,
+        "formal_statements_bound_to_the_frozen_plan": 128,
+        "failed_proofs_available": 128,
+        "own_diagnostics_available": 128,
+        "donor_diagnostics_available": 128,
+        "arm_plan_rows_complete": 128,
+        "arm_prompt_hashes_matched": 512,
+        "paired_seeds_valid": 128,
+        "arm_orders_valid": 128,
+        "screening_identity_fields_available": 128,
+        "assembly_probes_passed": 128
+      },
+      "generations": 0,
+      "formal_verifier_calls": 0,
+      "note": "Amendment B §7: candidate assembly validated for the whole frozen cohort without a model call and without a verifier call"
     }
   },
   "analyzer": {
     "synthetic_candidate_rows": 512,
     "check_only": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic --check-only",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/synthetic --check-only",
       "exit_code": 0,
-      "seconds": 8.22,
+      "seconds": 8.36,
       "stdout_tail": "      \"DIFFERENT_ERROR_CATEGORY\": 0,\n      \"FORMAT_FAILURE\": 0,\n      \"SYNTAX_FAILURE\": 0,\n      \"INFRA_MISSING\": 0\n    }\n  },\n  \"provenance\": {\n    \"n_checks\": 18,\n    \"n_failed\": 0\n  }\n}\n[check-only] nothing written",
       "stderr_tail": ""
     },
@@ -622,11 +644,11 @@
     },
     "classification_note": "the classification below is what the analyzer computes on a *fabricated* outcome pattern (Arm C succeeds on all 128 ranks, A/B/D never do). It proves the analyzer executes the mechanical order on this host and writes nothing; it is not a result, and no formal outcome exists.",
     "refuses_when_artifacts_are_absent": {
-      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty --check-only",
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T153419Z/empty --check-only",
       "exit_code": 3,
       "seconds": 0.21,
       "stdout_tail": "",
-      "stderr_tail": "[ABORT BEFORE ANALYSIS] cannot analyze: required artifact(s) absent -- second_stage_raw (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_second_stage_raw.jsonl), summary (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_run_summary.json), screening_raw (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_screening_raw.jsonl), cohort (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_primary_cohort.json), derangement (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_diagnostic_derangement.json), plan (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_second_stage_plan.json), boundary_validation (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_boundary_validation.json). The formal second stage writes the second-stage raw artifact and the run summary; an aborted or never-launched run has no analyzable outcome."
+      "stderr_tail": "[ABORT BEFORE ANALYSIS] cannot analyze: required artifact(s) absent -- second_stage_raw (/tmp/v4_p001_dry_run_20260925T153419Z/empty/v4_p001_second_stage_raw.jsonl), summary (/tmp/v4_p001_dry_run_20260925T153419Z/empty/v4_p001_run_summary.json), screening_raw (/tmp/v4_p001_dry_run_20260925T153419Z/empty/v4_p001_screening_raw.jsonl), cohort (/tmp/v4_p001_dry_run_20260925T153419Z/empty/V4-P001_primary_cohort.json), derangement (/tmp/v4_p001_dry_run_20260925T153419Z/empty/V4-P001_diagnostic_derangement.json), plan (/tmp/v4_p001_dry_run_20260925T153419Z/empty/V4-P001_second_stage_plan.json), boundary_validation (/tmp/v4_p001_dry_run_20260925T153419Z/empty/V4-P001_boundary_validation.json). The formal second stage writes the second-stage raw artifact and the run summary; an aborted or never-launched run has no analyzable outcome."
     }
   },
   "artifact_locations": {
@@ -668,7 +690,7 @@
         "exists": true
       },
       "experiments/manifests/v4/registry.yaml": {
-        "sha256": "c098fa09f7e123f4f09a996e1b7662d6ce16aada2e4af2e7b31da8d92a53968e",
+        "sha256": "916f267569e59c3fc5c2c0d86f77129d63616f3c2a92d2cf934b376b44b04c51",
         "exists": true
       }
     },
@@ -681,39 +703,48 @@
       "v4_p001_verifier_events.jsonl"
     ],
     "raw_directory": "runs/v4_p001/rollout (gitignored)",
-    "raw_directory_exists": false,
+    "raw_directory_exists": true,
+    "second_stage_artifacts_present": {
+      "v4_p001_second_stage_raw.jsonl": false,
+      "v4_p001_run_summary.json": false
+    },
+    "stage_one_artifacts_present": {
+      "v4_p001_screening_raw.jsonl": true,
+      "v4_p001_screening_summary.json": true,
+      "V4-P001_boundary_validation.json": true
+    },
     "gitignore_rule": ".gitignore:29:runs/\truns/v4_p001/rollout/v4_p001_screening_raw.jsonl",
-    "scratch_dir": "/tmp/v4_p001_dry_run_20260925T123649Z",
+    "scratch_dir": "/tmp/v4_p001_dry_run_20260925T153419Z",
     "scratch_note": "every synthetic artifact of this run lives under the scratch dir and is removed before this script exits; nothing is written under runs/"
   },
   "gates_on_this_host_at_this_commit": {
     "pytest": {
       "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python -m pytest tests/",
       "exit_code": 0,
-      "seconds": 440.29,
-      "stdout_tail": "........................................................................ [ 13%]\n........................................................................ [ 27%]\n........................................................................ [ 41%]\n........................................................................ [ 54%]\n........................................................................ [ 68%]\n........................................................................ [ 82%]\n...s.................................................................... [ 96%]\n....................                                                     [100%]\n523 passed, 1 skipped in 437.79s (0:07:17)",
+      "seconds": 523.25,
+      "stdout_tail": "........................................................................ [ 13%]\n........................................................................ [ 26%]\n........................................................................ [ 40%]\n........................................................................ [ 53%]\n........................................................................ [ 66%]\n........................................................................ [ 80%]\n...s.................................................................... [ 93%]\n....................................                                     [100%]\n539 passed, 1 skipped in 520.77s (0:08:40)",
       "stderr_tail": ""
     },
-    "pytest_summary": "523 passed, 1 skipped in 437.79s (0:07:17)",
+    "pytest_summary": "539 passed, 1 skipped in 520.77s (0:08:40)",
     "ruff": {
       "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python -m ruff check src scripts tests",
       "exit_code": 0,
-      "seconds": 0.07,
+      "seconds": 0.09,
       "stdout_tail": "All checks passed!",
       "stderr_tail": ""
     }
   },
   "script_hashes": {
-    "scripts/v4_p001_rollout.py": "5e506e0a695160fd813a94d3d1015bc2b89ea7e0a120e8e8a1f58d7fffdcd816",
+    "scripts/v4_p001_rollout.py": "abc8249bdc1bb7aa0de95ddaa13b42a95d689c05160893bb074335d2978d2cc1",
     "scripts/v4_p001_analyze.py": "e20638c1daddb964e7c5ea20bd79f55f01f50360c750593b68a774051798e536",
     "scripts/v4_p001_spec.py": "5f6f8a0ed46ec3df9ed29ca9ca5dc33ed87b8efddbe202dff988e5adc783573d",
-    "scripts/v4_p001_dry_run.py": "d329daadb22dc58336c1d072b597c79d25fc87830ec7a92b7d740a60e7f55e01",
+    "scripts/v4_p001_dry_run.py": "0416abd29276202223197202cb97cab5dd5e3f681a8fe854d3722b6581ff595f",
     "scripts/v4_p001_context_four_arm.py": "4f0a1eae79ee9e809b7f96cf44e153bbc262ffe62ee6aa043975cf478e1f01bd",
     "scripts/v4_p001_prompt_provenance.py": "fa813c6383cd338ba1b10c39b66085e376871d1478ea2968904795eedbcb07ce",
     "scripts/v4_p001_arm_schedule.py": "0c6f1fd647017d68d702382388f62ce1ec4f0d15d6c9d7981fd6f3dee0d3e001",
-    "tests/test_v4_p001.py": "d9dcaeb351b1aac9e7b05fa62df735aad77e77ef899d4d5428590444edf2a308",
+    "tests/test_v4_p001.py": "5850136165e12587e9cb77add4362dad9fa3054421073241b0408dae37a29a54",
     "tests/test_v4_p001_analyze.py": "e57e45e89ad9dd0c130d2e727a00a42407edebfec323eda156abde405ce72238",
-    "tests/test_v4_p001_rollout.py": "cd7f06c427566a44381b45f4947104e31120b1f1fd2f3882e6404df36e010221"
+    "tests/test_v4_p001_rollout.py": "5851e3a594536230e6c3434441fed1efae58734ed2c16ddff5770d4ad7ce9f38"
   },
   "checks": [
     {
@@ -804,7 +835,7 @@
     {
       "check": "canary_verifies_and_uses_no_formal_theorem",
       "pass": true,
-      "detail": "canary='verified' in 0.11s"
+      "detail": "canary='verified' in 0.12s"
     },
     {
       "check": "no_formal_verifier_call",
@@ -907,6 +938,16 @@
       "detail": "exit=0, theorems_to_run=128"
     },
     {
+      "check": "second_stage_dry_run_validates_the_candidate_assembly",
+      "pass": true,
+      "detail": "n_failed=0 counts={'surface_statements_available': 128, 'formal_statements_nonempty': 128, 'formal_statements_bound_to_the_frozen_plan': 128, 'failed_proofs_available': 128, 'own_diagnostics_available': 128, 'donor_diagnostics_available': 128, 'arm_plan_rows_complete': 128, 'arm_prompt_hashes_matched': 512, 'paired_seeds_valid': 128, 'arm_orders_valid': 128, 'screening_identity_fields_available': 128, 'assembly_probes_passed': 128}"
+    },
+    {
+      "check": "candidate_assembly_used_no_model_and_no_verifier",
+      "pass": true,
+      "detail": "generations=0 verifier_calls=0"
+    },
+    {
       "check": "second_stage_dry_run_wrote_no_raw",
       "pass": true,
       "detail": "no second-stage raw"
@@ -942,9 +983,9 @@
       "detail": "[]"
     },
     {
-      "check": "raw_artifact_directory_does_not_exist_yet",
+      "check": "no_second_stage_execution_artifact_exists_yet",
       "pass": true,
-      "detail": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout"
+      "detail": "present: []"
     },
     {
       "check": "raw_artifacts_are_gitignored",
@@ -954,7 +995,7 @@
     {
       "check": "full_suite_is_green",
       "pass": true,
-      "detail": "523 passed, 1 skipped in 437.79s (0:07:17)"
+      "detail": "539 passed, 1 skipped in 520.77s (0:08:40)"
     },
     {
       "check": "ruff_is_clean",
@@ -974,15 +1015,15 @@
     {
       "check": "scratch_directory_removed",
       "pass": true,
-      "detail": "/tmp/v4_p001_dry_run_20260925T123649Z"
+      "detail": "/tmp/v4_p001_dry_run_20260925T153419Z"
     },
     {
-      "check": "raw_artifact_directory_still_absent",
+      "check": "no_second_stage_execution_artifact_was_created",
       "pass": true,
-      "detail": "runs/v4_p001/rollout"
+      "detail": "runs/v4_p001/rollout: []"
     }
   ],
-  "n_checks": 53,
+  "n_checks": 55,
   "n_failed": 0,
   "status_of_this_transcript": "PASS",
   "cleanliness_waiver": {},
@@ -996,7 +1037,7 @@
   "owner_constraints_observed": [
     "No V4 formal theorem generation: 0 candidates generated, 0 formal verifier calls",
     "the formal stages were refused without --i-have-owner-launch-authorization",
-    "the synthetic cohort lives under /tmp, is marked SYNTHETIC-DRY-RUN, and is deleted before exit; runs/ stays empty",
+    "the synthetic cohort lives under /tmp, is marked SYNTHETIC-DRY-RUN, and is deleted before exit; no second-stage execution artifact is created under runs/",
     "no RL, SFT, checkpoint update, controller training or final-holdout use",
     "no verifier throughput, latency or capacity claim"
   ],
