@@ -27,6 +27,24 @@
     "seed": 20260924,
     "why_not_a_library_rng": "a hash order is reproducible on any numpy/python version, so 'fixed before the result' stays checkable"
   },
+  "formal_sample_rank_rule": {
+    "definition": "`formal_sample_rank` is 1..128 in the frozen draw order -- the order `membership_hashes.statement_ids_sha256` is taken in, i.e. SHA256('<draw_seed>|<component_id>') ascending",
+    "used_for": "the generation seed schedule and nothing else",
+    "depends_on": [
+      "the frozen draw seed",
+      "component_id"
+    ],
+    "independent_of": [
+      "q_B2_controller",
+      "q_B1_handcrafted",
+      "q_B2_fold_ensemble",
+      "q_B1_fold_ensemble",
+      "source",
+      "any future rollout outcome"
+    ],
+    "amendment": "owner amendment B (2026-09-25, PRE-OUTCOME CLARIFICATION -- no prospective labels existed): the generation RNG stream may not be determined by the controller's prediction or by its ranking, so the seed rank is this draw-order rank, not rank_by_q_B2",
+    "statement_ids_sha256_in_this_order": "05e161adbcbee3a9257530822b33683a47c4b83a287a571f5bbabc7603565227"
+  },
   "governance": {
     "contamination_definition": "consumed_only",
     "owner_release_of_track_c": "V2 Track C reserved families were released by owner for V3 because Track C was never executed and no outcomes from those families were observed. This is a governance change in reservation status, not a reuse of previously evaluated data.",
@@ -135,6 +153,7 @@
   "theorems": [
     {
       "rank_by_q_B2": 1,
+      "formal_sample_rank": 75,
       "in_top20pct_block": true,
       "component_id": "fc-39d897116bd7",
       "statement_id": "047ffb5c-6865-4e0c-8199-0cde6eaa05a1",
@@ -150,6 +169,7 @@
     },
     {
       "rank_by_q_B2": 2,
+      "formal_sample_rank": 73,
       "in_top20pct_block": true,
       "component_id": "fc-c9a8b0a98bb4",
       "statement_id": "0ba67b73-5d77-4c38-a974-42c6dda57c24",
@@ -165,6 +185,7 @@
     },
     {
       "rank_by_q_B2": 3,
+      "formal_sample_rank": 18,
       "in_top20pct_block": true,
       "component_id": "fc-0689070d172a",
       "statement_id": "0566ec2e-2988-435a-8092-5f27048728c8",
@@ -180,6 +201,7 @@
     },
     {
       "rank_by_q_B2": 4,
+      "formal_sample_rank": 36,
       "in_top20pct_block": true,
       "component_id": "fc-6cb8a6d4a479",
       "statement_id": "165f9e7e-bbaf-4934-872e-60c45451546e",
@@ -195,6 +217,7 @@
     },
     {
       "rank_by_q_B2": 5,
+      "formal_sample_rank": 128,
       "in_top20pct_block": true,
       "component_id": "fc-b8de6a1b6b2b",
       "statement_id": "2ea0eae4-96df-4a37-825f-a38a334d22be",
@@ -210,6 +233,7 @@
     },
     {
       "rank_by_q_B2": 6,
+      "formal_sample_rank": 58,
       "in_top20pct_block": true,
       "component_id": "fc-2d39bc742192",
       "statement_id": "25a22fb6-f605-4413-ad5a-f2dc89660899",
@@ -225,6 +249,7 @@
     },
     {
       "rank_by_q_B2": 7,
+      "formal_sample_rank": 111,
       "in_top20pct_block": true,
       "component_id": "fc-b3c31e8c7b0c",
       "statement_id": "385e41a7-8d11-4302-b719-bbedf01b9d64",
@@ -240,6 +265,7 @@
     },
     {
       "rank_by_q_B2": 8,
+      "formal_sample_rank": 105,
       "in_top20pct_block": true,
       "component_id": "fc-b7cf6bdf813a",
       "statement_id": "001b8dc1-f3ca-4080-afaa-0316eb52e0e1",
@@ -255,6 +281,7 @@
     },
     {
       "rank_by_q_B2": 9,
+      "formal_sample_rank": 59,
       "in_top20pct_block": true,
       "component_id": "fc-448a551e1af3",
       "statement_id": "1677733a-4938-40c7-ba89-ed388c1876ac",
@@ -270,6 +297,7 @@
     },
     {
       "rank_by_q_B2": 10,
+      "formal_sample_rank": 5,
       "in_top20pct_block": true,
       "component_id": "fc-ed37ba853f68",
       "statement_id": "06746116-0095-41d2-ac94-8aacfe1079d3",
@@ -285,6 +313,7 @@
     },
     {
       "rank_by_q_B2": 11,
+      "formal_sample_rank": 79,
       "in_top20pct_block": true,
       "component_id": "fc-6dd26be50f09",
       "statement_id": "0a6a3348-c9c2-4f57-a781-3a9d9aaf2b34",
@@ -300,6 +329,7 @@
     },
     {
       "rank_by_q_B2": 12,
+      "formal_sample_rank": 99,
       "in_top20pct_block": true,
       "component_id": "fc-c79441c83a21",
       "statement_id": "1e2fe887-41fd-4653-9665-c8cc79a49f84",
@@ -315,6 +345,7 @@
     },
     {
       "rank_by_q_B2": 13,
+      "formal_sample_rank": 57,
       "in_top20pct_block": true,
       "component_id": "fc-0f819e17da4a",
       "statement_id": "65d0d4ee-47b5-46b1-9c22-affaf09c984f",
@@ -330,6 +361,7 @@
     },
     {
       "rank_by_q_B2": 14,
+      "formal_sample_rank": 122,
       "in_top20pct_block": true,
       "component_id": "fc-3d830ea68aec",
       "statement_id": "17e2e6ba-74e9-4927-b22d-54fc1252162a",
@@ -345,6 +377,7 @@
     },
     {
       "rank_by_q_B2": 15,
+      "formal_sample_rank": 93,
       "in_top20pct_block": true,
       "component_id": "fc-188a292628c5",
       "statement_id": "088ba34f-d401-48e3-9502-33ad82c7ae5f",
@@ -360,6 +393,7 @@
     },
     {
       "rank_by_q_B2": 16,
+      "formal_sample_rank": 8,
       "in_top20pct_block": true,
       "component_id": "fc-0fe9dead274c",
       "statement_id": "020c0a33-4450-4395-90e1-74555b4b8afc",
@@ -375,6 +409,7 @@
     },
     {
       "rank_by_q_B2": 17,
+      "formal_sample_rank": 9,
       "in_top20pct_block": true,
       "component_id": "fc-37a6748121cc",
       "statement_id": "31afc8d8-3d62-472b-bb13-7f49aa88922d",
@@ -390,6 +425,7 @@
     },
     {
       "rank_by_q_B2": 18,
+      "formal_sample_rank": 113,
       "in_top20pct_block": true,
       "component_id": "fc-257e76457074",
       "statement_id": "0c6f3f74-6135-4d66-ac3d-d780e9530810",
@@ -405,6 +441,7 @@
     },
     {
       "rank_by_q_B2": 19,
+      "formal_sample_rank": 4,
       "in_top20pct_block": true,
       "component_id": "fc-278ab74b2ccf",
       "statement_id": "5519efd2-b1d0-464a-923c-80b72e782347",
@@ -420,6 +457,7 @@
     },
     {
       "rank_by_q_B2": 20,
+      "formal_sample_rank": 41,
       "in_top20pct_block": true,
       "component_id": "fc-5e872dd37fb2",
       "statement_id": "0436871e-13f7-4d0c-bfae-7c1f4f381aec",
@@ -435,6 +473,7 @@
     },
     {
       "rank_by_q_B2": 21,
+      "formal_sample_rank": 97,
       "in_top20pct_block": true,
       "component_id": "fc-d5b923ba5007",
       "statement_id": "29e15600-b16f-4459-96d5-57ab22fd07a4",
@@ -450,6 +489,7 @@
     },
     {
       "rank_by_q_B2": 22,
+      "formal_sample_rank": 64,
       "in_top20pct_block": true,
       "component_id": "fc-b6c81a143995",
       "statement_id": "29e95659-6e7a-43ea-b8a8-f008e815aff5",
@@ -465,6 +505,7 @@
     },
     {
       "rank_by_q_B2": 23,
+      "formal_sample_rank": 120,
       "in_top20pct_block": true,
       "component_id": "fc-430be1d7e57c",
       "statement_id": "16c3d7c8-cd48-46df-8242-8606d7755e43",
@@ -480,6 +521,7 @@
     },
     {
       "rank_by_q_B2": 24,
+      "formal_sample_rank": 104,
       "in_top20pct_block": true,
       "component_id": "fc-3091ded6ed01",
       "statement_id": "275e7b8f-9789-4015-931b-e75503470730",
@@ -495,6 +537,7 @@
     },
     {
       "rank_by_q_B2": 25,
+      "formal_sample_rank": 28,
       "in_top20pct_block": true,
       "component_id": "fc-d20080a03e76",
       "statement_id": "06ac1087-8206-4438-a9a8-db1d34715e01",
@@ -510,6 +553,7 @@
     },
     {
       "rank_by_q_B2": 26,
+      "formal_sample_rank": 3,
       "in_top20pct_block": true,
       "component_id": "fc-57ce6002d9a7",
       "statement_id": "3225d903-804e-4f80-8727-0d77d00b7c52",
@@ -525,6 +569,7 @@
     },
     {
       "rank_by_q_B2": 27,
+      "formal_sample_rank": 118,
       "in_top20pct_block": false,
       "component_id": "fc-4989305d3bcd",
       "statement_id": "620b5535-9a44-43d2-aee7-03f455929c63",
@@ -540,6 +585,7 @@
     },
     {
       "rank_by_q_B2": 28,
+      "formal_sample_rank": 90,
       "in_top20pct_block": false,
       "component_id": "fc-a0f1a1307f28",
       "statement_id": "1142f533-7e85-45ba-bfb4-b6a336d86c08",
@@ -555,6 +601,7 @@
     },
     {
       "rank_by_q_B2": 29,
+      "formal_sample_rank": 123,
       "in_top20pct_block": false,
       "component_id": "fc-96ccd27476e8",
       "statement_id": "0d00100e-8a88-4fbb-b2c9-d5b5ad03db89",
@@ -570,6 +617,7 @@
     },
     {
       "rank_by_q_B2": 30,
+      "formal_sample_rank": 117,
       "in_top20pct_block": false,
       "component_id": "fc-3eb0ed70c7fb",
       "statement_id": "025772ad-81eb-4a4c-acc0-29f7d2437072",
@@ -585,6 +633,7 @@
     },
     {
       "rank_by_q_B2": 31,
+      "formal_sample_rank": 89,
       "in_top20pct_block": false,
       "component_id": "fc-f523ec09a157",
       "statement_id": "075a9084-6489-414e-ad2a-d0ef145d8c47",
@@ -600,6 +649,7 @@
     },
     {
       "rank_by_q_B2": 32,
+      "formal_sample_rank": 72,
       "in_top20pct_block": false,
       "component_id": "fc-f3e7db6dc281",
       "statement_id": "01bc12cf-8b53-4637-a245-2d4e20a056f4",
@@ -615,6 +665,7 @@
     },
     {
       "rank_by_q_B2": 33,
+      "formal_sample_rank": 29,
       "in_top20pct_block": false,
       "component_id": "fc-57de4c336c5d",
       "statement_id": "0fa68f3f-3c5b-4ed3-bf75-789551c35650",
@@ -630,6 +681,7 @@
     },
     {
       "rank_by_q_B2": 34,
+      "formal_sample_rank": 65,
       "in_top20pct_block": false,
       "component_id": "fc-c59fafb22f6b",
       "statement_id": "09cee5d4-5bfa-401e-9824-150b3e361645",
@@ -645,6 +697,7 @@
     },
     {
       "rank_by_q_B2": 35,
+      "formal_sample_rank": 91,
       "in_top20pct_block": false,
       "component_id": "fc-81873a34743b",
       "statement_id": "21e9d315-e00c-44ae-b4e7-4c6c9e277d6c",
@@ -660,6 +713,7 @@
     },
     {
       "rank_by_q_B2": 36,
+      "formal_sample_rank": 81,
       "in_top20pct_block": false,
       "component_id": "fc-9f3de013aff9",
       "statement_id": "1e3baa30-5e2d-4540-a6a6-ebe04dd149cb",
@@ -675,6 +729,7 @@
     },
     {
       "rank_by_q_B2": 37,
+      "formal_sample_rank": 80,
       "in_top20pct_block": false,
       "component_id": "fc-8eda04d6684f",
       "statement_id": "065891a0-f7d2-4114-bb56-3dc6e347355b",
@@ -690,6 +745,7 @@
     },
     {
       "rank_by_q_B2": 38,
+      "formal_sample_rank": 44,
       "in_top20pct_block": false,
       "component_id": "fc-0bc85e9e082f",
       "statement_id": "216efe98-9766-488a-808d-f7cacc160285",
@@ -705,6 +761,7 @@
     },
     {
       "rank_by_q_B2": 39,
+      "formal_sample_rank": 51,
       "in_top20pct_block": false,
       "component_id": "fc-3822b660b20e",
       "statement_id": "07af2205-7e6c-4b24-9af7-308540a61add",
@@ -720,6 +777,7 @@
     },
     {
       "rank_by_q_B2": 40,
+      "formal_sample_rank": 77,
       "in_top20pct_block": false,
       "component_id": "fc-e8527c2b2acd",
       "statement_id": "908743d7-c66d-4034-a35f-9e60d5b8bb13",
@@ -735,6 +793,7 @@
     },
     {
       "rank_by_q_B2": 41,
+      "formal_sample_rank": 16,
       "in_top20pct_block": false,
       "component_id": "fc-88aa49bb6ba7",
       "statement_id": "2f5d65f3-990c-43be-b33b-76394b9e524e",
@@ -750,6 +809,7 @@
     },
     {
       "rank_by_q_B2": 42,
+      "formal_sample_rank": 126,
       "in_top20pct_block": false,
       "component_id": "fc-348620dd2045",
       "statement_id": "68f8106e-35bd-4ac9-afd0-352ec4235f4f",
@@ -765,6 +825,7 @@
     },
     {
       "rank_by_q_B2": 43,
+      "formal_sample_rank": 14,
       "in_top20pct_block": false,
       "component_id": "fc-6fe179620442",
       "statement_id": "8712e2b6-f090-4f5b-abb8-dc038df0f0e1",
@@ -780,6 +841,7 @@
     },
     {
       "rank_by_q_B2": 44,
+      "formal_sample_rank": 101,
       "in_top20pct_block": false,
       "component_id": "fc-a2d83cfc4551",
       "statement_id": "b4f32983-a4f6-4028-abab-85e01d678c2d",
@@ -795,6 +857,7 @@
     },
     {
       "rank_by_q_B2": 45,
+      "formal_sample_rank": 46,
       "in_top20pct_block": false,
       "component_id": "fc-9dd26185d0e9",
       "statement_id": "6d329209-968d-4d3e-809e-77c34a745fcf",
@@ -810,6 +873,7 @@
     },
     {
       "rank_by_q_B2": 46,
+      "formal_sample_rank": 103,
       "in_top20pct_block": false,
       "component_id": "fc-190578b1acfd",
       "statement_id": "79aea89e-6780-4bbd-8dca-52bec3443702",
@@ -825,6 +889,7 @@
     },
     {
       "rank_by_q_B2": 47,
+      "formal_sample_rank": 96,
       "in_top20pct_block": false,
       "component_id": "fc-e59f10ae7bac",
       "statement_id": "86eab5ec-63c2-45dd-9213-a8fd198639d4",
@@ -840,6 +905,7 @@
     },
     {
       "rank_by_q_B2": 48,
+      "formal_sample_rank": 27,
       "in_top20pct_block": false,
       "component_id": "fc-fb8902691048",
       "statement_id": "b065feac-5453-42bc-89ff-f6755ce6ae9c",
@@ -855,6 +921,7 @@
     },
     {
       "rank_by_q_B2": 49,
+      "formal_sample_rank": 78,
       "in_top20pct_block": false,
       "component_id": "fc-b56d6e51353f",
       "statement_id": "d8f0928f-5f2b-43c9-9e14-a0f2752594af",
@@ -870,6 +937,7 @@
     },
     {
       "rank_by_q_B2": 50,
+      "formal_sample_rank": 38,
       "in_top20pct_block": false,
       "component_id": "fc-3e438f20e131",
       "statement_id": "076082a8-ded1-49a9-821e-d518daae94da",
@@ -885,6 +953,7 @@
     },
     {
       "rank_by_q_B2": 51,
+      "formal_sample_rank": 107,
       "in_top20pct_block": false,
       "component_id": "fc-42ae3c1dac0c",
       "statement_id": "0d28234f-b1ce-44a6-942d-fcbb48cd9e5d",
@@ -900,6 +969,7 @@
     },
     {
       "rank_by_q_B2": 52,
+      "formal_sample_rank": 48,
       "in_top20pct_block": false,
       "component_id": "fc-a667ea5e07a0",
       "statement_id": "e239ebe0-04bf-470b-af75-ec8e87fa4edc",
@@ -915,6 +985,7 @@
     },
     {
       "rank_by_q_B2": 53,
+      "formal_sample_rank": 87,
       "in_top20pct_block": false,
       "component_id": "fc-e9dd9238b5fe",
       "statement_id": "1ed9c376-b6fd-49db-92d4-c5c2b1b55dc6",
@@ -930,6 +1001,7 @@
     },
     {
       "rank_by_q_B2": 54,
+      "formal_sample_rank": 24,
       "in_top20pct_block": false,
       "component_id": "fc-f99a58e14b27",
       "statement_id": "9fda62bc-2d56-4d3a-82e6-df399e8b897c",
@@ -945,6 +1017,7 @@
     },
     {
       "rank_by_q_B2": 55,
+      "formal_sample_rank": 32,
       "in_top20pct_block": false,
       "component_id": "fc-2c496591fc37",
       "statement_id": "2207c5a1-974a-40c7-9332-4c24568803db",
@@ -960,6 +1033,7 @@
     },
     {
       "rank_by_q_B2": 56,
+      "formal_sample_rank": 54,
       "in_top20pct_block": false,
       "component_id": "fc-1c8d4f8a0bc8",
       "statement_id": "0ea64ba5-d3a4-4c8b-a64b-175790d42d16",
@@ -975,6 +1049,7 @@
     },
     {
       "rank_by_q_B2": 57,
+      "formal_sample_rank": 39,
       "in_top20pct_block": false,
       "component_id": "fc-2fe9ed46c365",
       "statement_id": "363625e7-070c-4515-9c49-150f36fcc76a",
@@ -990,6 +1065,7 @@
     },
     {
       "rank_by_q_B2": 58,
+      "formal_sample_rank": 34,
       "in_top20pct_block": false,
       "component_id": "fc-fc3df7992aa2",
       "statement_id": "5237c538-b1c0-4355-846a-72b0322d3edd",
@@ -1005,6 +1081,7 @@
     },
     {
       "rank_by_q_B2": 59,
+      "formal_sample_rank": 114,
       "in_top20pct_block": false,
       "component_id": "fc-c5f9286639ad",
       "statement_id": "14823060-bfe8-4c46-85ae-851dde30c621",
@@ -1020,6 +1097,7 @@
     },
     {
       "rank_by_q_B2": 60,
+      "formal_sample_rank": 127,
       "in_top20pct_block": false,
       "component_id": "fc-9961ba637d99",
       "statement_id": "86c6a3eb-c3d2-4608-bfe5-a3ee07561d65",
@@ -1035,6 +1113,7 @@
     },
     {
       "rank_by_q_B2": 61,
+      "formal_sample_rank": 49,
       "in_top20pct_block": false,
       "component_id": "fc-bffc470022ad",
       "statement_id": "2cde8815-8da0-45d5-bc84-b0ad23f2fdaa",
@@ -1050,6 +1129,7 @@
     },
     {
       "rank_by_q_B2": 62,
+      "formal_sample_rank": 66,
       "in_top20pct_block": false,
       "component_id": "fc-0d956741c37c",
       "statement_id": "b2c2f7f5-9746-4530-af2a-116a6b8365e1",
@@ -1065,6 +1145,7 @@
     },
     {
       "rank_by_q_B2": 63,
+      "formal_sample_rank": 31,
       "in_top20pct_block": false,
       "component_id": "fc-f9da9881fae7",
       "statement_id": "f56f88ae-37ed-4857-9066-494ea3fccf74",
@@ -1080,6 +1161,7 @@
     },
     {
       "rank_by_q_B2": 64,
+      "formal_sample_rank": 10,
       "in_top20pct_block": false,
       "component_id": "fc-d61cf28f33b7",
       "statement_id": "ced8ac7c-a989-49ef-bf54-4f6c9826aacb",
@@ -1095,6 +1177,7 @@
     },
     {
       "rank_by_q_B2": 65,
+      "formal_sample_rank": 53,
       "in_top20pct_block": false,
       "component_id": "fc-87cfe8bb7513",
       "statement_id": "20379987-0e7c-4975-818e-bc6e0bd6b33a",
@@ -1110,6 +1193,7 @@
     },
     {
       "rank_by_q_B2": 66,
+      "formal_sample_rank": 108,
       "in_top20pct_block": false,
       "component_id": "fc-fe4d9e37e87c",
       "statement_id": "ca86c34d-5950-40b9-8ea7-07f7a6a239cc",
@@ -1125,6 +1209,7 @@
     },
     {
       "rank_by_q_B2": 67,
+      "formal_sample_rank": 1,
       "in_top20pct_block": false,
       "component_id": "fc-38a8017ff11d",
       "statement_id": "fb1f143d-cb4f-4c62-87f7-a5d37f054344",
@@ -1140,6 +1225,7 @@
     },
     {
       "rank_by_q_B2": 68,
+      "formal_sample_rank": 110,
       "in_top20pct_block": false,
       "component_id": "fc-14d482665b8e",
       "statement_id": "cd351f93-f95d-431c-9479-56960f46fb8d",
@@ -1155,6 +1241,7 @@
     },
     {
       "rank_by_q_B2": 69,
+      "formal_sample_rank": 102,
       "in_top20pct_block": false,
       "component_id": "fc-9c0d33bb1443",
       "statement_id": "df41acef-9904-4864-8c9b-b39f5c15a6e0",
@@ -1170,6 +1257,7 @@
     },
     {
       "rank_by_q_B2": 70,
+      "formal_sample_rank": 69,
       "in_top20pct_block": false,
       "component_id": "fc-7e5e569c08c8",
       "statement_id": "7be3d4da-16d0-4984-9900-3179c82095ee",
@@ -1185,6 +1273,7 @@
     },
     {
       "rank_by_q_B2": 71,
+      "formal_sample_rank": 82,
       "in_top20pct_block": false,
       "component_id": "fc-fc6c56b489df",
       "statement_id": "7c2cee5e-739b-4124-88cf-46bf6f912bbe",
@@ -1200,6 +1289,7 @@
     },
     {
       "rank_by_q_B2": 72,
+      "formal_sample_rank": 22,
       "in_top20pct_block": false,
       "component_id": "fc-ffa96673f879",
       "statement_id": "d5051455-bdbb-4fed-ba30-11360397da02",
@@ -1215,6 +1305,7 @@
     },
     {
       "rank_by_q_B2": 73,
+      "formal_sample_rank": 124,
       "in_top20pct_block": false,
       "component_id": "fc-e91676480a63",
       "statement_id": "0cdc2a00-f6c5-4e0f-9cdc-cdd5eed5c456",
@@ -1230,6 +1321,7 @@
     },
     {
       "rank_by_q_B2": 74,
+      "formal_sample_rank": 6,
       "in_top20pct_block": false,
       "component_id": "fc-b8ae97bf9dab",
       "statement_id": "be97d7f4-1f1c-4e55-91fd-4c3af6335cc6",
@@ -1245,6 +1337,7 @@
     },
     {
       "rank_by_q_B2": 75,
+      "formal_sample_rank": 45,
       "in_top20pct_block": false,
       "component_id": "fc-bd894427077e",
       "statement_id": "a7ad4907-560d-4403-84a7-21155242e37d",
@@ -1260,6 +1353,7 @@
     },
     {
       "rank_by_q_B2": 76,
+      "formal_sample_rank": 71,
       "in_top20pct_block": false,
       "component_id": "fc-d3c1d180e5bf",
       "statement_id": "1296dd15-e35e-43c1-8eff-abb7e5b43789",
@@ -1275,6 +1369,7 @@
     },
     {
       "rank_by_q_B2": 77,
+      "formal_sample_rank": 74,
       "in_top20pct_block": false,
       "component_id": "fc-f7e131119281",
       "statement_id": "0648e4bd-5421-4a3e-9249-256e1cc168af",
@@ -1290,6 +1385,7 @@
     },
     {
       "rank_by_q_B2": 78,
+      "formal_sample_rank": 15,
       "in_top20pct_block": false,
       "component_id": "fc-ff9f71ec3e00",
       "statement_id": "5d2826e3-4a1b-4290-81e1-e3fc25457364",
@@ -1305,6 +1401,7 @@
     },
     {
       "rank_by_q_B2": 79,
+      "formal_sample_rank": 95,
       "in_top20pct_block": false,
       "component_id": "fc-b4a0dfaa0058",
       "statement_id": "b59ee1ba-deee-43cc-9d96-0c533ca76a63",
@@ -1320,6 +1417,7 @@
     },
     {
       "rank_by_q_B2": 80,
+      "formal_sample_rank": 83,
       "in_top20pct_block": false,
       "component_id": "fc-2706d8933690",
       "statement_id": "41bb42f5-f840-421f-9dea-bccbd65f64b5",
@@ -1335,6 +1433,7 @@
     },
     {
       "rank_by_q_B2": 81,
+      "formal_sample_rank": 50,
       "in_top20pct_block": false,
       "component_id": "fc-0329317f5ea4",
       "statement_id": "e6156786-fff0-4d6f-b807-b0ea185debd3",
@@ -1350,6 +1449,7 @@
     },
     {
       "rank_by_q_B2": 82,
+      "formal_sample_rank": 112,
       "in_top20pct_block": false,
       "component_id": "fc-8b84184abda1",
       "statement_id": "9c82aee6-b870-46e9-ac0f-695a774bd2c9",
@@ -1365,6 +1465,7 @@
     },
     {
       "rank_by_q_B2": 83,
+      "formal_sample_rank": 63,
       "in_top20pct_block": false,
       "component_id": "fc-a29d5d9cd7c7",
       "statement_id": "9fb943d3-0260-41f7-bc7c-668b2c3a1add",
@@ -1380,6 +1481,7 @@
     },
     {
       "rank_by_q_B2": 84,
+      "formal_sample_rank": 61,
       "in_top20pct_block": false,
       "component_id": "fc-938af9ba7175",
       "statement_id": "a09c1e49-738f-4c56-b373-c642c12ad4ba",
@@ -1395,6 +1497,7 @@
     },
     {
       "rank_by_q_B2": 85,
+      "formal_sample_rank": 13,
       "in_top20pct_block": false,
       "component_id": "fc-8165dc1d93d5",
       "statement_id": "32c9db76-3468-4e11-bbf4-0398acead891",
@@ -1410,6 +1513,7 @@
     },
     {
       "rank_by_q_B2": 86,
+      "formal_sample_rank": 23,
       "in_top20pct_block": false,
       "component_id": "fc-8efb5539ab01",
       "statement_id": "a00ccb58-af7d-4a7d-bc51-038044183d37",
@@ -1425,6 +1529,7 @@
     },
     {
       "rank_by_q_B2": 87,
+      "formal_sample_rank": 67,
       "in_top20pct_block": false,
       "component_id": "fc-eb0679960b70",
       "statement_id": "219efcd4-4aa4-4c06-8f7e-3cc94c23dc60",
@@ -1440,6 +1545,7 @@
     },
     {
       "rank_by_q_B2": 88,
+      "formal_sample_rank": 119,
       "in_top20pct_block": false,
       "component_id": "fc-907339aa37b9",
       "statement_id": "19710675-3e49-4f81-aee9-8dd00fe2e082",
@@ -1455,6 +1561,7 @@
     },
     {
       "rank_by_q_B2": 89,
+      "formal_sample_rank": 30,
       "in_top20pct_block": false,
       "component_id": "fc-a70ce2f11392",
       "statement_id": "5df3adfc-ea6c-4c8a-a78b-d078b71948e6",
@@ -1470,6 +1577,7 @@
     },
     {
       "rank_by_q_B2": 90,
+      "formal_sample_rank": 98,
       "in_top20pct_block": false,
       "component_id": "fc-a01eb9d95b57",
       "statement_id": "b142c294-d44c-49d8-a579-0882b8063269",
@@ -1485,6 +1593,7 @@
     },
     {
       "rank_by_q_B2": 91,
+      "formal_sample_rank": 121,
       "in_top20pct_block": false,
       "component_id": "fc-fd17c0e5a63b",
       "statement_id": "0b85946b-fa54-402d-9995-e84bb4f5637c",
@@ -1500,6 +1609,7 @@
     },
     {
       "rank_by_q_B2": 92,
+      "formal_sample_rank": 106,
       "in_top20pct_block": false,
       "component_id": "fc-43b0e71fe301",
       "statement_id": "41ca65c5-a916-4932-9f4f-2316769b099f",
@@ -1515,6 +1625,7 @@
     },
     {
       "rank_by_q_B2": 93,
+      "formal_sample_rank": 60,
       "in_top20pct_block": false,
       "component_id": "fc-7a5eb5697a79",
       "statement_id": "b8e4d889-7ce4-4205-8b8b-d9a022f9164c",
@@ -1530,6 +1641,7 @@
     },
     {
       "rank_by_q_B2": 94,
+      "formal_sample_rank": 37,
       "in_top20pct_block": false,
       "component_id": "fc-28f5b1d97b7b",
       "statement_id": "36563546-bc14-457c-b4b4-a51100bd4d81",
@@ -1545,6 +1657,7 @@
     },
     {
       "rank_by_q_B2": 95,
+      "formal_sample_rank": 17,
       "in_top20pct_block": false,
       "component_id": "fc-fb826318a4e6",
       "statement_id": "27890765-5f27-48c6-81a2-2834fb1c771b",
@@ -1560,6 +1673,7 @@
     },
     {
       "rank_by_q_B2": 96,
+      "formal_sample_rank": 125,
       "in_top20pct_block": false,
       "component_id": "fc-17da809a3993",
       "statement_id": "9b72e179-2dea-45c3-a810-ae9a4d758573",
@@ -1575,6 +1689,7 @@
     },
     {
       "rank_by_q_B2": 97,
+      "formal_sample_rank": 94,
       "in_top20pct_block": false,
       "component_id": "fc-57049841f9ab",
       "statement_id": "6430b33c-5ca1-4603-8ccd-aec215200145",
@@ -1590,6 +1705,7 @@
     },
     {
       "rank_by_q_B2": 98,
+      "formal_sample_rank": 56,
       "in_top20pct_block": false,
       "component_id": "fc-578b5fb99ddd",
       "statement_id": "af68b4ce-48ec-42e9-b2a3-d5f1331eaf82",
@@ -1605,6 +1721,7 @@
     },
     {
       "rank_by_q_B2": 99,
+      "formal_sample_rank": 88,
       "in_top20pct_block": false,
       "component_id": "fc-ff824f2c2a6a",
       "statement_id": "a39553cd-24b9-4a1b-8e5e-971e2f179b4a",
@@ -1620,6 +1737,7 @@
     },
     {
       "rank_by_q_B2": 100,
+      "formal_sample_rank": 26,
       "in_top20pct_block": false,
       "component_id": "fc-547d6ab2f8b9",
       "statement_id": "f820a56d-702e-43ac-981d-1dcd7c838093",
@@ -1635,6 +1753,7 @@
     },
     {
       "rank_by_q_B2": 101,
+      "formal_sample_rank": 25,
       "in_top20pct_block": false,
       "component_id": "fc-241875d5363c",
       "statement_id": "3772d961-2cb2-48a2-b190-3d5436e7ccce",
@@ -1650,6 +1769,7 @@
     },
     {
       "rank_by_q_B2": 102,
+      "formal_sample_rank": 42,
       "in_top20pct_block": false,
       "component_id": "fc-788f504708ad",
       "statement_id": "9d420e3b-ef16-49fd-91ad-0d0470ab5ab2",
@@ -1665,6 +1785,7 @@
     },
     {
       "rank_by_q_B2": 103,
+      "formal_sample_rank": 43,
       "in_top20pct_block": false,
       "component_id": "fc-67bf63869379",
       "statement_id": "3f7aa6f2-afa1-4d63-9a00-1ac490c04a62",
@@ -1680,6 +1801,7 @@
     },
     {
       "rank_by_q_B2": 104,
+      "formal_sample_rank": 70,
       "in_top20pct_block": false,
       "component_id": "fc-d6d6bafb58eb",
       "statement_id": "2426a81c-7aff-423c-8562-25a4e07fe80a",
@@ -1695,6 +1817,7 @@
     },
     {
       "rank_by_q_B2": 105,
+      "formal_sample_rank": 40,
       "in_top20pct_block": false,
       "component_id": "fc-27d101664782",
       "statement_id": "601408fd-8d4b-4be2-9be0-3a0452661c2a",
@@ -1710,6 +1833,7 @@
     },
     {
       "rank_by_q_B2": 106,
+      "formal_sample_rank": 35,
       "in_top20pct_block": false,
       "component_id": "fc-5181bf7047f8",
       "statement_id": "72874212-fd85-4783-94b4-fa7b81295b84",
@@ -1725,6 +1849,7 @@
     },
     {
       "rank_by_q_B2": 107,
+      "formal_sample_rank": 100,
       "in_top20pct_block": false,
       "component_id": "fc-6a87b124d09b",
       "statement_id": "c2da6a2a-ae32-4e04-ab5e-c75a56ae38bf",
@@ -1740,6 +1865,7 @@
     },
     {
       "rank_by_q_B2": 108,
+      "formal_sample_rank": 52,
       "in_top20pct_block": false,
       "component_id": "fc-c2c70c83388d",
       "statement_id": "7d0dff59-60c5-4d6d-8828-51956ee054a8",
@@ -1755,6 +1881,7 @@
     },
     {
       "rank_by_q_B2": 109,
+      "formal_sample_rank": 92,
       "in_top20pct_block": false,
       "component_id": "fc-91fe9003066e",
       "statement_id": "89fe01fc-8a59-4b6e-b115-45a2f3faf42d",
@@ -1770,6 +1897,7 @@
     },
     {
       "rank_by_q_B2": 110,
+      "formal_sample_rank": 21,
       "in_top20pct_block": false,
       "component_id": "fc-f17a0606cc52",
       "statement_id": "8472b9e5-448d-4571-805b-f881a9e54dee",
@@ -1785,6 +1913,7 @@
     },
     {
       "rank_by_q_B2": 111,
+      "formal_sample_rank": 115,
       "in_top20pct_block": false,
       "component_id": "fc-0d7b62e5f688",
       "statement_id": "534cfd78-b8f5-44ef-9a88-d4530cb3d367",
@@ -1800,6 +1929,7 @@
     },
     {
       "rank_by_q_B2": 112,
+      "formal_sample_rank": 33,
       "in_top20pct_block": false,
       "component_id": "fc-fa48284596f3",
       "statement_id": "c2b9c2dc-a08b-4e7c-9967-b0c4ab92bc8e",
@@ -1815,6 +1945,7 @@
     },
     {
       "rank_by_q_B2": 113,
+      "formal_sample_rank": 116,
       "in_top20pct_block": false,
       "component_id": "fc-d58dd3f72466",
       "statement_id": "d2527f67-946c-4fff-8624-1f96dfbaa446",
@@ -1830,6 +1961,7 @@
     },
     {
       "rank_by_q_B2": 114,
+      "formal_sample_rank": 12,
       "in_top20pct_block": false,
       "component_id": "fc-fac219e63390",
       "statement_id": "21252f73-0dfb-470d-92b6-1958cbe7c54c",
@@ -1845,6 +1977,7 @@
     },
     {
       "rank_by_q_B2": 115,
+      "formal_sample_rank": 76,
       "in_top20pct_block": false,
       "component_id": "fc-ffb0c7731b04",
       "statement_id": "109dfdae-1cb2-4b61-8fc2-76ba2cb26444",
@@ -1860,6 +1993,7 @@
     },
     {
       "rank_by_q_B2": 116,
+      "formal_sample_rank": 68,
       "in_top20pct_block": false,
       "component_id": "fc-f6e8f191d1c2",
       "statement_id": "cd98c486-be41-4d9d-9e54-9582bc28b129",
@@ -1875,6 +2009,7 @@
     },
     {
       "rank_by_q_B2": 117,
+      "formal_sample_rank": 11,
       "in_top20pct_block": false,
       "component_id": "fc-d73c233f79e2",
       "statement_id": "0a78405e-c05d-4efb-93c2-5b74be922277",
@@ -1890,6 +2025,7 @@
     },
     {
       "rank_by_q_B2": 118,
+      "formal_sample_rank": 7,
       "in_top20pct_block": false,
       "component_id": "fc-669826f495b4",
       "statement_id": "ed27326f-9bac-42ea-a02c-1e674c946de3",
@@ -1905,6 +2041,7 @@
     },
     {
       "rank_by_q_B2": 119,
+      "formal_sample_rank": 84,
       "in_top20pct_block": false,
       "component_id": "fc-0202679b26b2",
       "statement_id": "27284f6e-ad9f-48d8-8871-c45e4e667c7a",
@@ -1920,6 +2057,7 @@
     },
     {
       "rank_by_q_B2": 120,
+      "formal_sample_rank": 85,
       "in_top20pct_block": false,
       "component_id": "fc-fa744c5db430",
       "statement_id": "0d104c61-912b-436f-b35a-3292242ffe13",
@@ -1935,6 +2073,7 @@
     },
     {
       "rank_by_q_B2": 121,
+      "formal_sample_rank": 109,
       "in_top20pct_block": false,
       "component_id": "fc-f97e0a85230f",
       "statement_id": "64ef705e-9a65-4f16-bb2b-95440f25b092",
@@ -1950,6 +2089,7 @@
     },
     {
       "rank_by_q_B2": 122,
+      "formal_sample_rank": 55,
       "in_top20pct_block": false,
       "component_id": "fc-88a2413568c0",
       "statement_id": "9f47dfbd-0e9c-41eb-be8e-6eaf801fb9b7",
@@ -1965,6 +2105,7 @@
     },
     {
       "rank_by_q_B2": 123,
+      "formal_sample_rank": 62,
       "in_top20pct_block": false,
       "component_id": "fc-75564c45797f",
       "statement_id": "c0446e09-ae45-43d3-a0a7-c80b260caf8c",
@@ -1980,6 +2121,7 @@
     },
     {
       "rank_by_q_B2": 124,
+      "formal_sample_rank": 47,
       "in_top20pct_block": false,
       "component_id": "fc-fdd6234e6710",
       "statement_id": "e7ba31e7-4b9f-46a8-b278-6a167c251579",
@@ -1995,6 +2137,7 @@
     },
     {
       "rank_by_q_B2": 125,
+      "formal_sample_rank": 86,
       "in_top20pct_block": false,
       "component_id": "fc-db5550c33e04",
       "statement_id": "0a85a3e1-f162-4e4f-b03c-b3f5d03120fa",
@@ -2010,6 +2153,7 @@
     },
     {
       "rank_by_q_B2": 126,
+      "formal_sample_rank": 2,
       "in_top20pct_block": false,
       "component_id": "fc-f6926cda5361",
       "statement_id": "74730d17-2397-4154-aee2-dd55faa5347c",
@@ -2025,6 +2169,7 @@
     },
     {
       "rank_by_q_B2": 127,
+      "formal_sample_rank": 20,
       "in_top20pct_block": false,
       "component_id": "fc-7ee3d2d69b48",
       "statement_id": "822aa426-61da-43af-8c2c-6968327e7f78",
@@ -2040,6 +2185,7 @@
     },
     {
       "rank_by_q_B2": 128,
+      "formal_sample_rank": 19,
       "in_top20pct_block": false,
       "component_id": "fc-635a6f4adfdf",
       "statement_id": "b8f50fa0-e8d9-49e6-960b-cd8961deb783",

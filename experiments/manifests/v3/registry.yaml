@@ -242,6 +242,58 @@ amendments:
       never-executed reservations has capacity 56 or 0. It was the owner's signature, not an
       engineering choice, and no family was reclaimed silently for sample size (§5's prohibition).
 
+  - id: V3-R001-pre-outcome-amendments
+    applies_to: V3-R001
+    created_at_utc: "2026-09-25"
+    kind: pre-outcome-clarification            # no prospective labels existed; no frozen number moved
+    marker: "PRE-OUTCOME CLARIFICATION — no prospective labels existed"
+    authorized_by: "owner review 2026-09-25 (amendments A, B, C approved before the dry-run)"
+    what_changed:
+      amendment_A_frozen_block: >
+        The pooled and within-synthetic top-20% blocks are the preregistered FROZEN memberships. The
+        earlier wording "m = round(0.20 * N_analyzed)" is deprecated: it could be misread as re-taking
+        the top 20% after the labels exist. Formal rule: A = analyzable theorems, B = frozen block,
+        B_analyzed = A ∩ B, N = |A|, m = |B_analyzed|, K = positives in A, x = positives in
+        B_analyzed, X ~ Hypergeometric(N, K, m), p = P(X >= x); within-synthetic identical with
+        m_syn = |A_syn ∩ B_syn|. Invariants: membership never recomputed, never topped up from labels,
+        no replacement theorem for an infra-censored one, and m_variant_if_the_block_were_recomputed
+        is a descriptive disclosure that never enters a gate. Machine-readable:
+        V3-R001_gate.json#frozen_block_semantics.
+      amendment_B_seed_rank: >
+        The generation seed no longer depends on the controller's ranking. seed = seed_base +
+        (formal_sample_rank - 1) * 8 + sample_index, seed_base = 20260924, where formal_sample_rank is
+        written into v3_r001_formal_sample.json as 1..128 in the artifact's already-frozen,
+        outcome-free draw order (SHA256('<draw_seed>|<component_id>') ascending). Nothing was
+        re-shuffled or re-sorted: the existing order was written down. Enforced in code and tests: the
+        rank is independent of q_B2, q_B1, source and any outcome; changing any q moves no seed; all
+        1024 seeds are distinct.
+      amendment_C_verifier_execution: >
+        The formal verifier runs the B0 reliability policy (VerificationSession): sequential and
+        conservative, with server-side timeout, client timeout, health check, canary, infra taxonomy,
+        fail-close and unresolved-infra -> censored/missing. E024's 4-worker concurrency is not used
+        because a canary cannot be gated while verifications are in flight. Recorded as an
+        infrastructure execution choice, NOT a treatment difference; generation science, reward
+        semantics and both gates are unchanged. Accepted limitation: R001 verifier wall-clock may not
+        be compared to E023's concurrent wall-clock as an exact efficiency claim.
+    what_did_not_change: >
+      No sample member, no block membership, no gate boundary, no attainable alpha, no taxonomy, no
+      label rule, no threshold. sample_sha256, both q-vector hashes, the block hash, the 128 component
+      and statement memberships, the reserve manifest and the power artifact are byte-identical to the
+      preregistration commit. What moved is the two artifact FILE hashes (the sample gained the
+      explicit rank field, the gate gained the semantics block) and the frozen settings hash (the seed
+      formula string).
+    artifact_hashes_before_after:
+      v3_r001_formal_sample.json:
+        before: 7b4371e1f8211c41c3e158f8a9201f28948d29befc9a8462ae5f843c851d3d88
+        after:  733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb
+      V3-R001_gate.json:
+        before: b308038093e7260f7f15d774a7f428d1f913e2555e7f885b9b88d9102452a3fc
+        after:  fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93
+      v3_final_holdout_reserve.json: unchanged (b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568)
+    scripts: [scripts/v3_r001_sample_freeze.py, scripts/v3_r001_gate.py, scripts/v3_r001_spec.py,
+              scripts/v3_r001_rollout.py, scripts/v3_r001_analyze.py]
+    formal_candidates_generated: 0             # nothing was generated before or during the amendments
+
 
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is
@@ -467,11 +519,11 @@ prepreregistration_audits:                   # owner directive 2026-09-24 §17 s
     scripts: [scripts/v3_r001_sample_freeze.py, scripts/v3_r001_gate.py]
     artifacts:
       formal_sample: experiments/manifests/v3/v3_r001_formal_sample.json
-      formal_sample_sha256: 7b4371e1f8211c41c3e158f8a9201f28948d29befc9a8462ae5f843c851d3d88
+      formal_sample_sha256: 733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb
       final_reserve: experiments/manifests/v3/v3_final_holdout_reserve.json
       final_reserve_sha256: b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568
       gate: experiments/manifests/v3/V3-R001_gate.json
-      gate_sha256: b308038093e7260f7f15d774a7f428d1f913e2555e7f885b9b88d9102452a3fc
+      gate_sha256: fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93
       preregistration: docs/v3/V3-R001_preregistration.md
       reproducibility: >
         All three artifacts carry no wall-clock, host or git field: their bytes are a pure function

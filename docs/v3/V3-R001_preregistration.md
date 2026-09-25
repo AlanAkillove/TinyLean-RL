@@ -123,9 +123,13 @@ The other nine candidate samples are recorded in the gate artifact as
 **`DESIGN-ONLY / NEVER ANALYZE`**, with their hashes. Whatever the result, switching sample is not
 available.
 
-**File-level pins.** `v3_r001_formal_sample.json` = `7b4371e1f8211c41c3e158f8a9201f28948d29befc9a8462ae5f843c851d3d88`,
+**File-level pins.** `v3_r001_formal_sample.json` = `733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb`,
 `v3_final_holdout_reserve.json` = `b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568`,
-`V3-R001_gate.json` = `b308038093e7260f7f15d774a7f428d1f913e2555e7f885b9b88d9102452a3fc`. None of the
+`V3-R001_gate.json` = `fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93`. Both moved hashes moved exactly once, before any outcome, in the
+2026-09-25 pre-outcome amendments (§18): the sample gained the explicit `formal_sample_rank` and the
+gate gained `frozen_block_semantics` — neither changed a frozen number (sample hash `0ac7134f…`, the
+q-vector hashes and the block hash `d5791fd5…` are byte-identical to the preregistration commit).
+None of the
 three carries a wall-clock, host or git field — their bytes are a pure function of the committed pool,
 predictions and power artifacts — so re-running either script anywhere reproduces these hashes exactly.
 An earlier revision embedded `created_at_utc`/`git_revision`/`host` and therefore could not be
@@ -178,9 +182,9 @@ Exactly one pass, on fly122's RTX 3080, over the 128 frozen theorems.
 | max_model_len | 5120 |
 | gpu_memory_utilization | 0.85 |
 | chunk_theorems | 16 |
-| seed schedule | `seed_base + theorem_index * 8 + sample_index`, `seed_base = 20260924` (the canonical n=8 schedule, as recorded in `experiments/results/e023_holdout_base.json`) |
+| seed schedule | `seed_base + (formal_sample_rank − 1) * 8 + sample_index`, `seed_base = 20260924` (canonical n=8 schedule). `formal_sample_rank` is the frozen draw-order rank 1..128 written in the sample manifest — independent of `q_B2`, `q_B1`, `source` and any outcome (amendment B, §18) |
 | prompt | the canonical chat-template rendering, identical to the string used for representation extraction |
-| verifier | canonical Lean 4 `#check`/`by example` semantics as in D001/E023; timeout 120 s, first verify 600 s, batch 4, workers 4, retry sleep 10 s |
+| verifier | canonical Lean 4 `#check`/`by example` semantics as in D001/E023; server timeout 120 s, client timeout 180 s, first verify 600 s, batch 4, canary timeout 60 s, through the **B0 reliability policy** (`VerificationSession`), sequential rather than E024's 4-worker path (amendment C, §18) — health check and canary before group 1, infra taxonomy, fail-close, unresolved infra → censored/missing |
 
 Nothing about the sample may change after the result: no re-draw, no re-ranking, no re-fit, no new
 N, no λ selected on the outcome (owner §7, §12).
@@ -218,14 +222,18 @@ On the analyzed sample (all quantities on the same theorems, both arms):
 ## 9. The gate
 
 The gate is the frozen executable in `scripts/v3_r001_gate.py` (`pooled_gate()`), whose constants come
-from owner decisions 4, 8 and 9. Inputs: N_analyzed, the observed total positives k, and the block
-count x.
+from owner decisions 4, 8 and 9. Inputs: `N = |A|` (the analyzed theorems), `K` (positives in them),
+`m = |A ∩ B|` and `x` (positives among those `m`), where `B` is the **preregistered frozen** top-20%
+block. Membership is never recomputed after an outcome (amendment A, §18; machine-readable form
+`V3-R001_gate.json#frozen_block_semantics`).
 
 ### P1 — exact enrichment test (confirmatory)
 
-Rank the analyzed theorems by the frozen q_B2, take the top `m = round(0.20 × N_analyzed)`, count
-the informative theorems x in that block. Under H0 (the ranking carries no information), x given k is
-**Hypergeometric(N, k, m)**, so the one-sided exact p-value is `P(X ≥ x | N, k, m)`.
+Take the **preregistered frozen block** `B` — never re-taken, never topped up from labels, never
+repaired for a censored theorem — and let `A` be the analyzed theorems, `B_analyzed = A ∩ B`,
+`N = |A|`, `m = |B_analyzed|`, `K` the positives in `A` and `x` the positives in `B_analyzed`. Under
+H0 (the ranking carries no information), x given K is
+**Hypergeometric(N, K, m)**, so the one-sided exact p-value is `P(X ≥ x | N, K, m)`.
 
 ```
 P1 PASS  <=>  exact p <= 0.05
@@ -392,8 +400,11 @@ dry run cannot manufacture R001 labels.
 |---|---|
 | `scripts/v3_r001_sample_freeze.py` → `v3_r001_formal_sample.json`, `v3_final_holdout_reserve.json` | committed, runs CPU-only |
 | `scripts/v3_r001_gate.py` → `V3-R001_gate.json` | committed, runs CPU-only |
-| `scripts/v3_r001_rollout.py` | **to be written before launch**: Kimina-promptset variant of E024's engine/verifier path (that script's `statement_id` comes from MiniF2F `row["name"]`, so it cannot be reused as-is). It must read the formal sample manifest, refuse any component in the sealed reserve, and emit per-group scores. |
-| `scripts/v3_r001_analyze.py` | **to be written before launch**: reads the frozen gate artifact and the rollout result, computes §8's quantities, calls `pooled_gate()`, emits `V3-R001_results.json`. It must refuse to analyze anything but `consumed_only|N=128`. |
+| `scripts/v3_r001_rollout.py` | committed: reads the formal sample manifest, refuses any component in the sealed reserve, re-verifies every prompt against the frozen rendering before any generation, seeds each candidate from its frozen draw-order rank, verifies through the B0 policy, appends whole groups to `runs/v3_r001/rollout/` (gitignored). `--dry-run` performs every check and generates nothing; a formal run additionally requires `--i-have-owner-launch-authorization` |
+| `scripts/v3_r001_analyze.py` | committed: reads the frozen gate artifact and the raw rollout, computes §8's quantities, calls `pooled_gate()`, emits `V3-R001_results.json`. It must refuse to analyze anything but `consumed_only|N=128` |
+| `scripts/v3_r001_spec.py` | committed: the shared frozen contract both executables import (hash-pinned loading, the raw schema, the group-finalization rule, the seed schedule) |
+| `tests/test_v3_r001_fixtures.py` | committed: fixtures A–G — A/B/C/D outcomes, infra censoring, block-hash tamper, manifest tamper — run against the real frozen design on synthetic labels |
+| `tests/test_v3_r001_hypergeom.py` | committed: the exactness sweep over the preregistered N/K/m/x range, against exact rational arithmetic |
 | `tests/test_v3_r001_gate_freeze.py` | committed: identity with the power sample, partition/disjointness, seal, boundary-vs-p equivalence, taxonomy resolution, positivity invariant, and that the freeze scripts hash identically |
 
 ## 15. Prohibitions honored (owner §15)
@@ -429,6 +440,68 @@ R001 outcome, because none exists.
 - [x] every candidate scored with a q, no refit, D001 protocol replication 5/5
 - [x] nine alternative samples marked DESIGN-ONLY / NEVER ANALYZE
 - [x] reserve marked SEALED
+- [x] three pre-outcome amendments — A frozen block semantics, B draw-order seed rank, C B0 verifier
+      execution — implemented, tested and hash-pinned before any outcome (§18)
 - [x] **preregistration commit present on `origin/v3-jev-rl-controller`** — checked after the push of
       the commit that contains this file, verified with `git ls-remote` (remote == local HEAD)
 - [ ] **owner's explicit launch authorization** ← currently withheld
+
+## 18. Pre-outcome amendments (owner approved 2026-09-25)
+
+Marker for all three: **PRE-OUTCOME CLARIFICATION — no prospective labels existed.** No R001 candidate
+had been generated, no formal theorem had been sent to the verifier and no label existed when these
+were made. They change wording, the seed-rank rule and the verifier execution path — never the sample,
+the block, the boundary, the label rule or any threshold.
+
+**Amendment A — frozen block semantics (approved).** The pooled and the within-synthetic top-20%
+blocks are the **preregistered frozen memberships**. The earlier phrasing `m = round(0.20 × N_analyzed)`
+is deprecated, because it could be misread as re-taking the top 20% once labels exist. Formal
+definition of both cells:
+
+```
+A = the analyzable theorems          B = the preregistered frozen top-20% block
+B_analyzed = A ∩ B
+
+N = |A|     m = |B_analyzed|     K = positives in A     x = positives in B_analyzed
+X ~ Hypergeometric(N, K, m)      p = P(X >= x)
+```
+
+Within the synthetic stratum the same rule reads `A_syn`, `B_syn`, `m_syn = |A_syn ∩ B_syn|`,
+`X ~ Hypergeometric(|A_syn|, K_syn, m_syn)`. Invariants: membership is never recomputed; the block is
+never topped up from observed labels; no replacement theorem is drawn in for an infra-censored one;
+`m_variant_if_the_block_were_recomputed` is a descriptive disclosure that never enters a gate.
+
+**Amendment B — the generation seed formula (changed).** The earlier implementation seeded from
+`rank_by_q_B2`, which made the generation RNG stream a function of the controller's ranking. Not
+approved. The frozen rule is now
+
+```
+seed = seed_base + (formal_sample_rank − 1) * 8 + sample_index,   seed_base = 20260924
+```
+
+where `formal_sample_rank` is written into `v3_r001_formal_sample.json` as 1..128 in the artifact's
+already-frozen, outcome-free **draw order** (`SHA256('<draw_seed>|<component_id>')` ascending — the
+order the membership hash was already taken in). Nothing was re-shuffled and nothing was sorted by
+statement_id, q or source: the existing order was written down. Enforced in code and tests: the rank
+is independent of `q_B2`, `q_B1`, `source` and any outcome; changing any q value moves no seed; all
+128 × 8 = 1024 seeds are distinct. Membership unchanged, ordering explicitly pinned — the file hash
+moved (`7b4371e1…` → `733a699e…`) while `sample_sha256` (`0ac7134f…`), both q-vector hashes, the
+block hash (`d5791fd5…`) and all 128 component and statement memberships are byte-identical.
+
+**Amendment C — verifier execution (approved).** The formal R001 verifier runs the **B0 reliability
+policy** (`tinylean_rl.verifier.policy.VerificationSession`): sequential and conservative, with
+server-side timeout, client timeout, health check, canary, the infra taxonomy, fail-close, and
+unresolved infra → censored/missing. E024's 4-worker concurrency is **not** used, because a canary
+cannot be gated while verifications are in flight. This is recorded as an **infrastructure execution
+choice, not a treatment difference** — generation scientific semantics, reward semantics and both
+gates are unchanged. Limitation accepted with it: R001's verifier wall-clock may not be compared to
+E023's concurrent verifier wall-clock as an exact efficiency claim; R001's question is prospective
+informativeness, not verifier throughput.
+
+**Artifact hashes after the amendments (before → after).** `v3_r001_formal_sample.json`
+`7b4371e1f8211c41c3e158f8a9201f28948d29befc9a8462ae5f843c851d3d88` →
+`733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb`; `V3-R001_gate.json`
+`b308038093e7260f7f15d774a7f428d1f913e2555e7f885b9b88d9102452a3fc` →
+`fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93`; `v3_final_holdout_reserve.json`
+unchanged (`b60be381…`). The frozen settings block changed with the seed formula, so its sha256 moved
+too; the runner stamps the settings hash it actually ran under, and the analyzer re-checks it.

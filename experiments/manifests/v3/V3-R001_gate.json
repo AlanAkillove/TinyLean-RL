@@ -14,6 +14,31 @@
     "formal_sample_sha256": "0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451",
     "formal_sample_manifest": "experiments/manifests/v3/v3_r001_formal_sample.json"
   },
+  "frozen_block_semantics": {
+    "amendment": "owner amendment A (2026-09-25, PRE-OUTCOME CLARIFICATION -- no prospective labels existed): the block membership was already frozen at preregistration; this entry states the analysis arithmetic explicitly and retires the earlier wording 'm = round(0.20 * N_analyzed)', which could be misread as re-taking the top 20% once the labels exist",
+    "pooled": {
+      "A": "the analyzable formal-sample theorems",
+      "B": "the preregistered frozen top-20% block of the formal sample",
+      "B_analyzed": "A \u2229 B",
+      "N": "|A|",
+      "m": "|B_analyzed|",
+      "K": "positives in A",
+      "x": "positives in B_analyzed",
+      "test": "X ~ Hypergeometric(N, K, m); p = P(X >= x)"
+    },
+    "within_synthetic": {
+      "A_syn": "the analyzable synthetic subset",
+      "B_syn": "the preregistered frozen within-synthetic top-20% block",
+      "m_syn": "|A_syn \u2229 B_syn|",
+      "test": "X ~ Hypergeometric(|A_syn|, K_syn, m_syn); p = P(X >= x_syn)"
+    },
+    "invariants": [
+      "frozen block membership is never recomputed",
+      "the block is never topped up from observed labels",
+      "no replacement theorem is drawn in for an infra-censored one",
+      "m_variant_if_the_block_were_recomputed is descriptive only and never enters a gate"
+    ]
+  },
   "pooled_gate": {
     "P1": {
       "test": "exact one-sided conditional Hypergeometric(N_analyzed, k_observed, m): reject iff p <= 0.05, i.e. iff the block count reaches the frozen critical function",
@@ -314,7 +339,7 @@
         "expected_positives": 17.8,
         "how_computed": "V1's per-source informative rate applied to this sample's own source mix; a DESIGN anchor for power, not a measurement of R001"
       },
-      "recomputation_rule": "the test is evaluated on the ANALYZED set: N_analyzed and m = round(0.20 * N_analyzed) enter the SAME frozen functions, so infra-censoring shrinks the design without changing the rule"
+      "recomputation_rule": "the test is evaluated on the ANALYZED set with the FROZEN block membership: N = |analyzed|, K = positives in it, m = |analyzed \u2229 frozen top-20% block|, x = positives in that intersection. The block is never re-taken after an outcome and no replacement theorem is added for a censored one (owner amendment A, 2026-09-25: the earlier wording 'm = round(0.20 * N_analyzed)' is deprecated); the recomputed-size variant is reported as a descriptive diagnostic only."
     },
     "P2": {
       "statistic": "enrichment = (informative among the top-20% block) / (informative among the analyzed sample)",

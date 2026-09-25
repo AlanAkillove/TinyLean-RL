@@ -280,9 +280,13 @@ def main() -> int:
             if isinstance(PW.min_detectable_e(N_NOMINAL, m, pi, 0.8), float) else None,
         "boundary_table": boundary_table(N_NOMINAL, m),
         "expected": exp,
-        "recomputation_rule": ("the test is evaluated on the ANALYZED set: N_analyzed and "
-                               "m = round(0.20 * N_analyzed) enter the SAME frozen functions, so "
-                               "infra-censoring shrinks the design without changing the rule"),
+        "recomputation_rule": ("the test is evaluated on the ANALYZED set with the FROZEN block "
+                               "membership: N = |analyzed|, K = positives in it, m = |analyzed ∩ "
+                               "frozen top-20% block|, x = positives in that intersection. The block "
+                               "is never re-taken after an outcome and no replacement theorem is "
+                               "added for a censored one (owner amendment A, 2026-09-25: the earlier "
+                               "wording 'm = round(0.20 * N_analyzed)' is deprecated); the "
+                               "recomputed-size variant is reported as a descriptive diagnostic only."),
     }
     synth_cell = {
         "stratum": "synthetic", "n": len(synth), "m_top20": ms,
@@ -325,6 +329,33 @@ def main() -> int:
                    "top_block_size": m, "one_theorem_per_component": True,
                    "formal_sample_sha256": formal["sample_sha256"],
                    "formal_sample_manifest": FORMAL},
+        "frozen_block_semantics": {
+            "amendment": ("owner amendment A (2026-09-25, PRE-OUTCOME CLARIFICATION -- no prospective "
+                          "labels existed): the block membership was already frozen at preregistration; "
+                          "this entry states the analysis arithmetic explicitly and retires the "
+                          "earlier wording 'm = round(0.20 * N_analyzed)', which could be misread as "
+                          "re-taking the top 20% once the labels exist"),
+            "pooled": {
+                "A": "the analyzable formal-sample theorems",
+                "B": "the preregistered frozen top-20% block of the formal sample",
+                "B_analyzed": "A ∩ B",
+                "N": "|A|", "m": "|B_analyzed|",
+                "K": "positives in A", "x": "positives in B_analyzed",
+                "test": "X ~ Hypergeometric(N, K, m); p = P(X >= x)",
+            },
+            "within_synthetic": {
+                "A_syn": "the analyzable synthetic subset",
+                "B_syn": "the preregistered frozen within-synthetic top-20% block",
+                "m_syn": "|A_syn ∩ B_syn|",
+                "test": "X ~ Hypergeometric(|A_syn|, K_syn, m_syn); p = P(X >= x_syn)",
+            },
+            "invariants": [
+                "frozen block membership is never recomputed",
+                "the block is never topped up from observed labels",
+                "no replacement theorem is drawn in for an infra-censored one",
+                "m_variant_if_the_block_were_recomputed is descriptive only and never enters a gate",
+            ],
+        },
         "pooled_gate": {"P1": pooled_cell, "P2": {
             "statistic": ("enrichment = (informative among the top-20% block) / "
                           "(informative among the analyzed sample)"),

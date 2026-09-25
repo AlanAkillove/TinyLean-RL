@@ -117,12 +117,18 @@ def main() -> int:
     m = round(TOP_FRACTION * N_NOMINAL)
     order = sorted(range(N_NOMINAL), key=lambda i: (-cand[stmts[i]]["q_B2_controller"], stmts[i]))
 
+    # the outcome-free rank: position in the frozen draw order, which is what `stmts` is in. The
+    # generation seed schedule is built from THIS and never from rank_by_q_B2 -- a sampling RNG
+    # stream must not be a function of what the controller predicted (owner amendment B, 2026-09-25).
+    draw_rank = {sid: i + 1 for i, sid in enumerate(stmts)}
+
     theorems = []
     for pos, i in enumerate(order):
         sid, cid = stmts[i], recomputed[i]
         c = cand[sid]
         theorems.append({
             "rank_by_q_B2": pos + 1,
+            "formal_sample_rank": draw_rank[sid],
             "in_top20pct_block": pos < m,
             "component_id": cid, "statement_id": sid, "source": c["source"],
             "prompt_token_count": c["prompt_token_count"],
@@ -189,6 +195,20 @@ def main() -> int:
             "seed": DRAW_SEED,
             "why_not_a_library_rng": ("a hash order is reproducible on any numpy/python version, so "
                                       "'fixed before the result' stays checkable"),
+        },
+        "formal_sample_rank_rule": {
+            "definition": ("`formal_sample_rank` is 1..128 in the frozen draw order -- the order "
+                           "`membership_hashes.statement_ids_sha256` is taken in, i.e. "
+                           "SHA256('<draw_seed>|<component_id>') ascending"),
+            "used_for": "the generation seed schedule and nothing else",
+            "depends_on": ["the frozen draw seed", "component_id"],
+            "independent_of": ["q_B2_controller", "q_B1_handcrafted", "q_B2_fold_ensemble",
+                               "q_B1_fold_ensemble", "source", "any future rollout outcome"],
+            "amendment": ("owner amendment B (2026-09-25, PRE-OUTCOME CLARIFICATION -- no prospective "
+                          "labels existed): the generation RNG stream may not be determined by the "
+                          "controller's prediction or by its ranking, so the seed rank is this "
+                          "draw-order rank, not rank_by_q_B2"),
+            "statement_ids_sha256_in_this_order": sha(stmts),
         },
         "governance": {
             "contamination_definition": READING,
