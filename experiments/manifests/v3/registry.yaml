@@ -451,6 +451,44 @@ amendments:
       NOTHING. R002_AUTHORIZED = NO: outcome B is not a licence for decision-guided RL. Any later
       intervention requires a new owner decision and a new preregistration.
 
+  - id: V3-closeout
+    applies_to: [V3-D001, V3-R001, V3-R002]
+    created_at_utc: "2026-09-25"
+    kind: project-closeout                      # documentation and ledger only; no new experiment
+    marker: "V3 CONTROLLER LINE CLOSED - closed by the preregistered prospective outcome"
+    authorized_by: "owner decision 2026-09-25 (V3 closeout + research evidence consolidation)"
+    statuses_of_record:
+      V3-D001: "COMPLETE / CANONICAL_GO_WITH_QUALIFICATION"
+      V3-R001: "COMPLETE / SOURCE-DRIVEN-ONLY"
+      V3-R002: "NOT RUN - stopped by the preregistered R001 outcome"
+    record: >
+      R002 was not launched because the pooled prospective enrichment did not survive the
+      preregistered within-synthetic co-primary test.
+    classification_rule: >
+      R001 is NOT called a failure. The canonical classification is SOURCE-DRIVEN-ONLY (the frozen
+      outcome B of the gate in V3-R001_gate.json): the pooled prospective enrichment is real while
+      it does not reproduce within the synthetic stratum, so the effect cannot be separated from
+      source-level distributional structure.
+    line_status: CLOSED                         # the Jev-inspired controller intervention line
+    rescues_forbidden: [new layers, MLP, source-balanced retraining, larger controller, TinyJev/Kev,
+                        alternative sampling objective, new prospective sample, final reserve,
+                        RL intervention]
+    final_reserve:
+      artifact: experiments/manifests/v3/v3_final_holdout_reserve.json
+      components: 93
+      status: SEALED
+      usage: NEVER USED - no outcome from these components has been observed; not opened at closeout
+    no_new_experiments: true                    # no model generation, verifier experiment or RL run
+    documents:
+      closeout: docs/v3/v3_closeout.md
+      evidence_matrix: docs/research_evidence_matrix.md
+      contribution_candidates: docs/paper_contribution_candidates.md
+      figure_inventory: docs/paper_figure_inventory.md
+      engineering_chronology: docs/v3/V3-R001_infrastructure_amendment_Cprime.md   # appendix-grade
+    authorizes_next: >
+      NOTHING. This closes V3. Any future work is a new project with a new preregistration and a new
+      owner decision; V3-R002 and the sealed reserve stay closed.
+
 
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is
@@ -804,7 +842,9 @@ experiments_appended:
   V3-R001:                                             # the prospective validation, per owner rewrite
     kind: prospective-family-clean-validation           # NOT RL training: frozen theta0, no optimizer
     title: Prospective Family-Clean Validation of the Informative-Group Controller
-    status: PREREGISTERED / NOT-LAUNCHED                # owner launch authorization still withheld
+    status: COMPLETE / SOURCE-DRIVEN-ONLY               # attempt-2 analyzed exactly once; attempt-1
+                                                       # stayed infrastructure-only and unanalyzed;
+                                                       # see the V3-R001-attempt2-result amendment
     created_at_utc: "2026-09-24"
     host: "fly122 (RTX 3080, 10 GB) - owner §16 and decision 16; not moved to fly90's 3090"
     preregistration: docs/v3/V3-R001_preregistration.md
@@ -840,8 +880,10 @@ experiments_appended:
       - "[x] tests and lint green (345 passed, ruff clean)"
       - "[x] this preregistration present on origin/v3-jev-rl-controller - verified with
              git ls-remote after the push, remote == local HEAD"
-      - "[ ] owner's explicit launch authorization - WITHHELD"
-      - "[ ] scripts/v3_r001_rollout.py and scripts/v3_r001_analyze.py written and tested (not yet authored)"
+      - "[SUPERSEDED 2026-09-25] the owner's launch authorization was granted for attempt-2 under
+             infrastructure amendment Cprime; the outcome is the V3-R001-attempt2-result amendment"
+      - "[x] scripts/v3_r001_rollout.py and scripts/v3_r001_analyze.py written, tested and committed;
+             the analyzer ran exactly once on the complete formal sample"
     authorizes_next: >
       NOTHING by itself. R001 may run only on the owner's explicit launch instruction after reading
       this preregistration. Its result selects one of four outcomes (A GO-SEMANTIC, B
