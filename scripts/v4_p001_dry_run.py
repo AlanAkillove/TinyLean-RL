@@ -18,7 +18,9 @@ formal node, at one committed revision, and writes down what it observed:
     analyzer          `v4_p001_analyze.py --check-only` on the synthetic boundary (proves the
                       analyzer runs end to end on this host and writes nothing), plus its
                       fail-closed refusal when the artifacts are absent
-    artifact locations the committed design artifacts, and the raw directory that must stay empty
+    artifact locations the committed design artifacts, the Stage-1 artifacts on disk, and the
+                      second-stage artifacts that must not exist: launch-0 persisted nothing, and
+                      this dry run writes nothing under `runs/` either
     recovery policy   the frozen ceilings and semantics, and the V3 archive they were projected from
 
 The synthetic part is a *fixture*: it lives under /tmp (never under `runs/`), every row it writes
@@ -697,6 +699,17 @@ def section_artifacts(t: Transcript, scratch: Path) -> None:
     section["raw_directory"] = "runs/v4_p001/rollout (gitignored)"
     raw_dir = ROOT / "runs/v4_p001/rollout"
     section["raw_directory_exists"] = raw_dir.exists()
+    # the directory itself legitimately exists on the formal node once Stage 1 has run (its
+    # artifacts and the launch-0 logs live there). What must not exist is any *second-stage
+    # execution output*: the raw candidate artifact and the run summary. This is the launch-0
+    # record re-checked on the host that produced it ("persisted = 0").
+    section["second_stage_artifacts_present"] = {
+        name: (raw_dir / name).exists()
+        for name in (S.SECOND_STAGE_RAW_BASENAME, S.SUMMARY_BASENAME)}
+    section["stage_one_artifacts_present"] = {
+        name: (raw_dir / name).exists()
+        for name in (S.SCREENING_RAW_BASENAME, S.SCREENING_SUMMARY_BASENAME,
+                     S.BOUNDARY_VALIDATION_BASENAME)}
     ignore = subprocess.run(["git", "-C", str(ROOT), "check-ignore", "-v",
                              "runs/v4_p001/rollout/" + S.SCREENING_RAW_BASENAME],
                             capture_output=True, text=True, check=False)
@@ -709,7 +722,9 @@ def section_artifacts(t: Transcript, scratch: Path) -> None:
             all(entry["exists"] for entry in section["committed_design_artifacts"].values()),
             str([rel for rel, entry in section["committed_design_artifacts"].items()
                  if not entry["exists"]]))
-    t.check("raw_artifact_directory_does_not_exist_yet", not raw_dir.exists(), str(raw_dir))
+    t.check("no_second_stage_execution_artifact_exists_yet",
+            not any(section["second_stage_artifacts_present"].values()),
+            f"present: {[name for name, present in section['second_stage_artifacts_present'].items() if present]}")
     t.check("raw_artifacts_are_gitignored", ignore.returncode == 0 and ignore.stdout.strip() != "",
             section["gitignore_rule"])
 
@@ -778,8 +793,10 @@ def build_transcript(*, run_suite: bool, allow_informal: bool, allow_dirty: bool
     cleanliness("working_tree_is_clean_after_the_dry_run", env_after["status_porcelain"])
     t.check("dry_run_completed", crashed is None, crashed or "every section ran to the end")
     t.check("scratch_directory_removed", not scratch.exists(), str(scratch))
-    t.check("raw_artifact_directory_still_absent",
-            not (ROOT / "runs/v4_p001/rollout").exists(), "runs/v4_p001/rollout")
+    second_stage_outputs = [name for name in (S.SECOND_STAGE_RAW_BASENAME, S.SUMMARY_BASENAME)
+                            if (ROOT / "runs/v4_p001/rollout" / name).exists()]
+    t.check("no_second_stage_execution_artifact_was_created", not second_stage_outputs,
+            f"runs/v4_p001/rollout: {second_stage_outputs}")
 
     host = {key: env[key] for key in ("hostname", "ips", "git_revision", "branch",
                                       "status_porcelain", "gpu_names", "gpu_compute_apps",
@@ -847,7 +864,7 @@ def build_transcript(*, run_suite: bool, allow_informal: bool, allow_dirty: bool
             "No V4 formal theorem generation: 0 candidates generated, 0 formal verifier calls",
             "the formal stages were refused without --i-have-owner-launch-authorization",
             ("the synthetic cohort lives under /tmp, is marked SYNTHETIC-DRY-RUN, and is deleted "
-             "before exit; runs/ stays empty"),
+             "before exit; no second-stage execution artifact is created under runs/"),
             "no RL, SFT, checkpoint update, controller training or final-holdout use",
             "no verifier throughput, latency or capacity claim",
         ],
