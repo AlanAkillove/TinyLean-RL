@@ -75,7 +75,15 @@ VERIFIER = {                    # preregistration section 6 timeouts, applied th
     "server_timeout_s": 120.0,      # explicit per-request server budget (E024's --verify-timeout)
     "first_timeout_s": 600.0,       # cold-start budget, used only by the prewarm/canary before group 1
     "client_slack_s": 60.0,         # B0 rule: client timeout must exceed the server timeout
-    "batch_size": 4,
+    # C′ (2026-09-25, infrastructure-only; amendment section 19 / docs/v3/V3-R001_infrastructure_
+    # amendment_Cprime.md): one candidate per request, i.e. verification concurrency 1, to match the
+    # dedicated instance's MAX_REPLS = 1. A sub-batch of >1 would race the single REPL: in
+    # check.py:run_checks the snippets of one request are gathered concurrently, so the losers of the
+    # race wait up to LEAN_SERVER_MAX_WAIT (60 s) and then get HTTP 429 -- infrastructure events
+    # manufactured by the client's own batching, not by the server. This is the only value in
+    # FROZEN_SETTINGS that C′ changes (4 -> 1); timeouts, taxonomy, retry counts and gates are
+    # byte-identical.
+    "batch_size": 1,
     "canary_timeout_s": 60.0,
     "canary_retries": 1,
     "max_single_retries": 2,
@@ -88,6 +96,35 @@ VERIFIER = {                    # preregistration section 6 timeouts, applied th
                     "mid-flight, so R001 accepts lower verification throughput for the guarantee that "
                     "no infrastructure event is silently absorbed."),
 }
+
+# --- C′ verifier infrastructure (owner 2026-09-25 sections 5-6; NOT scientific settings) ----------
+# The formal verifier for R001 is a *dedicated* Kimina instance with MAX_REPLS = 1, so that a
+# pathological candidate can occupy at most one reusable REPL and the client can always restore
+# capacity by restarting a known container. None of these values enters the reward, the sample, the
+# seeds, the model, the generation or the gates; they are recorded in every run summary so the
+# attempt's verifier environment is auditable. Rationale and evidence: the C′ amendment document.
+VERIFIER_INFRA = {
+    "endpoint": "http://127.0.0.1:8010",
+    "container": "tinylean-rl-lean-server-r001",
+    "image": "projectnumina/kimina-lean-server:2.0.0",
+    "max_repls": 1,
+    "max_wait_s": 60,
+    "max_repl_mem": "8G",
+    "verification_concurrency": 1,
+    "compose_file": "infra/lean-server/r001/compose.yaml",
+    "max_recoveries_per_run": 16,
+    "restart_timeout_s": 120.0,
+    "health_poll_timeout_s": 180.0,
+    "health_poll_interval_s": 2.0,
+    "restart_grace_s": 10,
+}
+
+# The attempt-1 artifacts are immutable provenance (owner sections 2-4, 11-12); they may not be
+# resumed, appended to or analyzed together with attempt-2. The runner refuses this directory
+# outright, so a later `--resume` cannot silently skip attempt-1's finished groups and mix two
+# executions into one artifact.
+SUPERSEDED_ATTEMPT1_DIR = "runs/v3_r001/rollout"
+ATTEMPT = 2
 
 # --- frozen host policy (owner decision 16; fly90 is archive/coordination only) ------------------
 FORMAL_HOST_IP = "10.3.25.122"

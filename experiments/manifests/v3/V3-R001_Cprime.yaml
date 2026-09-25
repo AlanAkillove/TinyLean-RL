@@ -1,0 +1,175 @@
+# V3-R001 infrastructure amendment C' - machine-readable encoding.
+#
+# Companion to docs/v3/V3-R001_infrastructure_amendment_Cprime.md. This is an
+# INFRASTRUCTURE amendment made after attempt-1 aborted (2026-09-25) and before
+# any attempt-2 generation. It changes no scientific setting; the single moved
+# FROZEN_SETTINGS entry is verification concurrency (batch_size 4 -> 1), recorded
+# below with its rationale. Owner authority: directive of 2026-09-25, sections 1-16.
+experiment: V3-R001
+amendment_id: V3-R001-infrastructure-amendment-Cprime
+kind: infrastructure-amendment            # verifier lifecycle only; NOT a treatment change
+status: IMPLEMENTED_AND_VALIDATED         # attempt-2 NOT authorized (owner section 15)
+created_at_utc: "2026-09-25"
+branch: v3-jev-rl-controller
+host: "fly122 (RTX 3080, 10 GB) - formal compute; fly90 archive-only"
+
+authority: >
+  Owner directive 2026-09-25 (sections 1-16) after V3-R001 attempt-1 aborted three times on a
+  verifier-lifecycle fault: fix the lifecycle itself (section 1), audit before changing anything
+  (section 2), enforce the capacity invariant client-side (section 3), do not lengthen the frozen
+  server-side candidate timeout (section 4), prefer a dedicated single-REPL verifier instance
+  (section 5), mandate bounded fail-closed recovery (section 6), review - do not implement - the
+  censored-group short-circuit (section 7), validate on nonformal inputs before touching R001
+  (sections 8-9), freeze this document and the manifest (section 10).
+
+attempt1:
+  status: "INFRASTRUCTURE_ABORT / NO_SCIENTIFIC_OUTCOME / NOT_ANALYZED"
+  aborts:
+    - run_id: "20260925T012142Z"
+      candidates_generated: 384
+      groups_on_disk: 48
+      cause: "VerifierUnhealthyError: canary probe failed (fail-close)"
+    - run_id: "20260925T023307Z"
+      candidates_generated: 0
+      cause: "VerifierUnhealthyError: canary probe failed (fail-close)"
+    - run_id: "20260925T0311xxZ"
+      candidates_generated: 0
+      cause: "VerifierUnhealthyError: canary probe failed (fail-close)"
+  sealed_raw_artifact:
+    path: runs/v3_r001_rollout_archive_from_fly122/v3_r001_raw_rollout.jsonl
+    sha256: 4cdbab3f62f978aa1495fc99f1e5890a7071274908935e3fde84d889e2ccc405
+    rows: 384
+    rules: ["never combined with a later execution", "never analyzed",
+            "no label inspected (owner section 12)", "immutable provenance only"]
+
+root_cause:
+  determination: "Case B - the server-side timeout IS transmitted; the server-side lifecycle can
+                  nevertheless leave a Lean computation occupying a reusable REPL after the client
+                  has classified the attempt"
+  case_a_refuted_by: >
+    The attempt-1 verifier window contains exactly one enforcement line,
+    '[442176bd] Lean REPL command timed out in 120.0 seconds' (2026-09-25T01:42:43.931Z, repl.py:227)
+    plus its paired 'Closing REPL 442176bd'. 120.0 is the client's transmitted frozen budget, not the
+    server default 300 s; a never-transmitted value cannot appear in that message.
+  case_b_evidence: >
+    Snippet 50-1 ran on REPL 3062bfa7 from 02:03:47.681Z to 02:12:16.801Z = 509.1 s with no timeout
+    line and no Closing line for that REPL, while the client's bound was 180 s (120 + 60). Its two
+    isolation retries then returned in 18.4 s and 0.16 s on other REPLs.
+  window_log:
+    path_on_fly122: /tmp/r001_window_0925.log
+    bytes: 172895219
+    window_utc: "2026-09-25T01:03:56 -> 03:22:13"
+    http_429_count: 0
+    snippet_runs: 394
+    distinct_repl_ids: 9
+    repl_pool_size: 16
+  audit_fields:
+    client_timeout_s: 180.0          # server_timeout + client_slack
+    server_timeout_s: 120.0          # payload["timeout"], always sent
+    retry_count: "batch 1 + isolation 1+max_single_retries(2) = 3; a server-confirmed timeout is
+                  final and is not retried"
+    retry_delay_s: 2.0               # canary backoff 5.0 s
+    request_payload_field: "timeout (int seconds), kimina.py:100-101 / kimina.py:147-148"
+    server_interpretation: "VerifyRequestBody.timeout (default 300) -> prep header import +
+                            repl.send_timeout = asyncio.wait_for(send, timeout); on expiry the REPL
+                            is destroyed (SIGKILL) and the item reports 'Lean REPL command timed
+                            out in N seconds'. /verify has no client-disconnect handling
+                            (backward_router.py:29-37), unlike /api/check (check_router.py:187-191)."
+
+cprime:
+  invariant: >
+    No candidate verification attempt may leave a Lean computation occupying a reusable REPL after
+    that attempt is classified timed out/failed; capacity is restored before the next candidate.
+  changes:
+    - id: dedicated-instance
+      what: "infra/lean-server/r001/compose.yaml - container tinylean-rl-lean-server-r001,
+             127.0.0.1:8010 only, image pinned projectnumina/kimina-lean-server:2.0.0
+             (sha256:588a2cbb...3ffd9, pull_policy: never), LEAN_SERVER_MAX_REPLS=1,
+             LEAN_SERVER_MAX_REPL_USES=-1, LEAN_SERVER_MAX_REPL_MEM=8G, LEAN_SERVER_MAX_WAIT=60,
+             16 GiB container cap with swap disabled, subnet 10.202.0.0/24"
+      guard: "VerifierRecovery.verify_identity() - fail-closed preflight: the endpoint must be THIS
+              container (pinned image, MAX_REPLS=1, its published port)"
+    - id: verification-concurrency
+      what: "FROZEN_SETTINGS.VERIFIER.batch_size 4 -> 1 (the only frozen-settings change)"
+      rationale: "one candidate per request against a singleton REPL; batch>1 would race the single
+                  slot into 429s, and per-candidate sequencing preserves verdicts through a
+                  mid-group fail-close"
+    - id: mandatory-recovery
+      what: "after ANY non-conclusive classification: docker restart -t 10 -> /health poll ->
+             nonformal cold canary (first_timeout_s budget) -> next candidate; bounded by
+             max_recoveries_per_run=16; fail-closed (abort with aborted-summary + resume)"
+      note: "restart = infrastructure recovery, NOT a candidate retry; the frozen attempt budget is
+             untouched; VerifierUnhealthyError no longer ends the run by itself"
+  rejected_alternative: >
+    Switching to /api/check would give server-side disconnect cleanup but changes the frozen
+    decode/taxonomy path - out of C' scope; recorded as rejected.
+  short_circuit_review_owner_section_7: >
+    Review only, NOT implemented: after a permanent INFRA_CENSORED a skip of the group's remaining
+    candidates would change no endpoint/no gate/no label, i.e. it is a compute-only optimization -
+    but it changes which events exist, so it requires its own pre-outcome amendment and owner
+    authorization before it could be used.
+
+scientific_settings_changed: NONE
+
+scientific_surface_unchanged:
+  sample_content_sha256: 0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451
+  formal_sample_file_sha256: 733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb
+  top20pct_block_sha256: d5791fd52b80e899b563f2048b3d22d2ec560dc4cbc554e928774a5441fcd629
+  gate_artifact_sha256: fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93
+  sealed_reserve_sha256: b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568
+  theta0_weights_sha256: 34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2
+  theta0_revision: 332e8a5259d1bdfda19d7c7f339f30804813cd3a
+  seed_formula: "seed_base + (formal_sample_rank - 1) * 8 + sample_index, seed_base = 20260924"
+  generation: {temperature: 1.0, top_p: 1.0, max_response_tokens: 4096, max_model_len: 5120,
+               gpu_memory_utilization: 0.85, chunk_theorems: 16, n_samples: 8}
+  label_rule: "y = 1 iff 0 < n_pos_score < 8"
+  censoring: "infra outcomes -> group INFRA_CENSORED (y = None), never score 0, never all-fail"
+  verifier_timeouts_unchanged: {server_timeout_s: 120.0, client_slack_s: 60.0, first_timeout_s: 600.0,
+                                canary_timeout_s: 60.0, canary_retries: 1, max_single_retries: 2}
+  analysis: "scripts/v3_r001_analyze.py unchanged (D001-identical)"
+
+hashes:
+  frozen_settings_sha256_before: 978566da25f3f651aed3b8b537f8b4ebf94ecf0c0870c5cd4ebf2371e6052b3b
+  frozen_settings_sha256_after: bf069eccbc0af53768890340e77e03a46a865d05fb8bdcd7ceb2560bfe71e264
+  compose_old: {path: infra/lean-server/compose.yaml,
+                sha256: deca3d0ed1fe4cd9fd772b711e016159fb2e6734ca9ecc2927f1790b37a93497,
+                endpoint: "127.0.0.1:8000 (shared)", max_repls: "unset -> 16"}
+  compose_new: {path: infra/lean-server/r001/compose.yaml,
+                sha256: facbed7b8758aa95a5048daed4001cbb16a5f8afb81541816d5530179a4b9220,
+                endpoint: "127.0.0.1:8010 (dedicated)", max_repls: "1"}
+  scripts_before_commit_1cb9e89:
+    scripts/v3_r001_spec.py: 27d5b362dba1348c29a51c2f5a9ed0b008be8a4ea637c2ccd02057ac5b910856
+    scripts/v3_r001_rollout.py: 768ca0142d1a83f47ef0831440c3e067e80ba274d6817ff8fc34495f395bf6b2
+  scripts_after:
+    scripts/v3_r001_spec.py: 51b3bcdb5023a48ffe934334ef6b7a395d3df8f51e804353bff669c9d67ecaf7
+    scripts/v3_r001_rollout.py: a137f420452a58e3242fd0894168ac025998ac7083402d4cf20803b1ecd6b2d8
+    scripts/v3_r001_stress_recovery.py: 4a59ebc8014d645ff177ef7ea65b5290e9a54d1838c710d634df956781a4ff12
+
+validation_sections_8_9:
+  harness: scripts/v3_r001_stress_recovery.py
+  inputs: "nonformal only - interval_cases enumeration bomb (E024 chunk-7 class) + frozen canary
+           proof + one trivial proof; no V3 theorem, no reserve text, no attempt-1 candidate"
+  protocol: {confirmed_timeout_cycles: 3, client_abandonment_cycles: 3,
+             mixed_sequence: [normal, pathological, normal, pathological, normal]}
+  acceptance: {T1_bounded_return: pass, T2_no_repl_leak: pass, T3_post_timeout_canary: pass,
+               T4_stability: pass, T5_no_frozen_scientific_setting_changed: pass}
+  measured:
+    candidate_wall_s: {confirmed_bombs: [131.80, 131.77, 131.92], abandoned_bombs: [2.02, 2.02, 2.02],
+                       mixed_bombs: [131.81, 131.82]}     # all bounded; frozen server timeout 120 s
+    recovery_wall_s: {total_range: [7.37, 17.23], restart_range: [1.13, 10.93],
+                      note: "restart ~1.2 s when the REPL is idle (server-confirmed timeout);
+                             ~10.9 s = full -t 10 grace then SIGKILL when an abandoned Lean
+                             computation is still alive (attempt-1 Case B state)"}
+    canary_latency_s: [4.23, 4.17, 4.24, 4.15, 4.21, 4.18]   # post-timeout, all verified
+    container_restarts: 8                                    # 8 ok of max_recoveries_per_run 16
+    repl_availability: "exactly one repl + one lake process at every checkpoint; never leaked"
+    cycles: {confirmed_timeout: 3, client_abandonment: 3, mixed_sequence: 5}
+  ran_at_utc: "2026-09-25T04:02Z-04:14Z"
+  artifact: experiments/manifests/v3/V3-R001_Cprime_validation.json
+  artifact_sha256: 10d6f44cb87c7918c99275d68ac7c13b36d1e7b963e007d6a3e196d4afc87e8e
+
+launch:
+  attempt2_authorized: false               # owner section 15: separate launch instruction required
+  attempt2_out_dir: runs/v3_r001/rollout_attempt2
+  attempt1_dir_refused: runs/v3_r001/rollout
+  r002_authorized: false                   # owner section 16

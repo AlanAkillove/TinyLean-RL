@@ -294,6 +294,94 @@ amendments:
               scripts/v3_r001_rollout.py, scripts/v3_r001_analyze.py]
     formal_candidates_generated: 0             # nothing was generated before or during the amendments
 
+  - id: V3-R001-infrastructure-amendment-Cprime
+    applies_to: V3-R001
+    created_at_utc: "2026-09-25"
+    kind: infrastructure-amendment             # verifier lifecycle only; NO scientific setting moved
+    marker: "INFRASTRUCTURE AMENDMENT - attempt-1 aborted with NO scientific outcome"
+    authorized_by: "owner directive #6, 2026-09-25 (post-abort), sections 2-10, 13, 14"
+    supersedes_execution: >
+      V3-R001 attempt-1 (2026-09-25T012142Z, INFRASTRUCTURE_ABORT / NO_SCIENTIFIC_OUTCOME /
+      NOT_ANALYZED). Its 384 candidates (formal_sample_rank 1-48) are quarantined provenance: never
+      read for design, never combined with a later execution (owner sections 11-12). The runner
+      refuses the attempt-1 directory by construction (SUPERSEDED_ATTEMPT1_DIR).
+    root_cause: >
+      Attempt-1 aborted three times because a candidate request the client had already abandoned kept
+      a Lean computation alive on a reusable 16-slot server, and the frozen B0 policy could only
+      detect that state (canary -> fail-close) and stop. Owner section 2 audit: the server-side
+      timeout IS transmitted - client timeout 180 s = 120 s server + 60 s slack (policy.py), server
+      timeout 120 int in every payload (kimina.py), retries 1 batch + 2 single, delay 2.0/5.0 s. Case
+      B (timeout sent; active REPL lived longer than it): in the decisive episode a single candidate
+      ran 509.1 s on one REPL with no timeout and no Closing line - the server's per-command
+      enforcement did not apply to that state. Evidence: docs/v3/V3-R001_infrastructure_amendment_
+      Cprime.md sections 2.2-2.4.
+    what_changed:
+      dedicated_instance: >
+        New `tinylean-rl-lean-server-r001` container from the same pinned image, LEAN_SERVER_MAX_REPLS
+        = 1, MAX_REPL_MEM 8G, mem_limit = memswap_limit = 16g (no swap), published loopback-only on
+        127.0.0.1:8010, pull_policy never, subnet 10.202.0.0/24. The shared 16-slot server is not
+        used by formal R001 anymore. Compose: infra/lean-server/r001/compose.yaml.
+      per_candidate_sequencing: >
+        VERIFIER.batch_size 4 -> 1 (the single frozen-settings entry that moves): one candidate at a
+        time against the singleton pool, so each request owns the only REPL and its fate is
+        attributable. Verification concurrency 1.
+      mandatory_recovery: >
+        Client-side, bounded, fail-closed: after any candidate classified timed out/failed, docker
+        restart -t 10 -> /health poll -> nonformal cold canary (600 s first-use budget), before the
+        next candidate; max 16 recoveries per launch; each event journaled durably. Restart is
+        infrastructure recovery, NOT a candidate retry (owner section 6) - the candidate's attempt
+        budget stays decided by the frozen policy alone.
+      identity_preflight: >
+        Fail-close startup check: the endpoint must be this container (pinned image, MAX_REPLS = 1,
+        its published port) or the run refuses to start.
+    invariant: "owner section 3: no candidate verification attempt may leave a Lean computation
+                occupying a reusable REPL after that attempt is classified timed out/failed;
+                capacity is restored before the next candidate"
+    rejected_alternative: "switch the policy to the /api/check multiprocess endpoint - returns
+                           without waiting, so a timed-out candidate still occupies the pool"
+    short_circuit_review: >
+      Owner section 7 reviewed and NOT implemented: the raw contract requires verifying remaining
+      candidates after a permanent INFRA_CENSORED; skipping them is a compute-only optimization and
+      is not automatically authorized. Recorded in the amendment doc section 5.
+    scientific_settings_changed: NONE
+    scientific_surface_unchanged:
+      sample: experiments/manifests/v3/v3_r001_formal_sample.json (byte-identical)
+      reserve: experiments/manifests/v3/v3_final_holdout_reserve.json (sealed, byte-identical)
+      predictions: experiments/manifests/v3/V3-R001_predictions.json (byte-identical)
+      gate: experiments/manifests/v3/V3-R001_gate.json (byte-identical)
+      model_generation_label_censoring_analysis: unchanged (frozen settings diff is exactly
+        VERIFIER.batch_size 4 -> 1; no timeout lengthened, no seed, sample member, block boundary,
+        label rule, gate boundary, taxonomy or lambda touched)
+    artifact_hashes_before_after:
+      FROZEN_SETTINGS:
+        before: 978566da25f3f651aed3b8b537f8b4ebf94ecf0c0870c5cd4ebf2371e6052b3b
+        after:  bf069eccbc0af53768890340e77e03a46a865d05fb8bdcd7ceb2560bfe71e264
+      infra/lean-server/compose.yaml:
+        before: deca3d0ed1fe4cd9fd772b711e016159fb2e6734ca9ecc2927f1790b37a93497
+      infra/lean-server/r001/compose.yaml:
+        after:  facbed7b8758aa95a5048daed4001cbb16a5f8afb81541816d5530179a4b9220
+      scripts/v3_r001_spec.py:
+        before: 27d5b362dba1348c29a51c2f5a9ed0b008be8a4ea637c2ccd02057ac5b910856
+        after:  51b3bcdb5023a48ffe934334ef6b7a395d3df8f51e804353bff669c9d67ecaf7
+      scripts/v3_r001_rollout.py:
+        before: 768ca0142d1a83f47ef0831440c3e067e80ba274d6817ff8fc34495f395bf6b2
+        after:  a137f420452a58e3242fd0894168ac025998ac7083402d4cf20803b1ecd6b2d8
+    manifests:
+      amendment_yaml: experiments/manifests/v3/V3-R001_Cprime.yaml
+      amendment_doc: docs/v3/V3-R001_infrastructure_amendment_Cprime.md
+      preregistration_note: docs/v3/V3-R001_preregistration.md section 19
+    validation_nonformal:
+      harness: scripts/v3_r001_stress_recovery.py
+      artifact: experiments/manifests/v3/V3-R001_Cprime_validation.json
+      artifact_sha256: 10d6f44cb87c7918c99275d68ac7c13b36d1e7b963e007d6a3e196d4afc87e8e
+      result: "T1-T5 all PASS; 3/3 server-confirmed timeout cycles + 3/3 client-abandonment cycles +
+               mixed N/P/N/P/N 5/5; 8/8 recoveries ok; no REPL leak; every post-timeout canary
+               verified; no frozen scientific setting changed"
+      inputs: "nonformal only - interval_cases enumeration bomb (E024 chunk-7 class), canary proof,
+               one trivial proof; no formal theorem, no reserve theorem, no attempt-1 candidate"
+    formal_candidates_generated_by_this_amendment: 0
+    launch_authorization: WITHHELD   # attempt-2 runs only on the owner's separate instruction
+
 
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is

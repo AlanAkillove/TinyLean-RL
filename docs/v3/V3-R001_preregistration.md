@@ -505,3 +505,24 @@ informativeness, not verifier throughput.
 `fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93`; `v3_final_holdout_reserve.json`
 unchanged (`b60be381…`). The frozen settings block changed with the seed formula, so its sha256 moved
 too; the runner stamps the settings hash it actually ran under, and the analyzer re-checks it.
+
+## 19. Infrastructure amendment C′ (2026-09-25, post-attempt-1)
+
+**Status of record: `V3-R001 attempt-1: INFRASTRUCTURE_ABORT / NO_SCIENTIFIC_OUTCOME / NOT_ANALYZED`**
+(owner decision of 2026-09-25). Attempt-1 stopped three times on a verifier-lifecycle fault of the
+shared Lean server; its 384 candidates (ranks 1–48) are quarantined provenance, never combined with a
+later execution and never analyzed. Nothing in sections 1–18 of this preregistration is changed.
+
+The amendment and its evidence are frozen before attempt-2 in
+
+- narrative: `docs/v3/V3-R001_infrastructure_amendment_Cprime.md` (audit, root cause, C′ design,
+  the owner §7 review, the §8/§9 validation);
+- machine-readable: `experiments/manifests/v3/V3-R001_Cprime.yaml`;
+- validation artifact: `experiments/manifests/v3/V3-R001_Cprime_validation.json`.
+
+The only frozen-settings entry that moves is `VERIFIER.batch_size` 4 → 1 (verification concurrency
+1 against a dedicated `MAX_REPLS=1` instance); the settings hash moves `978566da…` → `bf069ecc…`.
+Sample, block, seeds, model, generation, label rule, censoring, gate and analysis are unchanged, and
+no timeout was lengthened. **The launch checklist item "owner's explicit launch authorization"
+remains withheld**: C′ is implemented and validated, attempt-2 still runs only on a separate owner
+instruction.

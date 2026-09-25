@@ -1,0 +1,64 @@
+# V3-R001 C′ dedicated verifier instance (owner decision 2026-09-25, sections 5-6).
+#
+# Same pinned image as the shared server, with the smallest viable REPL pool: MAX_REPLS = 1.
+# One reusable REPL means a pathological candidate -- or a client-abandoned request whose Lean
+# computation is still running -- can occupy at most one REPL, and `docker restart` of this known
+# container restores capacity by construction. The runner refuses any verifier endpoint that is not
+# this container (pinned image, LEAN_SERVER_MAX_REPLS=1, its published port); see
+# scripts/v3_r001_rollout.py:VerifierRecovery and
+# docs/v3/V3-R001_infrastructure_amendment_Cprime.md.
+#
+# Start / inspect / stop:
+#   docker compose -f infra/lean-server/r001/compose.yaml up -d
+#   docker compose -f infra/lean-server/r001/compose.yaml ps
+#   docker compose -f infra/lean-server/r001/compose.yaml stop
+#
+# `up -d` on an *existing* container is a no-op; do not delete the container casually -- its
+# writable layer holds the image's Mathlib build cache, and a wipe re-runs that build (~500% CPU,
+# tens of minutes) before the first /verify can succeed.
+
+name: tinylean-r001
+
+services:
+  lean-server-r001:
+    image: projectnumina/kimina-lean-server:2.0.0
+    # the pinned image is already on fly122; never fetch from a registry during a formal run
+    pull_policy: never
+    container_name: tinylean-rl-lean-server-r001
+    restart: unless-stopped
+    # One Mathlib REPL is capped at 8 GiB by RLIMIT_AS (LEAN_SERVER_MAX_REPL_MEM below), so this cap
+    # only has to cover that REPL + the server process + the import peak. 16 GiB gives that headroom
+    # and stays far below the host's ~62 GiB. Swap is disabled (memswap_limit = mem_limit): a runaway
+    # candidate must be killed, not thrash the host -- the 2026-09-25 attempt-1 forensics show a
+    # 492 s server-log silence consistent with memory pressure, and a stalled loop is the one state
+    # the client cannot observe except by timing out.
+    mem_limit: 16g
+    memswap_limit: 16g
+    ports:
+      # loopback only: the formal verifier is a local service, never reachable off-host
+      - "127.0.0.1:${LEAN_SERVER_PORT_R001:-8010}:8000"
+    environment:
+      LEAN_SERVER_PORT: "8000"
+      LEAN_SERVER_LOG_LEVEL: "${LEAN_SERVER_LOG_LEVEL:-INFO}"
+      # same logging personality as the shared instance (attempt-1 ran with ENVIRONMENT=prod)
+      LEAN_SERVER_ENVIRONMENT: prod
+      # C′: the dedicated pool size. The runner's identity check requires exactly this value.
+      LEAN_SERVER_MAX_REPLS: "1"
+      # No TTL recycling: a REPL re-import of Mathlib would eat into the *frozen* 120 s candidate
+      # budget, i.e. it would change the solving budget (owner section 4). Capacity is enforced by
+      # the server's own per-command timeout and, when that cannot be trusted, by the runner's
+      # restart of this container.
+      LEAN_SERVER_MAX_REPL_USES: "-1"
+      LEAN_SERVER_MAX_REPL_MEM: "8G"
+      LEAN_SERVER_MAX_WAIT: "60"
+      # Pass the key only when it is actually configured: a present-but-empty value makes the image
+      # require a key (empty string is not None in pydantic) and every request fail with 401.
+      LEAN_SERVER_API_KEY:
+
+# Pin the Compose network explicitly (same reason as the shared instance: automatic allocation
+# collided with the campus LAN once). Distinct subnet from the shared stack's 10.201.0.0/24.
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 10.202.0.0/24
