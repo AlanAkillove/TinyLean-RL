@@ -1,0 +1,65 @@
+{
+  "artifact_type": "v4_p001_context_smoke",
+  "created_at_utc": "2026-09-25T09:42:40.923953+00:00",
+  "host": "ubuntu",
+  "gpu": "NVIDIA GeForce RTX 3080, 10240 MiB",
+  "git_revision": "e80fe3e3e3a32ef98310818be4090aa2f619840b",
+  "note": "infrastructure-only memory/context audit; one generation, already-consumed prompt, no verifier, no analysis",
+  "authorization": "owner \u00a7I - non-formal 10GB context smoke on already-consumed data",
+  "model": {
+    "repo_id": "AI-MO/Kimina-Prover-Distill-0.6B",
+    "revision": "332e8a5259d1bdfda19d7c7f339f30804813cd3a",
+    "dir": "models/weights/kimina_distill_0_6b",
+    "weights_sha256_frozen": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "weights_sha256_on_disk": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2"
+  },
+  "engine": {
+    "vllm_version": "0.9.1",
+    "torch_version": "2.7.0+cu126",
+    "max_model_len": 10240,
+    "max_num_batched_tokens": 10240,
+    "gpu_memory_utilization": 0.85,
+    "max_num_seqs": 256,
+    "tensor_parallel_size": 1,
+    "dtype": "auto",
+    "load_seconds": 118.77
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "max_tokens": 4096,
+    "n": 1,
+    "seed": 20260925
+  },
+  "prompt": {
+    "source_artifact": "experiments/manifests/v4/v4_p001_smoke_prompt.json",
+    "prompt_tokens_measured_here": 5554,
+    "prompt_tokens_recorded": 5554,
+    "prompt_sha256": "5094b2c2a9d82f9451c30fb73aa13099820f8005800f55c3e8b00bc8a68eb30f",
+    "arm": "C_VERIFIER_REPAIR"
+  },
+  "run": {
+    "generation_seconds": 28.51,
+    "generated_tokens": 4096,
+    "finish_reason": "length",
+    "completion_sha256": "fcff2c48ba99d2733179406e019954788417ae03dfa455ed6c293e0df8b7b928",
+    "completion_head": "<think>\nThe error \"unexpected token ')'; expected ',' or 'in'\" occurs in the line:\n```tactics\n019 >|   have h6 : (x 0) ^ 2 \u2264 ( (n ) * b - a ^ 2) := by\n0```\nHere, `n` is `\u2191m + 1` (type `\u2115` to `\u2124`).\nThe right-hand side of the inequality `( (n ) * b - a ^ 2)` is claimed to be of type `\u2115`.\nHowever, `n, b, a ^ 2` are `\u2115` or `\u2124` depending on context.\nIf we let `X` be `(x 0) ^ 2` and `Y` be `((n ) * b - ",
+    "completion_tail": "itive integers a,b, and c have the property that\na^b,b^c,c^a end in 4,2 , and 9 , respectively.\nCompute the minimum possible value of a+b+c.-/\n\ntheorem number_theory_184446: IsLeast {n: \u2115 | \u2203 a b c, 0 < a \u2227 0 < b \u2227 0 < c \u2227\n  a ^ b % 10 = 4 \u2227 b ^ c % 10 = 2 \u2227 c ^ a % 10 = 9 \u2227 n = a + b + c} 17 := by\n  intro n hn\n  rcases hn with \u27e8a, b, c, ha, hb, hc, hab, hbc, hca, hn\u27e9\n\n  have h6a : 2 \u2264 b := by\n   "
+  },
+  "memory": {
+    "peak_vram_mib_nvidia_smi": 9208,
+    "peak_torch_allocated_mib": 0.0,
+    "peak_torch_reserved_mib": 0.0,
+    "device_total_mib": 10240
+  },
+  "checks": {
+    "worst_case_prompt_fits_context_with_full_response": true,
+    "context_headroom_tokens": 590,
+    "finish_reason_not_length_only_tested": true,
+    "completion_terminated_naturally_or_at_budget": true,
+    "weights_match_frozen": true,
+    "gpu_is_the_formal_host_device": true
+  },
+  "PASS": true,
+  "failure_mode_for_preregistration": "a theorem whose full Arm C prompt does not fit inside max_model_len - max_response_tokens is marked CONTEXT_INELIGIBLE before generation; proof semantics are never silently truncated"
+}

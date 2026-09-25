@@ -1,0 +1,77 @@
+artifact_type: v4_experiment_registry
+namespace: V4
+status: PREREGISTERED            # V4-P001 frozen; no formal V4 generation has run
+created_at_utc: "2026-09-25"
+naming:
+  V4-P###: {kind: probe, scope: "mechanism probes; no training, no checkpoint update, no controller"}
+  V4-R###: {kind: run, scope: "authorized by a probe outcome AND a separate owner decision"}
+freeze_inherited: "V1, V2 and V3 are frozen. No V1 result, V2 closeout or V3 result (V3-D001, V3-R001) is reopened and no artifact of theirs is edited by V4."
+sealed_sets_never_used:
+  - id: V3-FINAL-HOLDOUT
+    components: 93
+    status: SEALED / NEVER USED
+    manifest: experiments/manifests/v3/v3_final_holdout_reserve.json
+    statement: "V4-P001 asserts sealed_components_touched = 0 and sealed_statements_touched = 0 in experiments/manifests/v4/v4_p001_pool.json"
+
+experiments:
+  V4-P001:
+    title: "Paired verifier-guided repairability probe (FRESH_RETRY / SELF_REVISION / VERIFIER_REPAIR)"
+    status: PREREGISTERED
+    owner: fly90 (coordination) + fly122 (formal host)
+    authorization: "owner directive 'TinyLean-RL enters V4' §A-§S, 2026-09-25"
+    research_question: >
+      Given a Lean-level failed proof produced by frozen Kimina-Distill-0.6B theta0, does the exact
+      Lean verifier diagnostic improve second-attempt proof success beyond (A) a fresh retry and
+      (B) self-revision without the diagnostic?
+    design:
+      unit: theorem (family component), one representative per component
+      arms: [A_FRESH_RETRY, B_SELF_REVISION, C_VERIFIER_REPAIR]
+      pairing: common random numbers; one shared seed per formal rank across the three arms
+      success: canonical score == 1 under the same format-gated Lean verification in all arms
+      primary_endpoints: [mean(C-A), mean(C-B)]
+      descriptive_endpoint: mean(B-A)
+      statistics: "one-sided exact paired McNemar + paired theorem bootstrap 95% CI (10000 reps, frozen seed)"
+      data_guard: "complete triplets < 103 => INCONCLUSIVE_BY_DATA; the GO taxonomy is not applied"
+      outcome_taxonomy: [A_VERIFIER_SPECIFIC_GO, B_SELF_REVISION_ONLY, C_NO_REPAIR_GAIN, D_INCONCLUSIVE_BY_DATA]
+    artifacts:
+      pool: experiments/manifests/v4/v4_p001_pool.json
+      seeds: experiments/manifests/v4/v4_p001_seeds.json
+      historical_audit: experiments/manifests/v4/v4_p001_audit.json
+      prompt_audit: experiments/manifests/v4/v4_p001_prompt_audit.json
+      power: experiments/manifests/v4/v4_p001_power.json
+      verifier_plan: experiments/manifests/v4/v4_p001_verifier_plan.json
+      smoke_prompt: experiments/manifests/v4/v4_p001_smoke_prompt.json
+      context_smoke: experiments/manifests/v4/v4_p001_context_smoke.json
+      preregistration: docs/v4/V4-P001_preregistration.md
+    frozen_hashes:
+      pool_hash: 7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c
+      order_hash: ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15
+      screening_seed_hash: 2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51
+      paired_seed_hash: 06ba33b803201e8102b5537011bd242eca59b24768d69f256ac92335a6e6986d
+      prompt_template_hashes:
+        A_FRESH_RETRY: f2e2f2c2b9caec88a3955c3a47b922ff3a8afa7988fca817736c0a0e41b01811
+        B_SELF_REVISION: e64361448265d559e8a0ab34cd48efdae4310b5b02ae547b89b0d226aae6ab3a
+        C_VERIFIER_REPAIR: ee268b3ef181d910e54092318a34a5601cf1037dd633e6ac149739583a569dde
+    numbers:
+      pool_components: 1371
+      tier1_components: 453
+      tier2_components: 918
+      max_screening: 640
+      n_primary_required: 128
+      data_guard_min: 103
+      second_stage_candidates: 384
+      worst_case_context_tokens: 9618
+      max_model_len: 10240
+      verifier_recovery_ceiling_per_run: 192
+      verifier_recovery_ceiling_per_theorem: 3
+    formal_host: fly122 (RTX 3080 10 GB)
+    not_authorized_here:
+      - "no RL, SFT, checkpoint update, controller training or final-holdout use"
+      - "no V4-R### run: V4-R001 exists only as a downstream branch in the preregistration text"
+      - "no verifier-throughput claim, no capability claim, no training claim"
+
+downstream_branches_not_implemented:
+  A_VERIFIER_SPECIFIC_GO: "owner may design V4-R001 (verifier-integrated training); not part of V4-P001"
+  B_SELF_REVISION_ONLY: "possible separate self-revision direction only after owner review"
+  C_NO_REPAIR_GAIN: "close the verifier-feedback training line"
+  D_INCONCLUSIVE_BY_DATA: "owner review; no rescue by lowering N or changing the cohort"

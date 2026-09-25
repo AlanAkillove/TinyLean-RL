@@ -1,0 +1,139 @@
+{
+  "artifact_type": "v4_p001_prompt_audit",
+  "created_at_utc": "2026-09-25T09:52:26.944508+00:00",
+  "host": "fly",
+  "git_revision": "e80fe3e3e3a32ef98310818be4090aa2f619840b",
+  "note": "read-only over already-consumed artifacts; no generation, no verifier, no GPU, no V4 formal data",
+  "renderer_version": "v4-prompt-1",
+  "normalization_version": "v4-diag-1",
+  "correction_request": "The previous proof attempt was rejected. Revise it into a correct and complete Lean proof of the same theorem.",
+  "chat_template": {
+    "name": "Qwen2TokenizerFast",
+    "sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+    "length_chars": 4168,
+    "supports_multi_turn_user_assistant": false,
+    "renders_mid_conversation_assistant_plain": true,
+    "generation_prompt_suffix": "<|im_start|>assistant\n",
+    "rendered_probe": "<|im_start|>system\nS<|im_end|>\n<|im_start|>user\nU1<|im_end|>\n<|im_start|>assistant\nA1<|im_end|>\n<|im_start|>user\nU2<|im_end|>\n<|im_start|>assistant\n",
+    "rendered_probe_sha256": "3d6c9390bab9f00aa1acd3c344d260a60a3c3ce782cd4fd019653b1fbc55ae72",
+    "single_turn_rendered": "<|im_start|>system\nS<|im_end|>\n<|im_start|>user\nU1<|im_end|>\n<|im_start|>assistant\n",
+    "tool_role_supported": true,
+    "tool_role_used_by_renderer": false,
+    "thinking_control": true
+  },
+  "frozen_example": {
+    "theorem_statement_id": "bd53fe26-1fb5-46c7-b827-c4a9bc470408",
+    "theorem_name": "algebra_10592",
+    "theorem_screening_rank": 1,
+    "failed_proof_origin": "v1:p3b_pilot/1.jsonl",
+    "failed_proof_tokens": 986,
+    "failed_proof_sha256": "44dcbdcf028f30283add276449afc146af23be2edc6e83029d6ca52708e0ef69",
+    "diagnostic_source": "first observed Lean diagnostic of the consumed audit corpus",
+    "diagnostic_normalized": "unsolved goals\na b c : \u211d\nha : 0 < a\nhb : 0 < b\nhc : 0 < c\nh1 : 0 < a * b * c\nh2 : 0 < b + c\nh3 : 0 < c + a\nh4 : 0 < a + b\nh5 : 0 < 2 * a * b * c * (b + c) * (c + a) * (a + b)\n\u22a2 b * c ^ 4 * a ^ 7 * 8 + b * c ^ 5 * a ^ 6 * 24 + b * c ^ 6 * a ^ 5 * 24 +\n                                                    (b * c ^ 7 * a ^ 4 * 8 - b ^ 2 * c ^ 3 * a ^ 7 * 8) +\n                                                  b ^ 2 * c ^ 4 * a ^ 6 * 16 +\n                                                b ^ 2 * c ^ 5 * a ^ 5 * 48 +\n                                              (b ^ 2 * c ^ 6 * a ^ 4 * 16 - b ^ 2 * c ^ 7 * a ^ 3 * 8) +\n                                            (-(b ^ 3 * c ^ 2 * a ^ 7 * 8) - b ^ 3 * c ^ 3 * a ^ 6 * 16) +\n                                          (-(b ^ 3 * c ^ 4 * a ^ 5 * 40) - b ^ 3 * c ^ 5 * a ^ 4 * 40) +\n                                        (-(b ^ 3 * c ^ 6 * a ^ 3 * 16) - b ^ 3 * c ^ 7 * a ^ 2 * 8) +\n                                      b ^ 4 * c * a ^ 7 * 8 +\n                                    (b ^ 4 * c ^ 2 * a ^ 6 * 16 - b ^ 4 * c ^ 3 * a ^ 5 * 40) +\n                                  (-(b ^ 4 * c ^ 4 * a ^ 4 * 96) - b ^ 4 * c ^ 5 * a ^ 3 * 40) +\n[diagnostic truncated at the frozen 512-token budget]",
+    "diagnostic_tokens": 510,
+    "diagnostic_truncated": true,
+    "prompt_hashes": {
+      "A_FRESH_RETRY": "f2e2f2c2b9caec88a3955c3a47b922ff3a8afa7988fca817736c0a0e41b01811",
+      "B_SELF_REVISION": "e64361448265d559e8a0ab34cd48efdae4310b5b02ae547b89b0d226aae6ab3a",
+      "C_VERIFIER_REPAIR": "ee268b3ef181d910e54092318a34a5601cf1037dd633e6ac149739583a569dde"
+    },
+    "prompt_tokens": {
+      "A_FRESH_RETRY": 150,
+      "B_SELF_REVISION": 1168,
+      "C_VERIFIER_REPAIR": 1678
+    },
+    "rendered_prompts": {
+      "A_FRESH_RETRY": "<|im_start|>system\nYou are an expert in mathematics and proving theorems in Lean 4.<|im_end|>\n<|im_start|>user\nThink about and solve the following problems step by step in Lean 4.\n\n# Problem:\nIf $7=x^2+\\frac{1}{x^2}$, then what is the greatest possible value of $x+\\frac{1}{x}$?\n\n# Formal Statement:\n```lean4\nimport Mathlib\n\ntheorem algebra_10592 : IsGreatest {x + 1 / x | (x : \u211d) (_ : x \u2260 0) (_ : x ^ 2 + 1 / x ^ 2 = 7)} 3 := by\n```\n<|im_end|>\n<|im_start|>assistant\n",
+      "B_SELF_REVISION": "<|im_start|>system\nYou are an expert in mathematics and proving theorems in Lean 4.<|im_end|>\n<|im_start|>user\nThink about and solve the following problems step by step in Lean 4.\n\n# Problem:\nIf $7=x^2+\\frac{1}{x^2}$, then what is the greatest possible value of $x+\\frac{1}{x}$?\n\n# Formal Statement:\n```lean4\nimport Mathlib\n\ntheorem algebra_10592 : IsGreatest {x + 1 / x | (x : \u211d) (_ : x \u2260 0) (_ : x ^ 2 + 1 / x ^ 2 = 7)} 3 := by\n```\n<|im_end|>\n<|im_start|>assistant\nimport Mathlib\n\n/- 13. If $a, b, c \\in(0,+\\infty)$, prove:\n$$\n\\frac{b+c}{2 a}+\\frac{c+a}{2 b}+\\frac{a+b}{2 c} \\geqslant \\frac{2 a}{b+c}+\\frac{2 b}{c+a}+\\frac{2 c}{a+b} .\n$$ -/\ntheorem inequalities_320556\n    (a b c : \u211d)\n    (ha : 0 < a)\n    (hb : 0 < b)\n    (hc : 0 < c) :\n    (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) \u2265\n    2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b) := by\n  have h1 : 0 < a * b * c := by\n    apply mul_pos\n    apply mul_pos\n    all_goals linarith\n  have h2 : 0 < b + c := by linarith\n  have h3 : 0 < c + a := by linarith\n  have h4 : 0 < a + b := by linarith\n  have h5 : 0 < 2 * a * b * c * (b + c) * (c + a) * (a + b) := by\n    positivity\n  have h6 : (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) - (2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b)) \u2265 0 := by\n    have h8 : (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) - (2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b)) =\n        ((b + c) * (b + c) * (c + a) * (a + b) * (a * b * c) + (c + a) * (2 * a) * (b + c) * (a + b) * (a * b * c) + (a + b) * (2 * a) * (2 * b) * (c + a) * (a * b * c) - (2 * a * (b + c) * (c + a) + 2 * a * (c + a) * (2 * c) + 2 * b * (b + c) * (c + a))) / (2 * a * b * c * (b + c) * (c + a) * (a + b)) := by\n      field_simp\n      <;> ring\n    rw [h8]\n    apply div_nonneg\n    nlinarith [sq_nonneg (a * b - b * c), sq_nonneg (b * c - c * a), sq_nonneg (c * a - a * b), \n        sq_nonneg (a - b), sq_nonneg (b - c), sq_nonneg (c - a), \n        sq_nonneg (a * (a - b)), sq_nonneg (a * (a - c)), \n        sq_nonneg (b * (b - a)), sq_nonneg (b * (b - c)), \n        sq_nonneg (c * (c - a)), sq_nonneg (c * (c - b)), \n        mul_pos ha hb, mul_pos hb hc, mul_pos ha hc, \n        mul_pos (show 0 < b + c by linarith) (show 0 < c + a by linarith), \n        mul_pos (show 0 < b + c by linarith) (show 0 < a + b by linarith), \n        mul_pos (show 0 < c + a by linarith) (show 0 < a + b by linarith), \n        mul_pos (show 0 < b by linarith) (show 0 < a by linarith), \n        mul_pos (show 0 < b by linarith) (show 0 < c by linarith)\n      ]\n    positivity\n  linarith\n  all_goals positivity<|im_end|>\n<|im_start|>user\nThe previous proof attempt was rejected. Revise it into a correct and complete Lean proof of the same theorem.<|im_end|>\n<|im_start|>assistant\n",
+      "C_VERIFIER_REPAIR": "<|im_start|>system\nYou are an expert in mathematics and proving theorems in Lean 4.<|im_end|>\n<|im_start|>user\nThink about and solve the following problems step by step in Lean 4.\n\n# Problem:\nIf $7=x^2+\\frac{1}{x^2}$, then what is the greatest possible value of $x+\\frac{1}{x}$?\n\n# Formal Statement:\n```lean4\nimport Mathlib\n\ntheorem algebra_10592 : IsGreatest {x + 1 / x | (x : \u211d) (_ : x \u2260 0) (_ : x ^ 2 + 1 / x ^ 2 = 7)} 3 := by\n```\n<|im_end|>\n<|im_start|>assistant\nimport Mathlib\n\n/- 13. If $a, b, c \\in(0,+\\infty)$, prove:\n$$\n\\frac{b+c}{2 a}+\\frac{c+a}{2 b}+\\frac{a+b}{2 c} \\geqslant \\frac{2 a}{b+c}+\\frac{2 b}{c+a}+\\frac{2 c}{a+b} .\n$$ -/\ntheorem inequalities_320556\n    (a b c : \u211d)\n    (ha : 0 < a)\n    (hb : 0 < b)\n    (hc : 0 < c) :\n    (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) \u2265\n    2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b) := by\n  have h1 : 0 < a * b * c := by\n    apply mul_pos\n    apply mul_pos\n    all_goals linarith\n  have h2 : 0 < b + c := by linarith\n  have h3 : 0 < c + a := by linarith\n  have h4 : 0 < a + b := by linarith\n  have h5 : 0 < 2 * a * b * c * (b + c) * (c + a) * (a + b) := by\n    positivity\n  have h6 : (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) - (2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b)) \u2265 0 := by\n    have h8 : (b + c) / (2 * a) + (c + a) / (2 * b) + (a + b) / (2 * c) - (2 * a / (b + c) + 2 * b / (c + a) + 2 * c / (a + b)) =\n        ((b + c) * (b + c) * (c + a) * (a + b) * (a * b * c) + (c + a) * (2 * a) * (b + c) * (a + b) * (a * b * c) + (a + b) * (2 * a) * (2 * b) * (c + a) * (a * b * c) - (2 * a * (b + c) * (c + a) + 2 * a * (c + a) * (2 * c) + 2 * b * (b + c) * (c + a))) / (2 * a * b * c * (b + c) * (c + a) * (a + b)) := by\n      field_simp\n      <;> ring\n    rw [h8]\n    apply div_nonneg\n    nlinarith [sq_nonneg (a * b - b * c), sq_nonneg (b * c - c * a), sq_nonneg (c * a - a * b), \n        sq_nonneg (a - b), sq_nonneg (b - c), sq_nonneg (c - a), \n        sq_nonneg (a * (a - b)), sq_nonneg (a * (a - c)), \n        sq_nonneg (b * (b - a)), sq_nonneg (b * (b - c)), \n        sq_nonneg (c * (c - a)), sq_nonneg (c * (c - b)), \n        mul_pos ha hb, mul_pos hb hc, mul_pos ha hc, \n        mul_pos (show 0 < b + c by linarith) (show 0 < c + a by linarith), \n        mul_pos (show 0 < b + c by linarith) (show 0 < a + b by linarith), \n        mul_pos (show 0 < c + a by linarith) (show 0 < a + b by linarith), \n        mul_pos (show 0 < b by linarith) (show 0 < a by linarith), \n        mul_pos (show 0 < b by linarith) (show 0 < c by linarith)\n      ]\n    positivity\n  linarith\n  all_goals positivity<|im_end|>\n<|im_start|>user\nThe previous proof attempt was rejected. Revise it into a correct and complete Lean proof of the same theorem.\n\nunsolved goals\na b c : \u211d\nha : 0 < a\nhb : 0 < b\nhc : 0 < c\nh1 : 0 < a * b * c\nh2 : 0 < b + c\nh3 : 0 < c + a\nh4 : 0 < a + b\nh5 : 0 < 2 * a * b * c * (b + c) * (c + a) * (a + b)\n\u22a2 b * c ^ 4 * a ^ 7 * 8 + b * c ^ 5 * a ^ 6 * 24 + b * c ^ 6 * a ^ 5 * 24 +\n                                                    (b * c ^ 7 * a ^ 4 * 8 - b ^ 2 * c ^ 3 * a ^ 7 * 8) +\n                                                  b ^ 2 * c ^ 4 * a ^ 6 * 16 +\n                                                b ^ 2 * c ^ 5 * a ^ 5 * 48 +\n                                              (b ^ 2 * c ^ 6 * a ^ 4 * 16 - b ^ 2 * c ^ 7 * a ^ 3 * 8) +\n                                            (-(b ^ 3 * c ^ 2 * a ^ 7 * 8) - b ^ 3 * c ^ 3 * a ^ 6 * 16) +\n                                          (-(b ^ 3 * c ^ 4 * a ^ 5 * 40) - b ^ 3 * c ^ 5 * a ^ 4 * 40) +\n                                        (-(b ^ 3 * c ^ 6 * a ^ 3 * 16) - b ^ 3 * c ^ 7 * a ^ 2 * 8) +\n                                      b ^ 4 * c * a ^ 7 * 8 +\n                                    (b ^ 4 * c ^ 2 * a ^ 6 * 16 - b ^ 4 * c ^ 3 * a ^ 5 * 40) +\n                                  (-(b ^ 4 * c ^ 4 * a ^ 4 * 96) - b ^ 4 * c ^ 5 * a ^ 3 * 40) +\n[diagnostic truncated at the frozen 512-token budget]<|im_end|>\n<|im_start|>assistant\n"
+    },
+    "arm_c_equals_arm_b_plus_diagnostic_after_removal": true,
+    "arm_b_c_suffix_invariant": true,
+    "arm_a_has_no_previous_attempt_reference": true,
+    "arm_b_c_rendered_difference": " < a\nhb : 0 < b\nhc : 0 < c\nh1 : 0 < a * b * c\nh2 : 0 < b + c\nh3 : 0 < c + a\nh4 : 0 < a + b\nh5 : 0 < 2 * a * b * c * (b + c) * (c + a) * (a + b)\n\u22a2 b * c ^ 4 * a ^ 7 * 8 + b * c ^ 5 * a ^ 6 * 24 + b * c ^ 6 * a ^ 5 * 24 +\n                                                    (b * c ^ 7 * a ^ 4 * 8 - b ^ 2 * c ^ 3 * a ^ 7 * 8) +\n                                                  b ^ 2 * c ^ 4 * a ^ 6 * 16 +\n                                                b ^ 2 * c ^ 5 * a ^ 5 * 48 +\n                                              (b ^ 2 * c ^ 6 * a ^ 4 * 16 - b ^ 2 * c ^ 7 * a ^ 3 * 8) +\n                                            (-(b ^ 3 * c ^ 2 * a ^ 7 * 8) - b ^ 3 * c ^ 3 * a ^ 6 * 16) +\n                                          (-(b ^ 3 * c ^ 4 * a ^ 5 * 40) - b ^ 3 * c ^ 5 * a ^ 4 * 40) +\n                                        (-(b ^ 3 * c ^ 6 * a ^ 3 * 16) - b ^ 3 * c ^ 7 * a ^ 2 * 8) +\n                                      b ^ 4 * c * a ^ 7 * 8 +\n                                    (b ^ 4 * c ^ 2 * a ^ 6 * 16 - b ^ 4 * c ^ 3 * a ^ 5 * 40) +\n                                  (-(b ^ 4 * c ^ 4 * a ^ 4 * 96) - b ^ 4 * c ^ 5 * a ^ 3 * 40) +\n[diagnostic truncated at the frozen 512-token budget]<|im_end|>\n<|im_start|>assistant\n"
+  },
+  "prompt_lengths": {
+    "theorem_prompt_tokens_recorded_in_pool": {
+      "n": 1371,
+      "min": 112,
+      "median": 271,
+      "p90": 426,
+      "p95": 481,
+      "p99": 703,
+      "max": 914,
+      "mean": 291.5
+    },
+    "arm_a_rendered_tokens": {
+      "n": 1371,
+      "min": 112,
+      "median": 271,
+      "p90": 426,
+      "p95": 481,
+      "p99": 703,
+      "max": 914,
+      "mean": 291.5
+    },
+    "arm_c_rendered_tokens_with_example_failed_proof": {
+      "n": 1371,
+      "min": 1640,
+      "median": 1799,
+      "p90": 1954,
+      "p95": 2009,
+      "p99": 2231,
+      "max": 2442,
+      "mean": 1819.5
+    },
+    "renderer_matches_pool_prompt_tokens": true
+  },
+  "failed_proof_tokens": {
+    "n": 2899,
+    "min": 14,
+    "median": 460,
+    "p90": 1212,
+    "p95": 1895,
+    "p99": 3122,
+    "max": 4096,
+    "mean": 632.4,
+    "corpora": {
+      "v1:p3b_pilot": 652,
+      "v1:m1_seed2": 684,
+      "v1:m1_seed3": 665,
+      "v3_r001": 898
+    },
+    "note": "extracted failed proofs of already-consumed theta0 roll-outs; the second-stage context demand proxy"
+  },
+  "diagnostic_normalization": {
+    "raw_tokens": {
+      "n": 3289,
+      "min": 2,
+      "median": 220,
+      "p90": 714,
+      "p95": 860,
+      "p99": 1882,
+      "max": 18790,
+      "mean": 326.2
+    },
+    "normalized_tokens": {
+      "n": 3289,
+      "min": 2,
+      "median": 144,
+      "p90": 318,
+      "p95": 383,
+      "p99": 512,
+      "max": 512,
+      "mean": 152.7
+    },
+    "budget": 512,
+    "truncation_rate": 0.0268,
+    "truncated": 88,
+    "n": 3289,
+    "information_preserved": "only paths/ids/timestamps/server wrapper lines are removed; message, goal state, types, identifiers and positions are byte-preserved"
+  },
+  "context_requirement": {
+    "max_theorem_prompt_tokens": 914,
+    "max_failed_proof_tokens_observed": 4096,
+    "diagnostic_budget": 512,
+    "max_response_tokens": 4096,
+    "worst_case_context_tokens": 9618
+  }
+}

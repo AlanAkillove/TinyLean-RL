@@ -1,0 +1,333 @@
+{
+  "artifact_type": "v4_p001_verifier_plan",
+  "created_at_utc": "2026-09-25T09:53:27.737163+00:00",
+  "host": "fly",
+  "git_revision": "e80fe3e3e3a32ef98310818be4090aa2f619840b",
+  "note": "owner \u00a7P: V4 verifier infrastructure, and the safety recovery ceiling frozen before any formal generation",
+  "observed": {
+    "source": "runs/v3_r001_rollout_archive_from_fly122 (V3-R001 attempt-2 archive, read-only)",
+    "executions": [
+      {
+        "run_id": "20260925T042505Z",
+        "archive_path": "runs/v3_r001_rollout_archive_from_fly122/attempt2_abort_20260925/v3_r001_run_summary.aborted.json",
+        "candidates_generated": 384,
+        "recoveries_allowed": 16,
+        "recoveries_attempted": 17,
+        "recoveries_succeeded": 16,
+        "completed": false,
+        "abort_reason": "capacity restoration failed after verifier_timeout on rank=61 sample=2: recovery budget exhausted: 16 of 16 restarts already used in this launch",
+        "recovery_seconds": [
+          7.54,
+          7.61,
+          7.53,
+          17.29,
+          17.34,
+          17.31,
+          7.58,
+          7.54,
+          7.47,
+          7.59,
+          7.54,
+          7.56,
+          7.55,
+          7.52,
+          7.58,
+          7.58
+        ],
+        "triggers": [
+          {
+            "theorem_rank": 26,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 30,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 50,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 50,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 50,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 50,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 61,
+            "outcome": "verifier_timeout"
+          }
+        ]
+      },
+      {
+        "run_id": "20260925T062406Z",
+        "archive_path": "runs/v3_r001_rollout_archive_from_fly122/attempt2_complete_20260925T0839Z/v3_r001_run_summary.aborted.json",
+        "candidates_generated": 128,
+        "recoveries_allowed": 16,
+        "recoveries_attempted": 17,
+        "recoveries_succeeded": 16,
+        "completed": false,
+        "abort_reason": "capacity restoration failed after verifier_timeout on rank=67 sample=3: recovery budget exhausted: 16 of 16 restarts already used in this launch",
+        "recovery_seconds": [
+          17.25,
+          7.64,
+          17.4,
+          7.49,
+          7.45,
+          18.03,
+          7.5,
+          7.51,
+          7.55,
+          7.61,
+          7.59,
+          7.52,
+          7.49,
+          7.59,
+          7.56,
+          7.55
+        ],
+        "triggers": [
+          {
+            "theorem_rank": 50,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 56,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 58,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 59,
+            "outcome": "unresolved_infra_error"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 60,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 61,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 61,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 61,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 61,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 64,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          }
+        ]
+      },
+      {
+        "run_id": "20260925T074039Z",
+        "archive_path": "runs/v3_r001_rollout_archive_from_fly122/attempt2_complete_20260925T0839Z/v3_r001_run_summary.json",
+        "candidates_generated": 512,
+        "recoveries_allowed": 16,
+        "recoveries_attempted": 13,
+        "recoveries_succeeded": 13,
+        "completed": true,
+        "abort_reason": "",
+        "recovery_seconds": [
+          7.53,
+          7.52,
+          7.47,
+          7.53,
+          7.49,
+          7.55,
+          7.56,
+          7.59,
+          7.44,
+          7.54,
+          7.5,
+          7.53,
+          7.61
+        ],
+        "triggers": [
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 67,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 69,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 72,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 76,
+            "outcome": "verifier_timeout"
+          },
+          {
+            "theorem_rank": 77,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 77,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 97,
+            "outcome": "verifier_server_error"
+          },
+          {
+            "theorem_rank": 120,
+            "outcome": "verifier_server_error"
+          }
+        ]
+      }
+    ],
+    "total_candidates_verified": 1024,
+    "total_recoveries_attempted": 47,
+    "total_recoveries_succeeded": 45,
+    "pooled_density_recoveries_per_candidate": 0.0459,
+    "worst_execution": "20260925T062406Z",
+    "worst_execution_density": 0.1328,
+    "aborts_caused_by_the_ceiling": 2,
+    "ceiling_abort_reasons": [
+      "capacity restoration failed after verifier_timeout on rank=61 sample=2: recovery budget exhausted: 16 of 16 restarts already used in this launch",
+      "capacity restoration failed after verifier_timeout on rank=67 sample=3: recovery budget exhausted: 16 of 16 restarts already used in this launch"
+    ],
+    "recovery_seconds": {
+      "n": 45,
+      "min": 7.44,
+      "median": 7.55,
+      "max": 18.03
+    },
+    "pathology_note": "recoveries are not spread evenly: one theorem (rank 67) accounts for 7 of the 17 recoveries in the worst execution, because the V3 unit verified 8 samples of the same theorem and each sample re-poisoned the singleton REPL. V4 verifies one candidate per theorem per arm, so the structural per-theorem exposure is smaller."
+  },
+  "projection": {
+    "v4_worst_case_verifications": 1024,
+    "lambda_at_pooled_density": 47.0,
+    "poisson_999_pooled_density": 70,
+    "lambda_at_worst_density": 136.0,
+    "poisson_999_worst_density": 173,
+    "chosen_basis": "worst observed execution density, Poisson 99.9% upper bound, rounded up",
+    "structural_max_recoveries": 1024,
+    "frozen_ceiling": 192,
+    "ceiling_over_worst_quantile": 1.11
+  },
+  "frozen": {
+    "max_recoveries_per_run": 192,
+    "max_recoveries_per_theorem": 3,
+    "per_run_semantics": "the run continues through routine recovery; at the ceiling it fails closed with an aborted summary that keeps every finished candidate and stays resumable",
+    "per_theorem_semantics": "at most one recovery per arm candidate, so three recoveries exhaust a theorem's exposure; a theorem that exceeds it has its remaining arm candidates marked INFRA_CENSORED (missing, never a failure) and the run continues - one pathological theorem cannot consume the run budget",
+    "recovery_is_not_a_candidate_retry": true,
+    "recovery_trigger": "a non-conclusive candidate outcome (timeout / 5xx / unhealthy / unresolved), never a score"
+  },
+  "invariant": "no candidate verification attempt may leave a Lean computation occupying a reusable REPL after that attempt is classified timed out or failed; capacity is restored before the next candidate",
+  "inherited_from_Cprime": {
+    "dedicated_instance": true,
+    "max_repls": 1,
+    "verification_concurrency": 1,
+    "batch_size": 1,
+    "server_side_timeout_s": 120,
+    "client_slack_s": 60,
+    "cold_canary_budget_s": 600,
+    "restart_then_health_then_canary": true,
+    "fail_closed_on_identity_health_or_canary": true
+  },
+  "not_claimed": [
+    "no verifier throughput, latency or capacity claim - \u00a7P forbids it, and the recovery wall-clock is reported only as cost",
+    "no change to the frozen verification semantics: /verify, format gate, score, censoring rule",
+    "the V3 attempt-2 archive is read-only here; no V3 artifact is modified or re-interpreted"
+  ]
+}

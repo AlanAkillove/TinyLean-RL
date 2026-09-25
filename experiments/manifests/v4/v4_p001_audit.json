@@ -1,0 +1,192 @@
+{
+  "artifact_type": "v4_p001_historical_audit",
+  "created_at_utc": "2026-09-25T09:52:55.907830+00:00",
+  "host": "fly",
+  "git_revision": "e80fe3e3e3a32ef98310818be4090aa2f619840b",
+  "note": "read-only over already-consumed artifacts; no generation, no verifier, no GPU, no V4 formal data",
+  "development_pool": {
+    "components": 1371,
+    "sources": {
+      "autoformalizer": 686,
+      "human": 223,
+      "synthetic": 462
+    },
+    "pool_hash": "7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c",
+    "order_hash": "ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15"
+  },
+  "v1_training_population": {
+    "candidates": 5760,
+    "counts": {
+      "verified": 460,
+      "elaboration_type_mismatch": 125,
+      "unsolved_goals": 279,
+      "tactic_failure": 804,
+      "unknown_identifier": 114,
+      "typeclass_synthesis": 49,
+      "other_semantic_lean_failure": 68,
+      "syntax_parser": 46,
+      "format_no_code": 3651,
+      "timeout_resource": 84,
+      "infra": 80
+    },
+    "primary_rate": 0.2498,
+    "syntax_rate": 0.008,
+    "format_rate": 0.6339,
+    "timeout_resource_rate": 0.0146,
+    "infra_rate": 0.0139,
+    "verified_rate": 0.0799,
+    "ambiguous_primary_fraction": 0.0042,
+    "other_semantic_top_messages": {
+      "tauto failed to solve some goals.": 11,
+      "failed to prove positivity/nonnegativity/nonzeroness": 10,
+      "not a positivity goal": 5,
+      "maximum recursion depth has been reached": 5,
+      "interval_cases failed: could not find upper bound on x": 4,
+      "invalid 'simp', proposition expected": 3,
+      "interval_cases failed: could not find upper bound on n": 3,
+      "invalid constructor \u27e8...\u27e9, insufficient number of arguments, constructs 'Eq.refl' does not have explicit field": 2,
+      "invalid field 'den', the environment does not contain 'Int.den'": 2,
+      "failed to prove strict positivity, but it would be possible to prove nonnegativity if desired": 2
+    }
+  },
+  "v1_step1_theta0_proxy": {
+    "candidates": 96,
+    "counts": {
+      "verified": 1,
+      "elaboration_type_mismatch": 0,
+      "unsolved_goals": 5,
+      "tactic_failure": 21,
+      "unknown_identifier": 3,
+      "typeclass_synthesis": 1,
+      "other_semantic_lean_failure": 0,
+      "syntax_parser": 2,
+      "format_no_code": 58,
+      "timeout_resource": 4,
+      "infra": 1
+    },
+    "primary_rate": 0.3125,
+    "syntax_rate": 0.0208,
+    "format_rate": 0.6042,
+    "timeout_resource_rate": 0.0417,
+    "infra_rate": 0.0104,
+    "verified_rate": 0.0104,
+    "ambiguous_primary_fraction": 0.0,
+    "other_semantic_top_messages": {},
+    "note": "the step-1 dump of each seed is the on-policy theta0 rollout that started training; closest available proxy for theta0 on Tier-1 families"
+  },
+  "e023_holdout_theta0": {
+    "candidates": 512,
+    "counts": {
+      "verified": 120,
+      "elaboration_type_mismatch": 9,
+      "unsolved_goals": 12,
+      "tactic_failure": 102,
+      "unknown_identifier": 13,
+      "typeclass_synthesis": 8,
+      "other_semantic_lean_failure": 4,
+      "syntax_parser": 7,
+      "format_no_code": 225,
+      "timeout_resource": 7,
+      "infra": 5
+    },
+    "primary_rate": 0.2891,
+    "syntax_rate": 0.0137,
+    "format_rate": 0.4395,
+    "timeout_resource_rate": 0.0137,
+    "infra_rate": 0.0098,
+    "verified_rate": 0.2344,
+    "ambiguous_primary_fraction": 0.0078,
+    "other_semantic_top_messages": {
+      "invalid constructor \u27e8...\u27e9, insufficient number of arguments, constructs 'Eq.refl' does not have explicit field": 1,
+      "failed to prove positivity/nonnegativity/nonzeroness": 1,
+      "unexpected syntax ": 1,
+      "invalid 'calc' step, left-hand side is": 1
+    }
+  },
+  "v3_r001_attempt2_theta0": {
+    "candidates": 1024,
+    "counts": {
+      "verified": 98,
+      "elaboration_type_mismatch": 35,
+      "unsolved_goals": 41,
+      "tactic_failure": 165,
+      "unknown_identifier": 35,
+      "typeclass_synthesis": 7,
+      "other_semantic_lean_failure": 15,
+      "syntax_parser": 13,
+      "format_no_code": 567,
+      "timeout_resource": 20,
+      "infra": 28
+    },
+    "primary_rate": 0.291,
+    "syntax_rate": 0.0127,
+    "format_rate": 0.5537,
+    "timeout_resource_rate": 0.0195,
+    "infra_rate": 0.0273,
+    "verified_rate": 0.0957,
+    "ambiguous_primary_fraction": 0.0029,
+    "other_semantic_top_messages": {
+      "tauto failed to solve some goals.": 5,
+      "interval_cases failed: could not find upper bound on p": 2,
+      "type expected, got": 2,
+      "interval_cases failed: could not find upper bound on a": 1,
+      "failed to prove positivity/nonnegativity/nonzeroness": 1,
+      "not a positivity goal": 1,
+      "invalid field 'natAbs', the environment does not contain 'Rat.natAbs'": 1,
+      "invalid pattern, constructor or constant marked with '[match_pattern]' expected": 1,
+      "invalid field 'sq', the environment does not contain 'Int.sq'": 1
+    },
+    "note": "the extracted proof body is rebuilt from the recorded completion with the frozen extractor",
+    "re_extraction_mismatches_vs_recorded_extracted_proof_present": 0,
+    "format_failures_with_fenced_block": 0,
+    "format_failures_without_fenced_block": 567
+  },
+  "e024_minif2f_theta0_partial": {
+    "error": "partial artifact lives on fly122 only"
+  },
+  "diagnostic_tokens": {
+    "n": 3317,
+    "min": 2,
+    "median": 144,
+    "p90": 316,
+    "p95": 383,
+    "max": 18556,
+    "budget": 512,
+    "over_budget_fraction": 0.0265
+  },
+  "screening_projection": {
+    "primary_rate_estimates": {
+      "v1_step1_theta0_proxy__tier1_families": 0.3125,
+      "e023_holdout_theta0__independent": 0.2891,
+      "v1_training_population__all_steps__not_theta0": 0.2498
+    },
+    "theta0_estimate_central": 0.3008,
+    "planning_rate_floor": 0.2,
+    "pool_capacity": {
+      "tier1": 453,
+      "tier2": 918,
+      "total": 1371
+    },
+    "screens_needed_for_128": {
+      "0.2": 640,
+      "0.25": 512,
+      "0.3": 427,
+      "0.3125": 410
+    },
+    "frozen_max_screens": 640,
+    "expected_primary_failures_at_frozen_budget": {
+      "0.2": 128.0,
+      "0.25": 160.0,
+      "0.3": 192.0,
+      "0.3125": 200.0
+    },
+    "expected_primary_failures_in_tier1_alone": {
+      "0.2": 90.6,
+      "0.25": 113.2,
+      "0.3": 135.9,
+      "0.3125": 141.6
+    },
+    "tier2_needed": false,
+    "capacity_is_sufficient": true
+  }
+}
