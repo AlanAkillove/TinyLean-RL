@@ -1,6 +1,6 @@
 artifact_type: v4_experiment_registry
 namespace: V4
-status: STAGE1_COMPLETE   # V4-P001 Stage-1 formal screening closed at 464/640 screens; the 128-theorem primary cohort, its diagnostic derangement and the unexecuted second-stage plan are frozen; Stage-2 launch-0 aborted structurally before any candidate was persisted, its code fix (Amendment B) is validated, and the formal Stage-2 relaunch is still NOT authorized
+status: STAGE2_COMPLETE_C_NO_REPAIR_GAIN   # V4-P001 closed: Stage-2 launched once under the owner night authorization (512/512 candidates, 128 structurally complete quadruplets), both guards passed, provenance 18/18, canonical analysis C_NO_REPAIR_GAIN / DIAGNOSTIC_NONSPECIFIC; the verifier-feedback line is closed and nothing is auto-continued
 created_at_utc: "2026-09-25"
 amended_at_utc: "2026-09-25"
 amendment:
@@ -222,7 +222,68 @@ experiments:
         package: experiments/manifests/v4/V4-P001_execution_package_dry_run.json
         package_sha256: 819b6d8da039958af430222e700fbc12a3c1a8810e73c8f95c8f29ae27a66ad9
         package_result: "55 checks, 0 failed, PASS at commit 19a8d91; full suite 539 passed / 1 skipped; ruff clean; the four new/changed checks (candidate-assembly validation, no model/verifier use, no second-stage execution artifact before and after) all pass"
-      next: "owner review of the Amendment B code fix and the §14 validation records; the formal Stage-2 relaunch remains NOT authorized (V4_STAGE2_RELAUNCH_AUTHORIZED: NO) and --stage second was not invoked with a launch authorization"
+      stage2_result:
+        status: C_NO_REPAIR_GAIN
+        mechanism_label: DIAGNOSTIC_NONSPECIFIC
+        authorization: "owner night authorization, 2026-09-25: Stage-2 codefix -> validation -> formal Stage-2 execution -> canonical analysis -> result recording -> closeout per outcome; launch-1 ran under the §10 pre-authorization, no further owner wait"
+        result_artifact: experiments/manifests/v4/V4-P001_results.json
+        result_artifact_sha256: 5a741a83ee234c64957ecce9b17881fbc724992b5f2669ea5f76c55c52310177
+        memo: docs/v4/V4-P001_result.md
+        run_id: 20260925T160617Z
+        host: fly122 (RTX 3080 10 GB)
+        launch1:
+          executed_at_commit: 2422e4644fd4a9e694648654e35292878aaaf081
+          raw_artifact: runs/v4_p001/rollout/v4_p001_second_stage_raw.jsonl  # gitignored; externally archived on fly90
+          raw_artifact_sha256: 6597a53ff06139970ce8ed2db78d184a3a7bc81c979e164a0a6ce49b9c38f7f6
+          raw_artifact_bytes: 5842484
+          raw_rows: 512
+          theorems_structurally_complete: 128
+          arm_counts: {A_FRESH_RETRY: 128, B_SELF_REVISION: 128, C_VERIFIER_REPAIR: 128, D_MISMATCHED_DIAGNOSTIC: 128}
+          started_utc: "2026-09-25T16:08:02.574711+00:00"
+          ended_utc: "2026-09-25T17:44:18.862773+00:00"
+          wall_span_seconds: 5776.3
+          stage_seconds_reported: 5811.6
+          per_candidate_generation_seconds_sum: 2180.3
+          peak_vram_mib_nvidia_smi: 9206
+          recoveries: "11 attempted, 11 succeeded (7 verifier_server_error, 4 verifier_timeout) on ranks 3, 12, 34, 46, 54, 67, 81, 112, 119, 122; ceilings 192/run and 3/theorem untouched; max theorem_recovery_index 2"
+          recovery_sum_seconds: 83.8
+          restart_sum_seconds: 13.2
+          stage2_freeze:
+            artifact: experiments/manifests/v4/V4-P001_stage2_freeze.json
+            sha256: 9f3c72f3b03dc10d2812a057b317a92d9df9efcd8b6363acbcc64dd9fc87bf6e
+            status: FROZEN
+            checks: "13 of 13 passed; computed before any endpoint"
+          archive_on_fly90:
+            path: runs/v4_p001_stage2_archive_from_fly122/
+            raw: 6597a53ff06139970ce8ed2db78d184a3a7bc81c979e164a0a6ce49b9c38f7f6
+            summary: 90d21ef15c072e33e307ceae73d133ba3e9d599c0ea95e647bf78764e8a3df17
+            recovery_journal: 6975bfa28f122d0d841339db13960c70e18fb567f81de48adaecf9427b8b3b0c
+            verifier_events: f5dabfda48ff026e43f1912d8fee637cd33cd3d328ae02f01028e7dcea8184e4
+            gpu_samples: 853db4a43d898235d4706f1c53aa10e6fbe296e9179fb75f1510b0f0069eb99f
+            console_log: 3fbd5483f441a383d15ac18d4c745f1706541ecc0f13e27a787725a3f0d49857
+            host_role: "fly90 is archive-only: the raw artifact is never analyzed there"
+        analyzer_fix:
+          case: "owner §24 Case A: the first canonical run exited 3 (ABORT BEFORE ANALYSIS, nothing written, no metric emitted); a purely mechanical 0-based/1-based schedule-position check"
+          commit: d600905a88a752ef44dffac33754611857fe957c
+          analyzer_sha256_before: e20638c1daddb964e7c5ea20bd79f55f01f50360c750593b68a774051798e536
+          analyzer_sha256_after: 93721be7cb0e34fd5cf5503d3593b3604e397b46bf550d5972367f62ec423ddc
+          formulas_thresholds_guards_changed: NONE
+          regression_property: "with the fix reverted, six analyzer tests fail (including the provenance-consistency test)"
+          canonical_runs_after_fix: 1
+        provenance: "18 of 18 analyzer provenance checks PASS before any metric; 50 frozen-design checks 0 failed; sealed reserve touched 0/0; screening seeds not reused; prompts reproduce the frozen hashes"
+        guards:
+          n_complete: {value: 118, minimum_required: 103, pass: true, infra_incomplete_quadruplets: 10}
+          differential_censoring: {range: 0.015625, maximum_allowed: 0.05, pass: true, rates: {A_FRESH_RETRY: 0.023438, B_SELF_REVISION: 0.015625, C_VERIFIER_REPAIR: 0.015625, D_MISMATCHED_DIAGNOSTIC: 0.03125}}
+        gates:
+          C_minus_A: {n_pairs: 18, delta_pp: -1.69, mcnemar_p_one_sided: 0.7596588134765625, ci_lower: -0.0847457627118644, passes: false}
+          C_minus_B: {n_pairs: 16, delta_pp: 6.78, mcnemar_p_one_sided: 0.0384063720703125, ci_lower: 0.0, passes: false, note: "delta and p pass; the bootstrap CI lower bound is exactly 0.0, not > 0"}
+          C_minus_D_specificity: {n_pairs: 15, delta_pp: 2.54, mcnemar_p_one_sided: 0.303619384765625, ci_lower: -0.0423728813559322, demonstrated: false}
+          B_minus_A_descriptive: {n_pairs: 16, delta_pp: -8.47, mcnemar_p_one_sided: 0.9979095458984375, ci_lower: -0.15254237288135594}
+        success_by_arm_over_118_complete: {A_FRESH_RETRY: "18/118 (15.25%)", B_SELF_REVISION: "8/118 (6.78%)", C_VERIFIER_REPAIR: "16/118 (13.56%)", D_MISMATCHED_DIAGNOSTIC: "13/118 (11.02%)"}
+        sensitivity_infra_as_failure: {C_minus_A_pp: -1.56, C_minus_B_pp: 6.25, C_minus_D_pp: 2.34, note: "SENSITIVITY ONLY; verdicts unchanged"}
+        classification: C_NO_REPAIR_GAIN
+        closeout: "recorded, committed and pushed; the V4 verifier-feedback line is closed at this design; no prompt rescue, no Arm E, no larger context, no different model, no new cohort, no top-up, no reserve use; V4-R001 not drafted (GO-only branch); no RL/SFT/training authorized by this result; no V5/Jev-controller/adaptive-allocator work"
+      next: "none for V4-P001: closed with C_NO_REPAIR_GAIN. Further work requires an owner decision from the recorded result; nothing is auto-continued and no reserve has been touched"
     not_authorized_here:
       - "no RL, SFT, checkpoint update, controller training or final-holdout use"
       - "no V4-R### run: V4-R001 exists only as a downstream branch in the preregistration text"
