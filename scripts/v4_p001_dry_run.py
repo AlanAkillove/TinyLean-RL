@@ -572,13 +572,28 @@ def section_runner(t: Transcript, scratch: Path, surface: dict, plan: list) -> d
             f"{report.get('n_checks')} checks, {report.get('n_failed')} failed")
 
     second_dry = run([sys.executable, script, "--stage", "second", "--dry-run", "--out-dir",
-                      synthetic])
+                      synthetic], keep_stdout=True)
+    dry_stdout = second_dry.pop("stdout", "")
     section["synthetic_second_dry_run"] = second_dry
+    marker = f"[{S.EXPERIMENT_ID}] DRY RUN COMPLETE"
+    head = dry_stdout[:dry_stdout.index(marker)] if marker in dry_stdout else ""
+    lines = head.splitlines()
+    start = max((i for i, line in enumerate(lines) if line.strip() == "{"), default=len(lines))
+    try:
+        standalone = json.loads("\n".join(lines[start:]))
+    except ValueError:
+        standalone = {}
+    todo = standalone.get("theorems_to_run") or []
+    section["synthetic_second_dry_run_standalone"] = {
+        "mode": standalone.get("mode"), "n_candidates": standalone.get("n_candidates"),
+        "theorems_to_run_count": len(todo),
+        "theorems_to_run_is_the_whole_cohort": todo == list(range(1, S.N_PRIMARY + 1)),
+    }
     t.check("second_stage_dry_run_revalidates_and_generates_nothing",
             second_dry["exit_code"] == 0
-            and "candidates_generated=0" in second_dry["stdout_tail"]
-            and "theorems_to_run" in second_dry["stdout_tail"],
-            f"exit={second_dry['exit_code']}")
+            and "candidates_generated=0" in dry_stdout
+            and len(todo) == S.N_PRIMARY,
+            f"exit={second_dry['exit_code']}, theorems_to_run={len(todo)}")
     t.check("second_stage_dry_run_wrote_no_raw",
             not (synthetic / S.SECOND_STAGE_RAW_BASENAME).exists(), "no second-stage raw")
     return {"synthetic_dir": synthetic, "report": report,
