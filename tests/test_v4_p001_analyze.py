@@ -231,7 +231,7 @@ def build_case(out_dir: Path, *, succeed_through: dict, censor: dict | None = No
     rows = []
     for theorem in theorems:
         rank = theorem["formal_rank"]
-        for position, arm in enumerate(theorem["arm_order"]):
+        for position, arm in enumerate(theorem["arm_order"], start=1):
             censored = rank in censor.get(arm, set())
             success = None if censored else rank <= succeed_through.get(arm, 0)
             rows.append(repair_row(plan_row=theorem, screening=by_statement[theorem["statement_id"]],
@@ -352,7 +352,7 @@ def test_the_ci_condition_binds_the_gate(tmp_path: Path) -> None:
         rank = theorem["formal_rank"]
         rank_a = rank <= 20                               # 5 joint + 15 adverse discordant
         rank_c = rank <= 5 or 20 < rank <= 47             # 5 joint + 27 favourable discordant
-        for position, arm in enumerate(theorem["arm_order"]):
+        for position, arm in enumerate(theorem["arm_order"], start=1):
             success = {"A_FRESH_RETRY": rank_a, "C_VERIFIER_REPAIR": rank_c,
                        "B_SELF_REVISION": rank_a, "D_MISMATCHED_DIAGNOSTIC": rank_a}[arm]
             rows.append(repair_row(plan_row=theorem,
@@ -574,8 +574,10 @@ def test_the_synthetic_case_fixture_is_itself_consistent(tmp_path: Path) -> None
     assert all(sorted(t["arm_order"]) == sorted(S.ARM_ORDER) for t in theorems)
     assert len({tuple(t["arm_order"]) for t in theorems}) >= 1
     positions = Counter((arm, position) for t in theorems
-                        for position, arm in enumerate(t["arm_order"]))
+                        for position, arm in enumerate(t["arm_order"], start=1))
     assert set(positions.values()) == {S.N_PRIMARY // S.N_ARMS}
+    # the frozen row schema numbers execution positions 1..4, as the runner writes them
+    assert {position for _arm, position in positions} == {1, 2, 3, 4}
     rows = [json.loads(line) for line
             in (case["out_dir"] / S.SECOND_STAGE_RAW_BASENAME).read_text().splitlines() if line]
     assert len(rows) == S.SECOND_STAGE_CANDIDATES + 0

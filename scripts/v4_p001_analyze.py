@@ -251,9 +251,12 @@ def check_provenance(*, frozen: S.Frozen, paths: dict, payloads: dict, groups: d
           not ({row["seed"] for row in rows}
                & {row["seed"] for row in screening_rows}),
           "a second-stage candidate carries a first-stage screening seed")
+    # the frozen row schema numbers execution positions 1..4 (the runner and the structural freeze
+    # both use that convention), so the arm's index in the frozen arm_order is position - 1
     bad_position = sorted({(row["formal_rank"], row["arm"]) for row in rows
                            if row["position"]
-                           != list(plan_by_rank[row["formal_rank"]]["arm_order"]).index(row["arm"])})
+                           != list(plan_by_rank[row["formal_rank"]]["arm_order"]).index(row["arm"])
+                           + 1})
     check("execution_order_is_the_frozen_balanced_schedule",
           not bad_position,
           f"{len(bad_position)} candidate row(s) are not at their frozen schedule position "

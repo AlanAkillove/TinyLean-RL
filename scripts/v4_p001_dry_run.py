@@ -434,7 +434,7 @@ def synthetic_second_stage_rows(*, plan_artifact: dict, screening_by_statement: 
     rows = []
     for theorem in plan_artifact["theorems"]:
         row = screening_by_statement[theorem["statement_id"]]
-        for position, arm in enumerate(theorem["arm_order"]):
+        for position, arm in enumerate(theorem["arm_order"], start=1):
             success = arm == "C_VERIFIER_REPAIR"
             arm_plan = theorem["arms"][arm]
             rows.append({
