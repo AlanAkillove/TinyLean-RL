@@ -382,6 +382,75 @@ amendments:
     formal_candidates_generated_by_this_amendment: 0
     launch_authorization: WITHHELD   # attempt-2 runs only on the owner's separate instruction
 
+  - id: V3-R001-attempt2-result
+    applies_to: V3-R001
+    created_at_utc: "2026-09-25"
+    kind: prospective-validation-result         # first outcome data on the frozen R001 design
+    marker: "FORMAL RESULT - attempt-2 complete, analyzed exactly once"
+    authorized_by: >
+      Owner attempt-2 directive (2026-09-25) under infrastructure amendment Cprime, plus the owner
+      resume decision (2026-09-25, up to 3 additional sessions under the committed --resume
+      contract). Nothing was amended to make the run finish: ceiling 16 per launch, MAX_REPLS 1,
+      timeouts and verification concurrency unchanged.
+    supersedes_execution: >
+      V3-R001 attempt-1 (INFRASTRUCTURE_ABORT / NO_SCIENTIFIC_OUTCOME / NOT_ANALYZED) remains
+      quarantined provenance; its 384 candidates were never read, combined or analyzed.
+    execution:
+      host: "fly122 (RTX 3080, 10 GB), HEAD 7099db4ec5627b0151371b148d3cc167d54db23c"
+      path: "runs/v3_r001/rollout_attempt2 (attempt_id 2; raw data gitignored, hashes only here)"
+      groups: "128/128 finalized (112 COMPLETE + 16 INFRA_CENSORED, INCOMPLETE 0)"
+      candidates: 1024
+      sessions:
+        initial: "2026-09-25T04:25:05Z-06:15:50Z; ranks 0->48; recoveries 16/16; aborted at rank 61 sample 2"
+        resume_A: "2026-09-25T06:23:30Z-07:39:00Z; ranks 48->64; recoveries 16/16; aborted at rank 67 sample 3"
+        resume_B: "2026-09-25T07:40:39Z-08:39:22Z; ranks 64->128; recoveries 13/16; COMPLETED"
+      resume_sessions_used: 2                    # of 3 authorized; session C not needed
+      recoveries_per_session: {initial: 16, resume_A: 16, resume_B: 13}
+      total_recoveries: 45                       # 45/45 ok; every post-recovery canary verified
+    frozen_artifacts:
+      raw_rollout_sha256: 1033b8eb23b6ea3a4fea9cf9809bd4852c560401ad5ac942b13eb8ecb754ffb5
+      run_summary_sha256: f0dd23b1c566d27d1f73496efdd8d7456471e03c63d720e6e8255025f5157b5c
+      recovery_log_sha256: 7c9fea88952f9cbd44b70bd4ba02c1975295bb6871c0516b59cdd475d5a92530
+      verifier_events_sha256: d5ceb1e6ea5da4a577a06d66c5af297861d886cd9d6eace7d31943707da82edf
+      session_journal_sha256: 1e6c25bbf9f0fb2a33fadb54b91c6f0971620b9a2385d82099e8992de7ee26b1
+      console_sha256: {initial: c181822144e3e54d32d641c61e46593e45a778ef1b9767835604022a142316b6,
+                       resume_A: a316ba9e8af05c3724597173ed2643ce3d560c287afd7c4b926677ef3f5f4d10,
+                       resume_B: d77b4dc15ddbacfcc28b878941a5fe5cd61e218887097b22723e768e2f569aa1}
+      archive_fly90: "runs/v3_r001_rollout_archive_from_fly122/attempt2_complete_20260925T0839Z/"
+    structural_integrity_check:
+      result: PASS
+      checked: "1024 rows; unique (theorem_rank, sample_index); ranks 1-128 with exactly 8 samples;
+                seed = 20260924 + (formal_sample_rank-1)*8 + sample_index on every row;
+                model_sha256 = theta0 34e6e630... on every row; rank<->statement_id matches the frozen
+                formal sample manifest; per-rank rows contiguous; group statuses sum to 128"
+      verify_status_counts: {lean_error: 898, verified: 98, verifier_server_error: 11,
+                              verifier_timeout: 14, unresolved_infra_error: 3}
+    canonical_analysis:
+      script: "scripts/v3_r001_analyze.py (3b47af65d9f950739560b9062c82ad519ce90b0154537eb119df7f1798cff989)"
+      ran: "exactly once, on fly122, explicit attempt-2 raw/summary paths; no software error"
+      results_artifact: experiments/manifests/v3/V3-R001_results.json
+      results_sha256: 1d7128bdebf23ceb72544c15fbb4f6dedce32fbe20abdc10e33866fea673a911
+    outcome:
+      value: B_SOURCE-DRIVEN-ONLY
+      data_guard: "PASS before any gate (n_analyzed 112 >= 103; positives 24 >= 5)"
+      pooled_gate: "P1 PASS (boundary 9, x_block 16, k 24, exact p 0.0, conditional level 0.04494); P2 PASS (top-20 enrichment 2.9867, CI lower 2.2123)"
+      within_synthetic_gate: "S1/S2 FAIL (n 41, identifiable; boundary 8, x_block 7, enrichment 1.5185, CI lower 0.9762)"
+      descriptives_not_a_gate: "B2 AUPRC 0.6831 vs B1 0.5512 (delta +0.1319); top-20 enrichment 2.970 vs 2.758; prevalence 0.2143; synthetic stratum prevalence 0.5122"
+      r002_eligible: false
+    permitted_claim: >
+      None beyond the frozen taxonomy: outcome B licenses only the statement that the pooled
+      enrichment is real while it does not reproduce within the synthetic stratum - the pooled
+      effect is not separable from source routing. The gate's own branch text in
+      V3-R001_results.json (OUTCOME_TAXONOMY) is the wording of record.
+    not_permitted: ["controller improves RL", "controller improves theorem proving",
+                    "controller saves compute", "B2>B1 superiority",
+                    "any claim about the 93 sealed reserve components",
+                    "re-use of the analyzed sample as a fresh test"]
+    reserve: "93-component V3-FINAL-HOLDOUT remains sealed (b60be381...) - untouched"
+    authorizes_next: >
+      NOTHING. R002_AUTHORIZED = NO: outcome B is not a licence for decision-guided RL. Any later
+      intervention requires a new owner decision and a new preregistration.
+
 
 prepreregistration_audits:                   # owner directive 2026-09-24 §17 steps 3-5: artifacts that
                                              # must exist BEFORE the new V3-R001 preregistration is

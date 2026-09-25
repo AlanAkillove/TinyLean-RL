@@ -304,8 +304,15 @@ def test_fixture_F_block_hash_tamper_aborts_every_consumer(tmp_path, monkeypatch
     monkeypatch.setattr(S, "FORMAL_SAMPLE", path)
     with pytest.raises(S.FrozenViolation, match="block_hash_recomputes"):
         S.load_frozen(verify_files=False)
-    # and the analyzer's own entry point is that call, so no results artifact can exist
-    assert not (ROOT / A.RESULTS_DEFAULT).exists()
+    # and the analyzer's own entry point is that call, so on a tampered design it must abort before
+    # it can read a raw rollout or write anything: the canonical results artifact is never touched
+    monkeypatch.setattr(sys, "argv", [
+        "v3_r001_analyze.py", "--raw", str(tmp_path / "absent.jsonl"), "--summary", "none",
+        "--out", str(tmp_path / "never_written.json"), "--check-only",
+    ])
+    with pytest.raises(S.FrozenViolation, match="block_hash_recomputes"):
+        A.main()
+    assert not (tmp_path / "never_written.json").exists()
 
 
 def test_fixture_F_block_membership_tamper_is_caught_too(tmp_path, monkeypatch) -> None:
