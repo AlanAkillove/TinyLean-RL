@@ -1,0 +1,1094 @@
+{
+  "experiment_id": "V3-R001",
+  "attempt": 2,
+  "generated_at": "2026-09-25T04:02:06.375434+00:00",
+  "purpose": "amendment C′ sections 8-9 nonformal verifier-lifecycle stress; no formal theorem, no reserve theorem, no model generation",
+  "frozen_settings": {
+    "frozen_settings_sha256": "bf069eccbc0af53768890340e77e03a46a865d05fb8bdcd7ceb2560bfe71e264",
+    "server_timeout_s": 120.0,
+    "server_timeout_is_frozen": true,
+    "client_timeout_s": 180.0,
+    "client_timeout_is_frozen": true,
+    "batch_size": 1,
+    "batch_size_is_one": true,
+    "max_single_retries": 2,
+    "max_single_retries_is_frozen": true,
+    "endpoint": "http://127.0.0.1:8010",
+    "endpoint_is_dedicated": true,
+    "max_recoveries_per_run": 16
+  },
+  "inputs": {
+    "pathological": {
+      "kind": "interval_cases enumeration bomb (E024 chunk-7 family)",
+      "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+      "proof": "import Mathlib\nset_option maxHeartbeats 0\nexample (n : ℕ) (h : n < 500000) : n * 0 = 0 := by\n  interval_cases n <;> rfl\n"
+    },
+    "normal": {
+      "canary": {
+        "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+        "proof": "import Mathlib\ntheorem tinylean_v2_canary : (1 : Nat) = 1 := by rfl\n"
+      },
+      "trivial": {
+        "proof_sha256": "5348c3f087c4ac87787dd5503b43a41242e1d59a71f893af89e7fb6e52e0f87e",
+        "proof": "import Mathlib\nexample : (List.length [1, 2, 3]) = 3 := by rfl\n"
+      }
+    }
+  },
+  "protocol": {
+    "confirmed_timeout_cycles": 3,
+    "client_abandonment_cycles": 3,
+    "mixed_sequence": [
+      "normal",
+      "pathological",
+      "normal",
+      "pathological",
+      "normal"
+    ]
+  },
+  "dedicated_instance": {
+    "present": true,
+    "running": true,
+    "image": "projectnumina/kimina-lean-server:2.0.0",
+    "container_id": "67627202fd42",
+    "env": {
+      "LEAN_SERVER_MAX_REPLS": "1",
+      "LEAN_SERVER_MAX_REPL_USES": "-1",
+      "LEAN_SERVER_MAX_REPL_MEM": "8G",
+      "LEAN_SERVER_MAX_WAIT": "60",
+      "LEAN_SERVER_PORT": "8000"
+    },
+    "published": [
+      "127.0.0.1:8010"
+    ],
+    "ports": {
+      "8000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "8010"
+        }
+      ]
+    }
+  },
+  "preflight_health": {
+    "url": "http://127.0.0.1:8010/health",
+    "status": 200,
+    "body": "{\"status\":\"ok\"}",
+    "ok": true,
+    "seconds": 0.1
+  },
+  "preflight_canary": {
+    "verified": true,
+    "status": "verified",
+    "detail": "",
+    "seconds": 4.21,
+    "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+    "uses_formal_theorem": false,
+    "budget_s": 600.0
+  },
+  "repl_counts_after_preflight": {
+    "repl_processes": 1,
+    "lake_processes": 1,
+    "total": 3
+  },
+  "confirmed_timeout_cycles": [
+    {
+      "phase": "confirmed-timeout",
+      "cycle": 1,
+      "started_at": "2026-09-25T04:02:10.813315+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_candidate": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb (nonformal, E024 chunk-7 family)",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 131.8,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "Lean REPL command timed out in 120.0 seconds",
+        "abort_reason": null
+      },
+      "session_events": [
+        {
+          "at": 1790309050.9484093,
+          "kind": "batch_item",
+          "detail": "id=stress-confirmed-1 outcome=verifier_timeout Lean REPL command timed out in 120.0 seconds"
+        },
+        {
+          "at": 1790309055.1367414,
+          "kind": "canary",
+          "detail": "attempt=0 outcome=verified "
+        }
+      ],
+      "recovery": {
+        "n": 1,
+        "at": "2026-09-25T04:04:22.664675+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 1,
+          "custom_id": "stress-confirmed-1",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.18,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.23,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.48,
+        "ok": true
+      },
+      "ok": true
+    },
+    {
+      "phase": "confirmed-timeout",
+      "cycle": 2,
+      "started_at": "2026-09-25T04:04:22.848625+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_candidate": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb (nonformal, E024 chunk-7 family)",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 131.77,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "Lean REPL command timed out in 120.0 seconds",
+        "abort_reason": null
+      },
+      "session_events": [
+        {
+          "at": 1790309182.9837499,
+          "kind": "batch_item",
+          "detail": "id=stress-confirmed-2 outcome=verifier_timeout Lean REPL command timed out in 120.0 seconds"
+        },
+        {
+          "at": 1790309187.2619448,
+          "kind": "canary",
+          "detail": "attempt=0 outcome=verified "
+        }
+      ],
+      "recovery": {
+        "n": 2,
+        "at": "2026-09-25T04:06:34.673394+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 2,
+          "custom_id": "stress-confirmed-2",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.13,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.17,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.37,
+        "ok": true
+      },
+      "ok": true
+    },
+    {
+      "phase": "confirmed-timeout",
+      "cycle": 3,
+      "started_at": "2026-09-25T04:06:34.854499+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_candidate": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb (nonformal, E024 chunk-7 family)",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 131.92,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "Lean REPL command timed out in 120.0 seconds",
+        "abort_reason": null
+      },
+      "session_events": [
+        {
+          "at": 1790309314.9880202,
+          "kind": "batch_item",
+          "detail": "id=stress-confirmed-3 outcome=verifier_timeout Lean REPL command timed out in 120.0 seconds"
+        },
+        {
+          "at": 1790309319.2786033,
+          "kind": "canary",
+          "detail": "attempt=0 outcome=verified "
+        }
+      ],
+      "recovery": {
+        "n": 3,
+        "at": "2026-09-25T04:08:46.819769+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 3,
+          "custom_id": "stress-confirmed-3",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.16,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.09
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.24,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.49,
+        "ok": true
+      },
+      "ok": true
+    }
+  ],
+  "client_abandonment_cycles": [
+    {
+      "phase": "client-abandonment (attempt-1 Case B)",
+      "cycle": 1,
+      "started_at": "2026-09-25T04:08:47.008095+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_abandonment": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb, client timeout 2 s < server timeout",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 2.02,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "ReadTimeout: timed out"
+      },
+      "recovery": {
+        "ok": true,
+        "n": 4,
+        "at": "2026-09-25T04:09:06.365986+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 1,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.93,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.15,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.15
+      },
+      "ok": true
+    },
+    {
+      "phase": "client-abandonment (attempt-1 Case B)",
+      "cycle": 2,
+      "started_at": "2026-09-25T04:09:06.459579+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_abandonment": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb, client timeout 2 s < server timeout",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 2.02,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "ReadTimeout: timed out"
+      },
+      "recovery": {
+        "ok": true,
+        "n": 5,
+        "at": "2026-09-25T04:09:25.881185+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 2,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.93,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.09
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.21,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.23
+      },
+      "ok": true
+    },
+    {
+      "phase": "client-abandonment (attempt-1 Case B)",
+      "cycle": 3,
+      "started_at": "2026-09-25T04:09:25.955143+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_abandonment": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_recovery": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "candidate": {
+        "kind": "interval_cases bomb, client timeout 2 s < server timeout",
+        "proof_sha256": "8c6266135253ced3e4fd7f50bf32f8997bb7f1c08c3045e7231b5645a7573a9e",
+        "wall_s": 2.02,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "ReadTimeout: timed out"
+      },
+      "recovery": {
+        "ok": true,
+        "n": 6,
+        "at": "2026-09-25T04:09:45.352290+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 3,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.92,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.18,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.18
+      },
+      "ok": true
+    }
+  ],
+  "mixed_sequence": [
+    {
+      "phase": "mixed-sequence",
+      "step": 1,
+      "kind": "normal",
+      "started_at": "2026-09-25T04:09:45.443260+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_step": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "which": "canary",
+      "candidate": {
+        "wall_s": 0.12,
+        "outcome": "verified",
+        "conclusive": true,
+        "message": "",
+        "abort_reason": null
+      },
+      "recovery_attempted": false,
+      "session_events": [
+        {
+          "at": 1790309385.646458,
+          "kind": "batch_item",
+          "detail": "id=stress-mixed-1-canary outcome=verified "
+        }
+      ],
+      "ok": true
+    },
+    {
+      "phase": "mixed-sequence",
+      "step": 2,
+      "kind": "pathological",
+      "started_at": "2026-09-25T04:09:45.724999+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_step": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "which": "interval_cases bomb",
+      "candidate": {
+        "wall_s": 131.81,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "Lean REPL command timed out in 120.0 seconds",
+        "abort_reason": null
+      },
+      "recovery_attempted": true,
+      "session_events": [
+        {
+          "at": 1790309505.8569572,
+          "kind": "batch_item",
+          "detail": "id=stress-mixed-2-bomb outcome=verifier_timeout Lean REPL command timed out in 120.0 seconds"
+        },
+        {
+          "at": 1790309510.0589294,
+          "kind": "canary",
+          "detail": "attempt=0 outcome=verified "
+        }
+      ],
+      "ok": true
+    },
+    {
+      "phase": "mixed-sequence",
+      "step": 3,
+      "kind": "normal",
+      "started_at": "2026-09-25T04:11:57.689115+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_step": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "which": "trivial",
+      "candidate": {
+        "wall_s": 0.14,
+        "outcome": "verified",
+        "conclusive": true,
+        "message": "",
+        "abort_reason": null
+      },
+      "recovery_attempted": false,
+      "session_events": [
+        {
+          "at": 1790309517.9011786,
+          "kind": "batch_item",
+          "detail": "id=stress-mixed-3-trivial outcome=verified "
+        }
+      ],
+      "ok": true
+    },
+    {
+      "phase": "mixed-sequence",
+      "step": 4,
+      "kind": "pathological",
+      "started_at": "2026-09-25T04:11:57.996142+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_step": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "which": "interval_cases bomb",
+      "candidate": {
+        "wall_s": 131.82,
+        "outcome": "verifier_timeout",
+        "conclusive": false,
+        "message": "Lean REPL command timed out in 120.0 seconds",
+        "abort_reason": null
+      },
+      "recovery_attempted": true,
+      "session_events": [
+        {
+          "at": 1790309638.130925,
+          "kind": "batch_item",
+          "detail": "id=stress-mixed-4-bomb outcome=verifier_timeout Lean REPL command timed out in 120.0 seconds"
+        },
+        {
+          "at": 1790309642.3492405,
+          "kind": "canary",
+          "detail": "attempt=0 outcome=verified "
+        }
+      ],
+      "ok": true
+    },
+    {
+      "phase": "mixed-sequence",
+      "step": 5,
+      "kind": "normal",
+      "started_at": "2026-09-25T04:14:09.965409+00:00",
+      "repl_counts": {
+        "before": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        },
+        "after_step": {
+          "repl_processes": 1,
+          "lake_processes": 1,
+          "total": 3
+        }
+      },
+      "which": "canary",
+      "candidate": {
+        "wall_s": 0.1,
+        "outcome": "verified",
+        "conclusive": true,
+        "message": "",
+        "abort_reason": null
+      },
+      "recovery_attempted": false,
+      "session_events": [
+        {
+          "at": 1790309650.1291435,
+          "kind": "batch_item",
+          "detail": "id=stress-mixed-5-canary outcome=verified "
+        }
+      ],
+      "ok": true
+    }
+  ],
+  "acceptance": {
+    "T1_bounded_return": {
+      "pass": true,
+      "max_candidate_wall_s": 131.92,
+      "note": "confirmed cycles are bounded by the frozen server timeout plus client slack; abandonment cycles by their 2 s client timeout"
+    },
+    "T2_no_repl_leak": {
+      "pass": true,
+      "counts": [
+        {
+          "phase": "confirmed-timeout",
+          "cycle": 1,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_candidate": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        },
+        {
+          "phase": "confirmed-timeout",
+          "cycle": 2,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_candidate": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        },
+        {
+          "phase": "confirmed-timeout",
+          "cycle": 3,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_candidate": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        },
+        {
+          "phase": "client-abandonment (attempt-1 Case B)",
+          "cycle": 1,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_abandonment": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        },
+        {
+          "phase": "client-abandonment (attempt-1 Case B)",
+          "cycle": 2,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_abandonment": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        },
+        {
+          "phase": "client-abandonment (attempt-1 Case B)",
+          "cycle": 3,
+          "before": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_abandonment": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          },
+          "after_recovery": {
+            "repl_processes": 1,
+            "lake_processes": 1,
+            "total": 3
+          }
+        }
+      ]
+    },
+    "T3_post_timeout_canary": {
+      "pass": true,
+      "latencies_s": [
+        4.23,
+        4.17,
+        4.24,
+        4.15,
+        4.21,
+        4.18
+      ]
+    },
+    "T4_stability": {
+      "pass": true,
+      "confirmed_cycles": 3,
+      "abandonment_cycles": 3,
+      "mixed_steps_ok": 5
+    },
+    "T5_no_frozen_setting_changed": {
+      "pass": true,
+      "evidence": {
+        "frozen_settings_sha256": "bf069eccbc0af53768890340e77e03a46a865d05fb8bdcd7ceb2560bfe71e264",
+        "server_timeout_s": 120.0,
+        "server_timeout_is_frozen": true,
+        "client_timeout_s": 180.0,
+        "client_timeout_is_frozen": true,
+        "batch_size": 1,
+        "batch_size_is_one": true,
+        "max_single_retries": 2,
+        "max_single_retries_is_frozen": true,
+        "endpoint": "http://127.0.0.1:8010",
+        "endpoint_is_dedicated": true,
+        "max_recoveries_per_run": 16
+      }
+    }
+  },
+  "result": {
+    "ok": true,
+    "recoveries": {
+      "attempted": 8,
+      "succeeded": 8,
+      "allowed": 16
+    },
+    "events": [
+      {
+        "n": 1,
+        "at": "2026-09-25T04:04:22.664675+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 1,
+          "custom_id": "stress-confirmed-1",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.18,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.23,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.48,
+        "ok": true
+      },
+      {
+        "n": 2,
+        "at": "2026-09-25T04:06:34.673394+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 2,
+          "custom_id": "stress-confirmed-2",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.13,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.17,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.37,
+        "ok": true
+      },
+      {
+        "n": 3,
+        "at": "2026-09-25T04:08:46.819769+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 3,
+          "custom_id": "stress-confirmed-3",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.16,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.09
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.24,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.49,
+        "ok": true
+      },
+      {
+        "n": 4,
+        "at": "2026-09-25T04:09:06.365986+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 1,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.93,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.15,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.15,
+        "ok": true
+      },
+      {
+        "n": 5,
+        "at": "2026-09-25T04:09:25.881185+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 2,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.93,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.09
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.21,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.23,
+        "ok": true
+      },
+      {
+        "n": 6,
+        "at": "2026-09-25T04:09:45.352290+00:00",
+        "trigger": {
+          "phase": "client-abandonment",
+          "cycle": 3,
+          "outcome": "verifier_timeout",
+          "message": "ReadTimeout: timed out"
+        },
+        "restart_seconds": 10.92,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.18,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 17.18,
+        "ok": true
+      },
+      {
+        "n": 7,
+        "at": "2026-09-25T04:11:57.585637+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 202,
+          "custom_id": "stress-mixed-2-bomb",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.21,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.08
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.19,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.48,
+        "ok": true
+      },
+      {
+        "n": 8,
+        "at": "2026-09-25T04:14:09.868978+00:00",
+        "trigger": {
+          "theorem_rank": -1,
+          "sample_index": 204,
+          "custom_id": "stress-mixed-4-bomb",
+          "outcome": "verifier_timeout",
+          "message": "Lean REPL command timed out in 120.0 seconds"
+        },
+        "restart_seconds": 1.18,
+        "health": {
+          "url": "http://127.0.0.1:8010/health",
+          "status": 200,
+          "body": "{\"status\":\"ok\"}",
+          "ok": true,
+          "seconds": 2.07
+        },
+        "canary": {
+          "verified": true,
+          "status": "verified",
+          "detail": "",
+          "seconds": 4.22,
+          "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+          "uses_formal_theorem": false,
+          "budget_s": 600.0
+        },
+        "recovery_seconds": 7.47,
+        "ok": true
+      }
+    ],
+    "verifier_events_recorded": 13
+  }
+}
