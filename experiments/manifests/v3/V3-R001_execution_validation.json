@@ -1,0 +1,182 @@
+{
+  "artifact": "V3-R001_execution_validation",
+  "experiment_id": "V3-R001",
+  "what_this_is": "The canonical, no-generation validation transcript of the R001 execution path on the formal node. It records what was checked, on which bytes, before any outcome exists. It is not a result and not a rollout log: no formal theorem was generated, no formal candidate was sent to the verifier, and no raw result file was created. Unlike the three frozen design artifacts, this file is a transcript of a machine event and therefore deliberately carries the host, the commit and the timestamp it was taken at; every hash in it is recomputable from the committed artifacts by the commands in `how_to_reproduce`.",
+  "status": "NOT_LAUNCHED",
+  "formal_rollout_generated": 0,
+  "formal_candidate_generation_count": 0,
+  "validated_commit": {
+    "sha": "66162cc1300e6138786c39f5ede0ab572c78d655",
+    "short": "66162cc",
+    "subject": "v3: implement R001 runner/analyzer and freeze execution amendments",
+    "branch": "v3-jev-rl-controller",
+    "role": "the commit under validation; the dry run refuses a dirty tree, so this is exactly the code that was exercised"
+  },
+  "dry_run": {
+    "command": ".venv/bin/python scripts/v3_r001_rollout.py --dry-run",
+    "exit_code": 0,
+    "run_id": "20260925T010356Z",
+    "when_utc": "2026-09-25T01:03:56Z",
+    "mode": "DRY_RUN",
+    "llm_load_called": false,
+    "generate_called": false,
+    "verifier_formal_calls": 0,
+    "verifier_events_recorded": 1,
+    "verifier_events_note": "the single verified event is the canary; no formal theorem was ever sent",
+    "raw_artifact_written": false,
+    "raw_artifact_path_that_was_not_written": "runs/v3_r001/rollout/v3_r001_raw_rollout.jsonl",
+    "formal_result_files_created": [],
+    "formal_result_files_search": "find runs -name '*v3_r001*' -> only the pre-existing D001 tree; runs/v3_r001/rollout does not exist"
+  },
+  "host": {
+    "hostname": "ubuntu",
+    "ips": "10.3.25.122 10.201.1.1 10.201.0.1",
+    "formal_host_ip_required": "10.3.25.122",
+    "hostname_note": "the formal node's hostname is `ubuntu`; the frozen guard keys on the IP, which is the check the frozen code performs",
+    "gpu": "NVIDIA GeForce RTX 3080",
+    "gpu_compute_apps": "",
+    "repo": "/home/fly/ZJQ/TinyLean-RL",
+    "interpreter": ".venv/bin/python",
+    "versions": {
+      "python": "3.12.14",
+      "pytest": "8.4.2",
+      "transformers": "4.53.3"
+    },
+    "host_guard_mode": "On the formal path the host guard is enforced (`check_environment(require_formal_host=True)`): formal IP present, GPU is the frozen RTX 3080, no other compute job on the GPU, branch is `v3-jev-rl-controller`, the preregistration commit is an ancestor and the worktree is clean. In --dry-run the three host-only checks are report-only by design and the remaining three are still enforced; the values above are the ones the guard reads, recorded here so the report-only mode leaves evidence rather than silence."
+  },
+  "frozen_design_hashes": {
+    "settings_sha256": "978566da25f3f651aed3b8b537f8b4ebf94ecf0c0870c5cd4ebf2371e6052b3b",
+    "sample_content_sha256": "0ac7134fdbe03a7d698961e7fb49b288be29d5c62892fc2c56c858a4cbf70451",
+    "formal_sample_file_sha256": "733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb",
+    "top20pct_block_sha256": "d5791fd52b80e899b563f2048b3d22d2ec560dc4cbc554e928774a5441fcd629",
+    "controller_q_B2_vector_sha256": "d83f0bbae694f27c0769c6d15ce40f8d36850531bb1c347ab034201cef8e15bb",
+    "controller_q_B1_vector_sha256": "3d1fd616ac69a0b52f397f10d0ce060023d20e339f19934a39c8130203349c59",
+    "theta0_weights_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "theta0_revision": "332e8a5259d1bdfda19d7c7f339f30804813cd3a",
+    "gate_artifact_sha256": "fcb700b508460f5fdaac318f7ce8e9bd56266f7aaaf07c7452d00f08d9c7ac93",
+    "sealed_reserve_sha256": "b60be381b5f64a0394691344b71cd704ed337716f0eea81ea265e05af7761568",
+    "frozen_checks_passed": 30,
+    "frozen_checks_failed": 0
+  },
+  "script_hashes": {
+    "scripts/v3_r001_rollout.py": "768ca0142d1a83f47ef0831440c3e067e80ba274d6817ff8fc34495f395bf6b2",
+    "scripts/v3_r001_analyze.py": "3b47af65d9f950739560b9062c82ad519ce90b0154537eb119df7f1798cff989",
+    "scripts/v3_r001_spec.py": "27d5b362dba1348c29a51c2f5a9ed0b008be8a4ea637c2ccd02057ac5b910856",
+    "scripts/v3_r001_gate.py": "2798f526bd0c6be1b0751358b6099497507c8a85d0f98584d3b322f1b26c3676",
+    "scripts/v3_r001_sample_freeze.py": "c99014f48287e4c48345b90a3b8abd17b281af498b2ce18b32d9f8c923c3a0d2",
+    "tests/test_v3_r001_fixtures.py": "eedddc164f8386f184a9d746283d71af3bd82e198bc17f8985bf2783adba7422",
+    "tests/test_v3_r001_hypergeom.py": "ac78f556de9198b67f7f4f83050fac4e071d3cad45f6dcc3342e21c8022c4fdf"
+  },
+  "sample_structure": {
+    "theorems": 128,
+    "unique_statement_ids": 128,
+    "unique_component_ids": 128,
+    "candidates_per_theorem": 8,
+    "candidates_total": 1024,
+    "statement_ids_sha256_draw_order": "05e161adbcbee3a9257530822b33683a47c4b83a287a571f5bbabc7603565227",
+    "sources": {"synthetic": 45, "autoformalizer": 58, "human": 25},
+    "plan_order": "rank_by_q_B2 ascending, never re-sorted by the runner",
+    "expected_total_candidates": 1024,
+    "frozen_block_size_m": 26,
+    "frozen_block_sha256": "d5791fd52b80e899b563f2048b3d22d2ec560dc4cbc554e928774a5441fcd629"
+  },
+  "prompt_identity_checks": {
+    "theorems_checked": 128,
+    "theorems_passed": 128,
+    "checks_per_theorem": 3,
+    "what_is_checked": [
+      "the frozen rendering (`prompt_of`, the function the q scores were computed on) re-tokenizes to exactly the frozen `prompt_token_count`",
+      "the canonical generation prompt (E023/E024 `build_prompt_text`) equals that rendering once chat-template special tokens are skipped",
+      "the `# Formal Statement:` block equals the pinned parquet statement under `_normalize`, at the frozen `formal_char_count`"
+    ],
+    "enforcement": "fail-closed: any mismatch raises FrozenViolation and the run stops before a model is loaded; all 128 passed",
+    "prompt_token_counts_sha256_draw_order": "b8a28281950439aedfc2f14746927b1d6ae6a8005fba75e78470a6e10f897acf",
+    "max_prompt_token_count": 1010,
+    "context_check": "max prompt 1010 + max response 4096 <= max_model_len 5120"
+  },
+  "seed_scheme": {
+    "formula": "seed = seed_base + (formal_sample_rank - 1) * seed_group_size + sample_index",
+    "seed_base": 20260924,
+    "seed_group_size": 8,
+    "sample_index_range": [0, 7],
+    "formal_sample_rank": "1..128 in the frozen draw order (the order `membership_hashes.statement_ids_sha256` is taken in); amendment B, chosen because it is independent of q_B2, q_B1, source and of every future outcome",
+    "depends_on": ["the frozen draw seed", "component_id"],
+    "independent_of": ["q_B2_controller", "q_B1_handcrafted", "q_B2_fold_ensemble", "q_B1_fold_ensemble", "source", "any rollout outcome"],
+    "n_seeds": 1024,
+    "n_seeds_unique": 1024,
+    "seed_min": 20260924,
+    "seed_max": 20261947,
+    "seed_set_sha256": "af3fa2dac53c61c7b19427a98e2f3a1ace25a89dff3bce2f4dfb697cf3e8051d",
+    "seed_set_sha256_note": "serialization is (formal_sample_rank, sample_index, seed) in plan order (rank_by_q_B2 ascending), the same object `seed_set_sha256(plan)` hashes in the runner. Recomputing it from the frozen manifest reproduces this exact value, so the runner's schedule and the manifest's schedule are the same schedule; the draw-order serialization is a different serialization of the same 1024 seeds.",
+    "first_plan_row": {"theorem_rank": 1, "formal_sample_rank": 75, "seeds": [20261516, 20261517, 20261518, 20261519, 20261520, 20261521, 20261522, 20261523]},
+    "last_plan_row": {"theorem_rank": 128, "formal_sample_rank": 19, "seeds": [20261068, 20261069, 20261070, 20261071, 20261072, 20261073, 20261074, 20261075]}
+  },
+  "verifier": {
+    "policy": "B0 reliability policy (`VerificationSession`), sequential and conservative rather than E024's 4-worker path -- an infrastructure execution choice, not a treatment difference (owner amendment C)",
+    "health_status": 200,
+    "canary": {
+      "status": "verified",
+      "verified": true,
+      "seconds": 0.11,
+      "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+      "uses_a_formal_theorem": false,
+      "note": "the canary is `tinylean_v2_canary`; the runner checks no formal prompt contains it, and the canary was verified before any generation was contemplated"
+    },
+    "servers_running": ["tinylean-rl-lean-server (Up 4 days)", "tinylean-rl-lean-scratch (Up 5 days)"],
+    "fail_close": "an unhealthy verifier aborts before generation; a mid-run unhealthiness keeps whole groups and resumes, and unresolved infrastructure outcomes stay censored/missing rather than becoming labels"
+  },
+  "resume_plan_at_dry_run": {
+    "n_rows_on_disk": 0,
+    "groups_on_disk": 0,
+    "groups_to_run": 128,
+    "expected_new_candidates": 1024,
+    "skipped": [],
+    "rerun": []
+  },
+  "tests_on_fly122_at_this_commit": {
+    "interpreter": ".venv/bin/python",
+    "v3_only": {
+      "command": ".venv/bin/python -m pytest tests/ -k v3",
+      "result": "239 passed, 191 deselected in 41.68s",
+      "collected": 239,
+      "passed": 239,
+      "skipped": 0,
+      "failed": 0
+    },
+    "full_suite": {
+      "command": ".venv/bin/python -m pytest tests/",
+      "result": "430 passed in 46.37s",
+      "collected": 430,
+      "passed": 430,
+      "skipped": 0,
+      "failed": 0
+    },
+    "count_reconciliation": "The 421 / 423 pair the owner flagged as inconsistent were both mid-implementation readings of a growing suite; the authoritative numbers are the ones above, measured on the formal node at the commit under validation. The 7 pre-outcome amendment tests are what moved 423 to 430."
+  },
+  "ruff_on_fly122_at_this_commit": {
+    "version": "0.16.7",
+    "v3_surface": {
+      "command": ".venv/bin/python -m ruff check scripts/v3_r001_spec.py scripts/v3_r001_rollout.py scripts/v3_r001_analyze.py scripts/v3_r001_gate.py scripts/v3_r001_sample_freeze.py tests/test_v3_r001_fixtures.py tests/test_v3_r001_hypergeom.py tests/test_v3_r001_gate_freeze.py",
+      "result": "All checks passed!"
+    },
+    "repo_wide": {
+      "command": ".venv/bin/python -m ruff check .",
+      "result": "Found 3 errors",
+      "detail": "all three are pre-existing E501/E402 in the vendored third_party/kimina-prover-rl/examples/ray/tutorial.ipynb, untouched by this commit"
+    }
+  },
+  "how_to_reproduce": [
+    "git checkout 66162cc1300e6138786c39f5ede0ab572c78d655",
+    ".venv/bin/python -m pytest tests/ -k v3    # expect 239 passed, 191 deselected",
+    ".venv/bin/python -m pytest tests/          # expect 430 passed",
+    ".venv/bin/python scripts/v3_r001_rollout.py --dry-run    # on fly122; expect exit 0, 128 theorems, 1024 candidates, 1024 unique seeds, 0 generations",
+    ".venv/bin/python -c \"import hashlib,json;print(hashlib.sha256(open('experiments/manifests/v3/v3_r001_formal_sample.json','rb').read()).hexdigest())\"    # expect 733a699e9eeb4f1d8b130c1a87c3455a06748b66aa3909f90995f432877c6beb"
+  ],
+  "owner_constraints_observed": [
+    "NO FORMAL R001 ROLLOUT: formal candidate generation count is 0 and remains 0",
+    "`--i-have-owner-launch-authorization` was not passed and no formal path was entered",
+    "no formal theorem was sent to the verifier; the only verifier event is the canary",
+    "no raw artifact, summary, or result file was written anywhere; the dry run is byte-invisible",
+    "READY_FOR_OWNER_LAUNCH may be YES after this validation, but only the owner's written go authorizes the formal run"
+  ]
+}
