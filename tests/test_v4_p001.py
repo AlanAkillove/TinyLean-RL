@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
+import inspect
+import json
 import sys
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -10,6 +14,7 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
+from tinylean_rl.evaluation import v4_derange, v4_schedule
 from tinylean_rl.evaluation import v4_diagnostics as diag
 from tinylean_rl.evaluation import v4_prompts as prompts
 from tinylean_rl.evaluation import v4_seeds as seeds
@@ -324,23 +329,72 @@ def test_bootstrap_ci_is_seeded_and_brackets_the_mean() -> None:
     assert lower > 0.0 and upper < 0.6
 
 
+BALANCED_RATES = {"A_FRESH_RETRY": 0.02, "B_SELF_REVISION": 0.02, "C_VERIFIER_REPAIR": 0.02,
+                  "D_MISMATCHED_DIAGNOSTIC": 0.03}
+
+
 def test_outcome_taxonomy_follows_the_frozen_order() -> None:
     passing = stats.Gate(delta=0.10, mcnemar_p=0.01, ci_lower=0.02, n_favor=12, n_against=2)
     failing = stats.Gate(delta=0.02, mcnemar_p=0.30, ci_lower=-0.03, n_favor=4, n_against=3)
-    assert stats.decide_outcome(120, passing, passing) is stats.Outcome.A_VERIFIER_SPECIFIC_GO
-    assert stats.decide_outcome(120, passing, failing) is stats.Outcome.B_SELF_REVISION_ONLY
-    assert stats.decide_outcome(120, failing, passing) is stats.Outcome.C_NO_REPAIR_GAIN
-    assert stats.decide_outcome(102, passing, passing) is stats.Outcome.D_INCONCLUSIVE_BY_DATA
+    assert stats.decide_outcome(
+        120, BALANCED_RATES, passing, passing) is stats.Outcome.A_VERIFIER_SPECIFIC_GO
+    assert stats.decide_outcome(
+        120, BALANCED_RATES, passing, failing) is stats.Outcome.B_SELF_REVISION_ONLY
+    assert stats.decide_outcome(
+        120, BALANCED_RATES, failing, passing) is stats.Outcome.C_NO_REPAIR_GAIN
+    assert stats.decide_outcome(
+        102, BALANCED_RATES, passing, passing) is stats.Outcome.D_INCONCLUSIVE_BY_DATA
     # the data guard is checked before any gate
-    assert stats.decide_outcome(0, passing, passing) is stats.Outcome.D_INCONCLUSIVE_BY_DATA
+    assert stats.decide_outcome(
+        0, BALANCED_RATES, passing, passing) is stats.Outcome.D_INCONCLUSIVE_BY_DATA
 
 
 def test_verifier_specific_go_needs_both_deltas_above_threshold() -> None:
     strong = stats.Gate(delta=0.10, mcnemar_p=0.01, ci_lower=0.02, n_favor=12, n_against=2)
     weak_cb = stats.Gate(delta=0.049, mcnemar_p=0.01, ci_lower=0.001, n_favor=10, n_against=4)
-    assert stats.decide_outcome(110, strong, weak_cb) is stats.Outcome.B_SELF_REVISION_ONLY
+    assert stats.decide_outcome(
+        110, BALANCED_RATES, strong, weak_cb) is stats.Outcome.B_SELF_REVISION_ONLY
     tight_ca = stats.Gate(delta=0.079, mcnemar_p=0.01, ci_lower=0.001, n_favor=10, n_against=1)
-    assert stats.decide_outcome(110, tight_ca, strong) is stats.Outcome.C_NO_REPAIR_GAIN
+    assert stats.decide_outcome(
+        110, BALANCED_RATES, tight_ca, strong) is stats.Outcome.C_NO_REPAIR_GAIN
+
+
+def test_differential_censoring_guard_precedes_the_gates() -> None:
+    passed = stats.Gate(delta=0.10, mcnemar_p=0.01, ci_lower=0.02, n_favor=12, n_against=2)
+    unbalanced = {"A_FRESH_RETRY": 0.01, "B_SELF_REVISION": 0.02, "C_VERIFIER_REPAIR": 0.03,
+                  "D_MISMATCHED_DIAGNOSTIC": 0.09}
+    assert stats.censoring_range(unbalanced) == pytest.approx(0.08)
+    assert stats.decide_outcome(
+        128, unbalanced, passed, passed
+    ) is stats.Outcome.D_INCONCLUSIVE_BY_DIFFERENTIAL_CENSORING
+    # the range is inclusive of the frozen ceiling: 0.05 exactly is not a guard failure
+    assert stats.decide_outcome(
+        128, {"A": 0.0, "B": 0.0, "C": 0.0, "D": 0.05}, passed, passed
+    ) is stats.Outcome.A_VERIFIER_SPECIFIC_GO
+
+
+def test_mechanism_label_is_separate_from_the_classification() -> None:
+    go = stats.Outcome.A_VERIFIER_SPECIFIC_GO
+    specific = stats.Gate(delta=0.09, mcnemar_p=0.01, ci_lower=0.03, n_favor=11, n_against=2)
+    nonspecific = stats.Gate(delta=0.00, mcnemar_p=0.60, ci_lower=-0.04, n_favor=6, n_against=6)
+    assert stats.mechanism_label(go, specific) is stats.Mechanism.DIAGNOSTIC_SPECIFIC
+    assert stats.mechanism_label(go, nonspecific) is stats.Mechanism.DIAGNOSTIC_NONSPECIFIC
+    # zero effect with a positive lower bound cannot be "specific" -- only C > D directionally
+    borderline = stats.Gate(delta=0.0, mcnemar_p=1.0, ci_lower=0.0, n_favor=0, n_against=0)
+    assert stats.mechanism_label(go, borderline) is stats.Mechanism.DIAGNOSTIC_NONSPECIFIC
+    for outcome in (stats.Outcome.D_INCONCLUSIVE_BY_DATA,
+                    stats.Outcome.D_INCONCLUSIVE_BY_DIFFERENTIAL_CENSORING):
+        assert stats.mechanism_label(outcome, specific) is stats.Mechanism.NOT_EVALUABLE
+
+
+def test_infra_as_failure_sensitivity_never_redefines_the_endpoint() -> None:
+    a = [True, False, None, True]
+    c = [True, True, True, None]
+    gate, completed = stats.paired_gate_infra_as_failure(a, c)
+    assert completed == 2                      # the reading had to complete two censored arms
+    assert gate.n_favor == 2                   # None -> False, so both censored pairs went to C
+    primary = stats.paired_gate([x for x in a if x is not None], [y for y in c if y is not None])
+    assert primary.n_favor == 1 and primary.n_against == 0
 
 
 def test_min_discordant_helper_matches_the_exact_tail() -> None:
@@ -392,3 +446,235 @@ def test_frozen_ceiling_clears_the_worst_observed_density_projection() -> None:
     # a per-theorem cap below the arm count would censor a theorem that is merely unlucky
     assert V4_MAX_ARMS_PER_THEOREM == 3
     assert V4_MAX_ARMS_PER_THEOREM < CEILING_ROUNDING < V4_WORST_CASE_VERIFICATIONS
+
+
+
+# --- frozen design artifacts (Amendment A §16) ---------------------------------------------------
+
+V4_MANIFESTS = ROOT / "experiments" / "manifests" / "v4"
+V3_MANIFESTS = ROOT / "experiments" / "manifests" / "v3"
+PROMPTSET_PARQUET = (ROOT / "data" / "processed" / "p3_promptset" / "prompt_sets" / "AI-MO"
+                     / "Kimina-Prover-Promptset" / "train.parquet")
+MODEL_DIR = ROOT / "models" / "weights" / "kimina_distill_0_6b"
+
+
+def v4_manifest(name: str) -> dict:
+    return json.loads((V4_MANIFESTS / name).read_text(encoding="utf-8"))
+
+
+def canonical_json(obj) -> str:
+    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def test_the_frozen_arm_schedule_is_position_and_predecessor_balanced() -> None:
+    artifact = v4_manifest("v4_p001_arm_schedule.json")
+    rows = v4_schedule.schedule()
+    assert rows == artifact["schedule"]
+    assert v4_schedule.schedule_hash() == artifact["schedule_hash"]
+    assert artifact["schedule_canonical_sha256_cross_check"] == artifact["schedule_hash"]
+    assert all(artifact["checks"].values())
+    positions = Counter((arm, index) for row in rows
+                        for index, arm in enumerate(row["order"], start=1))
+    assert len(positions) == 16 and set(positions.values()) == {32}
+    predecessors = Counter((first, second) for row in rows
+                           for first, second in zip(row["order"], row["order"][1:]))
+    assert len(predecessors) == 12
+    assert set(predecessors.values()) <= {30, 31, 32, 33}
+    assert artifact["balance"] == v4_schedule.balance_report()
+    # the execution order is a function of the formal rank alone: there is no second parameter
+    # through which a source, an error category or an outcome could reach it
+    assert tuple(inspect.signature(v4_schedule.arm_order).parameters) == ("formal_rank",)
+    assert [v4_schedule.arm_order(rank) for rank in range(1, 129)] == [
+        row["order"] for row in artifact["schedule"]]
+
+
+def derangement_fixture(multi: int = 3) -> list[dict]:
+    """Two multi-member categories plus one singleton per remaining class, by construction.
+
+    Token counts put the multi-member categories in bucket 1 (64 < tokens <= 128) and the two
+    singletons in buckets 2 (130) and 3 (300), so the fallback's nearest-bucket preference is
+    hand-computable.
+    """
+    items = []
+    for category, base_tokens, step in (("unsolved_goals", 70, 10), ("tactic_failure", 70, 20)):
+        for index in range(multi):
+            statement_id = f"{category}-{index}"
+            items.append({
+                "statement_id": statement_id, "category": category,
+                "diagnostic_sha256": hashlib.sha256(statement_id.encode("utf-8")).hexdigest(),
+                "diagnostic_tokens": base_tokens + step * index,
+            })
+    for statement_id, category, tokens in (
+            ("singleton-typeclass", "typeclass_synthesis", 130),
+            ("singleton-other", "other_semantic_lean_failure", 300)):
+        items.append({
+            "statement_id": statement_id, "category": category,
+            "diagnostic_sha256": hashlib.sha256(statement_id.encode("utf-8")).hexdigest(),
+            "diagnostic_tokens": tokens,
+        })
+    return items
+
+
+def test_the_derangement_never_hands_a_theorem_its_own_diagnostic() -> None:
+    cohort = derangement_fixture(multi=32)
+    result = v4_derange.derange(cohort)
+    assert result["n"] == len(cohort) == 66
+    assert all(row["recipient"] != row["donor"] for row in result["mapping"])
+    assert len({row["recipient"] for row in result["mapping"]}) == len(cohort)
+    assert result["checks"] == {"no_self_diagnostic": True,
+                                "every_recipient_assigned_exactly_once": True,
+                                "all_recipients_distinct": True}
+    by_id = {item["statement_id"]: item for item in cohort}
+    # a donor always contributes its own real diagnostic, never a copy of the recipient's
+    assert all(row["donor_diagnostic_sha256"] == by_id[row["donor"]]["diagnostic_sha256"]
+               for row in result["mapping"])
+    # the 64 multi-member theorems keep their category; the two singletons cannot
+    assert result["same_error_category_match_rate"] == round(64 / 66, 4)
+    assert result["diagnostic_token_length_difference"]["n"] == 66
+
+
+def test_the_derangement_is_deterministic_and_independent_of_input_order() -> None:
+    items = derangement_fixture(multi=8)
+    first = v4_derange.derange(items)
+    second = v4_derange.derange(list(reversed(items)))
+    assert first == second
+    assert first["mapping_sha256"] == second["mapping_sha256"]
+    assert first["mapping_sha256"] == hashlib.sha256(canonical_json(
+        {"version": v4_derange.DERANGEMENT_VERSION, "mapping": first["mapping"]}).encode(
+            "utf-8")).hexdigest()
+
+
+def test_a_singleton_category_falls_back_to_the_nearest_token_length_bucket() -> None:
+    items = derangement_fixture()
+    result = v4_derange.derange(items)
+    assert result["n"] == 8
+    assert result["fallback_count"] == 2
+    assert sorted(result["fallback_recipients"]) == ["singleton-other", "singleton-typeclass"]
+    rows = {row["recipient"]: row for row in result["mapping"]}
+    assert rows["singleton-other"]["fallback"] and rows["singleton-typeclass"]["fallback"]
+    # the bucket-3 singleton must take the bucket-2 one: distance 1 beats the multi members' 2, and
+    # no tie-break is needed to see it
+    assert v4_derange.token_bucket(300) == 3 and v4_derange.token_bucket(130) == 2
+    assert v4_derange.token_bucket(120) == 1
+    assert rows["singleton-other"]["donor"] == "singleton-typeclass"
+    assert rows["singleton-other"]["token_difference"] == 170
+    # the bucket-2 singleton prefers distance 1 too (a bucket-1 member or the bucket-3 singleton)
+    assert abs(v4_derange.token_bucket(rows["singleton-typeclass"]["donor_tokens"])
+               - v4_derange.token_bucket(130)) == 1
+    # every multi-member theorem is served by a same-category donor, cyclically shifted
+    for row in result["mapping"]:
+        if row["recipient_category"] in {"unsolved_goals", "tactic_failure"}:
+            assert row["same_category"] is True and row["fallback"] is False
+    assert result["same_error_category_match_rate"] == round(6 / 8, 4)
+    # the mapping is a permutation: donor reuse happens only through the fallback and is reported
+    donors = Counter(row["donor"] for row in result["mapping"])
+    assert result["donor_reuse_count"] == sum(1 for count in donors.values() if count > 1)
+
+
+def test_the_second_stage_seed_stream_is_a_function_of_the_rank_alone() -> None:
+    artifact = v4_manifest("v4_p001_seeds.json")
+    assert len(artifact["checks"]) == 10 and all(artifact["checks"].values())
+    assert tuple(inspect.signature(seeds.second_stage_seed).parameters) == ("formal_rank",)
+    paired = [seeds.second_stage_seed(rank) for rank in range(1, artifact["n_primary"] + 1)]
+    assert artifact["paired_seeds_by_rank"] == paired
+    assert len(set(paired)) == artifact["n_primary"]
+    assert artifact["paired_seed_hash"] == hashlib.sha256(
+        canonical_json({"n": artifact["n_primary"], "seeds": paired}).encode("utf-8")).hexdigest()
+    # the screening stream has its own recipe and 640 entries; the two streams cannot collide
+    screening = [row["seed"] for row in artifact["screening_schedule"]]
+    assert screening == [seeds.first_stage_seed(rank)
+                         for rank in range(1, artifact["max_screening"] + 1)]
+    assert artifact["screening_seed_hash"] == hashlib.sha256(
+        canonical_json(screening).encode("utf-8")).hexdigest()
+    assert len(set(screening)) == artifact["max_screening"]
+    assert max(screening) < min(paired)
+    assert artifact["formulas"]["second_stage"].startswith("V4_BASE_SEED + SECOND_STAGE_OFFSET")
+
+
+def test_arm_a_reproduces_the_canonical_prompt_on_every_audited_example() -> None:
+    artifact = v4_manifest("v4_p001_prompt_provenance.json")
+    assert all(artifact["checks"].values())
+    assert artifact["renderer_version"] == prompts.RENDERER_VERSION
+    reproduction = artifact["arm_a_canonical_reproduction"]
+    assert reproduction["target"] == "100% on every audited historical example"
+    archive = reproduction["v3_r001_archive"]
+    assert archive["n_theorems"] == 128 and set(archive["checks"].values()) == {128}
+    dumps = reproduction["v1_rollout_dumps"]
+    assert dumps["n_distinct_inputs"] == 612
+    assert dumps["n_matched_to_a_pinned_theorem"] == dumps["n_byte_identical_to_arm_a"] == 612
+    holdout = reproduction["e023_holdout"]
+    assert holdout["n_records"] == holdout["n_prompt_tokens_matched"] == 512
+    assert holdout["n_statement_not_in_parquet"] == 0
+    assert reproduction["pool_size"] == 1371
+    assert reproduction["pool_members_with_arm_a_ids_equal_to_canonical"] == 1371
+
+
+def test_arm_a_renders_the_pinned_promptset_the_way_the_chat_template_does() -> None:
+    """The live check behind the provenance artifact, over a deterministic sample of the pool."""
+    if not PROMPTSET_PARQUET.exists() or not MODEL_DIR.exists():
+        pytest.skip("the pinned promptset parquet / tokenizer are not present on this node")
+    import pandas as pd
+    from transformers import AutoTokenizer
+
+    frame = pd.read_parquet(PROMPTSET_PARQUET, columns=["statement_id", "prompt"])
+    tokenizer = AutoTokenizer.from_pretrained(str(MODEL_DIR), trust_remote_code=True,
+                                              local_files_only=True)
+    step = max(1, len(frame) // 24)
+    for row in frame.iloc[::step].head(24).itertuples(index=False):
+        raw = row.prompt.tolist() if hasattr(row.prompt, "tolist") else list(row.prompt)
+        messages = prompts.canonical_messages(raw)
+        rendered = prompts.render_prompt(tokenizer, messages)
+        canonical_ids = tokenizer.apply_chat_template([dict(m) for m in messages],
+                                                      add_generation_prompt=True, tokenize=True)
+        if isinstance(canonical_ids, dict):
+            canonical_ids = canonical_ids["input_ids"]
+        canonical_ids = list(canonical_ids)
+        if canonical_ids and isinstance(canonical_ids[0], list):
+            canonical_ids = canonical_ids[0]
+        assert tokenizer(rendered, add_special_tokens=False)["input_ids"] == canonical_ids, \
+            str(row.statement_id)
+
+
+def test_the_sealed_final_holdout_reserve_is_untouched_by_the_pool() -> None:
+    artifact = v4_manifest("v4_p001_pool.json")
+    # the "touched" entries are counts and must all be zero; every other check is a boolean
+    assert all(value is True for name, value in artifact["checks"].items()
+               if not name.endswith("_touched"))
+    assert {value for name, value in artifact["checks"].items()
+            if name.endswith("_touched")} == {0}
+    for name in ("sealed_components_touched", "sealed_statements_touched",
+                 "v3_formal_sample_components_touched", "v3_formal_sample_statements_touched"):
+        assert artifact["checks"][name] == 0
+    reserve = json.loads((V3_MANIFESTS / "v3_final_holdout_reserve.json").read_text(
+        encoding="utf-8"))
+    assert reserve["status"] == "SEALED" and reserve["n_components"] == 93
+    components = reserve["components"]
+    assert len(components) == reserve["n_components"]
+    sealed_components = {member["component_id"] for member in components}
+    sealed_statements = {member["statement_id"] for member in components}
+    assert len(sealed_components) == len(sealed_statements) == 93
+    members = artifact["members"]
+    assert not (sealed_components & {member["component_id"] for member in members})
+    assert not (sealed_statements & {member["statement_id"] for member in members})
+
+
+def test_the_pool_order_is_the_frozen_outcome_free_hash_permutation() -> None:
+    artifact = v4_manifest("v4_p001_pool.json")
+    members = artifact["members"]
+    assert [member["screening_rank"] for member in members] == list(range(1, len(members) + 1))
+    assert [member["tier"] for member in members] == sorted(member["tier"] for member in members)
+    class_rank = {name: index
+                  for index, name in enumerate(artifact["tier_rule"]["tier2_classes_in_order"])}
+
+    def key(member: dict) -> tuple:
+        classes = [name for name in member["classes"] if name != "v1_used"]
+        block = (0 if member["tier"] == "tier1" else 1, 1 + class_rank[classes[0]] if classes else 0)
+        return (*block, member["screening_order_key"])
+
+    for member in members:
+        recipe = hashlib.sha256(
+            f"{artifact['base_seed']}|{member['statement_id']}".encode()).hexdigest()
+        assert member["screening_order_key"] == recipe
+    keys = [key(member) for member in members]
+    assert keys == sorted(keys)
+    assert len({member["screening_order_key"] for member in members}) == len(members)

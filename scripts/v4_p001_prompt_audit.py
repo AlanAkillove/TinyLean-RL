@@ -6,7 +6,8 @@ exist). It answers four questions with measurements:
 
 1. does the frozen Kimina/Qwen3 chat template render a multi-turn user/assistant revision prompt
    stably, and does an invented tool role appear anywhere? (it must not be used)
-2. what are the exact rendered prompt templates and hashes of Arms A, B and C?
+2. what are the exact rendered prompt templates and hashes of Arms A, B, C and D (the Amendment A
+   four-arm design)?
 3. what is the prompt-length distribution of the pool, and what is the worst-case context demand
    once a failed proof and a normalized diagnostic are added?
 4. how often would the frozen diagnostic normalizer truncate at the 512-token budget?
@@ -35,10 +36,12 @@ from tinylean_rl.evaluation.v4_diagnostics import (
     normalize_diagnostic,
 )
 from tinylean_rl.evaluation.v4_prompts import (
+    ARMS,
     CORRECTION_REQUEST,
     RENDERER_VERSION,
     arm_suffix_invariant,
     canonical_messages,
+    diagnostic_arm_invariants,
     render_arm,
     sha256_text,
 )
@@ -178,16 +181,40 @@ def main() -> int:
     example_diagnostic, truncated_example = bound_diagnostic(
         normalize_diagnostic(diagnostics[0]), tokenizer
     )
+    # Arm D needs a second, *different* real diagnostic (the donor). The derangement that assigns
+    # donors does not exist yet -- it is computed after the cohort is frozen -- so the audit uses the
+    # first differently-normalized diagnostic of the same consumed corpus, purely to freeze the
+    # template and its hash.
+    donor_diagnostic = ""
+    for candidate in diagnostics[1:]:
+        normalized_candidate = normalize_diagnostic(candidate)
+        if normalized_candidate.strip() and normalized_candidate != normalize_diagnostic(diagnostics[0]):
+            donor_diagnostic = bound_diagnostic(normalized_candidate, tokenizer)[0]
+            break
+    if not donor_diagnostic:
+        raise SystemExit("no second distinct diagnostic found for the Arm D template audit")
     rendered = {
         arm: render_arm(
             tokenizer,
             base_messages,
             arm=arm,
             failed_proof=example_proof if arm != "A_FRESH_RETRY" else "",
-            diagnostic=example_diagnostic if arm == "C_VERIFIER_REPAIR" else "",
+            diagnostic=(
+                example_diagnostic
+                if arm == "C_VERIFIER_REPAIR"
+                else donor_diagnostic
+                if arm == "D_MISMATCHED_DIAGNOSTIC"
+                else ""
+            ),
         )
-        for arm in ("A_FRESH_RETRY", "B_SELF_REVISION", "C_VERIFIER_REPAIR")
+        for arm in ("A_FRESH_RETRY", "B_SELF_REVISION", "C_VERIFIER_REPAIR", "D_MISMATCHED_DIAGNOSTIC")
     }
+    d_invariants = diagnostic_arm_invariants(
+        base_messages,
+        failed_proof=example_proof,
+        own_diagnostic=example_diagnostic,
+        donor_diagnostic=donor_diagnostic,
+    )
     audit["frozen_example"] = {
         "theorem_statement_id": example_member["statement_id"],
         "theorem_name": example_member["name"],
@@ -199,40 +226,85 @@ def main() -> int:
         "diagnostic_normalized": example_diagnostic,
         "diagnostic_tokens": len(tokenizer.encode(example_diagnostic, add_special_tokens=False)),
         "diagnostic_truncated": truncated_example,
+        "donor_diagnostic_normalized": donor_diagnostic,
+        "donor_diagnostic_tokens": len(tokenizer.encode(donor_diagnostic, add_special_tokens=False)),
+        "donor_diagnostic_sha256": sha256_text(donor_diagnostic),
+        "donor_diagnostic_is_a_different_diagnostic": donor_diagnostic != example_diagnostic,
         "prompt_hashes": {arm: sha256_text(text) for arm, text in rendered.items()},
         "prompt_tokens": {arm: len(tokenizer.encode(text, add_special_tokens=False)) for arm, text in rendered.items()},
         "rendered_prompts": rendered,
         "arm_c_equals_arm_b_plus_diagnostic_after_removal": (
             rendered["C_VERIFIER_REPAIR"].replace(f"\n\n{example_diagnostic}", "") == rendered["B_SELF_REVISION"]
         ),
+        "arm_d_equals_arm_c_with_own_replaced_by_donor": (
+            rendered["D_MISMATCHED_DIAGNOSTIC"]
+            == rendered["C_VERIFIER_REPAIR"].replace(example_diagnostic, donor_diagnostic)
+        ),
         "arm_b_c_suffix_invariant": arm_suffix_invariant(
             base_messages, failed_proof=example_proof, diagnostic=example_diagnostic
         ),
+        "arm_d_invariants": d_invariants,
         "arm_a_has_no_previous_attempt_reference": (
             "previous" not in rendered["A_FRESH_RETRY"].lower()
             and "rejected" not in rendered["A_FRESH_RETRY"].lower()
         ),
     }
     audit["frozen_example"]["arm_b_c_rendered_difference"] = rendered["C_VERIFIER_REPAIR"][len(rendered["B_SELF_REVISION"]):]
+    audit["frozen_example"]["arm_c_d_rendered_difference"] = rendered["D_MISMATCHED_DIAGNOSTIC"][
+        len(rendered["C_VERIFIER_REPAIR"]) - len(example_diagnostic):
+    ]
 
     # --- 3. prompt length distributions -------------------------------------------------------
-    arm_a_tokens, arm_c_tokens, theorem_tokens = [], [], []
+    arm_tokens: dict[str, list[int]] = {arm: [] for arm in ARMS}
+    theorem_tokens = []
+    d_replaces_own_diagnostic_with_donor = []
     for member in members:
         messages = canonical_messages(prompts[member["statement_id"]])
-        text_a = render_arm(tokenizer, messages, arm="A_FRESH_RETRY")
-        text_c = render_arm(
-            tokenizer, messages, arm="C_VERIFIER_REPAIR", failed_proof=example_proof, diagnostic=example_diagnostic
+        per_member: dict[str, str] = {}
+        for arm in ARMS:
+            text = render_arm(
+                tokenizer,
+                messages,
+                arm=arm,
+                failed_proof=example_proof if arm != "A_FRESH_RETRY" else "",
+                diagnostic=(
+                    example_diagnostic
+                    if arm == "C_VERIFIER_REPAIR"
+                    else donor_diagnostic
+                    if arm == "D_MISMATCHED_DIAGNOSTIC"
+                    else ""
+                ),
+            )
+            per_member[arm] = text
+            arm_tokens[arm].append(len(tokenizer.encode(text, add_special_tokens=False)))
+        d_replaces_own_diagnostic_with_donor.append(
+            per_member["D_MISMATCHED_DIAGNOSTIC"]
+            == per_member["C_VERIFIER_REPAIR"].replace(example_diagnostic, donor_diagnostic)
         )
-        arm_a_tokens.append(len(tokenizer.encode(text_a, add_special_tokens=False)))
-        arm_c_tokens.append(len(tokenizer.encode(text_c, add_special_tokens=False)))
         theorem_tokens.append(member["prompt_tokens"])
-    assert arm_a_tokens, "empty pool"
+    assert theorem_tokens, "empty pool"
     audit["prompt_lengths"] = {
+        "note": (
+            "one fixed (proof, own-diagnostic) pair is reused for every pool theorem; the reference "
+            "proof and diagnostics are a common additive constant, so the across-theorem spread is "
+            "the theorem prompt spread. Arm D differs from Arm C by the diagnostic text alone, so "
+            "its token count differs by the (donor minus own) diagnostic token count."
+        ),
         "theorem_prompt_tokens_recorded_in_pool": percentiles(theorem_tokens),
-        "arm_a_rendered_tokens": percentiles(arm_a_tokens),
-        "arm_c_rendered_tokens_with_example_failed_proof": percentiles(arm_c_tokens),
+        **{f"{arm.lower()}_rendered_tokens": percentiles(arm_tokens[arm]) for arm in ARMS},
+        "arm_b_equals_a_plus_fixed_proof_shift": all(
+            b - a == arm_tokens["B_SELF_REVISION"][0] - arm_tokens["A_FRESH_RETRY"][0]
+            for a, b in zip(arm_tokens["A_FRESH_RETRY"], arm_tokens["B_SELF_REVISION"], strict=True)
+        ),
+        "arm_d_minus_c_is_the_diagnostic_replacement_on_every_theorem": all(
+            c - d == arm_tokens["C_VERIFIER_REPAIR"][0] - arm_tokens["D_MISMATCHED_DIAGNOSTIC"][0]
+            for c, d in zip(arm_tokens["C_VERIFIER_REPAIR"], arm_tokens["D_MISMATCHED_DIAGNOSTIC"], strict=True)
+        ),
+        "arm_d_rendering_is_c_with_the_donor_diagnostic_on_every_theorem": all(
+            d_replaces_own_diagnostic_with_donor
+        ),
         "renderer_matches_pool_prompt_tokens": all(
-            abs(a - b) <= 1 for a, b in zip(arm_a_tokens, theorem_tokens, strict=True)
+            abs(a - b) <= 1 for a, b in zip(arm_tokens["A_FRESH_RETRY"], theorem_tokens, strict=True)
         ),
     }
 
@@ -263,7 +335,8 @@ def main() -> int:
         "information_preserved": "only paths/ids/timestamps/server wrapper lines are removed; message, goal state, types, identifiers and positions are byte-preserved",
     }
     worst_case = {
-        "max_theorem_prompt_tokens": max(arm_a_tokens),
+        "max_theorem_prompt_tokens": max(arm_tokens["A_FRESH_RETRY"]),
+        "max_arm_rendered_tokens": {arm: max(arm_tokens[arm]) for arm in ARMS},
         "max_failed_proof_tokens_observed": max(proof_tokens) if proof_tokens else 0,
         "diagnostic_budget": DIAGNOSTIC_TOKEN_BUDGET,
         "max_response_tokens": MAX_RESPONSE_TOKENS,
@@ -274,6 +347,10 @@ def main() -> int:
         + worst_case["diagnostic_budget"]
         + worst_case["max_response_tokens"]
     )
+    worst_case["arm_d_worst_case_bounded_by_arm_c"] = (
+        "both arms append one diagnostic bounded by the same 512-token budget, so the Arm-D context "
+        "demand cannot exceed the Arm-C demand in the formal run"
+    )
     audit["context_requirement"] = worst_case
 
     destination = ROOT / args.out
@@ -281,6 +358,7 @@ def main() -> int:
     destination.write_text(json.dumps(audit, indent=2) + "\n")
     print("arm hashes:", json.dumps(audit["frozen_example"]["prompt_hashes"], indent=1))
     print("arm tokens:", json.dumps(audit["frozen_example"]["prompt_tokens"]))
+    print("arm D invariants:", json.dumps(d_invariants, indent=1))
     print("template multi-turn ok:", audit["chat_template"]["renders_mid_conversation_assistant_plain"],
           "| tool role supported:", audit["chat_template"]["tool_role_supported"])
     print("diagnostic:", json.dumps(audit["diagnostic_normalization"], indent=1))

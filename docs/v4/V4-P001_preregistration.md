@@ -1,5 +1,18 @@
 # V4-P001 — Paired Verifier-Guided Repairability Probe
 
+> **STATUS BANNER (owner review, 2026-09-25).** The owner accepted the preregistration *direction*
+> and re-issued `FORMAL_V4_P001_AUTHORIZED: NO`. A final pre-outcome design pass followed and is
+> recorded in **[`V4-P001_amendment_A_four_arm.md`](V4-P001_amendment_A_four_arm.md)**: a fourth
+> falsification arm `D_MISMATCHED_DIAGNOSTIC` with a frozen deterministic diagnostic derangement, the
+> differential-censoring guard, the frozen guard order, the specificity endpoint with a mechanism
+> label, the transition analysis, the re-run four-arm power sanity, the prompt-format provenance
+> audit and the 1152-generation budget.
+>
+> **The amendment supersedes the three-arm design everywhere it says `[A, B, C]` below**; the
+> payload of this document — pool, order, taxonomy, normalizer, verifier policy, thresholds,
+> guard order and the frozen outcome taxonomy — is unchanged, and this document is otherwise left
+> exactly as it was committed. No V4 formal generation exists, then or now.
+
 **Preregistration.** Written and committed **before any V4 formal generation exists**: no V4
 theorem rollout, no V4 verifier call, no V4 arm outcome, no V4 label. Every object named below is
 `FROZEN`; the only generation that has run under this directive is the §I infrastructure smoke on

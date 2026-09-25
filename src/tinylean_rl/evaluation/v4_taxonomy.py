@@ -274,6 +274,45 @@ def primary_eligible(category: str) -> bool:
     return category in PRIMARY_CATEGORIES
 
 
+#: Amendment A §15 frozen transition vocabulary for the second-stage outcome of a theorem whose
+#: first attempt failed in a known primary category.
+TRANSITION_CLASSES: tuple[str, ...] = (
+    "SUCCESS",
+    "SAME_ERROR_CATEGORY",
+    "DIFFERENT_ERROR_CATEGORY",
+    "FORMAT_FAILURE",
+    "SYNTAX_FAILURE",
+    "INFRA_MISSING",
+)
+
+
+def transition_class(original_category: str, second_category: str | None) -> str:
+    """Owner §15: the exact, preregistered mapping from an original error category to the class of
+    the second-stage outcome.
+
+    ``timeout_resource`` and ``infra`` both map to ``INFRA_MISSING``: resource exhaustion and
+    verifier trouble are missing data, never a proof failure, so they can never be counted as a
+    repair or non-repair. ``second_category=None`` (no conclusive second-stage classification)
+    maps there as well.
+    """
+
+    if original_category not in PRIMARY_CATEGORIES:
+        raise ValueError(f"original category must be a primary category, got {original_category!r}")
+    if second_category is None:
+        return "INFRA_MISSING"
+    if second_category not in ALL_CATEGORIES:
+        raise ValueError(f"unknown frozen category {second_category!r}")
+    if second_category == VERIFIED:
+        return "SUCCESS"
+    if second_category in {FORMAT_NO_CODE}:
+        return "FORMAT_FAILURE"
+    if second_category in {SYNTAX_PARSER}:
+        return "SYNTAX_FAILURE"
+    if second_category in {TIMEOUT_RESOURCE, INFRA}:
+        return "INFRA_MISSING"
+    return "SAME_ERROR_CATEGORY" if second_category == original_category else "DIFFERENT_ERROR_CATEGORY"
+
+
 __all__ = [
     "ALL_CATEGORIES",
     "ELABORATION_TYPE_MISMATCH",
@@ -286,6 +325,7 @@ __all__ = [
     "SYNTAX_PARSER",
     "TACTIC_FAILURE",
     "TIMEOUT_RESOURCE",
+    "TRANSITION_CLASSES",
     "TYPECLASS_SYNTHESIS",
     "UNKNOWN_IDENTIFIER",
     "UNSOLVED_GOALS",
@@ -295,4 +335,5 @@ __all__ = [
     "looks_like_non_code_extraction",
     "matched_primary_rules",
     "primary_eligible",
+    "transition_class",
 ]

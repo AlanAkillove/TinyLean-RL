@@ -1,0 +1,1235 @@
+{
+  "artifact_type": "v4_p001_arm_order_schedule",
+  "created_at_utc": "2026-09-25T10:20:43.245893+00:00",
+  "host": "fly",
+  "git_revision": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
+  "note": "frozen before any V4 formal generation; the schedule is a function of the formal theorem rank alone and is stored so that arm identity cannot be confounded with temporal or server state at analysis time",
+  "amendment": "Amendment A \u00a77 (owner decision, owner review of V4-P001 preregistration)",
+  "n_primary": 128,
+  "positions": 4,
+  "arms": [
+    "A_FRESH_RETRY",
+    "B_SELF_REVISION",
+    "C_VERIFIER_REPAIR",
+    "D_MISMATCHED_DIAGNOSTIC"
+  ],
+  "algorithm": {
+    "block_1_120": "the 24 permutations of the four arms in lexicographic order, five complete cycles",
+    "block_121_128": "the eight rotations of (A,B,C,D) and of (A,B,D,C) \u2014 two Latin squares",
+    "why": "the 120-row block is exactly position- and predecessor-balanced; the two Latin squares restore the per-position counts to exactly 32 per arm",
+    "outcome_dependence": "none: formal theorem rank only"
+  },
+  "schedule": [
+    {
+      "formal_rank": 1,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 2,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 3,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 4,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 5,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 6,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 7,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 8,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 9,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 10,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 11,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 12,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 13,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 14,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 15,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 16,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 17,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 18,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 19,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 20,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 21,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 22,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 23,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 24,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 25,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 26,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 27,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 28,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 29,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 30,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 31,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 32,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 33,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 34,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 35,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 36,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 37,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 38,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 39,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 40,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 41,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 42,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 43,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 44,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 45,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 46,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 47,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 48,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 49,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 50,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 51,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 52,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 53,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 54,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 55,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 56,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 57,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 58,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 59,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 60,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 61,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 62,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 63,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 64,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 65,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 66,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 67,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 68,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 69,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 70,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 71,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 72,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 73,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 74,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 75,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 76,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 77,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 78,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 79,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 80,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 81,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 82,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 83,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 84,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 85,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 86,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 87,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 88,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 89,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 90,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 91,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 92,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 93,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 94,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 95,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 96,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 97,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 98,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 99,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 100,
+      "order": [
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 101,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 102,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 103,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 104,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 105,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 106,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 107,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 108,
+      "order": [
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 109,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 110,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 111,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 112,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 113,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 114,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 115,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 116,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 117,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 118,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 119,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 120,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 121,
+      "order": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 122,
+      "order": [
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 123,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 124,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR"
+      ]
+    },
+    {
+      "formal_rank": 125,
+      "order": [
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION"
+      ]
+    },
+    {
+      "formal_rank": 126,
+      "order": [
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY"
+      ]
+    },
+    {
+      "formal_rank": 127,
+      "order": [
+        "C_VERIFIER_REPAIR",
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ]
+    },
+    {
+      "formal_rank": 128,
+      "order": [
+        "B_SELF_REVISION",
+        "A_FRESH_RETRY",
+        "D_MISMATCHED_DIAGNOSTIC",
+        "C_VERIFIER_REPAIR"
+      ]
+    }
+  ],
+  "balance": {
+    "arms": [
+      "A_FRESH_RETRY",
+      "B_SELF_REVISION",
+      "C_VERIFIER_REPAIR",
+      "D_MISMATCHED_DIAGNOSTIC"
+    ],
+    "positions_per_arm": {
+      "A_FRESH_RETRY": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "B_SELF_REVISION": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "C_VERIFIER_REPAIR": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "D_MISMATCHED_DIAGNOSTIC": [
+        32,
+        32,
+        32,
+        32
+      ]
+    },
+    "predecessor_pairs": {
+      "A_FRESH_RETRY->B_SELF_REVISION": 33,
+      "A_FRESH_RETRY->C_VERIFIER_REPAIR": 30,
+      "A_FRESH_RETRY->D_MISMATCHED_DIAGNOSTIC": 33,
+      "B_SELF_REVISION->A_FRESH_RETRY": 33,
+      "B_SELF_REVISION->C_VERIFIER_REPAIR": 33,
+      "B_SELF_REVISION->D_MISMATCHED_DIAGNOSTIC": 30,
+      "C_VERIFIER_REPAIR->A_FRESH_RETRY": 30,
+      "C_VERIFIER_REPAIR->B_SELF_REVISION": 33,
+      "C_VERIFIER_REPAIR->D_MISMATCHED_DIAGNOSTIC": 33,
+      "D_MISMATCHED_DIAGNOSTIC->A_FRESH_RETRY": 33,
+      "D_MISMATCHED_DIAGNOSTIC->B_SELF_REVISION": 30,
+      "D_MISMATCHED_DIAGNOSTIC->C_VERIFIER_REPAIR": 33
+    },
+    "predecessor_min": 30,
+    "predecessor_max": 33
+  },
+  "schedule_hash": "9e090325ac19cf54cb5a7d68507fb97d632a49802e15c2b5dc21ce4ae617da73",
+  "schedule_canonical_sha256_cross_check": "9e090325ac19cf54cb5a7d68507fb97d632a49802e15c2b5dc21ce4ae617da73",
+  "producer_sha256": "3441a7c91ed70706c457f0afebcdf6811a62fcedb6d6057a86c1a0eeb049d37e",
+  "checks": {
+    "exactly_one_candidate_per_arm_per_theorem": true,
+    "formal_ranks_contiguous_1_to_128": true,
+    "position_counts_exactly_balanced": true,
+    "predecessor_counts_within_three_of_ideal": true
+  }
+}

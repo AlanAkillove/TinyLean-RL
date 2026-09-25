@@ -1,0 +1,155 @@
+{
+  "artifact_type": "v4_p001_context_four_arm",
+  "created_at_utc": "2026-09-25T10:34:28.007657+00:00",
+  "host": "fly",
+  "git_revision": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
+  "note": "NONFORMAL context feasibility audit, CPU only; no generation, no verifier, no V4 formal theorem",
+  "renderer_version": "v4-prompt-1",
+  "normalization_version": "v4-diag-1",
+  "max_response_tokens": 4096,
+  "max_model_len": 10240,
+  "selection_rule": "longest by token count in each stream; no outcome, source, family or error label is read",
+  "worst_case_inputs": {
+    "theorem": {
+      "statement_id": "4f066e05-a94c-4ed9-83cd-d75f95294e12",
+      "name": "number_theory_184446",
+      "screening_rank": 772,
+      "tier": "tier2",
+      "theorem_prompt_tokens": 914
+    },
+    "failed_proof": {
+      "origin": "v3_r001/attempt2",
+      "tokens": 4096,
+      "sha256": "b69bdaa8a06463fefd25815bd4ffb6e463c6a2767c7428ae7fcc3425dc4853a2"
+    },
+    "own_diagnostic_tokens": 512,
+    "donor_diagnostic_tokens": 512,
+    "own_diagnostic_truncated_at_budget": true,
+    "diagnostic_stream": "the \u00a7I smoke streams (V1 roll-out dumps + V3-R001 archive); the audit corpus additionally holds E023 diagnostics, which carry no proof and are excluded here so the reproduction check is exact",
+    "diagnostic_budget": 512
+  },
+  "worst_case_by_arm": {
+    "A_FRESH_RETRY": {
+      "worst_case_prompt_tokens": 914,
+      "max_response_tokens": 4096,
+      "worst_case_total_tokens": 5010,
+      "max_model_len": 10240,
+      "headroom_tokens": 5230,
+      "fits": true
+    },
+    "B_SELF_REVISION": {
+      "worst_case_prompt_tokens": 5042,
+      "max_response_tokens": 4096,
+      "worst_case_total_tokens": 9138,
+      "max_model_len": 10240,
+      "headroom_tokens": 1102,
+      "fits": true
+    },
+    "C_VERIFIER_REPAIR": {
+      "worst_case_prompt_tokens": 5554,
+      "max_response_tokens": 4096,
+      "worst_case_total_tokens": 9650,
+      "max_model_len": 10240,
+      "headroom_tokens": 590,
+      "fits": true
+    },
+    "D_MISMATCHED_DIAGNOSTIC": {
+      "worst_case_prompt_tokens": 5554,
+      "max_response_tokens": 4096,
+      "worst_case_total_tokens": 9650,
+      "max_model_len": 10240,
+      "headroom_tokens": 590,
+      "fits": true
+    }
+  },
+  "worst_case_prompt_sha256": {
+    "A_FRESH_RETRY": "b95ae2efb9833f5838bc4660124059ff28d29d91170a173aa114af30ce4842f7",
+    "B_SELF_REVISION": "f7296736a768c69fe0615226396f3343b466a9aa42dd76e25856a4105a155863",
+    "C_VERIFIER_REPAIR": "5094b2c2a9d82f9451c30fb73aa13099820f8005800f55c3e8b00bc8a68eb30f",
+    "D_MISMATCHED_DIAGNOSTIC": "6530b58847a13bb2405c4643d184c033bc0e1d15a81cc8ee58c82635a3af55d3"
+  },
+  "pool_prompt_tokens": {
+    "A_FRESH_RETRY": {
+      "n": 1371,
+      "min": 112,
+      "median": 271,
+      "p90": 426,
+      "p95": 481,
+      "p99": 703,
+      "max": 914,
+      "mean": 291.5
+    },
+    "B_SELF_REVISION": {
+      "n": 1371,
+      "min": 1130,
+      "median": 1289,
+      "p90": 1444,
+      "p95": 1499,
+      "p99": 1721,
+      "max": 1932,
+      "mean": 1309.5
+    },
+    "C_VERIFIER_REPAIR": {
+      "n": 1371,
+      "min": 1640,
+      "median": 1799,
+      "p90": 1954,
+      "p95": 2009,
+      "p99": 2231,
+      "max": 2442,
+      "mean": 1819.5
+    },
+    "D_MISMATCHED_DIAGNOSTIC": {
+      "n": 1371,
+      "min": 1640,
+      "median": 1799,
+      "p90": 1954,
+      "p95": 2009,
+      "p99": 2231,
+      "max": 2442,
+      "mean": 1819.5
+    }
+  },
+  "structural_checks": {
+    "c_is_b_plus_own_diagnostic": true,
+    "d_is_b_plus_donor_diagnostic": true,
+    "d_equals_c_with_own_replaced_by_donor": true,
+    "c_and_d_share_prefix_before_diagnostic": true,
+    "histories_identical_except_the_diagnostic": true,
+    "worst_case_c_reproduces_smoke_prompt_sha256": true,
+    "arm_d_has_the_arm_c_message_count": true,
+    "worst_case_diagnostic_tokens_within_budget": true
+  },
+  "checks": {
+    "all_arms_fit_with_full_response": true,
+    "worst_case_c_is_the_longest_arm": true,
+    "arm_a_worst_case_equals_pool_max_theorem": true,
+    "arm_d_worst_case_is_bounded_by_b_plus_the_diagnostic_budget": true,
+    "worst_case_c_reproduces_smoke_prompt_sha256": true,
+    "arm_d_differs_from_c_only_in_the_diagnostic": true,
+    "no_self_diagnostic_in_the_audited_pairing": true,
+    "smoke_prompt_used_the_frozen_arm_c_and_renderer": true
+  },
+  "smoke_evidence": {
+    "artifact": "experiments/manifests/v4/v4_p001_context_smoke.json",
+    "engine": {
+      "vllm_version": "0.9.1",
+      "torch_version": "2.7.0+cu126",
+      "max_model_len": 10240,
+      "max_num_batched_tokens": 10240,
+      "gpu_memory_utilization": 0.85,
+      "max_num_seqs": 256,
+      "tensor_parallel_size": 1,
+      "dtype": "auto",
+      "load_seconds": 118.77
+    },
+    "peak_vram_mib_nvidia_smi": 9208,
+    "measured_prompt_tokens": 5554,
+    "measured_total_tokens": 9650,
+    "measured_headroom_tokens": 590,
+    "PASS": true,
+    "why_it_still_covers_the_four_arm_design": "the smoke ran the byte-identical worst-case arm-C prompt reproduced above; arm D uses the same message structure and a diagnostic bounded by the same budget, so it cannot exceed the arm-C ceiling on this pool. No engine parameter, tokenizer or model revision changes."
+  },
+  "pool_size": 1371,
+  "pool_hash": "7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c"
+}

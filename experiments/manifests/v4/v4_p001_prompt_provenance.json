@@ -1,0 +1,194 @@
+{
+  "artifact_type": "v4_p001_prompt_provenance",
+  "created_at_utc": "2026-09-25T10:40:12.401903+00:00",
+  "host": "fly",
+  "git_revision": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
+  "note": "read-only provenance audit over already-consumed artifacts; no generation, no verifier, no GPU",
+  "renderer_version": "v4-prompt-1",
+  "correction_request": "The previous proof attempt was rejected. Revise it into a correct and complete Lean proof of the same theorem.",
+  "arm_a_canonical_reproduction": {
+    "method": "no historical artifact stores token ids, so the check is four-fold: (i) the renderer's ids equal the canonical apply_chat_template ids, (ii) the rendered Arm-A text equals the canonical builder's text, (iii) sha256 of the canonical text equals the recorded hash, (iv) the special-token-dropped rendering equals the recorded dump string",
+    "target": "100% on every audited historical example",
+    "v3_r001_archive": {
+      "n_theorems": 128,
+      "n_rows": 1024,
+      "checks": {
+        "prompt_sha256_matches": 128,
+        "prompt_token_count_matches": 128,
+        "frozen_prompt_sha256_matches": 128,
+        "arm_a_text_equals_canonical_builder": 128,
+        "arm_a_token_ids_equal_canonical_ids": 128,
+        "arm_a_render_then_decode_equals_frozen_prompt": 128
+      }
+    },
+    "v1_rollout_dumps": {
+      "n_distinct_inputs": 612,
+      "n_rows": 5760,
+      "n_matched_to_a_pinned_theorem": 612,
+      "n_byte_identical_to_arm_a": 612
+    },
+    "e023_holdout": {
+      "n_records": 512,
+      "n_prompt_tokens_matched": 512,
+      "n_statement_not_in_parquet": 0,
+      "counting_convention": "E023 records prompt_tokens with special tokens (verified here: 512/512 under the with-special-tokens count)"
+    },
+    "pool_members_with_arm_a_ids_equal_to_canonical": 1371,
+    "pool_size": 1371
+  },
+  "multiturn_renderer_audit": {
+    "question": "does an existing supported Kimina/Qwen multi-turn or error-fixing renderer exist, and is it enabled here?",
+    "upstream_submodule": {
+      "path": "third_party/kimina-prover-rl",
+      "head": "e16b605e8186614c685875c9b57eb19e841b521a",
+      "files": {
+        "dataset": {
+          "path": "third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_rl/dataset.py",
+          "sha256": "a365f714679ee1298d72df201cb53fdd19d5603df7fa89d42752a431074dff4f",
+          "multiturn_hits": [
+            {
+              "line": 49,
+              "text": "metrics[f\"multiturn/turn_{turn_id}/{metric}\"] = 0"
+            },
+            {
+              "line": 50,
+              "text": "metrics[f\"multiturn/turn_{turn_id}/added_in_database\"] = 0"
+            },
+            {
+              "line": 89,
+              "text": "self.multi_turn_enabled = config.get(\"multiturn\", False)"
+            },
+            {
+              "line": 90,
+              "text": "self.multi_turn_sampling_rate = config.get(\"multiturn_sampling_rate\", 0.5)"
+            },
+            {
+              "line": 91,
+              "text": "self.multi_turn_n_samples_in_cache = config.get(\"multiturn_n_samples_in_cache\", 5000)"
+            },
+            {
+              "line": 92,
+              "text": "self.multiturn_max_feedback_length = config.get(\"multiturn_max_feedback_length\", 3000)"
+            }
+          ],
+          "builder": [
+            {
+              "line": 220,
+              "text": "def create_one_multiturn_prompt("
+            }
+          ],
+          "appends_assistant_then_user": [
+            {
+              "line": 258,
+              "text": "\"role\": \"assistant\","
+            }
+          ]
+        },
+        "error_fixing": {
+          "path": "third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_rl/reward/error_fixing.py",
+          "sha256": "55ace92c2106daff6fab2b88d9cae2f9238bd30a0dee93a527f6b66fed8c6ff0",
+          "multiturn_hits": [],
+          "builder": [
+            {
+              "line": 229,
+              "text": "def create_tool_message("
+            }
+          ]
+        },
+        "launcher": {
+          "path": "third_party/kimina-prover-rl/recipe/kimina_prover_rl/kimina_prover_0.6B.sh",
+          "sha256": "db99ef4fba59bff31286526bf26204fdc49fb60b811ea3ebf4ae43310f23758c",
+          "multiturn_hits": [
+            {
+              "line": 28,
+              "text": "+data.multiturn=True \\"
+            },
+            {
+              "line": 29,
+              "text": "+data.multiturn_sampling_rate=0.5 \\"
+            },
+            {
+              "line": 30,
+              "text": "+data.multiturn_n_samples_in_cache=5000 \\"
+            }
+          ]
+        }
+      }
+    },
+    "project_rl_configuration": {
+      "configs/rl/kimina_0.6b_pilot.yaml": {
+        "sha256": "c2a4aeda5cbe10653adea222134439f7b1aac21f66a0f23886b6f89cd328c089",
+        "multiturn_hits": [
+          {
+            "line": 56,
+            "text": "multiturn: false                  # official uses multiturn sampling 0.5; P3-A starts"
+          },
+          {
+            "line": 58,
+            "text": "# n=8 first, then multiturn"
+          }
+        ]
+      },
+      "scripts/run_p3_pilot.sh": {
+        "sha256": "7be25a39342c86115079c51d97328bfe2e18aa35a79674c6482147590b2fcb24",
+        "multiturn_hits": [
+          {
+            "line": 19,
+            "text": "#   5120, DrGRPO without KL, multiturn off. --n 8 restores the official"
+          },
+          {
+            "line": 138,
+            "text": "+data.multiturn=False"
+          }
+        ]
+      },
+      "scripts/run_p3_smoke.sh": {
+        "sha256": "aaa3cc60da0f7526f9ee9a225e0d6abd2356bb0e489c37dd3d0fb2a8557163a8",
+        "multiturn_hits": [
+          {
+            "line": 125,
+            "text": "# - multiturn disabled (audit S7 records the deviation);"
+          },
+          {
+            "line": 139,
+            "text": "+data.multiturn=False"
+          }
+        ]
+      }
+    },
+    "model_chat_template": {
+      "chat_template_sha256": "a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8",
+      "multi_turn_assistant_turn_renders_plain": true,
+      "generation_prompt_suffix_present": true,
+      "tool_role_supported_by_template": true,
+      "tool_role_used_by_v4_renderer": false,
+      "upstream_uses_tool_role": false
+    },
+    "diagnostic_format_provenance": {
+      "definition": "how often the consumed V1 verifier feedback carries the upstream error-fixing markers; the V4 normalizer removes server-wrapper lines only and never invents a format",
+      "n_diagnostics": 652,
+      "marker_counts": {
+        "Error message:": 652,
+        "Goals state": 0,
+        "Lean 4 code snippet with error:": 652
+      }
+    },
+    "finding": "an upstream multi-turn error-fixing pathway exists (the recipe appends an assistant turn with the previous response and a plain user turn carrying the formatted Lean feedback, then re-renders with the same chat template), but every project RL run disables it: the pilot configuration sets multiturn: false and both launchers pass +data.multiturn=False. It is also a training-data construction, not an inference convention for one verifier diagnostic turn (no diagnostic normalization, no donoring, no per-theorem control).",
+    "decision": "v4-prompt-1 is a NEW inference-only message convention of the same shape as the upstream pathway -- assistant turn with the extracted failed proof, then a user turn with the correction request (and, in C/D, the bounded normalized diagnostic). It is not described anywhere as the model's native chat format.",
+    "justification_from_model_behaviour": "the frozen chat template renders arbitrary assistant/user turns plainly, keeps the generation prompt suffix, and supports a tool role that this renderer deliberately does not use; the historical theta0 first attempts were rendered with the same template and the same canonical messages (reproduced above at 100%), so the first attempt and the revision turn cannot disagree about the template."
+  },
+  "checks": {
+    "r001_prompt_sha256_reproduced": true,
+    "r001_prompt_token_count_reproduced": true,
+    "r001_frozen_prompt_sha256_reproduced": true,
+    "r001_arm_a_equals_canonical": true,
+    "r001_arm_a_token_ids_equal_canonical": true,
+    "r001_arm_a_render_then_decode_equals_frozen_prompt": true,
+    "v1_inputs_all_matched": true,
+    "v1_inputs_byte_identical": true,
+    "e023_prompt_tokens_reproduced": true,
+    "pool_arm_a_ids_equal_canonical": true,
+    "upstream_multiturn_pathway_exists": true,
+    "upstream_pathway_disabled_in_every_project_run": true
+  }
+}

@@ -1,12 +1,17 @@
-"""V4-P001 prompt renderer for the three paired arms (owner §E, §F, §G).
+"""V4-P001 prompt renderer for the four paired arms (owner §E, §F, §G; Amendment A §1).
 
 Arm A - FRESH_RETRY: the original theorem prompt only. No failed proof, no diagnostic, no mention
         that a previous attempt exists.
 Arm B - SELF_REVISION: the theorem prompt, the extracted failed proof as an assistant turn, and a
         generic correction request that says the attempt was rejected but says nothing about why.
-Arm C - VERIFIER_REPAIR: byte-identical to Arm B except that the exact normalized Lean diagnostic is
-        appended to the correction request. ``text_c == text_b + "\\n\\n" + diagnostic`` is enforced,
-        so the wording of the two arms cannot drift apart.
+Arm C - VERIFIER_REPAIR (the "correct verifier diagnostic" arm): byte-identical to Arm B except that
+        the exact normalized Lean diagnostic is appended to the correction request.
+        ``text_c == text_b + "\\n\\n" + diagnostic`` is enforced, so the wording of the two arms
+        cannot drift apart.
+Arm D - MISMATCHED_DIAGNOSTIC: byte-identical to Arm C except that the diagnostic text belongs to a
+        *different* theorem (a real normalized diagnostic, assigned by the frozen derangement). It
+        tests whether a repair gain is specific to the correct theorem's diagnostic rather than to
+        the mere presence of Lean-error-like text.
 
 Format (§F): the frozen Kimina/Qwen3 chat template is used as-is with multi-turn user/assistant
 messages; no tool role is invented and no template variant is chosen per theorem. The rendered
@@ -30,7 +35,11 @@ CORRECTION_REQUEST = (
     "the same theorem."
 )
 
-ARMS = ("A_FRESH_RETRY", "B_SELF_REVISION", "C_VERIFIER_REPAIR")
+ARMS = ("A_FRESH_RETRY", "B_SELF_REVISION", "C_VERIFIER_REPAIR", "D_MISMATCHED_DIAGNOSTIC")
+
+#: Arms whose revision turn carries diagnostic text; C carries the theorem's own diagnostic, D the
+#: derangement-assigned donor diagnostic of a different theorem.
+DIAGNOSTIC_ARMS = ("C_VERIFIER_REPAIR", "D_MISMATCHED_DIAGNOSTIC")
 
 
 def sha256_text(text: str) -> str:
@@ -60,7 +69,11 @@ def arm_messages(
     failed_proof: str = "",
     diagnostic: str = "",
 ) -> list[dict[str, str]]:
-    """Build the frozen message list for one arm. Pure and deterministic."""
+    """Build the frozen message list for one arm. Pure and deterministic.
+
+    For Arm D the ``diagnostic`` argument is the derangement-assigned *donor* diagnostic of a
+    different theorem; the renderer is agnostic about whose diagnostic it is.
+    """
 
     if arm not in ARMS:
         raise ValueError(f"unknown arm {arm!r}; expected one of {ARMS}")
@@ -70,11 +83,11 @@ def arm_messages(
             raise ValueError("Arm A takes neither a failed proof nor a diagnostic by construction")
         return messages
     if not failed_proof.strip():
-        raise ValueError("Arms B and C require the extracted failed proof")
-    if arm == "C_VERIFIER_REPAIR" and not diagnostic.strip():
-        raise ValueError("Arm C requires the normalized Lean diagnostic")
+        raise ValueError("Arms B, C and D require the extracted failed proof")
     if arm == "B_SELF_REVISION" and diagnostic:
         raise ValueError("Arm B must not carry a diagnostic")
+    if arm in DIAGNOSTIC_ARMS and not diagnostic.strip():
+        raise ValueError(f"Arm {arm} requires a normalized Lean diagnostic")
     revision = CORRECTION_REQUEST if arm == "B_SELF_REVISION" else f"{CORRECTION_REQUEST}\n\n{diagnostic.strip()}"
     return [
         *messages,
@@ -113,13 +126,54 @@ def arm_suffix_invariant(base_messages, *, failed_proof: str, diagnostic: str) -
     return c[-1]["content"] == b[-1]["content"] + "\n\n" + diagnostic.strip()
 
 
+def diagnostic_arm_invariants(
+    base_messages,
+    *,
+    failed_proof: str,
+    own_diagnostic: str,
+    donor_diagnostic: str,
+) -> dict[str, bool]:
+    """Amendment A §1: D is C with ``diagnostic_i`` replaced by ``diagnostic_j`` and nothing else.
+
+    All checks are computed on the message lists, i.e. before chat-template rendering, and hold for
+    any model whose template renders the messages in order.
+    """
+
+    b = arm_messages(base_messages, arm="B_SELF_REVISION", failed_proof=failed_proof)
+    c = arm_messages(
+        base_messages, arm="C_VERIFIER_REPAIR", failed_proof=failed_proof, diagnostic=own_diagnostic
+    )
+    d = arm_messages(
+        base_messages,
+        arm="D_MISMATCHED_DIAGNOSTIC",
+        failed_proof=failed_proof,
+        diagnostic=donor_diagnostic,
+    )
+    own = own_diagnostic.strip()
+    donor = donor_diagnostic.strip()
+    b_tail = b[-1]["content"]
+    c_tail = c[-1]["content"]
+    d_tail = d[-1]["content"]
+    return {
+        "c_is_b_plus_own_diagnostic": c_tail == b_tail + "\n\n" + own,
+        "d_is_b_plus_donor_diagnostic": d_tail == b_tail + "\n\n" + donor,
+        "d_equals_c_with_own_replaced_by_donor": (
+            c_tail.endswith(own) and d_tail == c_tail[: len(c_tail) - len(own)] + donor
+        ),
+        "c_and_d_share_prefix_before_diagnostic": c_tail[: len(c_tail) - len(own)] == d_tail[: len(d_tail) - len(donor)],
+        "histories_identical_except_the_diagnostic": c[:-1] == d[:-1] == b[:-1],
+    }
+
+
 __all__ = [
     "ARMS",
     "CORRECTION_REQUEST",
+    "DIAGNOSTIC_ARMS",
     "RENDERER_VERSION",
     "arm_messages",
     "arm_suffix_invariant",
     "canonical_messages",
+    "diagnostic_arm_invariants",
     "prompt_sha256",
     "render_arm",
     "render_prompt",

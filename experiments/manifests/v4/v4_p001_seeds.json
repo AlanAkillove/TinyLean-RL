@@ -1,8 +1,8 @@
 {
   "artifact_type": "v4_p001_seed_freeze",
-  "created_at_utc": "2026-09-25T09:52:22.833352+00:00",
+  "created_at_utc": "2026-09-25T10:22:05.652470+00:00",
   "host": "fly",
-  "git_revision": "e80fe3e3e3a32ef98310818be4090aa2f619840b",
+  "git_revision": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
   "note": "frozen before any V4 formal generation; the second-stage seeds exist before the formal cohort does",
   "base_seed": 20260925,
   "second_stage_offset": 1000000,
@@ -14,9 +14,10 @@
     "shared_by_arms": [
       "A_FRESH_RETRY",
       "B_SELF_REVISION",
-      "C_VERIFIER_REPAIR"
+      "C_VERIFIER_REPAIR",
+      "D_MISMATCHED_DIAGNOSTIC"
     ],
-    "outcome_dependence": "none: rank and the base seed are frozen constants; no outcome, source, family, error category or diagnostic enters either formula"
+    "outcome_dependence": "none: rank and the base seed are frozen constants; no outcome, source, family, error category, diagnostic, arm or arm order enters either formula"
   },
   "pool_order_hash": "ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15",
   "pool_hash": "7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c",
@@ -4640,6 +4641,8 @@
     "arms_share_every_seed": true,
     "diagnostic_content_does_not_move_a_seed": true,
     "source_or_error_label_does_not_move_a_seed": true,
+    "arm_order_does_not_move_a_seed": true,
+    "every_second_stage_seed_differs_from_its_screening_rank_seed": true,
     "first_stage_seeds_unique": true,
     "second_stage_seeds_unique": true,
     "first_and_second_stage_disjoint": true,

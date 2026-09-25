@@ -1,7 +1,13 @@
 artifact_type: v4_experiment_registry
 namespace: V4
-status: PREREGISTERED            # V4-P001 frozen; no formal V4 generation has run
+status: PREREGISTERED_AMENDED   # V4-P001 frozen (preregistration + Amendment A); no formal V4 generation has run
 created_at_utc: "2026-09-25"
+amended_at_utc: "2026-09-25"
+amendment:
+  doc: docs/v4/V4-P001_amendment_A_four_arm.md
+  authority: "owner review of the V4-P001 preregistration, 2026-09-25: direction accepted, 20 numbered requirements"
+  scope: "Arm D (mismatched diagnostic) + derangement, differential-censoring guard, frozen guard order, specificity endpoint with a mechanism label, transition analysis, four-arm power sanity, prompt-format provenance, 1152-generation budget"
+  does_not_authorize: "no formal theorem generation; FORMAL_V4_P001_AUTHORIZED and V4_SECOND_STAGE_AUTHORIZED are both NO"
 naming:
   V4-P###: {kind: probe, scope: "mechanism probes; no training, no checkpoint update, no controller"}
   V4-R###: {kind: run, scope: "authorized by a probe outcome AND a separate owner decision"}
@@ -11,47 +17,80 @@ sealed_sets_never_used:
     components: 93
     status: SEALED / NEVER USED
     manifest: experiments/manifests/v3/v3_final_holdout_reserve.json
-    statement: "V4-P001 asserts sealed_components_touched = 0 and sealed_statements_touched = 0 in experiments/manifests/v4/v4_p001_pool.json"
+    statement: "V4-P001 asserts sealed_components_touched = 0 and sealed_statements_touched = 0 in experiments/manifests/v4/v4_p001_pool.json, and the runner re-asserts it in scripts/v4_p001_spec.py:load_frozen before any generation"
+
+file_pins:
+  pool_sha256: 354059087133445549972abef0d5386a6d421e61655412e13275ffe2b0225149
+  seeds_sha256: e0d18818badc96f695af7d3f6050c2fdcc288bb03f8df1110a92b6ad51c96a7d
+  schedule_sha256: 2dc85d0af0c4430996838a51b9d0c24d3f04087b490107d534003c91e65ac2f8
+  prompt_audit_sha256: c19537daf039c279688a72861d9f221da968844a4706a10f72c0f9bb1598e8e9
+  context_smoke_sha256: aea5a060e05e5d870e1536f3737c5f79f98f7cfff809644aac70cdc4546de476
+  verifier_plan_sha256: 22e8f578b3a4f3a61a7bdb256a2a451c3bd599b27763fc19021d679e60e8916a
 
 experiments:
   V4-P001:
-    title: "Paired verifier-guided repairability probe (FRESH_RETRY / SELF_REVISION / VERIFIER_REPAIR)"
+    title: "Paired verifier-guided repairability probe (FRESH_RETRY / SELF_REVISION / VERIFIER_REPAIR / MISMATCHED_DIAGNOSTIC)"
     status: PREREGISTERED
     owner: fly90 (coordination) + fly122 (formal host)
-    authorization: "owner directive 'TinyLean-RL enters V4' §A-§S, 2026-09-25"
+    authorization: "owner directive 'TinyLean-RL enters V4' §A-§S, 2026-09-25; owner review of the preregistration, 2026-09-25 (Amendment A)"
     research_question: >
       Given a Lean-level failed proof produced by frozen Kimina-Distill-0.6B theta0, does the exact
       Lean verifier diagnostic improve second-attempt proof success beyond (A) a fresh retry and
-      (B) self-revision without the diagnostic?
+      (B) self-revision without the diagnostic, and is any such gain specific to *this* theorem's
+      diagnostic (D, a real diagnostic of a different theorem, assigned by a frozen derangement)?
     design:
       unit: theorem (family component), one representative per component
-      arms: [A_FRESH_RETRY, B_SELF_REVISION, C_VERIFIER_REPAIR]
-      pairing: common random numbers; one shared seed per formal rank across the three arms
+      arms: [A_FRESH_RETRY, B_SELF_REVISION, C_VERIFIER_REPAIR, D_MISMATCHED_DIAGNOSTIC]
+      arm_d_role: "falsification / mechanism only; it does not enter the GO gate and does not replace the C-A and C-B primary questions"
+      pairing: common random numbers; one shared seed per formal rank across all four arms
+      arm_order: "balanced schedule over the 128 formal ranks (frozen before second-stage generation)"
       success: canonical score == 1 under the same format-gated Lean verification in all arms
       primary_endpoints: [mean(C-A), mean(C-B)]
-      descriptive_endpoint: mean(B-A)
+      specificity_endpoint: "mean(C-D), directional rule without an effect-size threshold, reported as a mechanism label"
+      descriptive_endpoints: [mean(B-A), error transitions for B/C/D]
       statistics: "one-sided exact paired McNemar + paired theorem bootstrap 95% CI (10000 reps, frozen seed)"
-      data_guard: "complete triplets < 103 => INCONCLUSIVE_BY_DATA; the GO taxonomy is not applied"
-      outcome_taxonomy: [A_VERIFIER_SPECIFIC_GO, B_SELF_REVISION_ONLY, C_NO_REPAIR_GAIN, D_INCONCLUSIVE_BY_DATA]
+      guards: "N_complete < 103 => D_INCONCLUSIVE_BY_DATA; censoring_range > 0.05 => D_INCONCLUSIVE_BY_DIFFERENTIAL_CENSORING; the GO taxonomy is not evaluated when either guard fails"
+      guard_order: [provenance, n_complete_guard, differential_censoring_guard, primary_gates, specificity_analysis, mechanism_and_descriptive]
+      outcome_taxonomy: [A_VERIFIER_SPECIFIC_GO, B_SELF_REVISION_ONLY, C_NO_REPAIR_GAIN, D_INCONCLUSIVE_BY_DATA, D_INCONCLUSIVE_BY_DIFFERENTIAL_CENSORING]
+      mechanism_labels: [DIAGNOSTIC_SPECIFIC, DIAGNOSTIC_NONSPECIFIC, NOT_EVALUABLE]
+      mechanism_label_rule: "DIAGNOSTIC_SPECIFIC iff mean(C-D) > 0, exact one-sided McNemar p <= 0.05 and the paired bootstrap CI lower bound > 0; appended to, never merged with, the classification"
+      diagnostic_derangement:
+        version: v4-derange-1
+        rule: "group by frozen error category; within a category of size >= 2 order by (token-length bucket, sha256(statement_id)) and shift cyclically by one; a singleton category takes the closest-token-length-bucket donor by sha256(statement_id), avoiding the recipient and already-used fallback donors"
+        invariants: [no_self_diagnostic, every_recipient_assigned_exactly_once, all_recipients_distinct]
+        frozen_before: "second-stage generation; the mapping itself is computed inside the Stage-1/Stage-2 freeze boundary together with mapping_sha256"
+      sensitivity: "infra-censored arms read as failures, reported separately for C-A / C-B / C-D, never redefining the primary endpoint"
     artifacts:
       pool: experiments/manifests/v4/v4_p001_pool.json
       seeds: experiments/manifests/v4/v4_p001_seeds.json
+      arm_schedule: experiments/manifests/v4/v4_p001_arm_schedule.json
       historical_audit: experiments/manifests/v4/v4_p001_audit.json
       prompt_audit: experiments/manifests/v4/v4_p001_prompt_audit.json
+      prompt_provenance: experiments/manifests/v4/v4_p001_prompt_provenance.json
       power: experiments/manifests/v4/v4_p001_power.json
       verifier_plan: experiments/manifests/v4/v4_p001_verifier_plan.json
       smoke_prompt: experiments/manifests/v4/v4_p001_smoke_prompt.json
       context_smoke: experiments/manifests/v4/v4_p001_context_smoke.json
+      context_four_arm: experiments/manifests/v4/v4_p001_context_four_arm.json
       preregistration: docs/v4/V4-P001_preregistration.md
+      amendment: docs/v4/V4-P001_amendment_A_four_arm.md
     frozen_hashes:
       pool_hash: 7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c
       order_hash: ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15
       screening_seed_hash: 2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51
       paired_seed_hash: 06ba33b803201e8102b5537011bd242eca59b24768d69f256ac92335a6e6986d
+      arm_schedule_hash: 9e090325ac19cf54cb5a7d68507fb97d632a49802e15c2b5dc21ce4ae617da73
+      diagnostic_derangement_version: v4-derange-1
       prompt_template_hashes:
         A_FRESH_RETRY: f2e2f2c2b9caec88a3955c3a47b922ff3a8afa7988fca817736c0a0e41b01811
         B_SELF_REVISION: e64361448265d559e8a0ab34cd48efdae4310b5b02ae547b89b0d226aae6ab3a
         C_VERIFIER_REPAIR: ee268b3ef181d910e54092318a34a5601cf1037dd633e6ac149739583a569dde
+        D_MISMATCHED_DIAGNOSTIC: 7ef1dca40506be417920c6abc5950fb158f80ec5fb8408b80b204def15b90107
+      chat_template_sha256: a55ee1b1660128b7098723e0abcd92caa0788061051c62d51cbe87d9cf1974d8
+    prompt_provenance:
+      arm_a_canonical_reproduction: "100%: 128/128 R001 checks (text, token ids, both hashes), 612/612 distinct V1 inputs byte-identical, 512/512 E023 prompt_tokens"
+      multiturn_source: "an upstream multi-turn error-fixing pathway exists in third_party/kimina-prover-rl (dataset.py:220 create_one_multiturn_prompt) but every project run disables it (multiturn: false / +data.multiturn=False)"
+      renderer: "v4-prompt-1 -- a NEW inference-only message convention of the upstream shape; not the model's native chat format and not claimed to be an upstream-validated one; the frozen chat template renders a mid-conversation assistant turn plain and the tool role is never used"
     numbers:
       pool_components: 1371
       tier1_components: 453
@@ -59,19 +98,27 @@ experiments:
       max_screening: 640
       n_primary_required: 128
       data_guard_min: 103
-      second_stage_candidates: 384
-      worst_case_context_tokens: 9618
+      censoring_range_max: 0.05
+      second_stage_candidates: 512
+      worst_case_formal_generations: 1152
+      worst_case_context_tokens: 9650
       max_model_len: 10240
+      worst_case_context_headroom_tokens: 590
+      measured_smoke_peak_vram_mib: 9208
       verifier_recovery_ceiling_per_run: 192
       verifier_recovery_ceiling_per_theorem: 3
+    freeze_boundary:
+      first_stage_artifacts: [V4-P001_primary_cohort.json, V4-P001_diagnostic_derangement.json, V4-P001_second_stage_plan.json]
+      invariant: "second_stage_candidates_generated = 0 at the boundary; the process that discovers the cohort does not generate a second-stage candidate; a separate deterministic validation command must pass before the second stage"
     formal_host: fly122 (RTX 3080 10 GB)
     not_authorized_here:
       - "no RL, SFT, checkpoint update, controller training or final-holdout use"
       - "no V4-R### run: V4-R001 exists only as a downstream branch in the preregistration text"
-      - "no verifier-throughput claim, no capability claim, no training claim"
+      - "no verifier-throughput claim, no capability claim, no training claim, no efficiency claim"
 
 downstream_branches_not_implemented:
   A_VERIFIER_SPECIFIC_GO: "owner may design V4-R001 (verifier-integrated training); not part of V4-P001"
   B_SELF_REVISION_ONLY: "possible separate self-revision direction only after owner review"
   C_NO_REPAIR_GAIN: "close the verifier-feedback training line"
   D_INCONCLUSIVE_BY_DATA: "owner review; no rescue by lowering N or changing the cohort"
+  D_INCONCLUSIVE_BY_DIFFERENTIAL_CENSORING: "owner review; the censoring guard is not to be weakened after seeing it"

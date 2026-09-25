@@ -5,11 +5,13 @@ Two frozen seed streams, both pure functions of a frozen constant:
     first-stage screening   seed = V4_BASE_SEED + (screening_rank - 1)          rank 1..640
     second-stage paired     seed = V4_BASE_SEED + SECOND_STAGE_OFFSET + (i - 1) i    1..128
 
-The second-stage seed is a function of the frozen formal rank *only*, and all three arms share it
-(common random numbers, §J): ``second_stage_seed`` is called with the same argument for A, B and C, so
-the three arms differ by their prompt and by nothing else. No outcome, source, family, error category
-or diagnostic label enters either formula, which is what makes the invariance test meaningful: the
-same theorem gets the same seed whatever the arm, the labels or the diagnostic say.
+The second-stage seed is a function of the frozen formal rank *only*, and all four arms share it
+(common random numbers, §J; Amendment A §8): ``second_stage_seed`` is called with the same argument
+for A, B, C and D, so the arms differ by their prompt and by nothing else. No outcome, source,
+family, error category or diagnostic label enters either formula, which is what makes the invariance
+test meaningful: the same theorem gets the same seed whatever the arm, the labels or the diagnostic
+say. The two streams are disjoint by construction, so no second-stage seed can repeat a first-attempt
+screening seed.
 """
 
 from __future__ import annotations
@@ -36,7 +38,7 @@ def first_stage_seed(screening_rank: int) -> int:
 
 
 def second_stage_seed(formal_rank: int) -> int:
-    """Shared generation seed of the A/B/C second-stage candidates at a frozen formal rank."""
+    """Shared generation seed of the A/B/C/D second-stage candidates at a frozen formal rank."""
 
     _check(formal_rank, N_PRIMARY, "formal_rank")
     return V4_BASE_SEED + SECOND_STAGE_OFFSET + (formal_rank - 1)
