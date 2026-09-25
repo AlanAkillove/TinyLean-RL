@@ -12,7 +12,9 @@ formal node, at one committed revision, and writes down what it observed:
     context           the four-arm worst-case audit and its arithmetic against the frozen window
     runner            --stage screening --dry-run; the owner-authorization interlock on both formal
                       stages; a *synthetic* screening artifact frozen and validated by the real
-                      `--stage freeze` / `--stage validate` code paths; --stage second --dry-run
+                      `--stage freeze` / `--stage validate` code paths; --stage second --dry-run,
+                      which since Amendment B also validates the whole candidate-assembly path
+                      (pinned formal statements, source assembly) for all 128 theorems
     analyzer          `v4_p001_analyze.py --check-only` on the synthetic boundary (proves the
                       analyzer runs end to end on this host and writes nothing), plus its
                       fail-closed refusal when the artifacts are absent
@@ -584,16 +586,46 @@ def section_runner(t: Transcript, scratch: Path, surface: dict, plan: list) -> d
     except ValueError:
         standalone = {}
     todo = standalone.get("theorems_to_run") or []
+    assembly = standalone.get("candidate_assembly") or {}
+    counts = assembly.get("counts") or {}
     section["synthetic_second_dry_run_standalone"] = {
         "mode": standalone.get("mode"), "n_candidates": standalone.get("n_candidates"),
         "theorems_to_run_count": len(todo),
         "theorems_to_run_is_the_whole_cohort": todo == list(range(1, S.N_PRIMARY + 1)),
+        "candidate_assembly_n_failed": assembly.get("n_failed"),
+    }
+    section["synthetic_second_dry_run_assembly"] = {
+        "theorems": assembly.get("theorems"), "n_failed": assembly.get("n_failed"),
+        "counts": counts, "generations": assembly.get("generations"),
+        "formal_verifier_calls": assembly.get("formal_verifier_calls"),
+        "note": assembly.get("note"),
     }
     t.check("second_stage_dry_run_revalidates_and_generates_nothing",
             second_dry["exit_code"] == 0
             and "candidates_generated=0" in dry_stdout
             and len(todo) == S.N_PRIMARY,
             f"exit={second_dry['exit_code']}, theorems_to_run={len(todo)}")
+    # Amendment B §3/§7: the dry run must validate the *whole* candidate-assembly path for the
+    # frozen cohort -- surface statements, failed proofs, diagnostics, arm plan rows, rendered arm
+    # prompts, paired seeds, arm order and the verifier-source assembly itself -- because that is
+    # exactly the path the launch-0 crash was in and the original dry run never reached.
+    t.check("second_stage_dry_run_validates_the_candidate_assembly",
+            assembly.get("theorems") == S.N_PRIMARY and assembly.get("n_failed") == 0
+            and counts.get("surface_statements_available") == S.N_PRIMARY
+            and counts.get("formal_statements_nonempty") == S.N_PRIMARY
+            and counts.get("formal_statements_bound_to_the_frozen_plan") == S.N_PRIMARY
+            and counts.get("failed_proofs_available") == S.N_PRIMARY
+            and counts.get("own_diagnostics_available") == S.N_PRIMARY
+            and counts.get("donor_diagnostics_available") == S.N_PRIMARY
+            and counts.get("arm_prompt_hashes_matched") == S.SECOND_STAGE_CANDIDATES
+            and counts.get("assembly_probes_passed") == S.N_PRIMARY,
+            f"n_failed={assembly.get('n_failed')} counts={counts}")
+    t.check("candidate_assembly_used_no_model_and_no_verifier",
+            assembly.get("generations") == 0 and assembly.get("formal_verifier_calls") == 0
+            and f"surface_formal_statements={S.N_PRIMARY}" in dry_stdout
+            and "candidate_assembly_validated=True" in dry_stdout,
+            f"generations={assembly.get('generations')} "
+            f"verifier_calls={assembly.get('formal_verifier_calls')}")
     t.check("second_stage_dry_run_wrote_no_raw",
             not (synthetic / S.SECOND_STAGE_RAW_BASENAME).exists(), "no second-stage raw")
     return {"synthetic_dir": synthetic, "report": report,

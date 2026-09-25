@@ -35,6 +35,13 @@ next candidate. The recovery adds no candidate attempt and moves no label. The c
 frozen ones: 192 per launch and 3 per theorem; a theorem that exceeds its exposure has its remaining
 arm candidates marked INFRA_CENSORED (missing, never a failure) and the run continues.
 
+Amendment B (owner pre-outcome execution-code amendment, Stage-2 launch-0 structural abort) made this
+path runnable without touching the scientific design: the formal statement of a candidate is read
+from the pinned parquet surface by `frozen_formal_statement` -- never from the screening-row schema,
+which has no such field -- and `--stage second --dry-run` now validates the whole candidate-assembly
+path for all 128 theorems (surface lookup, formal statement, failed proof, diagnostics, arm plan
+rows, prompt hashes, paired seeds, arm order, source assembly) before any generation is possible.
+
 Raw artifacts live under ``runs/v4_p001/rollout/`` (gitignored): only hashes, schema and provenance
 are ever committed.
 
@@ -1608,6 +1615,170 @@ def stage_validate(args: argparse.Namespace) -> int:
 
 # --- stage: second (the paired A/B/C/D generation the owner §11 requires) -------------------------
 
+#: The body of the assembly probe. It is never generated, never verified and never written: it only
+#: proves that a verifier source can be assembled for every frozen theorem from its pinned formal
+#: statement, so that the dry run executes the same path the formal run does (Amendment B §7). It is
+#: written without a leading `by` because that is the shape `complete_verifier_code` appends after
+#: `:= by`, and every line of it must survive the assembly intact.
+ASSEMBLY_PROBE_PROOF = ("-- Amendment B candidate-assembly probe; never sent to a verifier\n"
+                        "  trivial")
+
+
+def candidate_verifier_source(formal_statement: str, completion_text: str) -> tuple[str | None, str,
+                                                                                   bool]:
+    """The verifier source of one candidate, assembled exactly as the verifier would receive it.
+
+    Shared by the formal second stage and its dry run (Amendment B §7), so the two can never disagree
+    about how a candidate is built. ``lean_source`` is None when nothing Lean could be extracted, in
+    which case the frozen policy is not called at all. Returns ``(lean_source, extracted,
+    has_lean_block)``.
+    """
+    try:
+        extracted = extract_proof(completion_text)
+    except ValueError:
+        extracted = ""
+    return (complete_verifier_code(formal_statement, extracted), extracted,
+            bool(_FENCED_LEAN.search(completion_text)))
+
+
+def frozen_formal_statement(surface: dict, plan_row: dict) -> str:
+    """The pinned formal statement of one frozen theorem, with the Amendment B §3 identity guard.
+
+    The statement is the pinned parquet's text for this `statement_id` (`load_surface`; the parquet's
+    bytes are verified by `load_frozen`), bound to the frozen plan by that statement's own
+    first-attempt prompt hash, which the plan froze in Arm A. It is deliberately *not* read from the
+    screening-row schema, which has no such field. Any mismatch is fail-closed: a candidate whose
+    formal statement cannot be identified is never assembled and never verified.
+    """
+    sid, rank = plan_row["statement_id"], plan_row["formal_rank"]
+    row = surface.get(sid)
+    if row is None:
+        raise S.FrozenViolation(
+            f"formal_rank {rank}: statement {sid} is not in the pinned promptset parquet, so the "
+            "formal statement of this frozen theorem cannot be identified (Amendment B §3)")
+    formal = str(row.get("formal_statement") or "")
+    if not formal.strip():
+        raise S.FrozenViolation(
+            f"formal_rank {rank}: the pinned formal statement of {sid} is empty; no candidate of "
+            "this theorem may be assembled or verified (Amendment B §3)")
+    arm_a = (plan_row.get("arms") or {}).get(S.ARM_ORDER[0], {}).get("prompt_sha256")
+    if arm_a is None or row["prompt_sha256"] != arm_a:
+        raise S.FrozenViolation(
+            f"formal_rank {rank}: the pinned surface row of {sid} renders the first-attempt prompt "
+            f"{str(row['prompt_sha256'])[:16]}... but the frozen plan holds {str(arm_a)[:16]}...; the "
+            "formal statement of this rank is not the one the plan was frozen from (Amendment B §3)")
+    return formal
+
+
+def validate_candidate_assembly(*, frozen: S.Frozen, plan_by_rank: dict, surface: dict,
+                                formal_statements: dict, texts: dict,
+                                screening_by_statement: dict) -> dict:
+    """Amendment B §3/§4/§7: prove for every frozen theorem, without generating anything, that every
+    ingredient the Stage-2 candidate assembly reads is present, frozen and consistent.
+
+    This is the check the original dry run could not make: it never reached `repair_one`. The dry run
+    and the formal run both execute this function, and a failure here stops the run before any model
+    call and before any verifier contact.
+    """
+    counts = {name: 0 for name in (
+        "surface_statements_available", "formal_statements_nonempty",
+        "formal_statements_bound_to_the_frozen_plan", "failed_proofs_available",
+        "own_diagnostics_available", "donor_diagnostics_available", "arm_plan_rows_complete",
+        "arm_prompt_hashes_matched", "paired_seeds_valid", "arm_orders_valid",
+        "screening_identity_fields_available", "assembly_probes_passed")}
+    failures: list[dict] = []
+    pool_tokens = {m["statement_id"]: m["prompt_tokens"] for m in frozen.screening_theorems}
+    arms = list(S.ARM_ORDER)
+    arm_fields = ("prompt_sha256", "prompt_tokens", "context_tokens_with_response",
+                  "diagnostic_sha256", "diagnostic_source")
+
+    def record(name: str, ok: bool, detail: str, n: int = 1) -> None:
+        if ok:
+            counts[name] += n
+        else:
+            failures.append({"check": name, "pass": False, "detail": detail})
+
+    if sorted(plan_by_rank) != list(range(1, S.N_PRIMARY + 1)):
+        failures.append({"check": "plan_ranks_are_the_frozen_cohort", "pass": False,
+                         "detail": f"the plan holds {len(plan_by_rank)} rank(s); the frozen cohort is "
+                                   f"formal_rank 1..{S.N_PRIMARY}"})
+    cohort_missing = [rank for rank, theorem in plan_by_rank.items()
+                      if theorem["statement_id"] not in screening_by_statement]
+    if cohort_missing:
+        failures.append({"check": "screening_rows_cover_the_cohort", "pass": False,
+                         "detail": f"no screening row on disk for formal_rank "
+                                   f"{sorted(cohort_missing)[:5]}"})
+
+    for rank in sorted(plan_by_rank):
+        theorem = plan_by_rank[rank]
+        sid = theorem["statement_id"]
+        surface_row = surface.get(sid)
+        screening_row = screening_by_statement.get(sid)
+        formal = formal_statements.get(rank, "")
+        record("surface_statements_available", surface_row is not None,
+               f"formal_rank {rank}: statement {sid} is not in the pinned surface")
+        if surface_row is not None:
+            record("formal_statements_nonempty", bool(formal.strip()),
+                   f"formal_rank {rank}: the pinned formal statement is empty")
+            arm_a = (theorem.get("arms") or {}).get(arms[0], {}).get("prompt_sha256")
+            record("formal_statements_bound_to_the_frozen_plan",
+                   bool(formal.strip()) and formal == str(surface_row.get("formal_statement") or "")
+                   and arm_a is not None and surface_row["prompt_sha256"] == arm_a
+                   and pool_tokens.get(sid) == surface_row["prompt_token_count"],
+                   f"formal_rank {rank}: the surface row no longer matches the frozen first-attempt "
+                   "prompt / pool token count of this statement")
+        if screening_row is not None:
+            proof = str(screening_row.get("extracted_proof") or "")
+            record("failed_proofs_available",
+                   bool(proof.strip())
+                   and screening_row.get("extracted_proof_sha256") == theorem["failed_proof_sha256"],
+                   f"formal_rank {rank}: the failed proof of this theorem is missing or no longer "
+                   "matches the frozen plan")
+            record("own_diagnostics_available",
+                   bool(str(screening_row.get("diagnostic_text") or "").strip()),
+                   f"formal_rank {rank}: the own diagnostic Arm C renders is empty")
+            donor_row = screening_by_statement.get(theorem["donor_statement_id"])
+            donor = str((donor_row or {}).get("diagnostic_text") or "")
+            record("donor_diagnostics_available",
+                   bool(donor.strip()) and theorem["donor_statement_id"] != sid,
+                   f"formal_rank {rank}: the derangement donor diagnostic Arm D renders is empty or "
+                   "is the theorem's own diagnostic")
+            record("screening_identity_fields_available",
+                   all(str(screening_row.get(k) or "").strip()
+                       for k in ("component_id", "name", "source")),
+                   f"formal_rank {rank}: the screening row lost component_id / name / source")
+        else:
+            for name in ("failed_proofs_available", "own_diagnostics_available",
+                         "donor_diagnostics_available", "screening_identity_fields_available"):
+                record(name, False, f"formal_rank {rank}: no screening row on disk")
+        record("arm_plan_rows_complete",
+               set(theorem.get("arms") or {}) == set(arms)
+               and all(all(field in theorem["arms"][arm] for field in arm_fields) for arm in arms),
+               f"formal_rank {rank}: the frozen plan does not carry all four arm rows and the fields "
+               "the candidate row reads")
+        record("arm_prompt_hashes_matched",
+               all(S.sha256_text(texts.get(rank, {}).get(arm, ""))
+                   == theorem["arms"][arm]["prompt_sha256"] for arm in arms),
+               f"formal_rank {rank}: a rendered arm prompt no longer matches the frozen plan hash",
+               n=len(arms))
+        record("paired_seeds_valid", theorem["seed"] == second_stage_seed(rank),
+               f"formal_rank {rank}: the plan seed is not the frozen paired seed of this rank")
+        record("arm_orders_valid", sorted(theorem["arm_order"]) == sorted(arms),
+               f"formal_rank {rank}: arm_order is not a permutation of A/B/C/D")
+        probe_lines = [line.strip() for line in ASSEMBLY_PROBE_PROOF.splitlines() if line.strip()]
+        assembled = candidate_verifier_source(formal, ASSEMBLY_PROBE_PROOF)[0]
+        record("assembly_probes_passed",
+               isinstance(assembled, str) and all(line in assembled for line in probe_lines),
+               f"formal_rank {rank}: no candidate source could be assembled from the pinned formal "
+               "statement")
+    return {"theorems": len(plan_by_rank), "n_failed": len(failures), "counts": counts,
+            "failures": failures[:20], "failures_total": len(failures),
+            "generations": 0, "formal_verifier_calls": 0,
+            "probe_is_a_synthetic_body_never_generated_or_verified": True,
+            "note": ("Amendment B §7: candidate assembly validated for the whole frozen cohort "
+                     "without a model call and without a verifier call")}
+
+
 def censored_repair_row(*, plan_row: dict, screening_row: dict, arm: str, position: int, env: dict,
                         run_id: str, reason: str) -> dict:
     """An arm candidate the verifier plan censored: never generated, never verified, never a failure."""
@@ -1642,17 +1813,18 @@ def censored_repair_row(*, plan_row: dict, screening_row: dict, arm: str, positi
 
 
 def repair_one(tokenizer, session: VerificationSession, recovery: VerifierRecovery,
-               recorder: ResultItemRecorder, *, plan_row: dict, screening_row: dict, arm: str,
-               position: int, completion, generation_seconds: float, env: dict, run_id: str,
+               recorder: ResultItemRecorder, *, plan_row: dict, screening_row: dict,
+               formal_statement: str, arm: str, position: int, completion,
+               generation_seconds: float, env: dict, run_id: str,
                ) -> tuple[dict, str | None, bool]:
-    """One arm candidate: extract, verify (frozen policy + C′ recovery), classify, row."""
+    """One arm candidate: extract, verify (frozen policy + C′ recovery), classify, row.
+
+    `formal_statement` is the pinned surface text of this frozen rank, passed in explicitly
+    (Amendment B §2). It is not a screening-row field: the screening schema has no formal statement,
+    and the canonical one lives in the pinned parquet surface.
+    """
     text = completion.text
-    try:
-        extracted = extract_proof(text)
-    except ValueError:
-        extracted = ""
-    lean_source = complete_verifier_code(screening_row["formal_statement"], extracted)
-    has_lean_block = bool(_FENCED_LEAN.search(text))
+    lean_source, extracted, has_lean_block = candidate_verifier_source(formal_statement, text)
     rank = plan_row["formal_rank"]
     custom_id = f"rank{rank}-{arm}"
     if lean_source is None:
@@ -1825,6 +1997,28 @@ def stage_second(args: argparse.Namespace) -> int:
     print(f"[{S.EXPERIMENT_ID}] all {len(plan_by_rank) * S.N_ARMS} prompts re-rendered and matched "
           "against the frozen plan hashes")
 
+    # Amendment B §3/§7: identify the pinned formal statement of every frozen theorem and validate
+    # the whole candidate-assembly path before anything is generated or verified. The dry run and the
+    # formal run execute this same code, so the two can never diverge here.
+    try:
+        formal_statements = {rank: frozen_formal_statement(surface, theorem)
+                             for rank, theorem in plan_by_rank.items()}
+    except S.FrozenViolation as exc:
+        return abort(str(exc))
+    assembly = validate_candidate_assembly(
+        frozen=frozen, plan_by_rank=plan_by_rank, surface=surface,
+        formal_statements=formal_statements, texts=texts,
+        screening_by_statement=screening_by_statement)
+    if assembly["n_failed"]:
+        return abort(f"the Stage-2 candidate assembly does not validate for the frozen cohort "
+                     f"({assembly['failures_total']} failure(s)); no candidate may be generated or "
+                     "verified (Amendment B §3/§7)", assembly["failures"])
+    print(f"[{S.EXPERIMENT_ID}] candidate assembly validated: {assembly['theorems']} theorem(s), "
+          f"{assembly['counts']['arm_prompt_hashes_matched']} arm prompt hashes, "
+          f"{assembly['counts']['assembly_probes_passed']} source-assembly probes, "
+          f"{assembly['n_failed']} failure(s); candidate_assembly_generations=0 "
+          "candidate_assembly_verifier_calls=0")
+
     # resume: complete groups are kept, a torn tail is dropped (never rewritten), and the dropped
     # theorem is re-run from its own frozen seed. A dry run reads the artifact and writes nothing.
     complete: dict[int, list[dict]] = {}
@@ -1862,7 +2056,7 @@ def stage_second(args: argparse.Namespace) -> int:
                    "second_stage_seed_hash": plan_artifact["second_stage_seed_hash"],
                    "derangement_mapping_sha256": plan_artifact["derangement_mapping_sha256"],
                    "n_theorems": S.N_PRIMARY, "n_candidates": S.SECOND_STAGE_CANDIDATES,
-                   "resume_compaction": compaction,
+                   "resume_compaction": compaction, "candidate_assembly": assembly,
                    "mode": "FORMAL" if not args.dry_run else "DRY_RUN"}
 
     if args.dry_run:
@@ -1870,10 +2064,14 @@ def stage_second(args: argparse.Namespace) -> int:
                       "theorems_to_run": todo})
         print(json.dumps({k: stamp[k] for k in ("mode", "run_id", "n_candidates", "plan_sha256",
                                                 "arm_schedule_hash", "second_stage_seed_hash",
-                                                "theorems_to_run")}, indent=2))
+                                                "candidate_assembly", "theorems_to_run")}, indent=2))
         print(f"[{S.EXPERIMENT_ID}] DRY RUN COMPLETE: llm.load_called=false generate_called=false "
               "model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 "
-              "formal_raw_result_files_created=false")
+              "formal_raw_result_files_created=false "
+              f"theorems_planned={len(plan_by_rank)} candidates_planned="
+              f"{len(plan_by_rank) * S.N_ARMS} surface_formal_statements="
+              f"{assembly['counts']['formal_statements_nonempty']} candidate_assembly_validated="
+              f"{assembly['n_failed'] == 0}")
         return 0
 
     recovery = VerifierRecovery(out_dir)
@@ -1935,6 +2133,7 @@ def stage_second(args: argparse.Namespace) -> int:
                         tokenizer, session, recovery, recorder,
                         plan_row=plan_by_rank[rank],
                         screening_row=screening_by_statement[plan_by_rank[rank]["statement_id"]],
+                        formal_statement=formal_statements[rank],
                         arm=arm, position=position, completion=output.outputs[0],
                         generation_seconds=gen_seconds, env=env, run_id=stamp["run_id"])
                     buffer[rank][position] = row
