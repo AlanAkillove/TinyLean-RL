@@ -1,6 +1,6 @@
 artifact_type: v4_experiment_registry
 namespace: V4
-status: PREREGISTERED_AMENDED   # V4-P001 frozen (preregistration + Amendment A); execution package validated by the §19 dry run at 71d7304; no formal V4 generation has run
+status: STAGE1_COMPLETE   # V4-P001 Stage-1 formal screening closed at 464/640 screens; the 128-theorem primary cohort, its diagnostic derangement and the unexecuted second-stage plan are frozen; Stage 2 is still NOT authorized
 created_at_utc: "2026-09-25"
 amended_at_utc: "2026-09-25"
 amendment:
@@ -132,6 +132,67 @@ experiments:
       dry_run_scope: "pool, screen order, model weights, dedicated verifier (/health + nonformal canary), four-arm context, runner stages and interlocks, analyzer mechanical order on a synthetic cohort, artifact locations, recovery policy; no model load, no generation, no formal theorem ever sent to the verifier"
       finding_and_fix: "the first formal-node run failed one test that re-read the V3-R001 archive under gitignored runs/ (present only where §11 archived it); split into a host-independent artifact check plus a host-conditional recomputation in commit 71d7304, after which the formal-node suite is green (523 passed, 1 skipped)"
     formal_host: fly122 (RTX 3080 10 GB)
+    stage1_result:
+      status: STAGE1_COMPLETE_AWAITING_OWNER_REVIEW
+      authorization: "owner directive, 2026-09-25: V4_FORMAL_SCREENING_AUTHORIZED = YES, V4_SECOND_STAGE_AUTHORIZED = NO"
+      host: fly122 (RTX 3080 10 GB)
+      executed_at_commit: a18308f326ced4a95b8926cbb1cd192af68c9a60
+      screening:
+        screens_used: 464
+        screens_remaining_in_budget: 176
+        status_counts: {FORMAT_FAILURE: 247, PRIMARY_SEMANTIC_FAILURE: 130, INITIAL_SUCCESS: 67, TIMEOUT_OR_RESOURCE: 9, SYNTAX_FAILURE: 6, INFRA_CENSORED: 5, CONTEXT_INELIGIBLE: 0}
+        primary_128_finalized_at_screening_rank: 455
+        primaries_finalized_in_the_same_chunk_after_the_cohort_closed: 2
+        generation_seconds: 3439.2
+        recoveries: "5 attempted, 5 succeeded (restart -> /health -> nonformal canary; ranks 52, 84, 105, 385, 413)"
+        peak_vram_mib_nvidia_smi: 9206
+        raw_artifact: runs/v4_p001/rollout/v4_p001_screening_raw.jsonl  # gitignored
+        raw_artifact_sha256: fc8aa0a50a11d5709e96947f4d3a1b703941f4af1f177ae690bf7f64caf42f67
+        archive_on_fly90: runs/v4_p001_stage1_archive_from_fly122/  # raw + logs + SHA256SUMS; fly90 is archive-only
+      primary_cohort:
+        n: 128
+        artifact: experiments/manifests/v4/V4-P001_primary_cohort.json
+        content_sha256: c084b22f8f935580dbe59c7a058c3f91660fa4f8d6d895802c4dae44b4d30ffe
+        sources: {synthetic: 81, autoformalizer: 34, human: 13}
+        error_categories: {tactic_failure: 67, unsolved_goals: 24, elaboration_type_mismatch: 16, unknown_identifier: 13, other_semantic_lean_failure: 4, typeclass_synthesis: 4}
+      diagnostic_derangement:
+        artifact: experiments/manifests/v4/V4-P001_diagnostic_derangement.json
+        content_sha256: 3ec9c1ff2ca32aa844ad0223c675c19ba97a054c407a645998e94404ebbfbf9e
+        mapping_sha256: efcd8db58bddebf57938afddc5d05ed602eacb49800c66d8690b6c1ebbb525ce
+        version: v4-derange-1
+        same_error_category_match_rate: 1.0
+        fallback_count: 0
+        donor_reuse_count: 0
+        no_self_diagnostic: true
+        diagnostic_token_length_difference: {n: 128, min: 0, median: 19, p90: 83, p95: 121, p99: 490, max: 498, mean: 39.3}
+      second_stage_plan:
+        artifact: experiments/manifests/v4/V4-P001_second_stage_plan.json
+        content_sha256: 27b8fa4eb62b2d25305cb9451eade664128a24ab5ef1702197a477b564aa3277
+        plan_sha256: c278707d4a67c8fd8201e401c347a66dd2913060995189787d6022b03e59934d
+        n_theorems: 128
+        n_candidates: 512
+        arm_schedule_hash: 9e090325ac19cf54cb5a7d68507fb97d632a49802e15c2b5dc21ce4ae617da73
+        second_stage_seed_hash: 06ba33b803201e8102b5537011bd242eca59b24768d69f256ac92335a6e6986d
+        balance: "32 of each arm in each of the 4 positions"
+        max_context_tokens_with_response: 5924
+        donor_is_a_different_theorem_for_every_rank: true
+        n_byte_identical_donor_diagnostics: 0
+      stage1_freeze_record:
+        artifact: experiments/manifests/v4/V4-P001_stage1_freeze.json
+        status: FROZEN
+        structural_checks: "13 of 13 passed"
+      boundary_validation:
+        artifact: experiments/manifests/v4/V4-P001_boundary_validation.json
+        content_sha256: cdd14e0ec938d610a5c846af10961f95b36ca7a78cd0e8739909971cdcfafa58
+        status: PASS
+        checks: "29 of 29 passed"
+        second_stage_raw_present: false
+      second_stage_candidates_generated: 0
+      second_stage_verifier_calls: 0
+      sealed_components_touched: 0
+      sealed_statements_touched: 0
+      reports: "descriptive cohort facts only (owner §17); no C-A, C-B or C-D outcome exists and none was computed"
+      next: "owner review of the frozen boundary; --stage second remains unauthorized and was not invoked"
     not_authorized_here:
       - "no RL, SFT, checkpoint update, controller training or final-holdout use"
       - "no V4-R### run: V4-R001 exists only as a downstream branch in the preregistration text"

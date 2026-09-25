@@ -1,0 +1,454 @@
+{
+  "artifact_type": "v4_p001_boundary_validation",
+  "schema_version": "v4-p001-boundary-1",
+  "experiment_id": "V4-P001",
+  "boundary": "stage1_screening -> stage2_freeze -> stage2_generation",
+  "purpose": "the owner-required deterministic check that must pass before any second-stage generation: cohort membership, error taxonomy, prompt fit, derangement, seed set, arm schedule, sealed reserve",
+  "created_at_utc": "2026-09-25T14:00:42.212522+00:00",
+  "host": "ubuntu",
+  "git_revision": "a18308f326ced4a95b8926cbb1cd192af68c9a60",
+  "git_branch": "v3-jev-rl-controller",
+  "script_versions": {
+    "scripts/v4_p001_rollout.py": "5e506e0a695160fd813a94d3d1015bc2b89ea7e0a120e8e8a1f58d7fffdcd816",
+    "scripts/v4_p001_spec.py": "5f6f8a0ed46ec3df9ed29ca9ca5dc33ed87b8efddbe202dff988e5adc783573d",
+    "scripts/promptset_rollout_probe.py": "7dd2cf4c1a3499ca7094ba9a0482af4b5c7e2683d2872d819285054fad013dd0",
+    "src/tinylean_rl/evaluation/v4_prompts.py": "0b7a87458dd7a6124bb28ab5c98ade6f450e31f8cc887304b5a500713c5a6d2a",
+    "src/tinylean_rl/evaluation/v4_diagnostics.py": "c715044143368721d8ffc8253c0679bda83ee3c4f093f89b038e235b527f47a1",
+    "src/tinylean_rl/evaluation/v4_derange.py": "6becceeb0d1cb0fa4cb091fda86b84b6743d19c79d7843f8fc2d11ee66d3814d",
+    "src/tinylean_rl/evaluation/v4_schedule.py": "3441a7c91ed70706c457f0afebcdf6811a62fcedb6d6057a86c1a0eeb049d37e",
+    "src/tinylean_rl/evaluation/v4_seeds.py": "c63371769be9aaf2874f37530925ffafebbb2e2887bb1396c8c2947e4c77c3f2",
+    "src/tinylean_rl/evaluation/v4_taxonomy.py": "45c4debc8441afdfbaffe5d627f06f00c06c5d98d10ec48161550ac5f8674bc1",
+    "src/tinylean_rl/evaluation/v4_stats.py": "bc7f4b7ee6c7c626f297c2ef3c020cf8a31a287b80fca21b3e8e42b10c2f2f25"
+  },
+  "checks": [
+    {
+      "check": "boundary_artifacts_present",
+      "pass": true,
+      "detail": "missing: []"
+    },
+    {
+      "check": "self_hash::primary_cohort",
+      "pass": true,
+      "detail": "recorded c084b22f8f935580..."
+    },
+    {
+      "check": "self_hash::diagnostic_derangement",
+      "pass": true,
+      "detail": "recorded 3ec9c1ff2ca32aa8..."
+    },
+    {
+      "check": "self_hash::second_stage_plan",
+      "pass": true,
+      "detail": "recorded 27b8fa4eb62b2d25..."
+    },
+    {
+      "check": "second_stage_candidates_generated_is_zero",
+      "pass": true,
+      "detail": "the boundary artifacts may only be written before any second-stage generation"
+    },
+    {
+      "check": "boundary_artifact_type",
+      "pass": true,
+      "detail": "an unexpected artifact type at a boundary path"
+    },
+    {
+      "check": "screening_artifact_consumable",
+      "pass": true,
+      "detail": "464 screening rows, 128 cohort members"
+    },
+    {
+      "check": "screening_raw_hash_matches",
+      "pass": true,
+      "detail": "on disk fc8aa0a50a11d570... vs recorded fc8aa0a50a11d570..."
+    },
+    {
+      "check": "cohort_is_exactly_128",
+      "pass": true,
+      "detail": "128 members"
+    },
+    {
+      "check": "every_screened_theorem_is_a_pool_member",
+      "pass": true,
+      "detail": "a screening row names a theorem outside the frozen pool"
+    },
+    {
+      "check": "cohort_membership_matches_the_artifact",
+      "pass": true,
+      "detail": "the artifact's member list is not the cohort the raw artifact selects"
+    },
+    {
+      "check": "cohort_categories_are_primary",
+      "pass": true,
+      "detail": "{'verified': 0, 'elaboration_type_mismatch': 16, 'unsolved_goals': 24, 'tactic_failure': 67, 'unknown_identifier': 13, 'typeclass_synthesis': 4, 'other_semantic_lean_failure': 4, 'syntax_parser': 0, 'format_no_code': 0, 'timeout_resource': 0, 'infra': 0}"
+    },
+    {
+      "check": "cohort_ranks_are_contiguous",
+      "pass": true,
+      "detail": "formal ranks are not 1..128"
+    },
+    {
+      "check": "derangement_recomputes",
+      "pass": true,
+      "detail": "recomputed mapping efcd8db58bddebf5... vs recorded efcd8db58bddebf5..."
+    },
+    {
+      "check": "derangement_no_self_diagnostic",
+      "pass": true,
+      "detail": "0 self-diagnostic(s)"
+    },
+    {
+      "check": "derangement_every_recipient_assigned_once",
+      "pass": true,
+      "detail": "128 mapping rows"
+    },
+    {
+      "check": "second_stage_plan_recomputes",
+      "pass": true,
+      "detail": "recomputed plan c278707d4a67c8fd... vs recorded c278707d4a67c8fd..."
+    },
+    {
+      "check": "arm_a_is_the_screening_prompt",
+      "pass": true,
+      "detail": "an Arm-A prompt is not the theorem's screening prompt"
+    },
+    {
+      "check": "arm_c_is_b_plus_the_own_diagnostic_and_d_is_c_with_the_donor",
+      "pass": true,
+      "detail": "the Arm C/D invariants do not hold for every theorem"
+    },
+    {
+      "check": "arm_d_uses_the_derangement_donor",
+      "pass": true,
+      "detail": "Arm D does not carry the derangement-assigned donor diagnostic"
+    },
+    {
+      "check": "context_fits_all_arms",
+      "pass": true,
+      "detail": "worst case 5924 tokens vs the frozen window 10240"
+    },
+    {
+      "check": "second_stage_seeds_are_the_frozen_stream",
+      "pass": true,
+      "detail": "recomputed 06ba33b803201e81... vs frozen 06ba33b803201e81..."
+    },
+    {
+      "check": "second_stage_seeds_are_unique_and_disjoint_from_screening",
+      "pass": true,
+      "detail": "a second-stage seed repeats another second-stage or a screening seed"
+    },
+    {
+      "check": "arm_order_is_the_frozen_schedule",
+      "pass": true,
+      "detail": "recomputed 9e090325ac19cf54... vs recorded 9e090325ac19cf54..."
+    },
+    {
+      "check": "arm_schedule_is_position_balanced",
+      "pass": true,
+      "detail": "{'A_FRESH_RETRY': [32, 32, 32, 32], 'B_SELF_REVISION': [32, 32, 32, 32], 'C_VERIFIER_REPAIR': [32, 32, 32, 32], 'D_MISMATCHED_DIAGNOSTIC': [32, 32, 32, 32]}"
+    },
+    {
+      "check": "plan_candidate_count",
+      "pass": true,
+      "detail": "512 candidates"
+    },
+    {
+      "check": "hash_chain",
+      "pass": true,
+      "detail": "the boundary artifacts do not reference each other's content hashes"
+    },
+    {
+      "check": "sealed_reserve_untouched",
+      "pass": true,
+      "detail": "pool checks {'sealed_components_touched': 0, 'sealed_statements_touched': 0, 'v3_formal_sample_components_touched': 0, 'v3_formal_sample_statements_touched': 0, 'a_reserve_components_touched': 0, 'b1_audit_components_touched': 0, 'b1_reserved_ids_components_touched': 0, 'b003_buffer_components_touched': 0, 'all_representatives_prompt_filter_pass': True, 'screening_ranks_contiguous': True, 'screening_keys_unique': True, 'one_representative_per_component': True, 'tier1_block_precedes_tier2_block': True}"
+    },
+    {
+      "check": "frozen_design_checks_all_pass",
+      "pass": true,
+      "detail": "[]"
+    }
+  ],
+  "n_checks": 29,
+  "n_failed": 0,
+  "status": "PASS",
+  "artifacts": {
+    "primary_cohort": {
+      "path": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout/V4-P001_primary_cohort.json",
+      "sha256": "c6b71c245e19cf8d260e0e57214051e233804ed03e1148c7dfe86fa52f9cb876",
+      "content_sha256": "c084b22f8f935580dbe59c7a058c3f91660fa4f8d6d895802c4dae44b4d30ffe"
+    },
+    "diagnostic_derangement": {
+      "path": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout/V4-P001_diagnostic_derangement.json",
+      "sha256": "e9d882b521f5f925e59dec41995ca778ddda251f283ee374d01b0f83fcf51725",
+      "content_sha256": "3ec9c1ff2ca32aa844ad0223c675c19ba97a054c407a645998e94404ebbfbf9e"
+    },
+    "second_stage_plan": {
+      "path": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout/V4-P001_second_stage_plan.json",
+      "sha256": "9d8fddfc61e68e4244592c88fb404a9cc64b3cb6966c8e1796f8e9b1130bbce4",
+      "content_sha256": "27b8fa4eb62b2d25305cb9451eade664128a24ab5ef1702197a477b564aa3277"
+    }
+  },
+  "screening_raw": {
+    "path": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout/v4_p001_screening_raw.jsonl",
+    "sha256": "fc8aa0a50a11d5709e96947f4d3a1b703941f4af1f177ae690bf7f64caf42f67",
+    "rows": 464
+  },
+  "second_stage_raw": {
+    "path": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout/v4_p001_second_stage_raw.jsonl",
+    "present": false,
+    "rows": 0
+  },
+  "second_stage_candidates_generated": 0,
+  "frozen_design_checks": [
+    {
+      "check": "pool_size",
+      "pass": true,
+      "detail": "1371 members vs capacity 1371"
+    },
+    {
+      "check": "pool_hash_recomputes",
+      "pass": true,
+      "detail": "recomputed pool hash != committed 7533c94b4d1969f1..."
+    },
+    {
+      "check": "order_hash_recomputes",
+      "pass": true,
+      "detail": "order hash != ce329b36b5e7ee47..."
+    },
+    {
+      "check": "screening_order_keys_recompute",
+      "pass": true,
+      "detail": "a screening_order_key is not sha256(f'{base_seed}|{statement_id}')"
+    },
+    {
+      "check": "screening_ranks_are_the_frozen_sequence",
+      "pass": true,
+      "detail": "screening_rank is not the contiguous frozen order"
+    },
+    {
+      "check": "one_representative_per_component",
+      "pass": true,
+      "detail": "duplicate component_id or statement_id in the pool"
+    },
+    {
+      "check": "pool_self_checks_passed",
+      "pass": true,
+      "detail": "{'sealed_components_touched': 0, 'sealed_statements_touched': 0, 'v3_formal_sample_components_touched': 0, 'v3_formal_sample_statements_touched': 0, 'a_reserve_components_touched': 0, 'b1_audit_components_touched': 0, 'b1_reserved_ids_components_touched': 0, 'b003_buffer_components_touched': 0, 'all_representatives_prompt_filter_pass': True, 'screening_ranks_contiguous': True, 'screening_keys_unique': True, 'one_representative_per_component': True, 'tier1_block_precedes_tier2_block': True}"
+    },
+    {
+      "check": "sealed_reserve_untouched",
+      "pass": true,
+      "detail": "the pool touched a sealed V3-FINAL-HOLDOUT component or statement"
+    },
+    {
+      "check": "v3_formal_sample_untouched",
+      "pass": true,
+      "detail": "the pool overlaps the frozen V3 formal sample"
+    },
+    {
+      "check": "screening_budget_frozen",
+      "pass": true,
+      "detail": "{'n_primary_required': 128, 'primary_rate_floor': 0.2, 'max_screens': 640, 'rule': 'ceil(128 / floor); if 128 primary failures are not collected within max_screens the run STOPS and reports before any second-stage generation', 'expected_screens': {'0.2': {'expected_primary_failures_in_tier1': 90.6, 'screens_needed_for_128_at_this_rate': 640, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.25': {'expected_primary_failures_in_tier1': 113.2, 'screens_needed_for_128_at_this_rate': 512, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.29': {'expected_primary_failures_in_tier1': 131.4, 'screens_needed_for_128_at_this_rate': 442, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.3125': {'expected_primary_failures_in_tier1': 141.6, 'screens_needed_for_128_at_this_rate': 410, 'within_frozen_budget': True, 'within_pool_capacity': True}}}"
+    },
+    {
+      "check": "screening_seed_stream_matches_the_formula",
+      "pass": true,
+      "detail": "the frozen screening schedule is not first_stage_seed(1..640)"
+    },
+    {
+      "check": "screening_schedule_covers_the_frozen_order",
+      "pass": true,
+      "detail": "the seed schedule's statement order is not the pool's screening order"
+    },
+    {
+      "check": "second_stage_seed_stream_matches_the_formula",
+      "pass": true,
+      "detail": "the frozen paired seeds are not second_stage_seed(1..128)"
+    },
+    {
+      "check": "frozen_seed_hashes",
+      "pass": true,
+      "detail": "screening=2efb53d8525b7ced... paired=06ba33b803201e81..."
+    },
+    {
+      "check": "second_stage_seeds_do_not_repeat_screening_seeds",
+      "pass": true,
+      "detail": "a second-stage seed repeats a screening seed"
+    },
+    {
+      "check": "arm_schedule_hash_recomputes",
+      "pass": true,
+      "detail": "recomputed 9e090325ac19cf54... != committed 9e090325ac19cf54..."
+    },
+    {
+      "check": "arm_schedule_hash_is_the_frozen_constant",
+      "pass": true,
+      "detail": "9e090325ac19cf54cb5a7d68507fb97d632a49802e15c2b5dc21ce4ae617da73"
+    },
+    {
+      "check": "arm_schedule_is_a_permutation_at_every_rank",
+      "pass": true,
+      "detail": "an arm order is not a permutation of the four arms"
+    },
+    {
+      "check": "arm_schedule_is_position_balanced",
+      "pass": true,
+      "detail": "{'A_FRESH_RETRY': [32, 32, 32, 32], 'B_SELF_REVISION': [32, 32, 32, 32], 'C_VERIFIER_REPAIR': [32, 32, 32, 32], 'D_MISMATCHED_DIAGNOSTIC': [32, 32, 32, 32]}"
+    },
+    {
+      "check": "arm_schedule_predecessors_balanced",
+      "pass": true,
+      "detail": "min=30 max=33"
+    },
+    {
+      "check": "four_arms_in_the_prompt_audit",
+      "pass": true,
+      "detail": "['A_FRESH_RETRY', 'B_SELF_REVISION', 'C_VERIFIER_REPAIR', 'D_MISMATCHED_DIAGNOSTIC']"
+    },
+    {
+      "check": "arm_a_hash_is_the_frozen_three_arm_hash",
+      "pass": true,
+      "detail": "the Arm-A rendered template moved"
+    },
+    {
+      "check": "arm_d_invariants_hold",
+      "pass": true,
+      "detail": "{'c_is_b_plus_own_diagnostic': True, 'd_is_b_plus_donor_diagnostic': True, 'd_equals_c_with_own_replaced_by_donor': True, 'c_and_d_share_prefix_before_diagnostic': True, 'histories_identical_except_the_diagnostic': True}"
+    },
+    {
+      "check": "arm_d_equals_arm_c_with_the_donor_diagnostic",
+      "pass": true,
+      "detail": "Arm D is not Arm C with the own diagnostic replaced by a donor diagnostic"
+    },
+    {
+      "check": "arm_a_has_no_previous_attempt_reference",
+      "pass": true,
+      "detail": "Arm A mentions a previous attempt"
+    },
+    {
+      "check": "arm_b_c_suffix_invariant",
+      "pass": true,
+      "detail": "C is not B plus the diagnostic"
+    },
+    {
+      "check": "prompt_lengths_hold_for_the_whole_pool",
+      "pass": true,
+      "detail": "the pool-wide prompt checks did not all hold when the audit ran"
+    },
+    {
+      "check": "arm_a_canonical_reproduction_is_complete",
+      "pass": true,
+      "detail": "Arm A did not reproduce the canonical historical prompt on 100% of the audited rows"
+    },
+    {
+      "check": "renderer_is_not_claimed_as_the_native_chat_format",
+      "pass": true,
+      "detail": "v4-prompt-1 is a NEW inference-only message convention of the same shape as the upstream pathway -- assistant turn with the extracted failed proof, then a user turn with the correction request (and, i"
+    },
+    {
+      "check": "all_provenance_checks_passed",
+      "pass": true,
+      "detail": "{}"
+    },
+    {
+      "check": "renderer_version_frozen",
+      "pass": true,
+      "detail": "v4-prompt-1 != v4-prompt-1"
+    },
+    {
+      "check": "normalization_version_frozen",
+      "pass": true,
+      "detail": "v4-diag-1"
+    },
+    {
+      "check": "derangement_version_frozen",
+      "pass": true,
+      "detail": "v4-derange-1"
+    },
+    {
+      "check": "context_all_arms_fit",
+      "pass": true,
+      "detail": "{}"
+    },
+    {
+      "check": "worst_case_context_is_within_the_window",
+      "pass": true,
+      "detail": "worst case {'worst_case_prompt_tokens': 5554, 'max_response_tokens': 4096, 'worst_case_total_tokens': 9650, 'max_model_len': 10240, 'headroom_tokens': 590, 'fits': True} vs 10240"
+    },
+    {
+      "check": "smoke_engine_matches_this_run",
+      "pass": true,
+      "detail": "{'vllm_version': '0.9.1', 'torch_version': '2.7.0+cu126', 'max_model_len': 10240, 'max_num_batched_tokens': 10240, 'gpu_memory_utilization': 0.85, 'max_num_seqs': 256, 'tensor_parallel_size': 1, 'dtype': 'auto', 'load_seconds': 118.77}"
+    },
+    {
+      "check": "smoke_prompt_is_this_designs_worst_case",
+      "pass": true,
+      "detail": "the measured smoke prompt is not the worst-case Arm-C prompt of this design"
+    },
+    {
+      "check": "verifier_recovery_ceiling",
+      "pass": true,
+      "detail": "{'max_recoveries_per_run': 192, 'max_recoveries_per_theorem': 3, 'per_run_semantics': 'the run continues through routine recovery; at the ceiling it fails closed with an aborted summary that keeps every finished candidate and stays resumable', 'per_theorem_semantics': \"at most one recovery per arm candidate, so three recoveries exhaust a theorem's exposure; a theorem that exceeds it has its remaining arm candidates marked INFRA_CENSORED (missing, never a failure) and the run continues - one pathological theorem cannot consume the run budget\", 'recovery_is_not_a_candidate_retry': True, 'recovery_trigger': 'a non-conclusive candidate outcome (timeout / 5xx / unhealthy / unresolved), never a score'}"
+    },
+    {
+      "check": "recovery_is_not_a_candidate_retry",
+      "pass": true,
+      "detail": "the plan does not forbid adding an attempt through recovery"
+    },
+    {
+      "check": "gate_constants_are_the_frozen_ones",
+      "pass": true,
+      "detail": "a gate constant moved"
+    },
+    {
+      "check": "budget_arithmetic",
+      "pass": true,
+      "detail": "512 / 1152"
+    },
+    {
+      "check": "model_identity_frozen",
+      "pass": true,
+      "detail": "{'repo_id': 'AI-MO/Kimina-Prover-Distill-0.6B', 'revision': '332e8a5259d1bdfda19d7c7f339f30804813cd3a', 'dir': 'models/weights/kimina_distill_0_6b', 'weights_filename': 'model.safetensors', 'weights_sha256': '34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2'}"
+    },
+    {
+      "check": "pool_pin::train.parquet",
+      "pass": true,
+      "detail": "data/processed/p3_promptset/prompt_sets/AI-MO/Kimina-Prover-Promptset/train.parquet is 6950337b6093213b... but the frozen pool pins 6950337b6093213b..."
+    },
+    {
+      "check": "theta0_on_disk_matches_frozen",
+      "pass": true,
+      "detail": "/home/fly/ZJQ/TinyLean-RL/models/weights/kimina_distill_0_6b/model.safetensors hash did not equal the frozen 34e6e630f564d330..."
+    },
+    {
+      "check": "registry_pin::pool_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_pool.json is 3540590871334455... but experiments/manifests/v4/registry.yaml pins 3540590871334455..."
+    },
+    {
+      "check": "registry_pin::seeds_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_seeds.json is e0d18818badc96f6... but experiments/manifests/v4/registry.yaml pins e0d18818badc96f6..."
+    },
+    {
+      "check": "registry_pin::schedule_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_arm_schedule.json is 2dc85d0af0c44309... but experiments/manifests/v4/registry.yaml pins 2dc85d0af0c44309..."
+    },
+    {
+      "check": "registry_pin::prompt_audit_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_prompt_audit.json is c19537daf039c279... but experiments/manifests/v4/registry.yaml pins c19537daf039c279..."
+    },
+    {
+      "check": "registry_pin::context_smoke_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_context_smoke.json is aea5a060e05e5d87... but experiments/manifests/v4/registry.yaml pins aea5a060e05e5d87..."
+    },
+    {
+      "check": "registry_pin::verifier_plan_sha256",
+      "pass": true,
+      "detail": "experiments/manifests/v4/v4_p001_verifier_plan.json is 22e8f578b3a4f3a6... but experiments/manifests/v4/registry.yaml pins 22e8f578b3a4f3a6..."
+    }
+  ],
+  "content_sha256": "cdd14e0ec938d610a5c846af10961f95b36ca7a78cd0e8739909971cdcfafa58"
+}

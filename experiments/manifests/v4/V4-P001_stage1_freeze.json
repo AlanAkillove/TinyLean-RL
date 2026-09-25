@@ -1,0 +1,195 @@
+{
+  "artifact_type": "V4-P001_stage1_freeze",
+  "experiment_id": "V4-P001",
+  "created_at_utc": "2026-09-25T13:58:34.772351+00:00",
+  "validated_commit": "a18308f326ced4a95b8926cbb1cd192af68c9a60",
+  "raw_artifact": {
+    "path": "runs/v4_p001/rollout/v4_p001_screening_raw.jsonl",
+    "sha256": "fc8aa0a50a11d5709e96947f4d3a1b703941f4af1f177ae690bf7f64caf42f67",
+    "bytes": 6601863,
+    "rows": 464,
+    "run_id": "20260925T125540Z",
+    "created_at_min": "2026-09-25T12:57:33.040498+00:00",
+    "created_at_max": "2026-09-25T13:54:08.676318+00:00"
+  },
+  "screening": {
+    "screens_used": 464,
+    "screens_remaining_in_budget": 176,
+    "status_counts": {
+      "INITIAL_SUCCESS": 67,
+      "PRIMARY_SEMANTIC_FAILURE": 130,
+      "SYNTAX_FAILURE": 6,
+      "FORMAT_FAILURE": 247,
+      "TIMEOUT_OR_RESOURCE": 9,
+      "INFRA_CENSORED": 5,
+      "CONTEXT_INELIGIBLE": 0
+    },
+    "cohort_size": 128,
+    "primary_128_reached_at_screening_rank": 455,
+    "primaries_after_the_cohort_closed": [
+      {
+        "screening_rank": 463,
+        "statement_id": "bf211e99-508c-42b2-959f-e9d6787cf8f2",
+        "screening_status": "PRIMARY_SEMANTIC_FAILURE",
+        "note": "finalized in the same generation chunk as primary #128; not part of the cohort and never a backup pool"
+      },
+      {
+        "screening_rank": 464,
+        "statement_id": "b0a82ae1-cfb2-4337-85d6-3102759e5e0f",
+        "screening_status": "PRIMARY_SEMANTIC_FAILURE",
+        "note": "finalized in the same generation chunk as primary #128; not part of the cohort and never a backup pool"
+      }
+    ],
+    "generation_seconds": 3439.2
+  },
+  "primary_cohort": {
+    "N": 128,
+    "sources": {
+      "autoformalizer": 34,
+      "synthetic": 81,
+      "human": 13
+    },
+    "error_categories": {
+      "elaboration_type_mismatch": 16,
+      "unknown_identifier": 13,
+      "unsolved_goals": 24,
+      "tactic_failure": 67,
+      "other_semantic_lean_failure": 4,
+      "typeclass_synthesis": 4
+    },
+    "failed_proof_tokens": {
+      "n": 128,
+      "min": 45,
+      "p50": 366,
+      "p95": 866,
+      "p99": 982,
+      "max": 991,
+      "mean": 412.8
+    },
+    "diagnostic_tokens": {
+      "n": 128,
+      "min": 5,
+      "p50": 80,
+      "p95": 275,
+      "p99": 512,
+      "max": 512,
+      "mean": 104.9
+    },
+    "prompt_tokens": {
+      "n": 128,
+      "min": 119,
+      "p50": 241,
+      "p95": 370,
+      "p99": 495,
+      "max": 672,
+      "mean": 253.1
+    }
+  },
+  "hashes": {
+    "screening_order_hash": "ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15",
+    "pool_hash": "7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c",
+    "screening_seed_hash": "2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51",
+    "theta0_weights_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "script_versions": {
+      "scripts/v4_p001_rollout.py": "5e506e0a695160fd813a94d3d1015bc2b89ea7e0a120e8e8a1f58d7fffdcd816",
+      "scripts/v4_p001_spec.py": "5f6f8a0ed46ec3df9ed29ca9ca5dc33ed87b8efddbe202dff988e5adc783573d",
+      "scripts/promptset_rollout_probe.py": "7dd2cf4c1a3499ca7094ba9a0482af4b5c7e2683d2872d819285054fad013dd0",
+      "src/tinylean_rl/evaluation/v4_prompts.py": "0b7a87458dd7a6124bb28ab5c98ade6f450e31f8cc887304b5a500713c5a6d2a",
+      "src/tinylean_rl/evaluation/v4_diagnostics.py": "c715044143368721d8ffc8253c0679bda83ee3c4f093f89b038e235b527f47a1",
+      "src/tinylean_rl/evaluation/v4_derange.py": "6becceeb0d1cb0fa4cb091fda86b84b6743d19c79d7843f8fc2d11ee66d3814d",
+      "src/tinylean_rl/evaluation/v4_schedule.py": "3441a7c91ed70706c457f0afebcdf6811a62fcedb6d6057a86c1a0eeb049d37e",
+      "src/tinylean_rl/evaluation/v4_seeds.py": "c63371769be9aaf2874f37530925ffafebbb2e2887bb1396c8c2947e4c77c3f2",
+      "src/tinylean_rl/evaluation/v4_taxonomy.py": "45c4debc8441afdfbaffe5d627f06f00c06c5d98d10ec48161550ac5f8674bc1",
+      "src/tinylean_rl/evaluation/v4_stats.py": "bc7f4b7ee6c7c626f297c2ef3c020cf8a31a287b80fca21b3e8e42b10c2f2f25"
+    },
+    "summary_sha256": "42270c120147e132fab0f7d9ce39bc78fe725d270438bd24ce7cd1cddebd0810",
+    "recovery_log_sha256": "221f0c6d96cbe299de20081e3f8e9781e8408ad1d9bce29e7b768569015c66b5",
+    "verifier_events_sha256": "6dd8710aeb7fd1983c4be459b48baf178a97567b77c3a7c6e1f5adc2ab66252c",
+    "frozen_settings_sha256": "f650a128c5093abfe62054b0eb62d9d20c0bda8cb07aee3eed14fa0eabfd3f39",
+    "sealed_reserve_touch_counts": {
+      "sealed_components_touched": 0,
+      "sealed_statements_touched": 0,
+      "v3_formal_sample_components_touched": 0,
+      "v3_formal_sample_statements_touched": 0,
+      "a_reserve_components_touched": 0,
+      "b1_audit_components_touched": 0,
+      "b1_reserved_ids_components_touched": 0,
+      "b003_buffer_components_touched": 0
+    }
+  },
+  "infrastructure": {
+    "recoveries_attempted": 5,
+    "recoveries_succeeded": 5,
+    "recoveries_allowed": 192,
+    "recoveries_by_theorem": {
+      "52": 1,
+      "84": 1,
+      "105": 1,
+      "385": 1,
+      "413": 1
+    },
+    "dedicated_instance": {
+      "present": true,
+      "running": true,
+      "image": "projectnumina/kimina-lean-server:2.0.0",
+      "container_id": "67627202fd42",
+      "env": {
+        "LEAN_SERVER_MAX_REPLS": "1",
+        "LEAN_SERVER_MAX_REPL_USES": "-1",
+        "LEAN_SERVER_MAX_REPL_MEM": "8G",
+        "LEAN_SERVER_MAX_WAIT": "60",
+        "LEAN_SERVER_PORT": "8000"
+      },
+      "published": [
+        "127.0.0.1:8010"
+      ],
+      "ports": {
+        "8000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "8010"
+          }
+        ]
+      }
+    },
+    "verifier_health": {
+      "health_url": "http://127.0.0.1:8010/health",
+      "endpoint": "http://127.0.0.1:8010",
+      "health_status": 200,
+      "health_body": "{\"status\":\"ok\"}",
+      "canary": {
+        "verified": true,
+        "status": "verified",
+        "detail": "",
+        "seconds": 0.11,
+        "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+        "uses_formal_theorem": false,
+        "budget_s": 600.0
+      }
+    },
+    "vllm_version": "0.9.1",
+    "peak_vram_mib_nvidia_smi_observed": 9206,
+    "torch_peak_allocated_gb_reported": 0.0,
+    "torch_counter_note": "the runner resets the torch peak counter after the engine is built, so it reads ~0 when vLLM allocates its pools at load time; the nvidia-smi observation is the peak of record"
+  },
+  "structural_checks": {
+    "no_duplicate_screening_rank": true,
+    "screening_ranks_are_contiguous_from_one": true,
+    "every_row_is_within_the_frozen_plan": true,
+    "seeds_are_first_stage_seed_of_the_rank": true,
+    "seeds_are_unique": true,
+    "model_hash_and_revision_match_the_frozen_theta0": true,
+    "prompt_hashes_and_token_counts_match_the_pinned_parquet": true,
+    "cohort_is_the_first_128_primary_failures_in_frozen_order": true,
+    "no_primary_was_reclassified_by_hand": true,
+    "primary_eligibility_is_the_frozen_predicate": true,
+    "cohort_carries_attributable_proofs_and_diagnostics": true,
+    "sealed_reserve_and_other_exclusions_untouched": true,
+    "candidate_and_verifier_budget_respected": true
+  },
+  "n_checks": 13,
+  "n_failed": 0,
+  "status": "FROZEN",
+  "failing_checks": [],
+  "note": "Stage-1 raw freeze, owner §10. The raw generations stay in runs/ (gitignored) and are pinned by sha256 here. No D mapping and no second-stage prompt generation has run at the time this record was written."
+}

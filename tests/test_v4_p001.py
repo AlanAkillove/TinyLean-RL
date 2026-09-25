@@ -702,3 +702,174 @@ def test_the_pool_order_is_the_frozen_outcome_free_hash_permutation() -> None:
     keys = [key(member) for member in members]
     assert keys == sorted(keys)
     assert len({member["screening_order_key"] for member in members}) == len(members)
+
+
+# --- Stage-1 formal screening result: cohort, derangement, plan (owner §10-§16) --------------------
+#
+# ``runs/`` is gitignored, so the raw artifact is pinned by sha256 in the freeze record and the
+# owner-required boundary artifacts are committed. Every assertion below recomputes from the
+# committed manifests only, so the same checks run on both hosts.
+
+STAGE1_SOURCE_COMMIT = "a18308f326ced4a95b8926cbb1cd192af68c9a60"
+STAGE1_RAW_SHA256 = "fc8aa0a50a11d5709e96947f4d3a1b703941f4af1f177ae690bf7f64caf42f67"
+STAGE1_COHORT = "V4-P001_primary_cohort.json"
+STAGE1_DERANGEMENT = "V4-P001_diagnostic_derangement.json"
+STAGE1_PLAN = "V4-P001_second_stage_plan.json"
+
+
+def _unseal(payload: dict) -> str:
+    """Recompute an artifact's own content hash from its committed bytes (owner §10/§16)."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import v4_p001_spec as S
+    return S.sha({key: value for key, value in payload.items() if key != "content_sha256"})
+
+
+def test_the_stage1_freeze_record_passes_its_structural_checks() -> None:
+    record = v4_manifest("V4-P001_stage1_freeze.json")
+    assert record["artifact_type"] == "V4-P001_stage1_freeze"
+    assert record["status"] == "FROZEN"
+    assert record["n_checks"] == 13 and record["n_failed"] == 0 and record["failing_checks"] == []
+    assert all(record["structural_checks"].values())
+    assert record["raw_artifact"]["sha256"] == STAGE1_RAW_SHA256
+    assert record["raw_artifact"]["rows"] == record["screening"]["screens_used"] == 464
+    assert record["screening"]["primary_128_reached_at_screening_rank"] == 455
+    assert record["primary_cohort"]["N"] == 128
+    assert {row["screening_rank"] for row in
+            record["screening"]["primaries_after_the_cohort_closed"]} == {463, 464}
+    # the record is the §10 freeze of the raw artifact; it pins the taxonomy counts that decide
+    # whether the cohort is usable, not the outcomes of the not-yet-existing second stage
+    assert record["screening"]["status_counts"]["PRIMARY_SEMANTIC_FAILURE"] == 130
+    assert sum(record["screening"]["status_counts"].values()) == 464
+
+
+def test_the_frozen_boundary_artifacts_self_verify_and_generated_nothing() -> None:
+    for name in (STAGE1_COHORT, STAGE1_DERANGEMENT, STAGE1_PLAN):
+        artifact = v4_manifest(name)
+        assert artifact["content_sha256"] == _unseal(artifact), name
+        assert artifact["second_stage_candidates_generated"] == 0, name
+        assert artifact["git_revision"] == STAGE1_SOURCE_COMMIT, name
+        assert artifact["frozen_settings_sha256"], name
+
+
+def test_the_cohort_is_the_first_128_primary_failures_in_the_frozen_order() -> None:
+    cohort = v4_manifest(STAGE1_COHORT)
+    members = cohort["members"]
+    assert cohort["cohort_size"] == len(members) == 128
+    assert cohort["formal_ranks"] == [member["formal_rank"] for member in members]
+    assert cohort["formal_ranks"] == list(range(1, 129))
+    assert cohort["screening_raw_sha256"] == STAGE1_RAW_SHA256
+    assert cohort["screening_rows"] == 464 and cohort["screening_max_screens"] == 640
+    assert cohort["screening_status_counts"]["PRIMARY_SEMANTIC_FAILURE"] == 130
+    ranks = [member["screening_rank"] for member in members]
+    assert ranks == sorted(ranks) and len(set(ranks)) == 128 and 455 in ranks
+    pool = v4_manifest("v4_p001_pool.json")
+    pool_by_statement = {member["statement_id"]: member for member in pool["members"]}
+    for member in members:
+        assert member["screening_status"] == "PRIMARY_SEMANTIC_FAILURE"
+        assert member["error_category"] in PRIMARY_CATEGORIES
+        assert member["statement_id"] in pool_by_statement           # screened, never re-drawn
+        assert member["component_id"] == pool_by_statement[member["statement_id"]]["component_id"]
+        assert member["completion_sha256"] and member["failed_proof_sha256"]
+        assert member["failed_proof_tokens"] > 0 and member["diagnostic_tokens"] > 0
+        assert member["screening_verify_status"] != "verified"
+    assert len({member["component_id"] for member in members}) == 128
+    # the rows that finalized in the same chunk as primary #128 are not a backup pool
+    beyond = cohort["screened_after_the_cohort_closed"]
+    assert [row["screening_rank"] for row in beyond] == list(range(456, 465))
+    assert not ({row["statement_id"] for row in beyond}
+                & {member["statement_id"] for member in members})
+    assert sum(1 for row in beyond
+               if row["screening_status"] == "PRIMARY_SEMANTIC_FAILURE") == 2
+
+
+def test_the_derangement_is_the_frozen_v4_derange_1_mapping_of_the_cohort() -> None:
+    cohort = v4_manifest(STAGE1_COHORT)
+    record = v4_manifest(STAGE1_DERANGEMENT)
+    mapping = record["derangement"]["mapping"]
+    assert record["version"] == "v4-derange-1"
+    assert record["version"] == v4_derange.DERANGEMENT_VERSION
+    assert record["version_matches_the_frozen_derangement"] is True
+    assert record["cohort_content_sha256"] == cohort["content_sha256"]
+    assert record["mapping_sha256"] == record["derangement"]["mapping_sha256"]
+    assert record["deterministic"] is True
+    assert record["frozen_before_any_second_stage_generation"] is True
+    assert len(mapping) == 128
+    recipients = [entry["recipient"] for entry in mapping]
+    donors = [entry["donor"] for entry in mapping]
+    assert len(set(recipients)) == 128 and len(set(donors)) == 128  # no donor reuse
+    assert set(donors) == set(recipients)  # every donor is a cohort member, used exactly once
+    for entry in mapping:
+        assert entry["recipient"] != entry["donor"]
+        assert entry["donor_category"] == entry["recipient_category"] == \
+            next(m["error_category"] for m in cohort["members"] if m["statement_id"] == entry["recipient"])
+        assert entry["token_difference"] == abs(entry["donor_tokens"] - entry["recipient_tokens"])
+    own_diagnostic = {member["statement_id"]: member["diagnostic_sha256"]
+                      for member in cohort["members"]}
+    for entry in mapping:
+        assert entry["recipient_diagnostic_sha256"] == own_diagnostic[entry["recipient"]]
+        assert entry["donor_diagnostic_sha256"] == own_diagnostic[entry["donor"]]
+    report = record["owner_report"]
+    assert report["same_error_category_match_rate"] == 1.0
+    assert report["fallback_count"] == 0 and report["fallback_recipients"] == []
+    assert report["donor_reuse_count"] == 0
+    assert report["no_self_diagnostic"] is True
+    assert report["every_recipient_assigned_exactly_once"] is True
+    assert report["diagnostic_token_length_difference"]["n"] == 128
+
+def test_the_second_stage_plan_reproduces_the_frozen_design_and_generates_nothing() -> None:
+    plan = v4_manifest(STAGE1_PLAN)
+    cohort = v4_manifest(STAGE1_COHORT)
+    schedule = v4_manifest("v4_p001_arm_schedule.json")
+    seed_artifact = v4_manifest("v4_p001_seeds.json")
+    assert plan["cohort_content_sha256"] == cohort["content_sha256"]
+    assert plan["n_theorems"] == 128 and plan["n_candidates"] == 512 == 4 * 128
+    assert plan["second_stage_candidates_generated"] == 0
+    # the schedule and the seed stream are the frozen ones, recomputed from the frozen library
+    assert v4_schedule.schedule_hash() == schedule["schedule_hash"] == plan["arm_schedule_hash"]
+    assert plan["second_stage_seed_hash"] == seed_artifact["paired_seed_hash"]
+    theorems = plan["theorems"]
+    assert [theorem["formal_rank"] for theorem in theorems] == list(range(1, 129))
+    assert [theorem["seed"] for theorem in theorems] == seeds.second_stage_seeds(128)
+    assert [theorem["seed"] for theorem in theorems] == seed_artifact["paired_seeds_by_rank"]
+    assert [theorem["arm_order"] for theorem in theorems] == \
+        [v4_schedule.arm_order(rank) for rank in range(1, 129)]
+    assert [theorem["arm_order"] for theorem in theorems] == \
+        [entry["order"] for entry in schedule["schedule"][:128]]
+    assert [theorem["screening_rank"] for theorem in theorems] == \
+        [member["screening_rank"] for member in cohort["members"]]
+    assert [theorem["statement_id"] for theorem in theorems] == \
+        [member["statement_id"] for member in cohort["members"]]
+    donors = {entry["recipient"]: entry["donor"]
+              for entry in v4_manifest(STAGE1_DERANGEMENT)["derangement"]["mapping"]}
+    for theorem in theorems:
+        assert theorem["donor_statement_id"] == donors[theorem["statement_id"]]
+        assert theorem["donor_statement_id"] != theorem["statement_id"]
+        assert theorem["failed_proof_sha256"]
+        assert set(theorem["arms"]) == set(v4_schedule.ARM_ORDER)
+        assert all(theorem["arm_d_invariants"].values())
+        assert theorem["own_diagnostic_sha256"] != "" and theorem["donor_diagnostic_sha256"] != ""
+    assert plan["donor_is_a_different_theorem_for_every_rank"] is True
+    # every arm fits the frozen 10 240-token window with the 4096-token response budget
+    assert plan["max_model_len"] == 10240 and plan["max_response_tokens"] == 4096
+    for arm, span in plan["context_tokens_with_response_by_arm"].items():
+        assert span["max"] < plan["max_model_len"], arm
+    assert {arm: positions for arm, positions in plan["balance"]["positions_per_arm"].items()} == \
+        {arm: [32, 32, 32, 32] for arm in v4_schedule.ARM_ORDER}
+
+
+def test_the_boundary_validation_passed_and_the_second_stage_never_ran() -> None:
+    report = v4_manifest("V4-P001_boundary_validation.json")
+    assert report["artifact_type"] == "v4_p001_boundary_validation"
+    assert report["status"] == "PASS" and report["n_failed"] == 0
+    assert report["n_checks"] == len(report["checks"]) == 29
+    assert all(check["pass"] for check in report["checks"])
+    assert all(check["pass"] for check in report["frozen_design_checks"])
+    assert report["second_stage_candidates_generated"] == 0
+    assert report["second_stage_raw"]["present"] is False
+    assert report["second_stage_raw"]["rows"] == 0
+    assert report["screening_raw"]["sha256"] == STAGE1_RAW_SHA256
+    assert report["screening_raw"]["rows"] == 464
+    for key, name in (("primary_cohort", STAGE1_COHORT),
+                      ("diagnostic_derangement", STAGE1_DERANGEMENT),
+                      ("second_stage_plan", STAGE1_PLAN)):
+        assert report["artifacts"][key]["content_sha256"] == v4_manifest(name)["content_sha256"], key
