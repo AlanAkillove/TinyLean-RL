@@ -1,0 +1,1008 @@
+{
+  "artifact_type": "V4-P001_execution_package_dry_run",
+  "experiment_id": "V4-P001",
+  "what_this_is": "The owner-§19 no-generation dry run of the V4-P001 execution package: pool, screen order, model, verifier, context, runner, analyzer, artifact locations and recovery policy, exercised on the formal node at one committed revision. It is not a result: no model was loaded, no candidate was generated, no formal theorem was sent to the verifier (the only event is the canary), and no raw artifact was written anywhere. The freeze/validate/analyze middle section runs on a *synthetic* cohort that is explicitly marked and deleted before the script exits.",
+  "status": "NOT_LAUNCHED",
+  "informal_host": false,
+  "formal_candidates_generated": 0,
+  "formal_verifier_calls": 0,
+  "validated_commit": {
+    "sha": "71d7304a15e342e54587d3a7d4c1ab1c1eb76ecc",
+    "short": "71d7304a1",
+    "subject": "v4: make the archived-execution projection check host-conditional",
+    "branch": "v3-jev-rl-controller"
+  },
+  "host": {
+    "hostname": "ubuntu",
+    "ips": "10.3.25.122 10.201.1.1 10.201.0.1 10.202.0.1",
+    "git_revision": "71d7304a15e342e54587d3a7d4c1ab1c1eb76ecc",
+    "branch": "v3-jev-rl-controller",
+    "status_porcelain": "",
+    "gpu_names": "NVIDIA GeForce RTX 3080",
+    "gpu_compute_apps": "",
+    "prereg_is_ancestor": true,
+    "role": "the formal node"
+  },
+  "interpreter": {
+    "executable": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python",
+    "version": "3.12.14"
+  },
+  "duration_seconds": 615.4,
+  "when_utc": "2026-09-25T12:47:04.626903+00:00",
+  "frozen_design": {
+    "n_frozen_checks": 50,
+    "n_frozen_checks_failed": 0,
+    "file_hashes": {
+      "experiments/manifests/v4/v4_p001_pool.json": "354059087133445549972abef0d5386a6d421e61655412e13275ffe2b0225149",
+      "experiments/manifests/v4/v4_p001_seeds.json": "e0d18818badc96f695af7d3f6050c2fdcc288bb03f8df1110a92b6ad51c96a7d",
+      "experiments/manifests/v4/v4_p001_arm_schedule.json": "2dc85d0af0c4430996838a51b9d0c24d3f04087b490107d534003c91e65ac2f8",
+      "experiments/manifests/v4/v4_p001_prompt_audit.json": "c19537daf039c279688a72861d9f221da968844a4706a10f72c0f9bb1598e8e9",
+      "experiments/manifests/v4/v4_p001_prompt_provenance.json": "8f85931e37dd6efa178f8ef15e1f760a1f70ce244423e39f98eed89537bcde4f",
+      "experiments/manifests/v4/v4_p001_context_smoke.json": "aea5a060e05e5d870e1536f3737c5f79f98f7cfff809644aac70cdc4546de476",
+      "experiments/manifests/v4/v4_p001_context_four_arm.json": "b0364c38a4ab3ab6ae23cc51167b8de8d7b231f0dd9e5ebf01645e64ecaf6a5e",
+      "experiments/manifests/v4/v4_p001_verifier_plan.json": "22e8f578b3a4f3a61a7bdb256a2a451c3bd599b27763fc19021d679e60e8916a"
+    },
+    "registry_pins": {
+      "pool_sha256": "354059087133445549972abef0d5386a6d421e61655412e13275ffe2b0225149",
+      "seeds_sha256": "e0d18818badc96f695af7d3f6050c2fdcc288bb03f8df1110a92b6ad51c96a7d",
+      "schedule_sha256": "2dc85d0af0c4430996838a51b9d0c24d3f04087b490107d534003c91e65ac2f8",
+      "prompt_audit_sha256": "c19537daf039c279688a72861d9f221da968844a4706a10f72c0f9bb1598e8e9",
+      "context_smoke_sha256": "aea5a060e05e5d870e1536f3737c5f79f98f7cfff809644aac70cdc4546de476",
+      "verifier_plan_sha256": "22e8f578b3a4f3a61a7bdb256a2a451c3bd599b27763fc19021d679e60e8916a"
+    },
+    "frozen_settings": {
+      "experiment_id": "V4-P001",
+      "arms": [
+        "A_FRESH_RETRY",
+        "B_SELF_REVISION",
+        "C_VERIFIER_REPAIR",
+        "D_MISMATCHED_DIAGNOSTIC"
+      ],
+      "n_primary": 128,
+      "n_arms": 4,
+      "max_screening": 640,
+      "second_stage_candidates": 512,
+      "worst_case_formal_generations": 1152,
+      "temperature": 1.0,
+      "top_p": 1.0,
+      "max_response_tokens": 4096,
+      "max_model_len": 10240,
+      "gpu_memory_utilization": 0.85,
+      "max_num_batched_tokens": 10240,
+      "max_num_seqs": 256,
+      "n_samples_first_attempt": 1,
+      "seed_formulas": {
+        "first_stage": "V4_BASE_SEED + (screening_rank - 1), screening_rank in 1..640",
+        "second_stage": "V4_BASE_SEED + SECOND_STAGE_OFFSET + (formal_rank - 1), formal_rank in 1..128, shared by A/B/C/D"
+      },
+      "renderer_version": "v4-prompt-1",
+      "derangement_version": "v4-derange-1",
+      "verifier": {
+        "server_timeout_s": 120.0,
+        "first_timeout_s": 600.0,
+        "client_slack_s": 60.0,
+        "batch_size": 1,
+        "canary_timeout_s": 60.0,
+        "canary_retries": 1,
+        "max_single_retries": 2,
+        "policy": "tinylean_rl.verifier.policy.VerificationSession: batched pass, isolation pass with bounded retries, canary gate after every infrastructure event, fail-close on an unhealthy server"
+      },
+      "verifier_infra": {
+        "endpoint": "http://127.0.0.1:8010",
+        "container": "tinylean-rl-lean-server-r001",
+        "image": "projectnumina/kimina-lean-server:2.0.0",
+        "max_repls": 1,
+        "max_wait_s": 60,
+        "max_repl_mem": "8G",
+        "verification_concurrency": 1,
+        "compose_file": "infra/lean-server/r001/compose.yaml",
+        "max_recoveries_per_run": 192,
+        "max_recoveries_per_theorem": 3,
+        "restart_timeout_s": 120.0,
+        "health_poll_timeout_s": 180.0,
+        "health_poll_interval_s": 2.0,
+        "restart_grace_s": 10
+      },
+      "gates": {
+        "delta_ca_min": 0.08,
+        "delta_cb_min": 0.05,
+        "alpha": 0.05,
+        "bootstrap_reps": 10000,
+        "bootstrap_seed": 20260925,
+        "data_guard_min": 103,
+        "censoring_range_max": 0.05
+      },
+      "model": {
+        "repo_id": "AI-MO/Kimina-Prover-Distill-0.6B",
+        "revision": "332e8a5259d1bdfda19d7c7f339f30804813cd3a",
+        "dir": "models/weights/kimina_distill_0_6b",
+        "weights_filename": "model.safetensors",
+        "weights_sha256": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2"
+      },
+      "prereg_commit": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
+      "screening_schema_version": "v4-p001-screening-1",
+      "repair_schema_version": "v4-p001-repair-1"
+    },
+    "frozen_settings_sha256": "f650a128c5093abfe62054b0eb62d9d20c0bda8cb07aee3eed14fa0eabfd3f39",
+    "prereg_commit": "84ab51b5cec14b9e01f36ec3db78e1271194f234",
+    "amendment_doc": "docs/v4/V4-P001_amendment_A_four_arm.md",
+    "authorization_note": "the design is frozen and complete; it authorizes nothing. The two formal stages require the owner's written launch authorization."
+  },
+  "pool": {
+    "members": 1371,
+    "unique_components": 1371,
+    "unique_statements": 1371,
+    "pool_hash": "7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c",
+    "order_hash": "ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15",
+    "base_seed": 20260925,
+    "screening_order_rule": "tier blocks (Tier 1 first, then Tier-2 classes in the frozen order), each sorted by sha256(f'{base_seed}|{statement_id}') - outcome-free hash permutation",
+    "tier_rule": {
+      "tier1_definition": "component contains.v1_used >= 1 (already-consumed training families)",
+      "tier2_definition": "completed V2 development classes with released material + the Track-C class the owner released in V3",
+      "tier2_classes_in_order": [
+        "a001_selection",
+        "b002_pilot",
+        "b002_calibration",
+        "b003_eval",
+        "e023_holdout",
+        "c_joint_holdout"
+      ],
+      "tier2_used": true,
+      "tier2_admission_rule": "Tier 2 is only reached after the whole Tier 1 block is screened; the block order is frozen in the screening order below"
+    },
+    "members_by_tier": {
+      "tier1": 453,
+      "tier2": 918
+    },
+    "members_by_source": {
+      "human": 223,
+      "synthetic": 462,
+      "autoformalizer": 686
+    },
+    "screening_budget": {
+      "n_primary_required": 128,
+      "primary_rate_floor": 0.2,
+      "max_screens": 640,
+      "rule": "ceil(128 / floor); if 128 primary failures are not collected within max_screens the run STOPS and reports before any second-stage generation",
+      "expected_screens": {
+        "0.2": {
+          "expected_primary_failures_in_tier1": 90.6,
+          "screens_needed_for_128_at_this_rate": 640,
+          "within_frozen_budget": true,
+          "within_pool_capacity": true
+        },
+        "0.25": {
+          "expected_primary_failures_in_tier1": 113.2,
+          "screens_needed_for_128_at_this_rate": 512,
+          "within_frozen_budget": true,
+          "within_pool_capacity": true
+        },
+        "0.29": {
+          "expected_primary_failures_in_tier1": 131.4,
+          "screens_needed_for_128_at_this_rate": 442,
+          "within_frozen_budget": true,
+          "within_pool_capacity": true
+        },
+        "0.3125": {
+          "expected_primary_failures_in_tier1": 141.6,
+          "screens_needed_for_128_at_this_rate": 410,
+          "within_frozen_budget": true,
+          "within_pool_capacity": true
+        }
+      }
+    },
+    "worst_case_formal_generations": 1152,
+    "sealed_reserve_touch_counts": {
+      "sealed_components_touched": 0,
+      "sealed_statements_touched": 0,
+      "v3_formal_sample_components_touched": 0,
+      "v3_formal_sample_statements_touched": 0,
+      "a_reserve_components_touched": 0,
+      "b1_audit_components_touched": 0,
+      "b1_reserved_ids_components_touched": 0,
+      "b003_buffer_components_touched": 0
+    },
+    "checks": {
+      "sealed_components_touched": 0,
+      "sealed_statements_touched": 0,
+      "v3_formal_sample_components_touched": 0,
+      "v3_formal_sample_statements_touched": 0,
+      "a_reserve_components_touched": 0,
+      "b1_audit_components_touched": 0,
+      "b1_reserved_ids_components_touched": 0,
+      "b003_buffer_components_touched": 0,
+      "all_representatives_prompt_filter_pass": true,
+      "screening_ranks_contiguous": true,
+      "screening_keys_unique": true,
+      "one_representative_per_component": true,
+      "tier1_block_precedes_tier2_block": true
+    }
+  },
+  "screen_order": {
+    "theorems": 640,
+    "unique_statement_ids": 640,
+    "first": {
+      "screening_rank": 1,
+      "statement_id": "bd53fe26-1fb5-46c7-b827-c4a9bc470408",
+      "component_id": "fc-b4380584ca79",
+      "name": "algebra_10592",
+      "source": "human",
+      "tier": "tier1",
+      "classes": [
+        "v1_used"
+      ],
+      "prompt_tokens": 150,
+      "seed": 20260925
+    },
+    "last": {
+      "screening_rank": 640,
+      "statement_id": "bf53a6c2-ef1f-4c40-a325-72e6be9de785",
+      "component_id": "fc-286967454f8c",
+      "name": "number_theory_269979",
+      "source": "autoformalizer",
+      "tier": "tier2",
+      "classes": [
+        "b002_pilot"
+      ],
+      "prompt_tokens": 300,
+      "seed": 20261564
+    },
+    "prompt_token_equality": "every rendered first-attempt prompt re-tokenizes to the pool's frozen prompt_tokens (checked inside build_screening_plan)",
+    "prompt_tokens_max": 808,
+    "seed_formula": "first_stage_seed(rank) = sha256(f'v4-p001-screening|{rank}') truncated",
+    "screening_seed_hash": "2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51",
+    "screening_seed_hash_recomputed": "2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51",
+    "screening_seeds_unique": true,
+    "schedule_covers_the_frozen_order": true,
+    "tokenizer": "Qwen2TokenizerFast",
+    "tokenizer_vocab_size": 151643
+  },
+  "model": {
+    "dir": "models/weights/kimina_distill_0_6b",
+    "repo_id": "AI-MO/Kimina-Prover-Distill-0.6B",
+    "revision": "332e8a5259d1bdfda19d7c7f339f30804813cd3a",
+    "weights_filename": "model.safetensors",
+    "weights_sha256_frozen": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "weights_sha256_recomputed_on_this_host": "34e6e630f564d330c79424c404ab0494558a0a659e6201b47d9bd88ccd640fe2",
+    "weights_bytes": 1503300328
+  },
+  "verifier": {
+    "instance": {
+      "present": true,
+      "running": true,
+      "image": "projectnumina/kimina-lean-server:2.0.0",
+      "container_id": "67627202fd42",
+      "env": {
+        "LEAN_SERVER_MAX_REPLS": "1",
+        "LEAN_SERVER_MAX_REPL_USES": "-1",
+        "LEAN_SERVER_MAX_REPL_MEM": "8G",
+        "LEAN_SERVER_MAX_WAIT": "60",
+        "LEAN_SERVER_PORT": "8000"
+      },
+      "published": [
+        "127.0.0.1:8010"
+      ],
+      "error": null
+    },
+    "identity_error": null,
+    "health_url": "http://127.0.0.1:8010/health",
+    "health_status": 200,
+    "canary": {
+      "verified": true,
+      "status": "verified",
+      "detail": "",
+      "seconds": 0.11,
+      "proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+      "uses_formal_theorem": false,
+      "budget_s": 600.0
+    },
+    "canary_proof_sha256": "eab6a130d1676d9fbda343bdc1b083c54e1f1e2fa185b146d858e3a87ca62ba8",
+    "session_events": [
+      {
+        "kind": "canary",
+        "detail": "cold-start outcome=verified "
+      }
+    ],
+    "session_events_note": "the only verifier event of the dry run is the canary",
+    "verifier_formal_calls": 0,
+    "policy": "tinylean_rl.verifier.policy.VerificationSession: batched pass, isolation pass with bounded retries, canary gate after every infrastructure event, fail-close on an unhealthy server",
+    "endpoint": "http://127.0.0.1:8010",
+    "container": "tinylean-rl-lean-server-r001",
+    "max_repls": 1
+  },
+  "recovery_policy": {
+    "frozen": {
+      "max_recoveries_per_run": 192,
+      "max_recoveries_per_theorem": 3,
+      "per_run_semantics": "the run continues through routine recovery; at the ceiling it fails closed with an aborted summary that keeps every finished candidate and stays resumable",
+      "per_theorem_semantics": "at most one recovery per arm candidate, so three recoveries exhaust a theorem's exposure; a theorem that exceeds it has its remaining arm candidates marked INFRA_CENSORED (missing, never a failure) and the run continues - one pathological theorem cannot consume the run budget",
+      "recovery_is_not_a_candidate_retry": true,
+      "recovery_trigger": "a non-conclusive candidate outcome (timeout / 5xx / unhealthy / unresolved), never a score"
+    },
+    "max_recoveries_per_run_matches_the_code": true,
+    "max_recoveries_per_theorem_matches_the_code": true,
+    "projection": {
+      "v4_worst_case_verifications": 1024,
+      "lambda_at_pooled_density": 47.0,
+      "poisson_999_pooled_density": 70,
+      "lambda_at_worst_density": 136.0,
+      "poisson_999_worst_density": 173,
+      "chosen_basis": "worst observed execution density, Poisson 99.9% upper bound, rounded up",
+      "structural_max_recoveries": 1024,
+      "frozen_ceiling": 192,
+      "ceiling_over_worst_quantile": 1.11
+    },
+    "observed_basis": {
+      "source": "runs/v3_r001_rollout_archive_from_fly122 (V3-R001 attempt-2 archive, read-only)",
+      "n_executions": 3,
+      "note": "the ceilings were projected from the V3-R001 attempt-2 archive, read-only; the archive is evidence about infrastructure, never about this design"
+    },
+    "not_claimed": [
+      "no verifier throughput, latency or capacity claim - §P forbids it, and the recovery wall-clock is reported only as cost",
+      "no change to the frozen verification semantics: /verify, format gate, score, censoring rule",
+      "the V3 attempt-2 archive is read-only here; no V3 artifact is modified or re-interpreted"
+    ],
+    "what_the_runner_does_on_a_trigger": "restart -> /health -> nonformal cold canary, before the next candidate; a recovery is not a candidate attempt and moves no label; at the per-theorem ceiling the remaining arm candidates of that theorem are marked INFRA_CENSORED (missing, never a failure) and the run continues; at the per-run ceiling the run fails closed with an aborted, resumable summary",
+    "infra_is_never_a_proof_failure": "an unresolved candidate is written with score=None and an infrastructure status; the sensitivity reading that completes it as a failure belongs to the analyzer and never redefines the primary endpoint"
+  },
+  "context": {
+    "artifact": "experiments/manifests/v4/v4_p001_context_four_arm.json",
+    "max_response_tokens": 4096,
+    "max_model_len": 10240,
+    "worst_case_by_arm": {
+      "A_FRESH_RETRY": {
+        "prompt_tokens": 914,
+        "total_tokens": 5010,
+        "headroom_tokens": 5230,
+        "fits": true
+      },
+      "B_SELF_REVISION": {
+        "prompt_tokens": 5042,
+        "total_tokens": 9138,
+        "headroom_tokens": 1102,
+        "fits": true
+      },
+      "C_VERIFIER_REPAIR": {
+        "prompt_tokens": 5554,
+        "total_tokens": 9650,
+        "headroom_tokens": 590,
+        "fits": true
+      },
+      "D_MISMATCHED_DIAGNOSTIC": {
+        "prompt_tokens": 5554,
+        "total_tokens": 9650,
+        "headroom_tokens": 590,
+        "fits": true
+      }
+    },
+    "pool_prompt_tokens": {
+      "A_FRESH_RETRY": {
+        "max": 914,
+        "p95": 481,
+        "p99": 703
+      },
+      "B_SELF_REVISION": {
+        "max": 1932,
+        "p95": 1499,
+        "p99": 1721
+      },
+      "C_VERIFIER_REPAIR": {
+        "max": 2442,
+        "p95": 2009,
+        "p99": 2231
+      },
+      "D_MISMATCHED_DIAGNOSTIC": {
+        "max": 2442,
+        "p95": 2009,
+        "p99": 2231
+      }
+    },
+    "checks": {
+      "all_arms_fit_with_full_response": true,
+      "worst_case_c_is_the_longest_arm": true,
+      "arm_a_worst_case_equals_pool_max_theorem": true,
+      "arm_d_worst_case_is_bounded_by_b_plus_the_diagnostic_budget": true,
+      "worst_case_c_reproduces_smoke_prompt_sha256": true,
+      "arm_d_differs_from_c_only_in_the_diagnostic": true,
+      "no_self_diagnostic_in_the_audited_pairing": true,
+      "smoke_prompt_used_the_frozen_arm_c_and_renderer": true
+    },
+    "smoke_evidence": {
+      "artifact": "experiments/manifests/v4/v4_p001_context_smoke.json",
+      "engine": {
+        "vllm_version": "0.9.1",
+        "torch_version": "2.7.0+cu126",
+        "max_model_len": 10240,
+        "max_num_batched_tokens": 10240,
+        "gpu_memory_utilization": 0.85,
+        "max_num_seqs": 256,
+        "tensor_parallel_size": 1,
+        "dtype": "auto",
+        "load_seconds": 118.77
+      },
+      "peak_vram_mib_nvidia_smi": 9208,
+      "measured_prompt_tokens": 5554,
+      "measured_total_tokens": 9650,
+      "measured_headroom_tokens": 590,
+      "PASS": true,
+      "why_it_still_covers_the_four_arm_design": "the smoke ran the byte-identical worst-case arm-C prompt reproduced above; arm D uses the same message structure and a diagnostic bounded by the same budget, so it cannot exceed the arm-C ceiling on this pool. No engine parameter, tokenizer or model revision changes."
+    },
+    "live_recomputation": {
+      "arm_a_worst_case_rendered_here": 914,
+      "artifact_arm_a_worst_case": 914,
+      "pool_members_not_in_the_pinned_parquet": 0,
+      "note": "Arm A's prompt *is* the first-attempt screening prompt, so re-rendering the pool above gives its worst case directly. The worst cases of the other three arms are the committed audit's; they are reproducible with `scripts/v4_p001_context_four_arm.py`, which reads the consumed failure corpora."
+    }
+  },
+  "runner": {
+    "screening_dry_run": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+      "exit_code": 0,
+      "seconds": 30.6,
+      "stdout_tail": "        \"screens_needed_for_128_at_this_rate\": 410,\n        \"within_frozen_budget\": true,\n        \"within_pool_capacity\": true\n      }\n    }\n  },\n  \"screening_order_hash\": \"ce329b36b5e7ee4712fa9bdd1a8ac2f42d919129297475cc9387828b197ecc15\",\n  \"screening_seed_hash\": \"2efb53d8525b7ced44b13dc5aab388bbbf73ed920a65763918ef0e23ab0b8c51\",\n  \"pool_hash\": \"7533c94b4d1969f195ba7af81bc00023ef829a0495d67e5180cbf9fdfd3ffc2c\",\n  \"frozen_settings_sha256\": \"f650a128c5093abfe62054b0eb62d9d20c0bda8cb07aee3eed14fa0eabfd3f39\"\n}\n[V4-P001] DRY RUN COMPLETE: llm.load_called=false generate_called=false model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 formal_raw_result_files_created=0",
+      "stderr_tail": ""
+    },
+    "launch_interlock": {
+      "screening": {
+        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage screening --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+        "exit_code": 3,
+        "seconds": 0.74,
+        "stdout_tail": "",
+        "stderr_tail": "[ABORT BEFORE GENERATION] --stage screening generates formal candidates and is gated: pass --i-have-owner-launch-authorization only if the owner has authorized this exact V4-P001 formal launch. The execution package ends with V4_FORMAL_SCREENING_AUTHORIZED: NO and V4_SECOND_STAGE_AUTHORIZED: NO, so no authorization exists yet."
+      },
+      "second": {
+        "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+        "exit_code": 3,
+        "seconds": 0.74,
+        "stdout_tail": "",
+        "stderr_tail": "[ABORT BEFORE GENERATION] --stage second generates formal candidates and is gated: pass --i-have-owner-launch-authorization only if the owner has authorized this exact V4-P001 formal launch. The execution package ends with V4_FORMAL_SCREENING_AUTHORIZED: NO and V4_SECOND_STAGE_AUTHORIZED: NO, so no authorization exists yet."
+      }
+    },
+    "freeze_without_a_cohort": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty",
+      "exit_code": 3,
+      "seconds": 5.39,
+      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T123649Z/empty",
+      "stderr_tail": "[ABORT BEFORE GENERATION] /tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_screening_raw.jsonl does not exist; this stage may only run after a completed --stage screening"
+    },
+    "synthetic_freeze": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage freeze --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "exit_code": 0,
+      "seconds": 31.3,
+      "stdout_tail": "[V4-P001] stage=freeze dry_run=False out=/tmp/v4_p001_dry_run_20260925T123649Z/synthetic\n[V4-P001] cohort: 128 primary semantic failures from 128 screens (0 screened after the cohort closed)\n[V4-P001] error categories: {'verified': 0, 'elaboration_type_mismatch': 22, 'unsolved_goals': 22, 'tactic_failure': 21, 'unknown_identifier': 21, 'typeclass_synthesis': 21, 'other_semantic_lean_failure': 21, 'syntax_parser': 0, 'format_no_code': 0, 'timeout_resource': 0, 'infra': 0}\n[V4-P001] derangement: version=v4-derange-1 mapping_sha256=05b389bdf6dce170... same_category_rate=1.0 fallback_count=0 donor_reuse=0 token_difference={'n': 128, 'min': 0, 'median': 0, 'p90': 0, 'p95': 0, 'p99': 0, 'max': 0, 'mean': 0.0}\n[V4-P001] plan: 512 candidates, prompt tokens by arm {'A_FRESH_RETRY': 783, 'B_SELF_REVISION': 824, 'C_VERIFIER_REPAIR': 843, 'D_MISMATCHED_DIAGNOSTIC': 843} (max), arm_schedule_hash=9e090325ac19cf54... balance={'A_FRESH_RETRY': [32, 32, 32, 32], 'B_SELF_REVISION': [32, 32, 32, 32], 'C_VERIFIER_REPAIR': [32, 32, 32, 32], 'D_MISMATCHED_DIAGNOSTIC': [32, 32, 32, 32]}\n[V4-P001] wrote /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_primary_cohort.json, /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_diagnostic_derangement.json, /tmp/v4_p001_dry_run_20260925T123649Z/synthetic/V4-P001_second_stage_plan.json (second_stage_candidates_generated = 0)\n[V4-P001] STOP BEFORE SECOND-STAGE GENERATION by design (owner §12). Next: --stage validate.",
+      "stderr_tail": ""
+    },
+    "synthetic_screening_rows": 128,
+    "synthetic_marker": "SYNTHETIC-DRY-RUN",
+    "synthetic_boundary_artifacts": {
+      "V4-P001_primary_cohort.json": {
+        "sha256": "ccafee5998b630ab4ed156c2e518005ded886e6215ad4498afc0bda7e12d09e1",
+        "second_stage_candidates_generated": 0
+      },
+      "V4-P001_diagnostic_derangement.json": {
+        "sha256": "ffbc612b96d747291e417eb36f15b4687803325371883b4755e60e4fdce410d7",
+        "second_stage_candidates_generated": 0
+      },
+      "V4-P001_second_stage_plan.json": {
+        "sha256": "38c5d2a9abf173e26f5c078e3f8831dfaac6c6f5834f6fb1e62a24e48019c881",
+        "second_stage_candidates_generated": 0
+      }
+    },
+    "synthetic_validate": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage validate --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "exit_code": 0,
+      "seconds": 31.78,
+      "stdout_tail": "  [PASS] arm_d_uses_the_derangement_donor\n  [PASS] context_fits_all_arms\n  [PASS] second_stage_seeds_are_the_frozen_stream\n  [PASS] second_stage_seeds_are_unique_and_disjoint_from_screening\n  [PASS] arm_order_is_the_frozen_schedule\n  [PASS] arm_schedule_is_position_balanced\n  [PASS] plan_candidate_count\n  [PASS] hash_chain\n  [PASS] sealed_reserve_untouched\n  [PASS] frozen_design_checks_all_pass\n[V4-P001] boundary validation: 29 checks, 0 failed -> PASS\n[V4-P001] the boundary is frozen and valid. It does not authorize anything: the second stage needs the owner's authorization.",
+      "stderr_tail": ""
+    },
+    "synthetic_boundary_report": {
+      "status": "PASS",
+      "n_checks": 29,
+      "n_failed": 0,
+      "checks": [
+        "boundary_artifacts_present",
+        "self_hash::primary_cohort",
+        "self_hash::diagnostic_derangement",
+        "self_hash::second_stage_plan",
+        "second_stage_candidates_generated_is_zero",
+        "boundary_artifact_type",
+        "screening_artifact_consumable",
+        "screening_raw_hash_matches",
+        "cohort_is_exactly_128",
+        "every_screened_theorem_is_a_pool_member",
+        "cohort_membership_matches_the_artifact",
+        "cohort_categories_are_primary",
+        "cohort_ranks_are_contiguous",
+        "derangement_recomputes",
+        "derangement_no_self_diagnostic",
+        "derangement_every_recipient_assigned_once",
+        "second_stage_plan_recomputes",
+        "arm_a_is_the_screening_prompt",
+        "arm_c_is_b_plus_the_own_diagnostic_and_d_is_c_with_the_donor",
+        "arm_d_uses_the_derangement_donor",
+        "context_fits_all_arms",
+        "second_stage_seeds_are_the_frozen_stream",
+        "second_stage_seeds_are_unique_and_disjoint_from_screening",
+        "arm_order_is_the_frozen_schedule",
+        "arm_schedule_is_position_balanced",
+        "plan_candidate_count",
+        "hash_chain",
+        "sealed_reserve_untouched",
+        "frozen_design_checks_all_pass"
+      ],
+      "second_stage_candidates_generated": 0
+    },
+    "synthetic_second_dry_run": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_rollout.py --stage second --dry-run --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic",
+      "exit_code": 0,
+      "seconds": 31.68,
+      "stdout_tail": "    120,\n    121,\n    122,\n    123,\n    124,\n    125,\n    126,\n    127,\n    128\n  ]\n}\n[V4-P001] DRY RUN COMPLETE: llm.load_called=false generate_called=false model.generate on formal theorems=0 candidates_generated=0 verifier_formal_calls=0 formal_raw_result_files_created=false",
+      "stderr_tail": ""
+    },
+    "synthetic_second_dry_run_standalone": {
+      "mode": "DRY_RUN",
+      "n_candidates": 512,
+      "theorems_to_run_count": 128,
+      "theorems_to_run_is_the_whole_cohort": true
+    }
+  },
+  "analyzer": {
+    "synthetic_candidate_rows": 512,
+    "check_only": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/synthetic --check-only",
+      "exit_code": 0,
+      "seconds": 8.22,
+      "stdout_tail": "      \"DIFFERENT_ERROR_CATEGORY\": 0,\n      \"FORMAT_FAILURE\": 0,\n      \"SYNTAX_FAILURE\": 0,\n      \"INFRA_MISSING\": 0\n    }\n  },\n  \"provenance\": {\n    \"n_checks\": 18,\n    \"n_failed\": 0\n  }\n}\n[check-only] nothing written",
+      "stderr_tail": ""
+    },
+    "synthetic_classification": {
+      "classification": "A_VERIFIER_SPECIFIC_GO",
+      "mechanism_label": "DIAGNOSTIC_SPECIFIC",
+      "why": "C-A and C-B each satisfy delta >= threshold, exact one-sided McNemar p <= 0.05 and bootstrap CI lower bound > 0",
+      "data_guard": {
+        "n_complete": 128,
+        "pass": true
+      },
+      "censoring_guard": {
+        "range": 0.0,
+        "pass": true
+      },
+      "C_minus_A": {
+        "delta_pp": 100.0,
+        "mcnemar_p_one_sided_exact": 2.938735877055719e-39,
+        "ci_lower": 1.0,
+        "n_favor": 128,
+        "n_against": 0,
+        "passes": true
+      },
+      "C_minus_B": {
+        "delta_pp": 100.0,
+        "mcnemar_p_one_sided_exact": 2.938735877055719e-39,
+        "ci_lower": 1.0,
+        "n_favor": 128,
+        "n_against": 0,
+        "passes": true
+      },
+      "C_minus_D": {
+        "delta_pp": 100.0,
+        "mcnemar_p_one_sided_exact": 2.938735877055719e-39,
+        "ci_lower": 1.0,
+        "passes": true
+      },
+      "transitions": {
+        "B_SELF_REVISION": {
+          "SUCCESS": 0,
+          "SAME_ERROR_CATEGORY": 128,
+          "DIFFERENT_ERROR_CATEGORY": 0,
+          "FORMAT_FAILURE": 0,
+          "SYNTAX_FAILURE": 0,
+          "INFRA_MISSING": 0
+        },
+        "C_VERIFIER_REPAIR": {
+          "SUCCESS": 128,
+          "SAME_ERROR_CATEGORY": 0,
+          "DIFFERENT_ERROR_CATEGORY": 0,
+          "FORMAT_FAILURE": 0,
+          "SYNTAX_FAILURE": 0,
+          "INFRA_MISSING": 0
+        },
+        "D_MISMATCHED_DIAGNOSTIC": {
+          "SUCCESS": 0,
+          "SAME_ERROR_CATEGORY": 128,
+          "DIFFERENT_ERROR_CATEGORY": 0,
+          "FORMAT_FAILURE": 0,
+          "SYNTAX_FAILURE": 0,
+          "INFRA_MISSING": 0
+        }
+      },
+      "provenance": {
+        "n_checks": 18,
+        "n_failed": 0
+      }
+    },
+    "classification_note": "the classification below is what the analyzer computes on a *fabricated* outcome pattern (Arm C succeeds on all 128 ranks, A/B/D never do). It proves the analyzer executes the mechanical order on this host and writes nothing; it is not a result, and no formal outcome exists.",
+    "refuses_when_artifacts_are_absent": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python /home/fly/ZJQ/TinyLean-RL/scripts/v4_p001_analyze.py --out-dir /tmp/v4_p001_dry_run_20260925T123649Z/empty --check-only",
+      "exit_code": 3,
+      "seconds": 0.21,
+      "stdout_tail": "",
+      "stderr_tail": "[ABORT BEFORE ANALYSIS] cannot analyze: required artifact(s) absent -- second_stage_raw (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_second_stage_raw.jsonl), summary (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_run_summary.json), screening_raw (/tmp/v4_p001_dry_run_20260925T123649Z/empty/v4_p001_screening_raw.jsonl), cohort (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_primary_cohort.json), derangement (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_diagnostic_derangement.json), plan (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_second_stage_plan.json), boundary_validation (/tmp/v4_p001_dry_run_20260925T123649Z/empty/V4-P001_boundary_validation.json). The formal second stage writes the second-stage raw artifact and the run summary; an aborted or never-launched run has no analyzable outcome."
+    }
+  },
+  "artifact_locations": {
+    "committed_design_artifacts": {
+      "experiments/manifests/v4/v4_p001_pool.json": {
+        "sha256": "354059087133445549972abef0d5386a6d421e61655412e13275ffe2b0225149",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_seeds.json": {
+        "sha256": "e0d18818badc96f695af7d3f6050c2fdcc288bb03f8df1110a92b6ad51c96a7d",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_arm_schedule.json": {
+        "sha256": "2dc85d0af0c4430996838a51b9d0c24d3f04087b490107d534003c91e65ac2f8",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_prompt_audit.json": {
+        "sha256": "c19537daf039c279688a72861d9f221da968844a4706a10f72c0f9bb1598e8e9",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_prompt_provenance.json": {
+        "sha256": "8f85931e37dd6efa178f8ef15e1f760a1f70ce244423e39f98eed89537bcde4f",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_context_smoke.json": {
+        "sha256": "aea5a060e05e5d870e1536f3737c5f79f98f7cfff809644aac70cdc4546de476",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_context_four_arm.json": {
+        "sha256": "b0364c38a4ab3ab6ae23cc51167b8de8d7b231f0dd9e5ebf01645e64ecaf6a5e",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_verifier_plan.json": {
+        "sha256": "22e8f578b3a4f3a61a7bdb256a2a451c3bd599b27763fc19021d679e60e8916a",
+        "exists": true
+      },
+      "experiments/manifests/v4/v4_p001_power.json": {
+        "sha256": "73b567b07a06232d5ee7ce900818944303e4a2292a6c5d8cc6dd84f7ece2cc7b",
+        "exists": true
+      },
+      "experiments/manifests/v4/registry.yaml": {
+        "sha256": "c098fa09f7e123f4f09a996e1b7662d6ce16aada2e4af2e7b31da8d92a53968e",
+        "exists": true
+      }
+    },
+    "raw_artifact_basenames": [
+      "v4_p001_screening_raw.jsonl",
+      "v4_p001_second_stage_raw.jsonl",
+      "v4_p001_run_summary.json",
+      "V4-P001_boundary_validation.json",
+      "v4_p001_recovery_log.jsonl",
+      "v4_p001_verifier_events.jsonl"
+    ],
+    "raw_directory": "runs/v4_p001/rollout (gitignored)",
+    "raw_directory_exists": false,
+    "gitignore_rule": ".gitignore:29:runs/\truns/v4_p001/rollout/v4_p001_screening_raw.jsonl",
+    "scratch_dir": "/tmp/v4_p001_dry_run_20260925T123649Z",
+    "scratch_note": "every synthetic artifact of this run lives under the scratch dir and is removed before this script exits; nothing is written under runs/"
+  },
+  "gates_on_this_host_at_this_commit": {
+    "pytest": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python -m pytest tests/",
+      "exit_code": 0,
+      "seconds": 440.29,
+      "stdout_tail": "........................................................................ [ 13%]\n........................................................................ [ 27%]\n........................................................................ [ 41%]\n........................................................................ [ 54%]\n........................................................................ [ 68%]\n........................................................................ [ 82%]\n...s.................................................................... [ 96%]\n....................                                                     [100%]\n523 passed, 1 skipped in 437.79s (0:07:17)",
+      "stderr_tail": ""
+    },
+    "pytest_summary": "523 passed, 1 skipped in 437.79s (0:07:17)",
+    "ruff": {
+      "command": "/home/fly/ZJQ/TinyLean-RL/.venv/bin/python -m ruff check src scripts tests",
+      "exit_code": 0,
+      "seconds": 0.07,
+      "stdout_tail": "All checks passed!",
+      "stderr_tail": ""
+    }
+  },
+  "script_hashes": {
+    "scripts/v4_p001_rollout.py": "5e506e0a695160fd813a94d3d1015bc2b89ea7e0a120e8e8a1f58d7fffdcd816",
+    "scripts/v4_p001_analyze.py": "e20638c1daddb964e7c5ea20bd79f55f01f50360c750593b68a774051798e536",
+    "scripts/v4_p001_spec.py": "5f6f8a0ed46ec3df9ed29ca9ca5dc33ed87b8efddbe202dff988e5adc783573d",
+    "scripts/v4_p001_dry_run.py": "d329daadb22dc58336c1d072b597c79d25fc87830ec7a92b7d740a60e7f55e01",
+    "scripts/v4_p001_context_four_arm.py": "4f0a1eae79ee9e809b7f96cf44e153bbc262ffe62ee6aa043975cf478e1f01bd",
+    "scripts/v4_p001_prompt_provenance.py": "fa813c6383cd338ba1b10c39b66085e376871d1478ea2968904795eedbcb07ce",
+    "scripts/v4_p001_arm_schedule.py": "0c6f1fd647017d68d702382388f62ce1ec4f0d15d6c9d7981fd6f3dee0d3e001",
+    "tests/test_v4_p001.py": "d9dcaeb351b1aac9e7b05fa62df735aad77e77ef899d4d5428590444edf2a308",
+    "tests/test_v4_p001_analyze.py": "e57e45e89ad9dd0c130d2e727a00a42407edebfec323eda156abde405ce72238",
+    "tests/test_v4_p001_rollout.py": "cd7f06c427566a44381b45f4947104e31120b1f1fd2f3882e6404df36e010221"
+  },
+  "checks": [
+    {
+      "check": "working_tree_is_clean_before_the_dry_run",
+      "pass": true,
+      "detail": "porcelain=''"
+    },
+    {
+      "check": "dry_run_ran_on_the_formal_node",
+      "pass": true,
+      "detail": "ips='10.3.25.122 10.201.1.1 10.201.0.1 10.202.0.1'; fly122 is 10.3.25.122"
+    },
+    {
+      "check": "frozen_design_loads",
+      "pass": true,
+      "detail": "50 frozen-artifact checks passed"
+    },
+    {
+      "check": "pool_hash_recomputes",
+      "pass": true,
+      "detail": "7533c94b4d1969f1..."
+    },
+    {
+      "check": "order_hash_recomputes",
+      "pass": true,
+      "detail": "ce329b36b5e7ee47..."
+    },
+    {
+      "check": "sealed_reserve_untouched",
+      "pass": true,
+      "detail": "touch counts {'sealed_components_touched': 0, 'sealed_statements_touched': 0, 'v3_formal_sample_components_touched': 0, 'v3_formal_sample_statements_touched': 0, 'a_reserve_components_touched': 0, 'b1_audit_components_touched': 0, 'b1_reserved_ids_components_touched': 0, 'b003_buffer_components_touched': 0}"
+    },
+    {
+      "check": "screening_budget_is_the_frozen_one",
+      "pass": true,
+      "detail": "{'n_primary_required': 128, 'primary_rate_floor': 0.2, 'max_screens': 640, 'rule': 'ceil(128 / floor); if 128 primary failures are not collected within max_screens the run STOPS and reports before any second-stage generation', 'expected_screens': {'0.2': {'expected_primary_failures_in_tier1': 90.6, 'screens_needed_for_128_at_this_rate': 640, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.25': {'expected_primary_failures_in_tier1': 113.2, 'screens_needed_for_128_at_this_rate': 512, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.29': {'expected_primary_failures_in_tier1': 131.4, 'screens_needed_for_128_at_this_rate': 442, 'within_frozen_budget': True, 'within_pool_capacity': True}, '0.3125': {'expected_primary_failures_in_tier1': 141.6, 'screens_needed_for_128_at_this_rate': 410, 'within_frozen_budget': True, 'within_pool_capacity': True}}}"
+    },
+    {
+      "check": "worst_case_budget_is_1152",
+      "pass": true,
+      "detail": "640 + 512 = 1152"
+    },
+    {
+      "check": "screening_plan_is_640",
+      "pass": true,
+      "detail": "640 theorems"
+    },
+    {
+      "check": "screening_plan_renders_on_this_host",
+      "pass": true,
+      "detail": "640 prompts rendered and re-tokenized; every count equals the frozen pool's"
+    },
+    {
+      "check": "screening_seed_hash_recomputes",
+      "pass": true,
+      "detail": "2efb53d8525b7ced..."
+    },
+    {
+      "check": "screening_seeds_are_unique",
+      "pass": true,
+      "detail": "640 seeds, 640 unique"
+    },
+    {
+      "check": "model_dir_exists",
+      "pass": true,
+      "detail": "/home/fly/ZJQ/TinyLean-RL/models/weights/kimina_distill_0_6b"
+    },
+    {
+      "check": "weights_file_exists",
+      "pass": true,
+      "detail": "/home/fly/ZJQ/TinyLean-RL/models/weights/kimina_distill_0_6b/model.safetensors"
+    },
+    {
+      "check": "weights_sha256_matches_the_frozen_pin",
+      "pass": true,
+      "detail": "34e6e630f564d330..."
+    },
+    {
+      "check": "dedicated_instance_identity",
+      "pass": true,
+      "detail": "match"
+    },
+    {
+      "check": "verifier_health_is_200",
+      "pass": true,
+      "detail": "status=200"
+    },
+    {
+      "check": "canary_verifies_and_uses_no_formal_theorem",
+      "pass": true,
+      "detail": "canary='verified' in 0.11s"
+    },
+    {
+      "check": "no_formal_verifier_call",
+      "pass": true,
+      "detail": "1 event(s)"
+    },
+    {
+      "check": "recovery_ceilings_match_the_frozen_plan",
+      "pass": true,
+      "detail": "run=192 theorem=3"
+    },
+    {
+      "check": "recovery_is_not_a_candidate_retry",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "check": "no_efficiency_claim",
+      "pass": true,
+      "detail": "the frozen plan forbids throughput/latency/capacity claims"
+    },
+    {
+      "check": "four_arm_context_checks_all_pass",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "check": "every_arm_fits_with_a_full_response",
+      "pass": true,
+      "detail": "max total 9650 vs window 10240"
+    },
+    {
+      "check": "frozen_window_matches_the_code",
+      "pass": true,
+      "detail": "10240 / 4096"
+    },
+    {
+      "check": "arm_a_worst_case_recomputes_from_the_pinned_parquet",
+      "pass": true,
+      "detail": "re-rendered 914 vs artifact 914"
+    },
+    {
+      "check": "screening_dry_run_exits_zero",
+      "pass": true,
+      "detail": "exit=0"
+    },
+    {
+      "check": "screening_dry_run_wrote_nothing",
+      "pass": true,
+      "detail": "0 file(s) in the dry-run out-dir"
+    },
+    {
+      "check": "screening_stage_is_owner_gated",
+      "pass": true,
+      "detail": "exit=3"
+    },
+    {
+      "check": "second_stage_is_owner_gated",
+      "pass": true,
+      "detail": "exit=3"
+    },
+    {
+      "check": "freeze_refuses_without_a_screening_artifact",
+      "pass": true,
+      "detail": "exit=3"
+    },
+    {
+      "check": "synthetic_freeze_exits_zero",
+      "pass": true,
+      "detail": "exit=0"
+    },
+    {
+      "check": "freeze_wrote_the_three_sealed_artifacts",
+      "pass": true,
+      "detail": "['V4-P001_diagnostic_derangement.json', 'V4-P001_primary_cohort.json', 'V4-P001_second_stage_plan.json']"
+    },
+    {
+      "check": "boundary_artifacts_record_zero_candidates_generated",
+      "pass": true,
+      "detail": "{'V4-P001_primary_cohort.json': 0, 'V4-P001_diagnostic_derangement.json': 0, 'V4-P001_second_stage_plan.json': 0}"
+    },
+    {
+      "check": "freeze_wrote_no_second_stage_raw",
+      "pass": true,
+      "detail": "no second-stage candidate"
+    },
+    {
+      "check": "validate_exits_zero",
+      "pass": true,
+      "detail": "exit=0"
+    },
+    {
+      "check": "boundary_report_is_PASS_with_zero_failed",
+      "pass": true,
+      "detail": "29 checks, 0 failed"
+    },
+    {
+      "check": "second_stage_dry_run_revalidates_and_generates_nothing",
+      "pass": true,
+      "detail": "exit=0, theorems_to_run=128"
+    },
+    {
+      "check": "second_stage_dry_run_wrote_no_raw",
+      "pass": true,
+      "detail": "no second-stage raw"
+    },
+    {
+      "check": "analyzer_check_only_runs_on_this_host",
+      "pass": true,
+      "detail": "exit=0"
+    },
+    {
+      "check": "analyzer_reported_a_classification",
+      "pass": true,
+      "detail": "A_VERIFIER_SPECIFIC_GO"
+    },
+    {
+      "check": "analyzer_guards_ran_before_the_gates",
+      "pass": true,
+      "detail": "n_complete=128"
+    },
+    {
+      "check": "analyzer_wrote_nothing_in_check_only_mode",
+      "pass": true,
+      "detail": "7 file(s)"
+    },
+    {
+      "check": "analyzer_fails_closed_without_artifacts",
+      "pass": true,
+      "detail": "exit=3"
+    },
+    {
+      "check": "committed_design_artifacts_present",
+      "pass": true,
+      "detail": "[]"
+    },
+    {
+      "check": "raw_artifact_directory_does_not_exist_yet",
+      "pass": true,
+      "detail": "/home/fly/ZJQ/TinyLean-RL/runs/v4_p001/rollout"
+    },
+    {
+      "check": "raw_artifacts_are_gitignored",
+      "pass": true,
+      "detail": ".gitignore:29:runs/\truns/v4_p001/rollout/v4_p001_screening_raw.jsonl"
+    },
+    {
+      "check": "full_suite_is_green",
+      "pass": true,
+      "detail": "523 passed, 1 skipped in 437.79s (0:07:17)"
+    },
+    {
+      "check": "ruff_is_clean",
+      "pass": true,
+      "detail": "All checks passed!"
+    },
+    {
+      "check": "working_tree_is_clean_after_the_dry_run",
+      "pass": true,
+      "detail": "porcelain=''"
+    },
+    {
+      "check": "dry_run_completed",
+      "pass": true,
+      "detail": "every section ran to the end"
+    },
+    {
+      "check": "scratch_directory_removed",
+      "pass": true,
+      "detail": "/tmp/v4_p001_dry_run_20260925T123649Z"
+    },
+    {
+      "check": "raw_artifact_directory_still_absent",
+      "pass": true,
+      "detail": "runs/v4_p001/rollout"
+    }
+  ],
+  "n_checks": 53,
+  "n_failed": 0,
+  "status_of_this_transcript": "PASS",
+  "cleanliness_waiver": {},
+  "how_to_reproduce": [
+    "git checkout <the validated_commit.sha above>",
+    ".venv/bin/python scripts/v4_p001_dry_run.py    # on the formal node; writes this file",
+    ".venv/bin/python -m pytest tests/              # expect the suite green",
+    ".venv/bin/python -m ruff check src scripts tests",
+    ".venv/bin/python scripts/v4_p001_context_four_arm.py    # re-derives the four-arm context audit from the consumed corpora"
+  ],
+  "owner_constraints_observed": [
+    "No V4 formal theorem generation: 0 candidates generated, 0 formal verifier calls",
+    "the formal stages were refused without --i-have-owner-launch-authorization",
+    "the synthetic cohort lives under /tmp, is marked SYNTHETIC-DRY-RUN, and is deleted before exit; runs/ stays empty",
+    "no RL, SFT, checkpoint update, controller training or final-holdout use",
+    "no verifier throughput, latency or capacity claim"
+  ],
+  "authorizations": {
+    "V4_FORMAL_SCREENING_AUTHORIZED": "NO",
+    "V4_SECOND_STAGE_AUTHORIZED": "NO",
+    "note": "this transcript is the evidence the owner asked for; the authorizations stay NO until the owner says otherwise in writing"
+  }
+}

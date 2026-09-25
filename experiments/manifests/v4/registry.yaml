@@ -1,6 +1,6 @@
 artifact_type: v4_experiment_registry
 namespace: V4
-status: PREREGISTERED_AMENDED   # V4-P001 frozen (preregistration + Amendment A); no formal V4 generation has run
+status: PREREGISTERED_AMENDED   # V4-P001 frozen (preregistration + Amendment A); execution package validated by the §19 dry run at 71d7304; no formal V4 generation has run
 created_at_utc: "2026-09-25"
 amended_at_utc: "2026-09-25"
 amendment:
@@ -110,6 +110,27 @@ experiments:
     freeze_boundary:
       first_stage_artifacts: [V4-P001_primary_cohort.json, V4-P001_diagnostic_derangement.json, V4-P001_second_stage_plan.json]
       invariant: "second_stage_candidates_generated = 0 at the boundary; the process that discovers the cohort does not generate a second-stage candidate; a separate deterministic validation command must pass before the second stage"
+    execution_package:
+      runner: scripts/v4_p001_rollout.py
+      analyzer: scripts/v4_p001_analyze.py
+      spec: scripts/v4_p001_spec.py
+      dry_run_script: scripts/v4_p001_dry_run.py
+      dry_run_transcript: experiments/manifests/v4/V4-P001_execution_package_dry_run.json
+      dry_run_transcript_sha256: a12a936b30d6f84018f2ab08b93f0d2e26c571d4e7858c90da6fb0914e07bb4d
+      dry_run_status: PASS
+      dry_run_checks: 53
+      dry_run_failed: 0
+      dry_run_host: fly122 (10.3.25.122, RTX 3080)
+      validated_commit: 71d7304a15e342e54587d3a7d4c1ab1c1eb76ecc
+      formal_candidates_generated: 0
+      formal_verifier_calls: 0
+      stages:
+        screening: "owner-gated (--i-have-owner-launch-authorization); <= 640 first attempts; writes the raw screening artifact only"
+        freeze: "after Stage 1 has closed and before any second-stage generation; writes the three sealed boundary artifacts with second_stage_candidates_generated = 0"
+        validate: "deterministic re-validation of the boundary; writes V4-P001_boundary_validation.json, PASS iff n_failed == 0"
+        second: "owner-gated; <= 512 candidates; refused unless the boundary validation PASSes"
+      dry_run_scope: "pool, screen order, model weights, dedicated verifier (/health + nonformal canary), four-arm context, runner stages and interlocks, analyzer mechanical order on a synthetic cohort, artifact locations, recovery policy; no model load, no generation, no formal theorem ever sent to the verifier"
+      finding_and_fix: "the first formal-node run failed one test that re-read the V3-R001 archive under gitignored runs/ (present only where §11 archived it); split into a host-independent artifact check plus a host-conditional recomputation in commit 71d7304, after which the formal-node suite is green (523 passed, 1 skipped)"
     formal_host: fly122 (RTX 3080 10 GB)
     not_authorized_here:
       - "no RL, SFT, checkpoint update, controller training or final-holdout use"
