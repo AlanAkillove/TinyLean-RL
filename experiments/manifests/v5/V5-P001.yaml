@@ -1,0 +1,249 @@
+# V5-P001 experiment manifest - PREREGISTRATION (frozen before any historical process label is read).
+# Machine-readable twin of docs/v5/V5-P001_preregistration.md and owner directive
+# "TinyLean-RL enters V5" sections 1-34. No protocol parameter may change after the
+# process labels are seen without a recorded, owner-approved amendment.
+experiment: V5-P001
+title: >
+  Offline process-reward recoverability audit - on the existing V1 RLVR rollout surface,
+  how much of the outcome-level all-fail mass is process-recoverable under the
+  paper-compatible first-error credit (d1 = -0.05 before the earliest erroneous tactic,
+  d2 = -0.10 at it and after), measured by exact tactic -> generated-token mapping on a
+  dedicated frozen Lean oracle.
+kind: offline-audit          # no training, no model generation
+status: PREREGISTERED        # Phase B not yet executed
+created_at_utc: "2026-09-26"
+owner: "fly90 canonical / fly122 dedicated oracle instance"
+branch: v5-process-verified-rl
+
+freeze_rule: >
+  Committed at Phase A step 7, BEFORE the Phase-B process run. Parser definitions, gates,
+  denominators, the d1/d2 credit surface, the tokenizer identity and the oracle
+  infrastructure are frozen now. Phase A ends with historical process labels inspected = 0.
+  Any post-outcome edit is prohibited; the only permitted robustness analyses are the
+  pre-declared sensitivity settings, reported after the primary classification.
+
+authority:
+  directive: "owner 2026-09-26 - TinyLean-RL enters V5 (sections 1-34)"
+  predecessor: "V4-P001 frozen at C_NO_REPAIR_GAIN / DIAGNOSTIC_NONSPECIFIC (untouched)"
+  may_authorize: "drafting a V5-R001 preregistration if and only if PROCESS_SIGNAL_GO"
+  may_not_authorize: [training, weight updates, new model generation, V5-R001 launch]
+
+constraints:
+  no_model_training: true
+  no_new_model_generation: true
+  do_not_touch: ["V3 93-component SEALED reserve", "future family-clean capability holdout",
+                 "new theorem families", "V4-P001 frozen artifacts",
+                 "V1/V2 rollout data (read-only)"]
+  formal_host: "fly122 / RTX 3080 10GB (dedicated oracle instance); fly90 artifacts are NON-FORMAL"
+  canonical_verifier_semantics: "unchanged - the process oracle adds an infotree-reading layer on the same pinned image"
+  do_not_split_tactics_by: [newline, semicolon text, regex, indentation_alone]
+  do_not_invent_normalized_prefix_scalar_as_primary: true
+  do_not_substitute_any_active_metric_for_primary: true
+
+surface:
+  kind: historical V1 RLVR rollouts only
+  seeds: {seed1: runs/p3b_pilot/rollout_data, seed2: runs/m1_seed2/rollout_data,
+          seed3: runs/m1_seed3/rollout_data}
+  rollout_files_per_seed: 60
+  group_n: 8
+  groups_total: 720
+  candidates_total: 5760
+  labels_total: {ALL_FAIL: 603, MIXED: 110, ALL_SUCCESS: 7}
+  contamination_policy: "group excluded iff any candidate tool_feedback starts with '# System Error:'"
+  contaminated_groups: 34
+  contaminated_candidates: 103
+  groups_primary: 686
+  labels_primary: {ALL_FAIL: 575, MIXED: 104, ALL_SUCCESS: 7}
+  candidates_primary: 5488
+  candidates_primary_code: 2476
+  candidates_primary_sentinel: 3012
+  primary_all_fail: {groups: 575, candidates_code: 1736, candidates_sentinel: 2864,
+                     by_seed: {seed1: 193, seed2: 197, seed3: 185}}
+  primary_all_fail_code_histogram: {0: 95, 1: 92, 2: 90, 3: 88, 4: 52, 5: 51,
+                                    6: 41, 7: 37, 8: 29}
+  sentinels: ["No proof found in the output.", "Theorem statement couldn't be parsed from statement."]
+  historical_infra_flag_in_primary: 0   # historical infra censoring is entirely inside the 34 excluded groups
+  group_label_rule: "score_sum 0 -> ALL_FAIL; >= size -> ALL_SUCCESS; else MIXED"
+  artifacts:
+    surface: experiments/manifests/v5/v5_historical_surface.json
+    surface_sha256: b3c8f472b863aaef356b97ea897e141c6206daa3b17d897aa61f64f2173c5902
+    oracle_validation: experiments/manifests/v5/v5_process_oracle_validation.json
+    oracle_validation_sha256: 9153fd2f5b578efa02f926b46ccd9909d9b6233a94c0ef872d3177195979a869
+  provenance_hashes:
+    dataset_parquet_sha256: 68f33cee8d4d69479069117880be096fbfebb01af8c46cee0e54201fb28e1750
+    family_registry_sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
+    v1_sources_manifest_sha256: c405f5f6d3856ba09b1c1d4804afa40da5addae5b4161a40bfced075791e5168
+
+plan:
+  rule: "surface order, primary groups only, slot order"
+  n_planned: 5488
+  n_extractable: 2476
+  n_sentinel: 3012
+  n_historically_infra: 0
+  order_sha256: d04283eeb133f94bc5ba71ed36b758210486bfe2fa88126c1da9ab18c5da0f71
+  each_candidate_processed: exactly once
+  early_stop_after_observing_rate: prohibited
+
+oracle:
+  endpoint: http://127.0.0.1:8020
+  container: tinylean-rl-lean-oracle-v5
+  host: fly122
+  image: projectnumina/kimina-lean-server:2.0.0
+  image_digest: sha256:588a2cbbd10da509ed13f53ac136f8463fabff02dfe4eca535e7c47ae6e3ffd9
+  max_repls: 1
+  server_timeout_s: 120
+  client_slack_s: 60
+  batch_size: 1
+  max_single_retries: 2
+  canary_timeout_s: 300
+  warm_canary_timeout_s: 120
+  canary_retries: 1
+  max_recoveries_per_run: 192
+  restart_timeout_s: 120.0
+  health_poll_timeout_s: 180.0
+  health_poll_interval_s: 2.0
+  restart_grace_s: 10
+  infra_policy: "timeout / server error / transport loss are CENSORED, never failed proofs"
+  fail_close: "heal by bounded container restart + canary; stop and inspect when unhealthy after a recovery"
+
+position_conventions:
+  lines: 1-based
+  columns: 0-based
+  finish: exclusive
+  frame: "submitted code minus a maximal leading prefix of blank/import lines (a comment line stops stripping)"
+  chain: "tactic span -> pred char span -> generated response char span -> tokenizer token span -> first generated token"
+  formula: "response_offset = tail_offset + (pred_offset - normalized_formal_chars)"
+  tactic_outside_generated_response: not_scored
+
+fixtures:
+  artifact: experiments/manifests/v5/v5_process_oracle_validation.json
+  fixture_set_sha256: 2bfb0f4f25ae672144a8c2949f1c7ebcc597d34306dd132f7d1663963be237fe
+  runs_per_fixture: 2
+  n_fixtures: 13
+  n_classes: 13
+  determinism_rule: "fixtures must be byte-identical across the 2 runs; nondeterminism is a hard infrastructure failure"
+  classes: [fully_successful_tactic_proof, error_in_first_tactic, valid_prefix_then_later_type_error,
+            valid_prefix_then_unsolved_goals, unknown_identifier, typeclass_failure, nested_by_block,
+            semicolon_combinator_tactic, all_goals_case_style_block, multi_line_tactic,
+            syntax_parser_failure, term_style_proof, empty_proof_body]
+  ids: [F01_fully_successful, F02_error_first_tactic, F03_prefix_then_type_error,
+        F04_prefix_then_unsolved_goals, F05_unknown_identifier, F06_typeclass_failure,
+        F07_nested_by_block, F08_combinator, F09_case_style_block, F10_multiline_tactic,
+        F11_syntax_error, F12_term_style_not_extractable, F13_empty_proof_body]
+
+tokenizer:
+  dir: models/weights/kimina_distill_0_6b
+  class: Qwen2TokenizerFast
+  vocab_size: 151643
+  len_with_added_tokens: 151669
+  add_special_tokens: false
+  tokenizer_json_sha256: aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4
+  tokenizer_config_sha256: 5d27a191a7ba6f93bcc2a8e78bc633764bbaaee263e9f3d9225e2c8621a5dd72
+
+credit:
+  primary: {d1: -0.05, d2: -0.10, rule: "d1 strictly before the earliest erroneous tactic; d2 at it and after; success = 1"}
+  first_token_only: true
+  precedence: {d2: 3, d1: 2, success: 1}
+  mappable_statuses: [exact, contained]
+  requires_span_in_response: true
+  conflict_policy: "larger precedence wins; conflicts counted, never silently dropped"
+  sensitivity_after_primary_only:
+    canonical_d1_d2: [-0.05, -0.10]
+    stronger_gap: [-0.05, -0.50]
+    equal_penalty: [-0.10, -0.10]
+  sensitivity_is: label_preserving
+
+process_statuses: [SUCCESS, PREFIX_BEARING_FAILURE, FIRST_TACTIC_FAILURE,
+                   PARSE_OR_SYNTAX_FAILURE, FORMAT_NO_CODE, PROCESS_ORACLE_INFRA]
+
+blame:
+  order: [contains_innermost, range_last, unattributed]
+  sorry_fallback: "when no error message attributes, the earliest sorry range is blamed"
+  d2_at_unattributed_failure: true
+
+recoverability:
+  name: PROCESS_STRUCTURED_RECOVERABLE
+  definition: "global outcome ALL_FAIL (0) AND status PREFIX_BEARING_FAILURE AND >=1 verified prefix tactic strictly before the earliest erroneous tactic"
+  excluded: "trivial case where every parsed tactic is immediately erroneous (FIRST_TACTIC_FAILURE) - not recoverable"
+  no_fabricated_rewards_for: [no-code sentinels, unparseable proofs, infra-censored candidates]
+  any_active: secondary descriptive only
+
+units_and_denominators:
+  primary_estimand: "RecoveryRate = P(PROCESS_STRUCTURED_RECOVERABLE | ALL_FAIL), unit = primary all-fail group"
+  group_recovery_predicate: "existence of >=1 structured-recoverable candidate in the group"
+  candidate_level_rate: "pre-declared secondary descriptive, never the primary"
+  all_censored_group: "excluded from the primary denominator and counted explicitly"
+  censoring_trichotomy: [success, failure, censored-infra]
+  by_seed_estimates: [seed1, seed2, seed3]
+  length_robustness: "4 equal-count quartiles by (group_max_tactics, group_key)"
+
+bootstrap:
+  n_resamples: 10000
+  seed: 20260926
+  cluster: component_id      # family/component-aware; statement fallback when unmapped
+  alpha: 0.05
+  method: percentile
+  ci_reported_for: [pooled RecoveryRate]
+
+gates:                       # FROZEN (owner section 22); evaluated before any classification
+  E1: {metric: "mappable with verbatim in-response span / parsed tactic nodes", requirement: ">= 0.95"}
+  E2: {metric: "conclusive oracle outcomes / code-extractable non-infra primary candidates",
+       requirement: ">= 0.90"}
+  G1: {metric: pooled RecoveryRate, requirement: "point >= 0.25 AND bootstrap CI lower bound > 0.15"}
+  G2: {metric: "per-seed RecoveryRate", requirement: "point >= 0.20 in every seed"}
+  G3: {metric: "quartile RecoveryRate", requirement: "> 0.15 in >= 3 of 4 quartiles; each passing quartile needs >= 5 groups"}
+  any_fail_means: "no PROCESS_SIGNAL_GO; may NOT be rescued by changing d1/d2, parser definitions, or denominators"
+  classification_order:
+    - "INCONCLUSIVE_PROCESS_ORACLE if E1 or E2 fails"
+    - "NO_PROCESS_RECOVERY if G1 fails"
+    - "PROCESS_SIGNAL_SEED_UNSTABLE if G2 fails"
+    - "PROCESS_SIGNAL_LENGTH_CONFOUNDED if G3 fails"
+    - "PROCESS_SIGNAL_GO iff E1 AND E2 AND G1 AND G2 AND G3 all pass"
+  process_signal_go_authorizes: "drafting a V5-R001 preregistration only"
+
+scripts:
+  oracle: scripts/v5_process_oracle.py
+  reconstruction: scripts/v5_p001_reconstruct.py
+  runner: scripts/v5_p001_process_run.py     # --stage preflight|process|freeze|validate|status
+  analyzer: scripts/v5_p001_analyze.py       # canonical run exactly once, after the freeze
+  spec: scripts/v5_p001_spec.py
+  tests: tests/test_v5_process_oracle.py
+
+artifacts:
+  preregistration: docs/v5/V5-P001_preregistration.md
+  oracle_design: docs/v5/process_oracle_design.md
+  manifest: experiments/manifests/v5/V5-P001.yaml
+  surface: experiments/manifests/v5/v5_historical_surface.json
+  oracle_validation: experiments/manifests/v5/v5_process_oracle_validation.json
+  run_dir: runs/v5_p001_process/          # labels, raw items, raw manifest, freeze, validation
+  result: experiments/manifests/v5/V5-P001_results.json
+
+execution_order:
+  - "A1 oracle + fixtures (13 classes, 2 runs each) on fly122"
+  - "A2 tactic -> token mapping with the frozen Kimina tokenizer"
+  - "A3 historical surface reconstruction + binary baseline (720/686, 603/110/7)"
+  - "A4 analyzer, gates and result schema implemented; tests + ruff green"
+  - "A5 preregistration written and frozen (THIS manifest) - historical process labels inspected = 0"
+  - "A6 single Phase-A commit + push to origin + sync to fly122"
+  - "B1 preflight on fly122 (oracle identity, tokenizer, fixtures, plan)"
+  - "B2 process every planned candidate exactly once (2476 submissions; overnight)"
+  - "B3 freeze raw items + labels; archive to fly90"
+  - "B4 structural validation (24/24 fixture re-derivation, provenance)"
+  - "B5 canonical analyzer run, exactly once -> V5_P001_RESULT"
+  - "B6 if PROCESS_SIGNAL_GO: draft the V5-R001 preregistration only"
+  - "B7 STOP - no V5-R001 training is authorized"
+
+reporting:
+  live_metrics_during_phase_b: prohibited      # infrastructure monitoring only
+  if_scientific_metric_emitted_early: STOP_FOR_OWNER
+  result_schema: V5_P001_RESULT                # owner section 34 field list
+  permitted_claim: "offline process-label recoverability on the frozen V1 surface only; no training, no generation, no capability or gradient claim"
+
+compute:
+  new_model_generation: 0
+  training: 0
+  gpu_generation_hours: 0
+  oracle_submissions: 2476                    # primary code-extractable candidates
+  oracle_side_infrastructure: "one dedicated Kimina container on fly122 (not the pooled verifier)"
+  sealed_reserve_touched: 0
+  stop_and_report_if: "the oracle instance cannot be isolated from the pooled/production verifier"

@@ -1,0 +1,3626 @@
+{
+ "experiment": "V5-P001",
+ "purpose": "engineering fixture validation of the process oracle (owner \u00a78, \u00a721)",
+ "oracle_endpoint": "http://127.0.0.1:8020",
+ "generated_at": "2026-09-26T03:41:26Z",
+ "tokenizer": {
+  "dir": "models/weights/kimina_distill_0_6b",
+  "class": "Qwen2TokenizerFast",
+  "vocab_size": 151643,
+  "len_with_added_tokens": 151669,
+  "add_special_tokens": false,
+  "tokenizer_json_sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+  "tokenizer_config_sha256": "5d27a191a7ba6f93bcc2a8e78bc633764bbaaee263e9f3d9225e2c8621a5dd72"
+ },
+ "fixture_set_sha256": "2bfb0f4f25ae672144a8c2949f1c7ebcc597d34306dd132f7d1663963be237fe",
+ "runs_per_fixture": 2,
+ "health": {
+  "ok": true,
+  "status": 200,
+  "body": "{\"status\":\"ok\"}"
+ },
+ "per_fixture": [
+  {
+   "fid": "F01_fully_successful",
+   "klass": "fully_successful_tactic_proof",
+   "notes": "",
+   "expectations": {
+    "global": true,
+    "status": "SUCCESS",
+    "n_tactics": 2,
+    "blamed_index": null,
+    "tactic_texts": [
+     "rw [h1]",
+     "exact h2"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F01_fully_successful",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "9794349079b7db06c21c32e05a865e1acaf854c6b973f6b1613b24840f4515f7",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "3393a4bf39c8945f55738f925c94e0e896f887be19f77476d05c0894ad855095"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 107,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 75
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.15,
+      "raw_item_sha256": "a5fd7681d65e3b54d4d5fdf134e20776f834b1cd3fb48502b0251621f66ba50d",
+      "extraction_stats": {
+       "nodes_total": 8,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 2,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.rwSeq",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        9
+       ],
+       "pp": "rw [h1]",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 78,
+        "response_offset": 110,
+        "token_index": 45,
+        "token_id": 25991,
+        "token_start": 109,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "65abf9ea84601449c0de9c7a85c4bf0640e4a81c42b1a35f3194012c0178c540",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        10
+       ],
+       "pp": "exact h2",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 88,
+        "response_offset": 120,
+        "token_index": 51,
+        "token_id": 4734,
+        "token_start": 119,
+        "token_end": 125,
+        "exact": false,
+        "span_chars": 8,
+        "span_sha256": "5df8ab1712d271f7a49bbf8a9a7972f98cb8cc7730063c2e66a70451973cefa3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        45,
+        25991
+       ],
+       [
+        51,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample (a b c : \u2115) (h1 : a = b) (h2 : b = c) : a = c := by\n  rw [h1]\n  exact h2"
+    },
+    {
+     "candidate_id": "fixture::F01_fully_successful",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "9794349079b7db06c21c32e05a865e1acaf854c6b973f6b1613b24840f4515f7",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "3393a4bf39c8945f55738f925c94e0e896f887be19f77476d05c0894ad855095"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 107,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 75
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.15,
+      "raw_item_sha256": "1f5db09d06c95d165cafdf14721dbbeca099c6f1387e36d746f1649fca53445d",
+      "extraction_stats": {
+       "nodes_total": 8,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 2,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.rwSeq",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        9
+       ],
+       "pp": "rw [h1]",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 78,
+        "response_offset": 110,
+        "token_index": 45,
+        "token_id": 25991,
+        "token_start": 109,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "65abf9ea84601449c0de9c7a85c4bf0640e4a81c42b1a35f3194012c0178c540",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        10
+       ],
+       "pp": "exact h2",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 88,
+        "response_offset": 120,
+        "token_index": 51,
+        "token_id": 4734,
+        "token_start": 119,
+        "token_end": 125,
+        "exact": false,
+        "span_chars": 8,
+        "span_sha256": "5df8ab1712d271f7a49bbf8a9a7972f98cb8cc7730063c2e66a70451973cefa3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        45,
+        25991
+       ],
+       [
+        51,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample (a b c : \u2115) (h1 : a = b) (h2 : b = c) : a = c := by\n  rw [h1]\n  exact h2"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "965a1317896adb0a5602fb61104477aa4a1439f4d4a9bcf8da50e2b839b7701a",
+    "965a1317896adb0a5602fb61104477aa4a1439f4d4a9bcf8da50e2b839b7701a"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F02_error_first_tactic",
+   "klass": "error_in_first_tactic",
+   "notes": "",
+   "expectations": {
+    "global": false,
+    "status": "FIRST_TACTIC_FAILURE",
+    "n_tactics": 1,
+    "blamed_index": 0,
+    "tactic_texts": [
+     "exact True.intro"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F02_error_first_tactic",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "35b326d33947e89b929d9cd9acaee4d50c3a534c8b480d57f1faa5d4c70f1249",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "6b62cb6cd4639375998ae80589f32305726fca20ae2ef69e896f2c8b007e902a"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 65,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 33
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "type mismatch\n  True.intro\nhas type\n  True : Prop\nbut is expected to have type\n  \u2115 : Type",
+      "attempts": 1,
+      "seconds": 0.1,
+      "raw_item_sha256": "adaf92b4e6d0d9ff2e4e8dc9b8d3d58206dac7899c8621b6b29fb0f4d320fb36",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        18
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 36,
+        "response_offset": 68,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 67,
+        "token_end": 73,
+        "exact": false,
+        "span_chars": 16,
+        "span_sha256": "9338f7612e24f4b987404a343304b2bf597202b54af903fa422e55e5a747ffd3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : \u2115 := by\n  exact True.intro"
+    },
+    {
+     "candidate_id": "fixture::F02_error_first_tactic",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "35b326d33947e89b929d9cd9acaee4d50c3a534c8b480d57f1faa5d4c70f1249",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "6b62cb6cd4639375998ae80589f32305726fca20ae2ef69e896f2c8b007e902a"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 65,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 33
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "type mismatch\n  True.intro\nhas type\n  True : Prop\nbut is expected to have type\n  \u2115 : Type",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "7256f82be3f057f6daf3c319b174ca2c30b466be27b81a7d66c346d902e056b5",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        18
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 36,
+        "response_offset": 68,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 67,
+        "token_end": 73,
+        "exact": false,
+        "span_chars": 16,
+        "span_sha256": "9338f7612e24f4b987404a343304b2bf597202b54af903fa422e55e5a747ffd3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : \u2115 := by\n  exact True.intro"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "0482576922f46851084dcd398fd2cd5dd0d575975f80ad5bdae8f78ef70b8189",
+    "0482576922f46851084dcd398fd2cd5dd0d575975f80ad5bdae8f78ef70b8189"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F03_prefix_then_type_error",
+   "klass": "valid_prefix_then_later_type_error",
+   "notes": "",
+   "expectations": {
+    "global": false,
+    "status": "PREFIX_BEARING_FAILURE",
+    "n_tactics": 2,
+    "blamed_index": 1,
+    "tactic_texts": [
+     "have h : \u2115 := 0",
+     "exact True.intro"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F03_prefix_then_type_error",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "01d78025f14946d3cfe274bb22cea20e9d6783bbb195018cf3b9508a24b9c1ad",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "54fb27119bd24f53059b872a640f90221dc59f3c000f77dbaf29bad83be7ffc0"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 73,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 41
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "type mismatch\n  True.intro\nhas type\n  True : Prop\nbut is expected to have type\n  \u2115 : Type",
+      "attempts": 1,
+      "seconds": 0.12,
+      "raw_item_sha256": "2456dba3f898a2569de13c00e63659d8b051eea305c4a1c212e8b34924a3a6b3",
+      "extraction_stats": {
+       "nodes_total": 6,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PREFIX_BEARING_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 2,
+     "blamed_index": 1,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticHave_",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        17
+       ],
+       "pp": "have h : \u2115 := 0",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "d1",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 44,
+        "response_offset": 76,
+        "token_index": 25,
+        "token_id": 614,
+        "token_start": 75,
+        "token_end": 80,
+        "exact": false,
+        "span_chars": 15,
+        "span_sha256": "ff05f63f775acdad16f3d1b74df5a34fd1a0fcb57ee108cdfb9501ab9bd81e2f",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        18
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 62,
+        "response_offset": 94,
+        "token_index": 34,
+        "token_id": 4734,
+        "token_start": 93,
+        "token_end": 99,
+        "exact": false,
+        "span_chars": 16,
+        "span_sha256": "9338f7612e24f4b987404a343304b2bf597202b54af903fa422e55e5a747ffd3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [
+       [
+        25,
+        614
+       ]
+      ],
+      "d2_token_positions": [
+       [
+        34,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample (a : \u2115) : \u2115 := by\n  have h : \u2115 := 0\n  exact True.intro"
+    },
+    {
+     "candidate_id": "fixture::F03_prefix_then_type_error",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "01d78025f14946d3cfe274bb22cea20e9d6783bbb195018cf3b9508a24b9c1ad",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "54fb27119bd24f53059b872a640f90221dc59f3c000f77dbaf29bad83be7ffc0"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 73,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 41
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "type mismatch\n  True.intro\nhas type\n  True : Prop\nbut is expected to have type\n  \u2115 : Type",
+      "attempts": 1,
+      "seconds": 0.12,
+      "raw_item_sha256": "00a88eb8791695f2f9f45bfdefbfacf3cfd60d5cd5ab572d9617bdb287b251c3",
+      "extraction_stats": {
+       "nodes_total": 6,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PREFIX_BEARING_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 2,
+     "blamed_index": 1,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticHave_",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        17
+       ],
+       "pp": "have h : \u2115 := 0",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "d1",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 44,
+        "response_offset": 76,
+        "token_index": 25,
+        "token_id": 614,
+        "token_start": 75,
+        "token_end": 80,
+        "exact": false,
+        "span_chars": 15,
+        "span_sha256": "ff05f63f775acdad16f3d1b74df5a34fd1a0fcb57ee108cdfb9501ab9bd81e2f",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        18
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 62,
+        "response_offset": 94,
+        "token_index": 34,
+        "token_id": 4734,
+        "token_start": 93,
+        "token_end": 99,
+        "exact": false,
+        "span_chars": 16,
+        "span_sha256": "9338f7612e24f4b987404a343304b2bf597202b54af903fa422e55e5a747ffd3",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [
+       [
+        25,
+        614
+       ]
+      ],
+      "d2_token_positions": [
+       [
+        34,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample (a : \u2115) : \u2115 := by\n  have h : \u2115 := 0\n  exact True.intro"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "0a7a7e865b858f8fd9963c3857fb03a42f15037312cbee8b844bb014deb224bc",
+    "0a7a7e865b858f8fd9963c3857fb03a42f15037312cbee8b844bb014deb224bc"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F04_prefix_then_unsolved_goals",
+   "klass": "valid_prefix_then_unsolved_goals",
+   "notes": "a real tactic elaborated, a goal stayed open; Lean reports 'unsolved goals' with a range covering the whole tactic block (start right after 'by'), so blame lands on the last tactic in the range (blame_kind=range_last) and the verified prefix keeps d1",
+   "expectations": {
+    "global": false,
+    "status": "PREFIX_BEARING_FAILURE",
+    "n_tactics": 2,
+    "blamed_index": 1,
+    "tactic_texts": [
+     "refine \u27e8?_, ?_\u27e9",
+     "trivial"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F04_prefix_then_unsolved_goals",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "e0fe245df3f411e36c245136635346e3fecca0fa6bdfe632d126cfbc3abbc40f",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "806caf8fcf79680fdef13d7b358c1e17d01ee2c4c6948ccc71575494887d0693"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 75,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 43
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unsolved goals\ncase refine_2\n\u22a2 True",
+      "attempts": 1,
+      "seconds": 0.1,
+      "raw_item_sha256": "f668afae296d886f372434ecb06303707e945bf7f14d77b59fed1ef9e418fc2c",
+      "extraction_stats": {
+       "nodes_total": 6,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PREFIX_BEARING_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 2,
+     "blamed_index": 1,
+     "blame_kind": "range_last",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.refine",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        17
+       ],
+       "pp": "refine \u27e8?_, ?_\u27e9",
+       "goals_before_n": 1,
+       "goals_after_n": 2,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "d1",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 45364,
+        "token_start": 77,
+        "token_end": 84,
+        "exact": false,
+        "span_chars": 15,
+        "span_sha256": "46cff693e2e88d9c93de09c39166ab7a388691005ef8936c7a6eb8e33d13405b",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticTrivial",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        9
+       ],
+       "pp": "trivial",
+       "goals_before_n": 2,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 64,
+        "response_offset": 96,
+        "token_index": 31,
+        "token_id": 35647,
+        "token_start": 95,
+        "token_end": 103,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "6d4c9cf5e022a07ea8013a4b07a30a88270c65dfd5223ccc3964d9a7b4525008",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [
+       [
+        22,
+        45364
+       ]
+      ],
+      "d2_token_positions": [
+       [
+        31,
+        35647
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True \u2227 True := by\n  refine \u27e8?_, ?_\u27e9\n  trivial"
+    },
+    {
+     "candidate_id": "fixture::F04_prefix_then_unsolved_goals",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "e0fe245df3f411e36c245136635346e3fecca0fa6bdfe632d126cfbc3abbc40f",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "806caf8fcf79680fdef13d7b358c1e17d01ee2c4c6948ccc71575494887d0693"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 75,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 43
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unsolved goals\ncase refine_2\n\u22a2 True",
+      "attempts": 1,
+      "seconds": 0.11,
+      "raw_item_sha256": "c288397926ad829ba654b225a9665eb34fc7852778dfa7d7adf2fe6013175a4d",
+      "extraction_stats": {
+       "nodes_total": 6,
+       "tactic_named": 4,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 2
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PREFIX_BEARING_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 2,
+     "blamed_index": 1,
+     "blame_kind": "range_last",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.refine",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        17
+       ],
+       "pp": "refine \u27e8?_, ?_\u27e9",
+       "goals_before_n": 1,
+       "goals_after_n": 2,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "d1",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 45364,
+        "token_start": 77,
+        "token_end": 84,
+        "exact": false,
+        "span_chars": 15,
+        "span_sha256": "46cff693e2e88d9c93de09c39166ab7a388691005ef8936c7a6eb8e33d13405b",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticTrivial",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        9
+       ],
+       "pp": "trivial",
+       "goals_before_n": 2,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 64,
+        "response_offset": 96,
+        "token_index": 31,
+        "token_id": 35647,
+        "token_start": 95,
+        "token_end": 103,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "6d4c9cf5e022a07ea8013a4b07a30a88270c65dfd5223ccc3964d9a7b4525008",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 2,
+      "n_exact": 0,
+      "n_contained": 2,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [
+       [
+        22,
+        45364
+       ]
+      ],
+      "d2_token_positions": [
+       [
+        31,
+        35647
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True \u2227 True := by\n  refine \u27e8?_, ?_\u27e9\n  trivial"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "18487269b2d4b29802421b554e492f7b191a9badbb34982fc9d5874dbb4f9967",
+    "18487269b2d4b29802421b554e492f7b191a9badbb34982fc9d5874dbb4f9967"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F05_unknown_identifier",
+   "klass": "unknown_identifier",
+   "notes": "",
+   "expectations": {
+    "global": false,
+    "status": "FIRST_TACTIC_FAILURE",
+    "n_tactics": 1,
+    "blamed_index": 0,
+    "tactic_texts": [
+     "exact unknown_xyz_123"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F05_unknown_identifier",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "48f386a18545343d7365eca09db0fa59a7ba2b63d4c542a0e29d8340789643db",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "4e97ac724e1c78fad9dac0778976671a839496c6af7866883194e43c9e774603"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unknown identifier 'unknown_xyz_123'",
+      "attempts": 1,
+      "seconds": 0.1,
+      "raw_item_sha256": "deed57866ec3b780ee5cb70651bd3e99f652e4357a51248cbfcc39dcdf9026b1",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        23
+       ],
+       "pp": "exact unknown_xyz_123",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 21,
+        "span_sha256": "270fe301414edbd36c13c1b2c077ae5a840374ac32575e41ac99200ed404a7fa",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact unknown_xyz_123"
+    },
+    {
+     "candidate_id": "fixture::F05_unknown_identifier",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "48f386a18545343d7365eca09db0fa59a7ba2b63d4c542a0e29d8340789643db",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "4e97ac724e1c78fad9dac0778976671a839496c6af7866883194e43c9e774603"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unknown identifier 'unknown_xyz_123'",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "71e2889983f76776f84cff0164feb7c346205581d21274b98a179f1ef347976c",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        23
+       ],
+       "pp": "exact unknown_xyz_123",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 21,
+        "span_sha256": "270fe301414edbd36c13c1b2c077ae5a840374ac32575e41ac99200ed404a7fa",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact unknown_xyz_123"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "5073ddff015a17823c144230c85c88779c565962167a9cfd4ade7529c31e6e52",
+    "5073ddff015a17823c144230c85c88779c565962167a9cfd4ade7529c31e6e52"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F06_typeclass_failure",
+   "klass": "typeclass_failure",
+   "notes": "",
+   "expectations": {
+    "global": false,
+    "status": "FIRST_TACTIC_FAILURE",
+    "n_tactics": 1,
+    "blamed_index": 0,
+    "tactic_texts": [
+     "infer_instance"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F06_typeclass_failure",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "ed6d22f8a76621b92f4e11c2f6b1c02e6772ee32f7526eff31cbb0d93a8b2174",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "bfb4cee4b2e4f12f8cd1040b6f19fa0e8214f6a8d7658518cf75eddbfb32372f"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 79,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 47
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "failed to synthesize\n  Inhabited Empty\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+      "attempts": 1,
+      "seconds": 0.1,
+      "raw_item_sha256": "37a796ff7c8f548dd238d074dfa3213b906fcbf3791a2195ad52c27640af2b0d",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticInfer_instance",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        16
+       ],
+       "pp": "infer_instance",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 50,
+        "response_offset": 82,
+        "token_index": 23,
+        "token_id": 23583,
+        "token_start": 81,
+        "token_end": 87,
+        "exact": false,
+        "span_chars": 14,
+        "span_sha256": "1be023dbb859162463cfcba2e9fc80f1c85bab9d31edeb816d1518206e2b70fa",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        23,
+        23583
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : Inhabited Empty := by\n  infer_instance"
+    },
+    {
+     "candidate_id": "fixture::F06_typeclass_failure",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "ed6d22f8a76621b92f4e11c2f6b1c02e6772ee32f7526eff31cbb0d93a8b2174",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "bfb4cee4b2e4f12f8cd1040b6f19fa0e8214f6a8d7658518cf75eddbfb32372f"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 79,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 47
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "failed to synthesize\n  Inhabited Empty\nAdditional diagnostic information may be available using the `set_option diagnostics true` command.",
+      "attempts": 1,
+      "seconds": 0.09,
+      "raw_item_sha256": "76fb213d6332ecb8cae8f6fd33fe4e07cec7632c8ce23d1156eabe487cfaa1c1",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": false,
+     "n_error_messages": 1,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticInfer_instance",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        16
+       ],
+       "pp": "infer_instance",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 50,
+        "response_offset": 82,
+        "token_index": 23,
+        "token_id": 23583,
+        "token_start": 81,
+        "token_end": 87,
+        "exact": false,
+        "span_chars": 14,
+        "span_sha256": "1be023dbb859162463cfcba2e9fc80f1c85bab9d31edeb816d1518206e2b70fa",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        23,
+        23583
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : Inhabited Empty := by\n  infer_instance"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "54ade46422d5defac1eb27074f6807d1925baafe31de8e74e1297a28bced0329",
+    "54ade46422d5defac1eb27074f6807d1925baafe31de8e74e1297a28bced0329"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F07_nested_by_block",
+   "klass": "nested_by_block",
+   "notes": "",
+   "expectations": {
+    "global": true,
+    "status": "SUCCESS",
+    "n_tactics": 3,
+    "blamed_index": null,
+    "tactic_texts": [
+     "have h : a = a := by rfl",
+     "rfl",
+     "exact h"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F07_nested_by_block",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "cb6bf17dca3cb1cbadec3a95df2ba60971e3904e6657ea9084b1baa9e412d19b",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "65e082b5b99fa0a4afb539ae468e7e4c7220b6953e4b987d2013884d0504fb40"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 77,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 45
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.12,
+      "raw_item_sha256": "875f8ccf1e7aaed41b5222de31982e5966e58b667e3945216988554aa5e182e0",
+      "extraction_stats": {
+       "nodes_total": 8,
+       "tactic_named": 5,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticHave_",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        26
+       ],
+       "pp": "have h : a = a := by rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 48,
+        "response_offset": 80,
+        "token_index": 27,
+        "token_id": 614,
+        "token_start": 79,
+        "token_end": 84,
+        "exact": false,
+        "span_chars": 24,
+        "span_sha256": "c65ef78774b0ab03b0cae881073ecdade8e9b8ea52b96f072d4d9aacbf7c64d8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        2,
+        23
+       ],
+       "finish": [
+        2,
+        26
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 69,
+        "response_offset": 101,
+        "token_index": 35,
+        "token_id": 69335,
+        "token_start": 100,
+        "token_end": 104,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        9
+       ],
+       "pp": "exact h",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 75,
+        "response_offset": 107,
+        "token_index": 38,
+        "token_id": 4734,
+        "token_start": 106,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "c2ce0e21ffddde69d6a80e187a5bf12b7761df4be076519945be8ed7a7a77294",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 3,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        27,
+        614
+       ],
+       [
+        35,
+        69335
+       ],
+       [
+        38,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample (a : \u2115) : a = a := by\n  have h : a = a := by rfl\n  exact h"
+    },
+    {
+     "candidate_id": "fixture::F07_nested_by_block",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "cb6bf17dca3cb1cbadec3a95df2ba60971e3904e6657ea9084b1baa9e412d19b",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "65e082b5b99fa0a4afb539ae468e7e4c7220b6953e4b987d2013884d0504fb40"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 77,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 45
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.12,
+      "raw_item_sha256": "f9bfb5b24792112b3f935ce8987b479cf60cd58ce707ccdd394d451808f1b047",
+      "extraction_stats": {
+       "nodes_total": 8,
+       "tactic_named": 5,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.tacticHave_",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        26
+       ],
+       "pp": "have h : a = a := by rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 48,
+        "response_offset": 80,
+        "token_index": 27,
+        "token_id": 614,
+        "token_start": 79,
+        "token_end": 84,
+        "exact": false,
+        "span_chars": 24,
+        "span_sha256": "c65ef78774b0ab03b0cae881073ecdade8e9b8ea52b96f072d4d9aacbf7c64d8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        2,
+        23
+       ],
+       "finish": [
+        2,
+        26
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 69,
+        "response_offset": 101,
+        "token_index": 35,
+        "token_id": 69335,
+        "token_start": 100,
+        "token_end": 104,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        3,
+        2
+       ],
+       "finish": [
+        3,
+        9
+       ],
+       "pp": "exact h",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 75,
+        "response_offset": 107,
+        "token_index": 38,
+        "token_id": 4734,
+        "token_start": 106,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "c2ce0e21ffddde69d6a80e187a5bf12b7761df4be076519945be8ed7a7a77294",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 3,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        27,
+        614
+       ],
+       [
+        35,
+        69335
+       ],
+       [
+        38,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample (a : \u2115) : a = a := by\n  have h : a = a := by rfl\n  exact h"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "a433606ec28bdde1100c9aef7f4ef3e00b09ec528f715ee16218d2965d523dcf",
+    "a433606ec28bdde1100c9aef7f4ef3e00b09ec528f715ee16218d2965d523dcf"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F08_combinator",
+   "klass": "semicolon_combinator_tactic",
+   "notes": "the combinator node and its children are all tactic nodes; exact-duplicate nodes are collapsed by (name, start, finish). The composite and its first child share a first token (credit precedence d2 > d1 > success)",
+   "expectations": {
+    "global": true,
+    "status": "SUCCESS",
+    "n_tactics": 3,
+    "blamed_index": null,
+    "tactic_texts": [
+     "constructor",
+     "constructor <;> trivial",
+     "trivial"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F08_combinator",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "cc0d7de1c47d0dccb09efc877319804e811a015ad4e4a48f0bdc6c271b738a4e",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "03e9ad5f12c9b38e80276e7356601426200048a378de9b82f7136807a5c96e8c"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 75,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 43
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.13,
+      "raw_item_sha256": "63b19f123b9a4d54253311a39cf41c95daa4bafe3d156055ee7801e76d226f20",
+      "extraction_stats": {
+       "nodes_total": 9,
+       "tactic_named": 6,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 1,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.constructor",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        13
+       ],
+       "pp": "constructor",
+       "goals_before_n": 1,
+       "goals_after_n": 2,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 4692,
+        "token_start": 77,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 11,
+        "span_sha256": "e3c1703abf8a6b3df04dd30e184fe02bb6724f46830b544562ff083169371068",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.\u00abtactic_<;>_\u00bb",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        25
+       ],
+       "pp": "constructor <;> trivial",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 4692,
+        "token_start": 77,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 23,
+        "span_sha256": "413e78899c772e4341c38bf34090c07d56c745a584a2bde1f62e3a2b1560807f",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.tacticTrivial",
+       "start": [
+        2,
+        18
+       ],
+       "finish": [
+        2,
+        25
+       ],
+       "pp": "trivial",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 62,
+        "response_offset": 94,
+        "token_index": 26,
+        "token_id": 35647,
+        "token_start": 93,
+        "token_end": 101,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "6d4c9cf5e022a07ea8013a4b07a30a88270c65dfd5223ccc3964d9a7b4525008",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        22,
+        4692
+       ],
+       [
+        26,
+        35647
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True \u2227 True := by\n  constructor <;> trivial"
+    },
+    {
+     "candidate_id": "fixture::F08_combinator",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "cc0d7de1c47d0dccb09efc877319804e811a015ad4e4a48f0bdc6c271b738a4e",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "03e9ad5f12c9b38e80276e7356601426200048a378de9b82f7136807a5c96e8c"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 75,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 43
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.11,
+      "raw_item_sha256": "eb143df6a562d1fe81440cd4d4bcd03eb50d9be59f090304541e8b56a69f769d",
+      "extraction_stats": {
+       "nodes_total": 9,
+       "tactic_named": 6,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 1,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.constructor",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        13
+       ],
+       "pp": "constructor",
+       "goals_before_n": 1,
+       "goals_after_n": 2,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 4692,
+        "token_start": 77,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 11,
+        "span_sha256": "e3c1703abf8a6b3df04dd30e184fe02bb6724f46830b544562ff083169371068",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.\u00abtactic_<;>_\u00bb",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        25
+       ],
+       "pp": "constructor <;> trivial",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 46,
+        "response_offset": 78,
+        "token_index": 22,
+        "token_id": 4692,
+        "token_start": 77,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 23,
+        "span_sha256": "413e78899c772e4341c38bf34090c07d56c745a584a2bde1f62e3a2b1560807f",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.tacticTrivial",
+       "start": [
+        2,
+        18
+       ],
+       "finish": [
+        2,
+        25
+       ],
+       "pp": "trivial",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 62,
+        "response_offset": 94,
+        "token_index": 26,
+        "token_id": 35647,
+        "token_start": 93,
+        "token_end": 101,
+        "exact": false,
+        "span_chars": 7,
+        "span_sha256": "6d4c9cf5e022a07ea8013a4b07a30a88270c65dfd5223ccc3964d9a7b4525008",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 2,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        22,
+        4692
+       ],
+       [
+        26,
+        35647
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True \u2227 True := by\n  constructor <;> trivial"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "3e1dc72698f92437949ebab879d41ebcf772acada0509c6e5c6f1bf52b739569",
+    "3e1dc72698f92437949ebab879d41ebcf772acada0509c6e5c6f1bf52b739569"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F09_case_style_block",
+   "klass": "all_goals_case_style_block",
+   "notes": "branch bodies are nested tactic nodes; the induction node is reachable twice in the elaboration tree and is collapsed by (name, start, finish)",
+   "expectations": {
+    "global": true,
+    "status": "SUCCESS",
+    "n_tactics": 3,
+    "blamed_index": null,
+    "tactic_texts": [
+     "induction n with\n  | zero => rfl\n  | succ k ih => rfl",
+     "rfl",
+     "rfl"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F09_case_style_block",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "0df56eb5e1d83d202c5a141e185cda054244afafdc0859f64534f885690b56a7",
+      "prefix_chars": 16,
+      "n_lines": 6,
+      "frame_sha256": "3a4dbf0ef1cb687e397c0f94a97322b3cde78f6d2dd5a2852766dfa7a7d6420f"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 77,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 45
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.17,
+      "raw_item_sha256": "755ab1d34d1b6e7944d7ca2a784357086330441edd0201f0b646b6a6737d7928",
+      "extraction_stats": {
+       "nodes_total": 14,
+       "tactic_named": 10,
+       "wrappers_skipped": 6,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 1,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.induction",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        4,
+        20
+       ],
+       "pp": "induction n with\n| zero => rfl\n| succ k ih => rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 48,
+        "response_offset": 80,
+        "token_index": 27,
+        "token_id": 37056,
+        "token_start": 79,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 53,
+        "span_sha256": "f9f9d3392eb375477fbb6c9008e6b61238ebbf762968caed7ab512aecc285416",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        3,
+        12
+       ],
+       "finish": [
+        3,
+        15
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 77,
+        "response_offset": 109,
+        "token_index": 35,
+        "token_id": 69335,
+        "token_start": 108,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        4,
+        17
+       ],
+       "finish": [
+        4,
+        20
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 98,
+        "response_offset": 130,
+        "token_index": 43,
+        "token_id": 69335,
+        "token_start": 129,
+        "token_end": 133,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 3,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        27,
+        37056
+       ],
+       [
+        35,
+        69335
+       ],
+       [
+        43,
+        69335
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample (n : \u2115) : n = n := by\n  induction n with\n  | zero => rfl\n  | succ k ih => rfl"
+    },
+    {
+     "candidate_id": "fixture::F09_case_style_block",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "0df56eb5e1d83d202c5a141e185cda054244afafdc0859f64534f885690b56a7",
+      "prefix_chars": 16,
+      "n_lines": 6,
+      "frame_sha256": "3a4dbf0ef1cb687e397c0f94a97322b3cde78f6d2dd5a2852766dfa7a7d6420f"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 77,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 45
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.17,
+      "raw_item_sha256": "4ff3eecb14295c91ef78669079d2ac4fe660f7fa23235e7269bd830fd95a216f",
+      "extraction_stats": {
+       "nodes_total": 14,
+       "tactic_named": 10,
+       "wrappers_skipped": 6,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 1,
+       "tactics": 3
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 3,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.induction",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        4,
+        20
+       ],
+       "pp": "induction n with\n| zero => rfl\n| succ k ih => rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 48,
+        "response_offset": 80,
+        "token_index": 27,
+        "token_id": 37056,
+        "token_start": 79,
+        "token_end": 89,
+        "exact": false,
+        "span_chars": 53,
+        "span_sha256": "f9f9d3392eb375477fbb6c9008e6b61238ebbf762968caed7ab512aecc285416",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 1,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        3,
+        12
+       ],
+       "finish": [
+        3,
+        15
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 77,
+        "response_offset": 109,
+        "token_index": 35,
+        "token_id": 69335,
+        "token_start": 108,
+        "token_end": 112,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      },
+      {
+       "i": 2,
+       "name": "Lean.Parser.Tactic.tacticRfl",
+       "start": [
+        4,
+        17
+       ],
+       "finish": [
+        4,
+        20
+       ],
+       "pp": "rfl",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 98,
+        "response_offset": 130,
+        "token_index": 43,
+        "token_id": 69335,
+        "token_start": 129,
+        "token_end": 133,
+        "exact": false,
+        "span_chars": 3,
+        "span_sha256": "5a633da644c1afc6f5222be040e6a19d687c01104c0263cce32773e07376dfa8",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 3,
+      "n_exact": 0,
+      "n_contained": 3,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 3,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        27,
+        37056
+       ],
+       [
+        35,
+        69335
+       ],
+       [
+        43,
+        69335
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample (n : \u2115) : n = n := by\n  induction n with\n  | zero => rfl\n  | succ k ih => rfl"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "d597a8b67b6a564ffbab5af6fe1d37611931f38110c051dd7b2dfe9fe3264aa1",
+    "d597a8b67b6a564ffbab5af6fe1d37611931f38110c051dd7b2dfe9fe3264aa1"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F10_multiline_tactic",
+   "klass": "multi_line_tactic",
+   "notes": "",
+   "expectations": {
+    "global": true,
+    "status": "SUCCESS",
+    "n_tactics": 1,
+    "blamed_index": null,
+    "tactic_texts": [
+     "exact\n    True.intro"
+    ],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F10_multiline_tactic",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "1afbd3a924b7407ab7da97b48389e27776219330a789a0efa39f4f79b80019b2",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "dfe168c4d27250a870db346ce18963fcf7df4b1a5e1ae71e9a4d8717d75485b7"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "2ef5c815e71635d7feb9535d35d4afaaa179a468acfbef8f28cba0a9b4420e49",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 1,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        3,
+        14
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 20,
+        "span_sha256": "d2050c4e3c64ef1bd2ad52b836ff7b2f32470e0bb987c27f27ebadf21bd86aa7",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact\n    True.intro"
+    },
+    {
+     "candidate_id": "fixture::F10_multiline_tactic",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "1afbd3a924b7407ab7da97b48389e27776219330a789a0efa39f4f79b80019b2",
+      "prefix_chars": 16,
+      "n_lines": 5,
+      "frame_sha256": "dfe168c4d27250a870db346ce18963fcf7df4b1a5e1ae71e9a4d8717d75485b7"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "verified",
+      "infra": false,
+      "redeclaration": false,
+      "message": "",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "145cdcdfa6a0df926931c2cac5ea6daba34c10ca83dca5e191db6ebaa4693622",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 1,
+     "process_status": "SUCCESS",
+     "failure_kind": null,
+     "n_tactics": 1,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        3,
+        14
+       ],
+       "pp": "exact True.intro",
+       "goals_before_n": 1,
+       "goals_after_n": 0,
+       "error_hits": 0,
+       "sorry_hits": 0,
+       "locally_verified": true,
+       "blamed": false,
+       "label": "success",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 20,
+        "span_sha256": "d2050c4e3c64ef1bd2ad52b836ff7b2f32470e0bb987c27f27ebadf21bd86aa7",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact\n    True.intro"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "5f9aa71e98a21a906a5abdae5d37263f2729a6c3cfa0270b699301689414d84e",
+    "5f9aa71e98a21a906a5abdae5d37263f2729a6c3cfa0270b699301689414d84e"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F11_syntax_error",
+   "klass": "syntax_parser_failure",
+   "notes": "an unbalanced parenthesis is still recovered into one tactic node by the server's parser; the first (and only) tactic is blamed, its pp is unprintable, and no verified tactic precedes it, so no credit is fabricated. Recorded for the syntax-damage diagnostic (blamed_pp_unprintable)",
+   "expectations": {
+    "global": false,
+    "status": "FIRST_TACTIC_FAILURE",
+    "n_tactics": 1,
+    "blamed_index": 0,
+    "tactic_texts": [
+     "exact (True.intro"
+    ],
+    "pp_unprintable": true,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F11_syntax_error",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "dfaa704e4b18e17ddf8ffcc86793e2d050c2f05cb0781130e9a0cfd7f3de234f",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "3e2b81c7a36f8141ed3d0b2a04f343fa2b6f212fd8e2962cdd1e1421fa387071"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unexpected end of input; expected ')', ',' or ':'",
+      "attempts": 1,
+      "seconds": 0.09,
+      "raw_item_sha256": "0e8260c339e9d519ed9f4faed1bbe1b480071146fbff166ee3b4f29cbd3eb2be",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": true,
+     "n_error_messages": 2,
+     "n_unmapped_error_messages": 1,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        19
+       ],
+       "pp": "<failed to pretty print>",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 17,
+        "span_sha256": "e790caaff8c49c150ca1462e81ed74abfcc1c1a6b52142dddd3d9f5ee66345c7",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact (True.intro"
+    },
+    {
+     "candidate_id": "fixture::F11_syntax_error",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "dfaa704e4b18e17ddf8ffcc86793e2d050c2f05cb0781130e9a0cfd7f3de234f",
+      "prefix_chars": 16,
+      "n_lines": 4,
+      "frame_sha256": "3e2b81c7a36f8141ed3d0b2a04f343fa2b6f212fd8e2962cdd1e1421fa387071"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unexpected end of input; expected ')', ',' or ':'",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "308397dafe6b80eb3da3f9bbcb684eaf2d09b313f49a2d04ac3ad9b864889243",
+      "extraction_stats": {
+       "nodes_total": 5,
+       "tactic_named": 3,
+       "wrappers_skipped": 2,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 1
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "FIRST_TACTIC_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 1,
+     "blamed_index": 0,
+     "blame_kind": "contains",
+     "blamed_pp_unprintable": true,
+     "n_error_messages": 2,
+     "n_unmapped_error_messages": 1,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [
+      {
+       "i": 0,
+       "name": "Lean.Parser.Tactic.exact",
+       "start": [
+        2,
+        2
+       ],
+       "finish": [
+        2,
+        19
+       ],
+       "pp": "<failed to pretty print>",
+       "goals_before_n": 1,
+       "goals_after_n": 1,
+       "error_hits": 1,
+       "sorry_hits": 0,
+       "locally_verified": false,
+       "blamed": true,
+       "label": "d2",
+       "mapping": {
+        "status": "contained",
+        "pred_offset": 39,
+        "response_offset": 71,
+        "token_index": 20,
+        "token_id": 4734,
+        "token_start": 70,
+        "token_end": 76,
+        "exact": false,
+        "span_chars": 17,
+        "span_sha256": "e790caaff8c49c150ca1462e81ed74abfcc1c1a6b52142dddd3d9f5ee66345c7",
+        "span_in_response": true
+       }
+      }
+     ],
+     "token_credit": {
+      "n_mapped": 1,
+      "n_exact": 0,
+      "n_contained": 1,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 1,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [
+       [
+        20,
+        4734
+       ]
+      ],
+      "success_token_positions": [],
+      "blamed_mappable": true
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True := by\n  exact (True.intro"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "ee70127a016214f1f30590c0836914a4a06257ad299ddf121b95820b8eab07f6",
+    "ee70127a016214f1f30590c0836914a4a06257ad299ddf121b95820b8eab07f6"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F12_term_style_not_extractable",
+   "klass": "term_style_proof",
+   "notes": "term-style proofs contain no ':= by', so the historical extractor returns its sentinel: no code was ever submitted, and no tactic credit may be fabricated",
+   "expectations": {
+    "global": null,
+    "status": "FORMAT_NO_CODE",
+    "n_tactics": 0,
+    "blamed_index": null,
+    "tactic_texts": [],
+    "pp_unprintable": null,
+    "sentinel": "No proof found in the output."
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F12_term_style_not_extractable",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": false,
+      "sentinel": "No proof found in the output.",
+      "pred_sha256": "34d6941ef06ee09ede3d531df5669a3006eac7d78d4136f094c736b2b268066b",
+      "prefix_chars": 0,
+      "n_lines": 0,
+      "frame_sha256": null
+     },
+     "tail": {
+      "located": false,
+      "offset_in_response": null,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": null,
+      "normalized_formal_chars": 43
+     },
+     "oracle": null,
+     "global_outcome": null,
+     "process_status": "FORMAT_NO_CODE",
+     "failure_kind": null,
+     "n_tactics": 0,
+     "blamed_index": null,
+     "blame_kind": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [],
+     "token_credit": {
+      "n_mapped": 0,
+      "n_exact": 0,
+      "n_contained": 0,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 0,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": []
+     },
+     "fixture_run": "r1",
+     "pred": "No proof found in the output."
+    },
+    {
+     "candidate_id": "fixture::F12_term_style_not_extractable",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": false,
+      "sentinel": "No proof found in the output.",
+      "pred_sha256": "34d6941ef06ee09ede3d531df5669a3006eac7d78d4136f094c736b2b268066b",
+      "prefix_chars": 0,
+      "n_lines": 0,
+      "frame_sha256": null
+     },
+     "tail": {
+      "located": false,
+      "offset_in_response": null,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": null,
+      "normalized_formal_chars": 43
+     },
+     "oracle": null,
+     "global_outcome": null,
+     "process_status": "FORMAT_NO_CODE",
+     "failure_kind": null,
+     "n_tactics": 0,
+     "blamed_index": null,
+     "blame_kind": null,
+     "n_error_messages": 0,
+     "n_unmapped_error_messages": 0,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [],
+     "token_credit": {
+      "n_mapped": 0,
+      "n_exact": 0,
+      "n_contained": 0,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 0,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": []
+     },
+     "fixture_run": "r2",
+     "pred": "No proof found in the output."
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "061e80a2b9943eac6f75bb898201e1e2c8c1b17393c438863c67a20b1ce98f4a",
+    "061e80a2b9943eac6f75bb898201e1e2c8c1b17393c438863c67a20b1ce98f4a"
+   ],
+   "validation_failures": [],
+   "ok": true
+  },
+  {
+   "fid": "F13_empty_proof_body",
+   "klass": "empty_proof_body",
+   "notes": "submitted code ends right after 'by': failure with no tactic to blame",
+   "expectations": {
+    "global": false,
+    "status": "PARSE_OR_SYNTAX_FAILURE",
+    "n_tactics": 0,
+    "blamed_index": null,
+    "tactic_texts": [],
+    "pp_unprintable": null,
+    "sentinel": null
+   },
+   "runs": [
+    {
+     "candidate_id": "fixture::F13_empty_proof_body",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "6d4d5582202aafa45b860385efdb958130c8d1d5ff1c617b0119365b3622cfb4",
+      "prefix_chars": 16,
+      "n_lines": 3,
+      "frame_sha256": "43362f0287b469a78caf2f4cbf2dff14929fb9192258fde074df97530ada40eb"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unexpected end of input; expected '{'",
+      "attempts": 1,
+      "seconds": 0.07,
+      "raw_item_sha256": "e5edd42a1b1475386364c20e8389ee0cba74ff97f6c9e1860bfc62131e22d3ad",
+      "extraction_stats": {
+       "nodes_total": 2,
+       "tactic_named": 0,
+       "wrappers_skipped": 0,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 0
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PARSE_OR_SYNTAX_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 0,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 2,
+     "n_unmapped_error_messages": 2,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [],
+     "token_credit": {
+      "n_mapped": 0,
+      "n_exact": 0,
+      "n_contained": 0,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 0,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r1",
+     "pred": "import Mathlib\n\nexample : True := by"
+    },
+    {
+     "candidate_id": "fixture::F13_empty_proof_body",
+     "d1": -0.05,
+     "d2": -0.1,
+     "code": {
+      "extractable": true,
+      "sentinel": null,
+      "pred_sha256": "6d4d5582202aafa45b860385efdb958130c8d1d5ff1c617b0119365b3622cfb4",
+      "prefix_chars": 16,
+      "n_lines": 3,
+      "frame_sha256": "43362f0287b469a78caf2f4cbf2dff14929fb9192258fde074df97530ada40eb"
+     },
+     "tail": {
+      "located": true,
+      "offset_in_response": 68,
+      "n_lean4_blocks": 1,
+      "pred_recomputed_matches": true,
+      "normalized_formal_chars": 36
+     },
+     "oracle": {
+      "outcome": "lean_error",
+      "infra": false,
+      "redeclaration": false,
+      "message": "unexpected end of input; expected '{'",
+      "attempts": 1,
+      "seconds": 0.08,
+      "raw_item_sha256": "4dbe61929ad530956977359c6d94eb815ff9cf9ff3012468c73920e32cca25f9",
+      "extraction_stats": {
+       "nodes_total": 2,
+       "tactic_named": 0,
+       "wrappers_skipped": 0,
+       "synthetic_skipped": 0,
+       "malformed_skipped": 0,
+       "duplicates_removed": 0,
+       "tactics": 0
+      }
+     },
+     "global_outcome": 0,
+     "process_status": "PARSE_OR_SYNTAX_FAILURE",
+     "failure_kind": "error",
+     "n_tactics": 0,
+     "blamed_index": null,
+     "blame_kind": null,
+     "blamed_pp_unprintable": null,
+     "n_error_messages": 2,
+     "n_unmapped_error_messages": 2,
+     "n_sorries": 0,
+     "n_unmapped_sorries": 0,
+     "tactics": [],
+     "token_credit": {
+      "n_mapped": 0,
+      "n_exact": 0,
+      "n_contained": 0,
+      "n_ambiguous": 0,
+      "n_outside_response": 0,
+      "n_span_not_in_response": 0,
+      "n_unmapped": 0,
+      "n_credit_tokens": 0,
+      "n_credit_conflicts": 0,
+      "d1_token_positions": [],
+      "d2_token_positions": [],
+      "success_token_positions": [],
+      "blamed_mappable": null
+     },
+     "fixture_run": "r2",
+     "pred": "import Mathlib\n\nexample : True := by"
+    }
+   ],
+   "deterministic": true,
+   "projection_hashes": [
+    "b905acf59a1a2cef057274afa5750381420308ec7f357c4ef8b059c150d2705b",
+    "b905acf59a1a2cef057274afa5750381420308ec7f357c4ef8b059c150d2705b"
+   ],
+   "validation_failures": [],
+   "ok": true
+  }
+ ],
+ "class_coverage": {
+  "all_goals_case_style_block": [
+   "F09_case_style_block"
+  ],
+  "empty_proof_body": [
+   "F13_empty_proof_body"
+  ],
+  "error_in_first_tactic": [
+   "F02_error_first_tactic"
+  ],
+  "fully_successful_tactic_proof": [
+   "F01_fully_successful"
+  ],
+  "multi_line_tactic": [
+   "F10_multiline_tactic"
+  ],
+  "nested_by_block": [
+   "F07_nested_by_block"
+  ],
+  "semicolon_combinator_tactic": [
+   "F08_combinator"
+  ],
+  "syntax_parser_failure": [
+   "F11_syntax_error"
+  ],
+  "term_style_proof": [
+   "F12_term_style_not_extractable"
+  ],
+  "typeclass_failure": [
+   "F06_typeclass_failure"
+  ],
+  "unknown_identifier": [
+   "F05_unknown_identifier"
+  ],
+  "valid_prefix_then_later_type_error": [
+   "F03_prefix_then_type_error"
+  ],
+  "valid_prefix_then_unsolved_goals": [
+   "F04_prefix_then_unsolved_goals"
+  ]
+ },
+ "summary": {
+  "n_fixtures": 13,
+  "n_ok": 13,
+  "n_failed": 0,
+  "all_deterministic": true,
+  "all_validated": true
+ }
+}

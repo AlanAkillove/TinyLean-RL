@@ -1,0 +1,102 @@
+# Canonical V5 experiment registry.
+#
+# V5 namespace (owner directive 2026-09-26, "TinyLean-RL enters V5", branch
+# v5-process-verified-rl):
+#   V5-P###  offline probes/audits on existing surfaces (no training, no model
+#            generation).
+#   V5-R###  RL-intervention experiments; created ONLY after a probe passes its
+#            frozen gate AND the owner authorizes the next stage.
+# V1 (E###), V2 (A/B/C), V3 and V4 identifiers are never reused. All of them are
+# frozen and none of their artifacts is edited by V5.
+#
+# This file is append-only for experiment entries. A manifest is created and
+# committed BEFORE its run and frozen per its own freeze_rule (see
+# experiments/manifests/v5/V5-P001.yaml).
+
+registry:
+  created_at_utc: "2026-09-26"
+  namespaces:
+    V5-P###: {kind: offline-audit, default-host: fly122, scope: "process-label recoverability on frozen historical rollouts; read-only oracle, no generation"}
+    V5-R###: {kind: rl-intervention, default-host: fly122, scope: "process-verified RL; NOT authorized by V5-P001 - only the drafting of an R001 preregistration is"}
+  host_policy: >
+    Owner directive 2026-09-26: fly122 (RTX 3080, 10 GB) hosts the dedicated process
+    oracle instance `tinylean-rl-lean-oracle-v5` (pinned image digest
+    sha256:588a2cbbd10da509ed13f53ac136f8463fabff02dfe4eca535e7c47ae6e3ffd9) and any
+    future formal compute; fly90 is coordination/archive and CPU analysis only - it does
+    NOT become a formal model-compute node. V5-P001 generates no tokens and updates no
+    weights anywhere.
+
+frozen_inherited: "V1, V2, V3 and V4 are frozen. V4-P001 stays closed at C_NO_REPAIR_GAIN / DIAGNOSTIC_NONSPECIFIC; the verifier-text repair line is not reopened."
+
+sealed_sets_never_used:
+  - id: V3-FINAL-HOLDOUT
+    components: 93
+    status: SEALED / NEVER USED
+    manifest: experiments/manifests/v3/v3_final_holdout_reserve.json
+  - id: future-family-clean-capability-holdout
+    status: NOT YET DEFINED / NEVER TOUCHED BY V5
+  - id: new-theorem-families
+    status: NONE INTRODUCED BY V5-P001
+
+experiments:
+  V5-P001:
+    title: "Offline process-reward recoverability audit (first-error d1/d2 credit on the frozen V1 RLVR surface)"
+    status: PREREGISTERED
+    owner: fly90 (coordination/analysis) + fly122 (dedicated oracle instance)
+    authorization: "owner directive 'TinyLean-RL enters V5' §1-§34, 2026-09-26"
+    research_question: >
+      On the existing V1 RLVR rollouts, what fraction of the outcome-level all-fail groups
+      contain at least one candidate that admits the paper-compatible first-error process
+      credit structure (d1 = -0.05 for verified tactics strictly before the earliest
+      erroneous tactic, d2 = -0.10 at it and after), with the tactic -> generated-token
+      mapping established on a dedicated frozen Lean oracle instead of text heuristics?
+    surface:
+      seeds: [seed1, seed2, seed3]
+      groups_total: 720
+      labels_total: {ALL_FAIL: 603, MIXED: 110, ALL_SUCCESS: 7}
+      contaminated_groups: 34
+      groups_primary: 686
+      labels_primary: {ALL_FAIL: 575, MIXED: 104, ALL_SUCCESS: 7}
+      primary_all_fail: {groups: 575, candidates_code: 1736, candidates_sentinel: 2864,
+                         by_seed: {seed1: 193, seed2: 197, seed3: 185}}
+      plan: {n_planned: 5488, n_code: 2476, n_sentinel: 3012}
+    estimand:
+      primary: "RecoveryRate = P(PROCESS_STRUCTURED_RECOVERABLE | ALL_FAIL); unit = primary all-fail group"
+      bootstrap: "10000 resamples, seed 20260926, component-family cluster, percentile 95%"
+      secondary: "candidate-level rate (descriptive); per-seed, quartile and d1/d2 sensitivity views"
+    gates:
+      E1: "tactic -> first-generated-token mapping >= 0.95"
+      E2: "conclusive oracle outcomes >= 0.90 among code-extractable non-infra candidates"
+      G1: "pooled RecoveryRate >= 0.25 and CI lower bound > 0.15"
+      G2: "per-seed point estimate >= 0.20 in every seed"
+      G3: "> 0.15 in >= 3 of 4 length quartiles"
+      classification: [PROCESS_SIGNAL_GO, NO_PROCESS_RECOVERY, PROCESS_SIGNAL_SEED_UNSTABLE,
+                       PROCESS_SIGNAL_LENGTH_CONFOUNDED, INCONCLUSIVE_PROCESS_ORACLE]
+    artifacts:
+      preregistration: docs/v5/V5-P001_preregistration.md
+      oracle_design: docs/v5/process_oracle_design.md
+      manifest: experiments/manifests/v5/V5-P001.yaml
+      surface: experiments/manifests/v5/v5_historical_surface.json
+      oracle_validation: experiments/manifests/v5/v5_process_oracle_validation.json
+      runner: scripts/v5_p001_process_run.py
+      analyzer: scripts/v5_p001_analyze.py
+      result: experiments/manifests/v5/V5-P001_results.json
+      run_dir: runs/v5_p001_process/
+    frozen_hashes:
+      surface_sha256: b3c8f472b863aaef356b97ea897e141c6206daa3b17d897aa61f64f2173c5902
+      oracle_validation_sha256: 9153fd2f5b578efa02f926b46ccd9909d9b6233a94c0ef872d3177195979a869
+      fixture_set_sha256: 2bfb0f4f25ae672144a8c2949f1c7ebcc597d34306dd132f7d1663963be237fe
+      plan_order_sha256: d04283eeb133f94bc5ba71ed36b758210486bfe2fa88126c1da9ab18c5da0f71
+      dataset_parquet_sha256: 68f33cee8d4d69479069117880be096fbfebb01af8c46cee0e54201fb28e1750
+      family_registry_sha256: f5074c962ca33975154291f675c50bc55aa481785ad9401e5f0b6bf1ac5a0024
+      v1_sources_manifest_sha256: c405f5f6d3856ba09b1c1d4804afa40da5addae5b4161a40bfced075791e5168
+      tokenizer_json_sha256: aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4
+    compute:
+      new_model_generation: 0
+      training: 0
+      oracle_submissions: 2476
+      sealed_reserve_touched: 0
+    stop_rule: >
+      PROCESS_SIGNAL_GO authorizes drafting a V5-R001 preregistration only. No training,
+      no weight update and no V5-R001 launch is authorized by V5-P001. If any scientific
+      metric is emitted before the canonical analyzer run: STOP_FOR_OWNER.
