@@ -472,10 +472,21 @@ class ProcessStage:
         )
         try:
             self.client.require_healthy()
-        except VerifierUnhealthyError as exc:
-            raise RuntimeError(
-                f"oracle unhealthy again after a recovery at {candidate_id}; stop and inspect"
-            ) from exc
+        except VerifierUnhealthyError:
+            # Amendment A: a proof whose elaboration outlives both the bounded
+            # client window and the bounded canary window wedges the serialized
+            # instance (observed: 737 s elaboration vs 180 s + 2 x 180 s budgets).
+            # Owner section 26: an infrastructure outcome is censored, never a
+            # failed proof and never a reason to abandon the remaining surface.
+            self.infra_log.event(
+                "candidate_censored_two_strikes",
+                {
+                    "candidate_id": candidate_id,
+                    "outcome": result["classified"].outcome.value,
+                    "message": result["classified"].message[:300],
+                },
+            )
+            self.recover(f"instance wedged again by {candidate_id}; censoring candidate")
         return result
 
     def recover(self, reason: str) -> None:

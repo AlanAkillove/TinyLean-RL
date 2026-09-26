@@ -100,3 +100,12 @@ experiments:
       PROCESS_SIGNAL_GO authorizes drafting a V5-R001 preregistration only. No training,
       no weight update and no V5-R001 launch is authorized by V5-P001. If any scientific
       metric is emitted before the canonical analyzer run: STOP_FOR_OWNER.
+    amendments:
+      A:                       # 2026-09-26, owner-approved pre-outcome (Phase-B attempt 0)
+        document: docs/v5/V5-P001_amendment_A.md
+        kind: execution-code-only
+        change: "two-strike wedge (candidate infra after bounded post-recovery re-submission + canary unhealthy again) => censor the candidate as PROCESS_ORACLE_INFRA, one more bounded restore recovery, continue; restore remains fail-close"
+        runner_sha256_before: f98d810fc3e32bafe520ce7d18e1aae3093aef894a3489d4f27991cfa1f83c27
+        runner_sha256_after: 5c090e5c6549b55af0850cce49644d34aee5707066128a9330d07d694e0c1f6c
+        trial_cost: "attempt 0 fail-closed at plan position 571 (seed1:0019:g02:c02, ~737 s elaboration vs 180 s client + 2x180 s canary windows); 570 labels archived as runs/v5_p001_process_attempt0_wedge/ (fly122, renamed never deleted, never analyzed); attempt 1 = fresh run dir from candidate 1"
+        scientific_design_changed: NONE

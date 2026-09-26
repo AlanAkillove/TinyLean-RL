@@ -21,6 +21,7 @@ Phase-A exit condition reads **`historical process labels inspected = 0`**. Ever
 | Process oracle | `scripts/v5_process_oracle.py` |
 | Surface reconstruction | `scripts/v5_p001_reconstruct.py` |
 | Phase-B runner | `scripts/v5_p001_process_run.py` (stages `preflight`, `process`, `freeze`, `validate`, `status`) |
+| Amendments | [A](V5-P001_amendment_A.md) — two-strike wedge ⇒ censor the candidate, bounded restore, continue (owner-approved 2026-09-26, pre-outcome, execution-code only) |
 | Canonical analyzer | `scripts/v5_p001_analyze.py` (exactly one run, after the freeze) |
 | Tests | `tests/test_v5_process_oracle.py` |
 | Run directory | `runs/v5_p001_process/` (labels, raw items, manifest, freeze, validation) |
@@ -104,7 +105,13 @@ surface; the raw/all-groups table is reported alongside, never instead.
 * Infrastructure outcomes (`VERIFIER_TIMEOUT`, `VERIFIER_SERVER_ERROR`, `VERIFIER_UNHEALTHY`,
   `UNRESOLVED_INFRA_ERROR`) are **censored, never failures** (owner §26). A candidate-specific infra
   event is re-checked with a canary; an unhealthy instance triggers a bounded restart + cold canary;
-  if the instance is unhealthy again after a recovery the run stops and the owner is informed.
+  if the instance is unhealthy again after a recovery the run stops and the owner is informed —
+  **except under [Amendment A](V5-P001_amendment_A.md) (owner-approved 2026-09-26, documented before
+  any analyzable label set)**: a candidate that is still an infrastructure outcome after its bounded
+  post-recovery re-submission *and* leaves the canary unhealthy again is censored
+  (`PROCESS_ORACLE_INFRA`, excluded from the numerator, kept in its group's denominator), one more
+  bounded recovery restores the instance, and the run continues with the next candidate; a restore
+  that cannot be re-warmed still stops the run.
 * **Tactic decomposition is done by Lean, not by text** (owner §7): tactics come from the infotree
   nodes whose name starts with `Lean.Parser.Tactic.`, with the pure-sequence wrappers
   (`tacticSeq`, `tacticSeq1Indented`, `tacticSeqBracketed`) skipped and exact `(name, span)` duplicates
@@ -253,7 +260,8 @@ by changing d1/d2, parser definitions or denominators.
 ## 10. Frozen artifacts and result template (owner §33, §34)
 
 Artifacts: `docs/v5/V5-P001_preregistration.md`, `docs/v5/process_oracle_design.md`,
-`experiments/manifests/v5/V5-P001.yaml`, `experiments/manifests/v5/registry.yaml`,
+`docs/v5/V5-P001_amendment_A.md`, `experiments/manifests/v5/V5-P001.yaml`,
+`experiments/manifests/v5/registry.yaml`,
 `experiments/manifests/v5/v5_historical_surface.json`,
 `experiments/manifests/v5/v5_process_oracle_validation.json`, `scripts/v5_process_oracle.py`,
 `scripts/v5_p001_reconstruct.py`, `scripts/v5_p001_analyze.py` (+ the Phase-B runner
@@ -274,7 +282,9 @@ Artifacts: `docs/v5/V5-P001_preregistration.md`, `docs/v5/process_oracle_design.
 * The V3 93-component `SEALED` reserve, the future family-clean capability holdout and any new theorem
   family are untouched.
 * Every infra failure is bounded and fail-close: timeouts are censored (missing data), never a failed
-  proof; the recovery budget is finite; an unhealthy instance after recovery stops the run.
+  proof; the recovery budget is finite; an unhealthy instance after recovery stops the run — except
+  under [Amendment A](V5-P001_amendment_A.md)'s two-strike rule, where the *candidate* is censored
+  and the instance is restored by one more bounded recovery; the restore itself remains fail-close.
 
 ## 12. Known limitations, declared before the outcome
 

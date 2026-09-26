@@ -259,8 +259,8 @@ A **dedicated** instance — the pooled production verifier is never touched:
 | client timeout | server timeout + 60 s slack |
 | batch | 1 candidate per request |
 | isolation retries | ≤ 2 bounded retries for *infrastructure* outcomes only |
-| canary | 300 s cold / 120 s warm, 1 retry; a failed canary is `fail-close` |
-| recovery | ≤ 192 bounded container restarts per Phase-B run, then stop and inspect |
+| canary | 300 s cold / 120 s warm, 1 retry; a failed canary is `fail-close`, except the Amendment A two-strike branch in the semantics below |
+| recovery | ≤ 192 bounded container restarts per Phase-B run (including Amendment A restore restarts), then stop and inspect |
 
 **Semantics.**
 
@@ -271,13 +271,23 @@ A **dedicated** instance — the pooled production verifier is never touched:
   restarts the container (bounded), re-warms it and re-submits the candidate once; if the canary is
   healthy the event was candidate-specific and the candidate is censored and the run continues;
 * an unhealthy server after a recovery aborts the run (`fail-close`) rather than silently censoring
-  a block of candidates.
+  a block of candidates — **[Amendment A](V5-P001_amendment_A.md) (owner-approved 2026-09-26,
+  pre-outcome, execution-code only) narrows exactly this branch**: when a candidate is *again* an
+  infrastructure outcome after its bounded post-recovery re-submission and the canary is *again*
+  unhealthy (observed: one proof elaborating ~737 s — 12 m 17 s — wedging the serialized REPL through
+  the 180 s client window and both 180 s canary attempts, deterministically, on every resume), that
+  **candidate** is censored (`PROCESS_ORACLE_INFRA`; numerator excluded, group denominator kept), one
+  more bounded recovery restores the instance, and the run continues with the next candidate. A
+  restore whose cold canary fails still stops the run; the recovery budget is unchanged and shared.
+  Evidence, diff and pinned hashes: [`V5-P001_amendment_A.md`](V5-P001_amendment_A.md).
 
 **Measured latency character.** With the REPL warm, a plainer failing proof returns in ~0.1 s while
 the heavy historical candidates (polynomial case analysis, `omega`, `ring_nf`) take up to ~30 s of
 CPU; the REPL is reused (`MAX_REPL_USES = -1`), so these costs are genuine elaboration time, not
-re-imports. Phase B therefore runs for hours and is treated as an overnight batch with
-infrastructure-only monitoring (owner §28).
+re-imports. The surface also contains rare pathological candidates: Phase-B attempt 0 measured one
+proof at ~737 s (12 m 17 s) of wall-clock elaboration, beyond every frozen bounded window — the
+trigger of [Amendment A](V5-P001_amendment_A.md). Phase B therefore runs for hours and is treated as
+an overnight batch with infrastructure-only monitoring (owner §28).
 
 ---
 

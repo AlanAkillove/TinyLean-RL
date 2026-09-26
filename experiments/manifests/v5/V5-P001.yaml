@@ -218,6 +218,30 @@ artifacts:
   run_dir: runs/v5_p001_process/          # labels, raw items, raw manifest, freeze, validation
   result: experiments/manifests/v5/V5-P001_results.json
 
+amendments:
+  A:
+    title: "two-strike wedge censoring (deterministic ultra-long elaboration)"
+    document: docs/v5/V5-P001_amendment_A.md
+    date: "2026-09-26"
+    approved_by_owner: true
+    scope: >
+      execution-code only, pre-outcome (attempt 0 produced no analyzable label set and no
+      scientific metric); no scientific element changed: d1/d2 credit, parsers, statuses, blame
+      rules, PROCESS_STRUCTURED_RECOVERABLE, gates E1/E2/G1/G2/G3, denominators, surfaces, plan
+      order, fixtures, oracle timeouts/canary budgets, recovery budget, exactly-once submission,
+      canonical-analyzer-once, compute=0
+    change: >
+      a candidate that is still an infrastructure outcome after its bounded post-recovery
+      re-submission AND leaves the canary unhealthy again is censored as PROCESS_ORACLE_INFRA
+      (excluded from the numerator, kept in its group's denominator per the frozen censoring
+      trichotomy), one more bounded recovery restores the instance, and the run continues; a
+      restore whose cold canary fails, or budget exhaustion, still stops the run (fail-close)
+    runner_sha256_before: f98d810fc3e32bafe520ce7d18e1aae3093aef894a3489d4f27991cfa1f83c27
+    runner_sha256_after: 5c090e5c6549b55af0850cce49644d34aee5707066128a9330d07d694e0c1f6c
+    attempt0_archive: runs/v5_p001_process_attempt0_wedge/   # fly122; renamed, never deleted/analyzed
+    attempt0_labels_sha256: 854f51118ad028dfee07c84263ac3f2d50de700a3c76ad59d26c16dd00492f08
+    tests: "tests/test_v5_process_oracle.py (three pinned policy tests)"
+
 execution_order:
   - "A1 oracle + fixtures (13 classes, 2 runs each) on fly122"
   - "A2 tactic -> token mapping with the frozen Kimina tokenizer"
@@ -225,6 +249,7 @@ execution_order:
   - "A4 analyzer, gates and result schema implemented; tests + ruff green"
   - "A5 preregistration written and frozen (THIS manifest) - historical process labels inspected = 0"
   - "A6 single Phase-A commit + push to origin + sync to fly122"
+  - "A7 Amendment A (owner-approved pre-outcome): two-strike wedge censoring; attempt0 archived; fresh run dir + preflight + relaunch"
   - "B1 preflight on fly122 (oracle identity, tokenizer, fixtures, plan)"
   - "B2 process every planned candidate exactly once (2476 submissions; overnight)"
   - "B3 freeze raw items + labels; archive to fly90"

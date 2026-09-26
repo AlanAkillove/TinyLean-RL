@@ -38,7 +38,7 @@ import v5_p001_spec as S
 import v5_process_oracle as O
 from kimina_prover_rl.reward.proof_utils import extract_proof_from_text
 
-from tinylean_rl.verifier.policy import Classified, VerifyOutcome
+from tinylean_rl.verifier.policy import Classified, VerifierUnhealthyError, VerifyOutcome
 
 #: Canonical tiny theorem reused by the fixtures: the frame is ``pred`` itself
 #: (no blank/import header), so frame positions are readable off the string.
@@ -745,6 +745,105 @@ def test_the_canonical_run_directory_refuses_a_debug_limited_freeze(tmp_path, mo
     # A different stamp is refused before the debug rule is even reached.
     with pytest.raises(RuntimeError, match="run stamp mismatch"):
         RUN.stage_freeze(scratch, planned=[], stamp={"git_head": "b" * 40})
+
+
+# --------------------------------------------------------------------------------------
+# runner: Phase-B infra policy -- Amendment A (two-strike wedge -> censored, not stop)
+# --------------------------------------------------------------------------------------
+
+
+def _infra_result() -> dict:
+    return {
+        "item": None,
+        "classified": Classified(VerifyOutcome.VERIFIER_TIMEOUT, "ReadTimeout: timed out"),
+        "attempts": [
+            {
+                "attempt": 0,
+                "outcome": "verifier_timeout",
+                "message": "ReadTimeout: timed out",
+                "seconds": 180.0,
+                "item_sha256": None,
+            }
+        ],
+        "seconds": 180.0,
+    }
+
+
+class _WedgeClient:
+    """Post-recovery retry stays infra; the canary fails unless ``healthy_probes`` allows it."""
+
+    def __init__(self, healthy_probes: int = 0) -> None:
+        self.healthy_probes = healthy_probes
+        self.probes = 0
+        self.warmups = 0
+
+    def verify_raw(self, proof: str, custom_id: str) -> dict:
+        return _infra_result()
+
+    def require_healthy(self) -> None:
+        self.probes += 1
+        if self.probes > self.healthy_probes:
+            raise VerifierUnhealthyError("canary failed")
+
+    def warmup(self, *, timeout_s: int | None = None) -> dict:
+        self.warmups += 1
+        return {"ok": True, "outcome": "verified", "seconds": 0.01}
+
+
+def _wedge_stage(tmp_path, monkeypatch, client):
+    monkeypatch.setattr(RUN, "container_restart", lambda: None)
+    monkeypatch.setattr(RUN, "wait_healthy", lambda the_client: None)
+    monkeypatch.setitem(S.ORACLE_INFRA, "restart_grace_s", 0)
+    paths = RUN.RunPaths(tmp_path / "run")
+    paths.root.mkdir(parents=True, exist_ok=True)
+    stage = RUN.ProcessStage(
+        paths=paths,
+        client=client,
+        mapper=None,
+        infra_log=RUN.InfraLog(paths.infra_log),
+        manage_container=True,
+    )
+    return stage, paths
+
+
+def _kinds(paths) -> list[str]:
+    return [
+        json.loads(line)["kind"]
+        for line in paths.infra_log.read_text(encoding="utf-8").split("\n")
+        if line.strip()
+    ]
+
+
+def test_two_strike_wedge_is_censored_and_the_instance_restarted_once_more(tmp_path, monkeypatch):
+    client = _WedgeClient()
+    stage, paths = _wedge_stage(tmp_path, monkeypatch, client)
+    result = stage.repeat_after_recovery("seed1:0019:g02:c02", "by simp", "v5p001-x")
+    assert result["classified"].outcome.is_infrastructure  # censored, never a failure
+    assert stage.counters.recoveries == 1
+    assert client.warmups == 1  # the extra restart re-warms the instance before continuing
+    assert _kinds(paths) == [
+        "infra_event_after_recovery",
+        "candidate_censored_two_strikes",
+        "recovery_start",
+        "recovery_done",
+    ]
+
+
+def test_healthy_canary_after_recovery_censors_without_an_extra_restart(tmp_path, monkeypatch):
+    client = _WedgeClient(healthy_probes=1)
+    stage, paths = _wedge_stage(tmp_path, monkeypatch, client)
+    result = stage.repeat_after_recovery("seed1:0019:g02:c02", "by simp", "v5p001-x")
+    assert result["classified"].outcome.is_infrastructure
+    assert stage.counters.recoveries == 0 and client.warmups == 0
+    assert _kinds(paths) == ["infra_event_after_recovery"]
+
+
+def test_recovery_budget_exhaustion_still_fails_close(tmp_path, monkeypatch):
+    client = _WedgeClient()
+    stage, _ = _wedge_stage(tmp_path, monkeypatch, client)
+    stage.counters.recoveries = int(S.ORACLE_INFRA["max_recoveries_per_run"])
+    with pytest.raises(RuntimeError, match="budget exhausted"):
+        stage.repeat_after_recovery("seed1:0019:g02:c02", "by simp", "v5p001-x")
 
 
 # --------------------------------------------------------------------------------------
