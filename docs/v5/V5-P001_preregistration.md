@@ -21,7 +21,7 @@ Phase-A exit condition reads **`historical process labels inspected = 0`**. Ever
 | Process oracle | `scripts/v5_process_oracle.py` |
 | Surface reconstruction | `scripts/v5_p001_reconstruct.py` |
 | Phase-B runner | `scripts/v5_p001_process_run.py` (stages `preflight`, `process`, `freeze`, `validate`, `status`) |
-| Amendments | [A](V5-P001_amendment_A.md) — two-strike wedge ⇒ censor the candidate, bounded restore, continue (owner-approved 2026-09-26, pre-outcome, execution-code only) |
+| Amendments | [A](V5-P001_amendment_A.md) — two-strike wedge ⇒ censor the candidate, bounded restore, continue (owner-approved 2026-09-26, pre-outcome, execution-code only); [B](V5-P001_analyzer_amendment_B.md) — analyzer report-wiring repair with a pinned parent freeze, no re-freeze, no re-processing (owner-approved 2026-09-27, after the pre-metric analyzer abort, analyzer-code-only) |
 | Canonical analyzer | `scripts/v5_p001_analyze.py` (exactly one run, after the freeze) |
 | Tests | `tests/test_v5_process_oracle.py` |
 | Run directory | `runs/v5_p001_process/` (labels, raw items, manifest, freeze, validation) |
@@ -260,8 +260,8 @@ by changing d1/d2, parser definitions or denominators.
 ## 10. Frozen artifacts and result template (owner §33, §34)
 
 Artifacts: `docs/v5/V5-P001_preregistration.md`, `docs/v5/process_oracle_design.md`,
-`docs/v5/V5-P001_amendment_A.md`, `experiments/manifests/v5/V5-P001.yaml`,
-`experiments/manifests/v5/registry.yaml`,
+`docs/v5/V5-P001_amendment_A.md`, `docs/v5/V5-P001_analyzer_amendment_B.md`,
+`experiments/manifests/v5/V5-P001.yaml`, `experiments/manifests/v5/registry.yaml`,
 `experiments/manifests/v5/v5_historical_surface.json`,
 `experiments/manifests/v5/v5_process_oracle_validation.json`, `scripts/v5_process_oracle.py`,
 `scripts/v5_p001_reconstruct.py`, `scripts/v5_p001_analyze.py` (+ the Phase-B runner
@@ -271,7 +271,11 @@ Artifacts: `docs/v5/V5-P001_preregistration.md`, `docs/v5/process_oracle_design.
 `by_seed`, `length_robustness`, `candidate_mechanism`, `token_credit`, `format_decomposition`,
 `sensitivity`, `FINAL_CLASSIFICATION`, `permitted_claim`, `limitations`, `compute`, `provenance`,
 `if_GO` (draft created / training launched), plus `NEW_MODEL_GENERATION: 0` and
-`SEALED_RESERVE_TOUCHED: 0`.
+`SEALED_RESERVE_TOUCHED: 0`. Under [Amendment B](V5-P001_analyzer_amendment_B.md) the provenance
+distinguishes `execution_code_stamp` (the Phase-B execution commit that produced the labels) from
+`analysis_code_stamp` (the analyzer commit) and carries the explicit `analysis_amendment` block
+(`kind`, `parent_execution_head`, `parent_analyzer_sha256`, `analysis_head`, `analyzer_sha256`,
+`parent_freeze_sha256`, `labels_sha256`, `raw_manifest_content_hash`).
 
 ---
 

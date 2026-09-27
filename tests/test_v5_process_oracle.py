@@ -997,6 +997,10 @@ def _plan_entry(candidate_id, meta, pred, response):
 STAMP = {"git_head": "f" * 40, "scripts": {"v5_p001_spec.py": "0" * 64}}
 
 
+RAW_ITEM_NAME = "seed1_0001_g01_c01.json"
+RAW_ITEM_TEXT = '{"fixture": "raw-oracle-item"}\n'
+
+
 def _write_run_dir(
     root: Path,
     *,
@@ -1008,26 +1012,45 @@ def _write_run_dir(
     validation_passed=True,
     debug_limit=None,
     tamper_labels=False,
+    stamp=STAMP,
 ):
     root.mkdir(parents=True, exist_ok=True)
     paths = RUN.RunPaths(root)
     labels_text = "".join(S.canonical_json(record) + "\n" for record in records)
     paths.labels.write_text(labels_text, encoding="utf-8")
+    paths.raw.mkdir(parents=True, exist_ok=True)
+    raw_item = paths.raw / RAW_ITEM_NAME
+    raw_item.write_text(RAW_ITEM_TEXT, encoding="utf-8")
     paths.raw_manifest.write_text(
-        json.dumps({"n_files": 0, "total_bytes": 0, "files": []}, indent=1) + "\n",
+        json.dumps(
+            {
+                "artifact": "v5_p001_process_raw_manifest",
+                "n_files": 1,
+                "total_bytes": raw_item.stat().st_size,
+                "files": [
+                    {
+                        "file": RAW_ITEM_NAME,
+                        "sha256": S.sha256_file(raw_item),
+                        "bytes": raw_item.stat().st_size,
+                    }
+                ],
+            },
+            indent=1,
+        )
+        + "\n",
         encoding="utf-8",
     )
     freeze = {
         "artifact": "v5_p001_process_freeze",
         "experiment": S.EXPERIMENT_ID,
-        "code_stamp": STAMP,
+        "code_stamp": stamp,
         "debug_limit": debug_limit,
         "labels": {
             "path": str(paths.labels),
             "sha256": S.sha256_file(paths.labels),
             "n_records": len(records),
         },
-        "raw": {"manifest_sha256": S.sha256_file(paths.raw_manifest), "n_files": 0},
+        "raw": {"manifest_sha256": S.sha256_file(paths.raw_manifest), "n_files": 1},
         "infrastructure": {
             "n_infra_censored": 0,
             "n_submissions": 3,
@@ -1041,7 +1064,7 @@ def _write_run_dir(
     paths.run_meta.write_text(
         json.dumps(
             {
-                "code_stamp": STAMP,
+                "code_stamp": stamp,
                 "debug_limit": debug_limit,
                 "tokenizer_identity": {"dir": "models/weights/kimina_distill_0_6b"},
                 "oracle": {"endpoint": "http://127.0.0.1:8020", "image_digest": "sha256:fixture"},
@@ -1051,12 +1074,24 @@ def _write_run_dir(
         + "\n",
         encoding="utf-8",
     )
+    # Production-shaped structural artifact: no "summary" (that key belongs to
+    # the fixture/oracle validation manifest), plus the freeze/labels chain.
     paths.validation.write_text(
         json.dumps(
             {
+                "artifact": "v5_p001_process_validation",
                 "passed": validation_passed,
-                "summary": {"n_records": len(records), "all_validated": validation_passed},
-                "checks": {"n_records": len(records)},
+                "freeze_sha256": S.sha256_file(paths.freeze),
+                "labels_sha256": S.sha256_file(paths.labels),
+                "checks": {
+                    "n_planned": len(plan),
+                    "n_records": len(records),
+                    "n_rebuilt_from_sources": len(records),
+                    "all_records_reproduced": True,
+                    "n_mismatches": 0,
+                    "coverage_complete": True,
+                },
+                "mismatches": [],
             },
             indent=1,
         )
@@ -1070,7 +1105,13 @@ def _write_run_dir(
         json.dumps(
             oracle_validation
             or {
-                "summary": {"all_validated": True, "all_deterministic": True},
+                "summary": {
+                    "n_fixtures": 26,
+                    "n_ok": 26,
+                    "n_failed": 0,
+                    "all_validated": True,
+                    "all_deterministic": True,
+                },
                 "fixture_set_sha256": "deadbeef",
             },
             indent=1,
@@ -1083,12 +1124,12 @@ def _write_run_dir(
     return paths, surface_path, oracle_validation_path
 
 
-def _load(root, surface_path, oracle_validation_path, monkeypatch, plan):
+def _load(root, surface_path, oracle_validation_path, monkeypatch, plan, stamp=STAMP):
     """Load a synthetic run directory with the frozen artifact paths redirected."""
 
     monkeypatch.setattr(S, "HISTORICAL_SURFACE", surface_path)
     monkeypatch.setattr(S, "ORACLE_VALIDATION", oracle_validation_path)
-    monkeypatch.setattr(A, "code_stamp", lambda: STAMP)
+    monkeypatch.setattr(A, "code_stamp", lambda: stamp)
     monkeypatch.setattr(A, "build_plan", lambda surface: plan)
     return A.load_inputs(root)
 
@@ -1158,6 +1199,204 @@ def test_load_inputs_accepts_the_fixture_and_fails_closed_on_every_mutation(
         _load(root, root / "surface.json", root / "oracle_validation.json", monkeypatch, cohort["plan"])
 
 
+# --------------------------------------------------------------------------------------
+# Amendment B: report plumbing, pinned parent freeze, scientific invariance
+# --------------------------------------------------------------------------------------
+
+#: sha256 over every metric-producing report subtree, pinned from the
+#: pre-amendment analyzer on the same synthetic records (Amendment B T3).
+SCIENTIFIC_DIGEST_KEYS = (
+    "gates",
+    "primary_recovery",
+    "by_seed",
+    "length_robustness",
+    "candidate_mechanism",
+    "token_credit",
+    "format_decomposition",
+    "sensitivity",
+    "FINAL_CLASSIFICATION",
+    "historical_surface",
+    "permitted_claim",
+    "limitations",
+    "if_GO",
+    "SEALED_RESERVE_TOUCHED",
+)
+SCIENTIFIC_DIGEST = "171e21c3b46f5031b566ba2138e128b1e7e66b9b53cf82eec76bb808fa42803b"
+
+
+def _pinned_amendment_stamps():
+    parent = {
+        "git_head": A.ANALYSIS_AMENDMENT["parent_execution_head"],
+        "scripts": {name: "a" * 64 for name in RUN.STAMP_SCRIPTS},
+        "historical_surface_sha256": "b" * 64,
+        "oracle_validation_sha256": "c" * 64,
+    }
+    parent["scripts"][A.ANALYZER_SCRIPT] = A.ANALYSIS_AMENDMENT["parent_analyzer_sha256"]
+    analysis = json.loads(json.dumps(parent))
+    analysis["git_head"] = "e" * 40
+    analysis["scripts"][A.ANALYZER_SCRIPT] = "f" * 64
+    return parent, analysis
+
+
+def test_structural_validation_fixture_is_production_shaped(cohort, monkeypatch):
+    """T1: the structural artifact carries no ``summary``; the pre-amendment
+    alias (structural artifact under ``validation``) raises KeyError on it while
+    the repaired analyzer passes."""
+
+    inputs = _load(
+        cohort["root"],
+        cohort["surface_path"],
+        cohort["oracle_validation_path"],
+        monkeypatch,
+        cohort["plan"],
+    )
+    structural = inputs["structural_validation"]
+    assert "summary" not in structural
+    with pytest.raises(KeyError):
+        structural["summary"]  # the old wiring's key access
+    assert inputs["validation"]["summary"]["all_validated"] is True
+    report = A.build_report(inputs)
+    assert report["process_oracle"]["fixtures"]["all_validated"] is True
+
+
+def test_analyzer_accepts_only_the_pinned_analyzer_only_amendment(cohort, tmp_path, monkeypatch):
+    """T4: the pinned FreezeA lineage loads and is recorded as an amendment."""
+
+    parent, analysis = _pinned_amendment_stamps()
+    root = tmp_path / "pinned"
+    paths, surface_path, oracle_validation_path = _write_run_dir(
+        root,
+        surface=cohort["surface"],
+        plan=cohort["plan"],
+        records=cohort["records"],
+        stamp=parent,
+    )
+    inputs = _load(
+        root, surface_path, oracle_validation_path, monkeypatch, cohort["plan"], stamp=analysis
+    )
+    report = A.build_report(inputs)
+    assert report["analysis_amendment"] == {
+        "kind": "analyzer_code_only",
+        "parent_execution_head": A.ANALYSIS_AMENDMENT["parent_execution_head"],
+        "parent_analyzer_sha256": A.ANALYSIS_AMENDMENT["parent_analyzer_sha256"],
+        "analysis_head": analysis["git_head"],
+        "analyzer_sha256": analysis["scripts"][A.ANALYZER_SCRIPT],
+        "parent_freeze_sha256": S.sha256_file(paths.freeze),
+        "labels_sha256": S.sha256_file(paths.labels),
+        "raw_manifest_content_hash": S.sha256_file(paths.raw_manifest),
+    }
+    assert report["provenance"]["execution_code_stamp"] == parent
+    assert report["provenance"]["analysis_code_stamp"] == analysis
+
+
+def test_analyzer_refuses_an_unpinned_or_non_analyzer_stamp_delta(cohort, tmp_path, monkeypatch):
+    """T4: only this analyzer's own hash may move, and only from the pinned parent."""
+
+    parent, analysis = _pinned_amendment_stamps()
+
+    def load(root, stamp=analysis):
+        return _load(
+            root,
+            root / "surface.json",
+            root / "oracle_validation.json",
+            monkeypatch,
+            cohort["plan"],
+            stamp=stamp,
+        )
+
+    def build(name, stamp):
+        root = tmp_path / name
+        _write_run_dir(
+            root,
+            surface=cohort["surface"],
+            plan=cohort["plan"],
+            records=cohort["records"],
+            stamp=stamp,
+        )
+        return root
+
+    unpinned = json.loads(json.dumps(parent))
+    unpinned["git_head"] = "0" * 40
+    with pytest.raises(A.AnalyzerError, match="pinned FreezeA lineage"):
+        load(build("unpinned", unpinned))
+
+    wrong_analyzer = json.loads(json.dumps(parent))
+    wrong_analyzer["scripts"][A.ANALYZER_SCRIPT] = "9" * 64
+    with pytest.raises(A.AnalyzerError, match="parent analyzer hash is not the pinned FreezeA one"):
+        load(build("wrong-analyzer", wrong_analyzer))
+
+    moved_oracle = json.loads(json.dumps(parent))
+    moved_oracle["scripts"]["v5_process_oracle.py"] = "9" * 64
+    with pytest.raises(A.AnalyzerError, match="stamp delta is not analyzer-only"):
+        load(build("moved-oracle", moved_oracle))
+
+    moved_manifest = json.loads(json.dumps(analysis))
+    moved_manifest["historical_surface_sha256"] = "9" * 64
+    with pytest.raises(A.AnalyzerError, match="scientific manifest hash differs"):
+        load(build("moved-manifest", parent), stamp=moved_manifest)
+
+    moved_oracle_manifest = json.loads(json.dumps(analysis))
+    moved_oracle_manifest["oracle_validation_sha256"] = "9" * 64
+    with pytest.raises(A.AnalyzerError, match="scientific manifest hash differs"):
+        load(build("moved-oracle-manifest", parent), stamp=moved_oracle_manifest)
+
+
+def test_analyzer_refuses_a_structural_validation_from_another_freeze(cohort, tmp_path, monkeypatch):
+    for key, needle in (
+        ("freeze_sha256", "does not reference this freeze"),
+        ("labels_sha256", "was not computed on these labels"),
+    ):
+        root = tmp_path / key
+        paths, surface_path, oracle_validation_path = _write_run_dir(
+            root,
+            surface=cohort["surface"],
+            plan=cohort["plan"],
+            records=cohort["records"],
+        )
+        payload = json.loads(paths.validation.read_text(encoding="utf-8"))
+        payload[key] = "0" * 64
+        paths.validation.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
+        with pytest.raises(A.AnalyzerError, match=needle):
+            _load(root, surface_path, oracle_validation_path, monkeypatch, cohort["plan"])
+
+
+def test_analyzer_refuses_a_tampered_raw_oracle_item(cohort, monkeypatch):
+    paths = RUN.RunPaths(cohort["root"])
+    _load(
+        cohort["root"],
+        cohort["surface_path"],
+        cohort["oracle_validation_path"],
+        monkeypatch,
+        cohort["plan"],
+    )  # sanity: the intact fixture loads
+    item = paths.raw / RAW_ITEM_NAME
+    item.write_text(RAW_ITEM_TEXT + "tampered\n", encoding="utf-8")
+    with pytest.raises(A.AnalyzerError, match="raw oracle item changed"):
+        _load(
+            cohort["root"],
+            cohort["surface_path"],
+            cohort["oracle_validation_path"],
+            monkeypatch,
+            cohort["plan"],
+        )
+
+
+def test_report_plumbing_fix_leaves_every_scientific_output_identical(cohort, monkeypatch):
+    """T3: the digest over all metric-producing subtrees is pinned from the
+    pre-amendment analyzer; only report/provenance assembly may differ."""
+
+    inputs = _load(
+        cohort["root"],
+        cohort["surface_path"],
+        cohort["oracle_validation_path"],
+        monkeypatch,
+        cohort["plan"],
+    )
+    report = A.build_report(inputs)
+    payload = {key: report[key] for key in SCIENTIFIC_DIGEST_KEYS}
+    assert S.sha256_text(S.canonical_json(payload)) == SCIENTIFIC_DIGEST
+
+
 def test_candidate_class_trichotomy_and_denominators(cohort):
     records = cohort["records"]
     classes = {A.candidate_class(record) for record in records}
@@ -1222,7 +1461,17 @@ def test_full_report_reaches_the_frozen_go_classification(cohort, monkeypatch, c
     assert report["token_credit"]["success_tokens"]["n"] == 4
     assert report["token_credit"]["blamed_mappable_rate"] == 1.0
     assert report["FINAL_CLASSIFICATION"]["gate_order"] == ["E1", "E2", "GO", "G1", "G2", "G3"]
-    assert report["provenance"]["code_stamp"] == STAMP
+    assert report["provenance"]["execution_code_stamp"] == STAMP
+    assert report["provenance"]["analysis_code_stamp"] == STAMP
+    assert report["analysis_amendment"] is None  # fixture stamps: no amendment in play
+    assert report["provenance"]["fixture_set_sha256"] == "deadbeef"
+    # T2 source separation: fixtures <- the fixture/oracle validation manifest;
+    # re-derivation <- the structural validation artifact.
+    assert report["process_oracle"]["fixtures"]["n_fixtures"] == 26
+    assert report["process_oracle"]["re_derivation"]["n_rebuilt_from_sources"] == len(
+        cohort["records"]
+    )
+    assert report["process_oracle"]["re_derivation"]["n_mismatches"] == 0
     assert report["permitted_claim"].startswith("Offline process-label recoverability")
     assert report["compute"] == {
         "new_model_generation": 0,

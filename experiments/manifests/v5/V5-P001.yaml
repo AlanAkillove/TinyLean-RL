@@ -241,6 +241,29 @@ amendments:
     attempt0_archive: runs/v5_p001_process_attempt0_wedge/   # fly122; renamed, never deleted/analyzed
     attempt0_labels_sha256: 854f51118ad028dfee07c84263ac3f2d50de700a3c76ad59d26c16dd00492f08
     tests: "tests/test_v5_process_oracle.py (three pinned policy tests)"
+  B:
+    title: "analyzer report-wiring repair with an immutable parent freeze (no re-freeze, no re-processing)"
+    document: docs/v5/V5-P001_analyzer_amendment_B.md
+    date: "2026-09-27"
+    approved_by_owner: true
+    kind: analyzer-code-only
+    scope: >
+      pre-metric analyzer abort (KeyError 'summary' in report-metadata assembly; 0 scientific
+      metrics emitted, no result artifact written); no scientific element changed: labels, raw
+      oracle items, freeze, structural validation, surface, oracle implementation, gates,
+      thresholds, denominators, bootstrap, classification order, compute=0
+    change: >
+      load_inputs exposes the fixture/oracle validation manifest and the structural validation
+      artifact as separate inputs; build_report reads fixtures/provenance from the former and
+      re_derivation from the latter; the stamp guard accepts the pinned FreezeA lineage
+      (execution head 5b1c5d277a7d923c7aed0626f238012dfc6d9f18, parent analyzer f5532f50...) when
+      the only stamp delta is git_head + this analyzer's own hash, and additionally verifies every
+      raw oracle item and the structural-validation -> freeze/labels chain
+    analyzer_sha256_before: f5532f5019ea435030672c5ac6e8e4631b64277a941412e5d0bd56c2340bc1be
+    analyzer_sha256_after: 8c485eecef92517bc49082043d790b701996ddb43ba5bd92c479da42ce393731
+    freeze_a_freeze_sha256: 1d41c6a7829fbccdc52b0442ff529755476ebea89f61f78b16f6b46da5cb9815
+    freeze_a_labels_sha256: 8c9f1ca604e2ff17ba06a79e568b8f97c79bcd5e290923cabefdeaaf7ee321ea
+    tests: "tests/test_v5_process_oracle.py (T1-T4: production-shaped fixtures, source separation, scientific digest, pinned-parent refusals)"
 
 execution_order:
   - "A1 oracle + fixtures (13 classes, 2 runs each) on fly122"
@@ -257,6 +280,7 @@ execution_order:
   - "B5 canonical analyzer run, exactly once -> V5_P001_RESULT"
   - "B6 if PROCESS_SIGNAL_GO: draft the V5-R001 preregistration only"
   - "B7 STOP - no V5-R001 training is authorized"
+  - "A8 Analyzer amendment B (owner-approved 2026-09-27, after the pre-metric analyzer abort): report-wiring fix + pinned parent freeze; FreezeA untouched (no re-freeze, no re-processing); then the ONE productive canonical analyzer run"
 
 reporting:
   live_metrics_during_phase_b: prohibited      # infrastructure monitoring only

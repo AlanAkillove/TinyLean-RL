@@ -109,3 +109,15 @@ experiments:
         runner_sha256_after: 5c090e5c6549b55af0850cce49644d34aee5707066128a9330d07d694e0c1f6c
         trial_cost: "attempt 0 fail-closed at plan position 571 (seed1:0019:g02:c02, ~737 s elaboration vs 180 s client + 2x180 s canary windows); 570 labels archived as runs/v5_p001_process_attempt0_wedge/ (fly122, renamed never deleted, never analyzed); attempt 1 = fresh run dir from candidate 1"
         scientific_design_changed: NONE
+      B:                       # 2026-09-27, owner-approved after the pre-metric analyzer abort
+        document: docs/v5/V5-P001_analyzer_amendment_B.md
+        kind: analyzer-code-only
+        change: "load_inputs separates the fixture/oracle validation manifest from the structural validation artifact; build_report reads fixtures/provenance from the former and re_derivation from the latter; the stamp guard accepts the pinned FreezeA lineage when the only delta is git_head + the analyzer's own hash, and verifies every raw oracle item plus the structural-validation -> freeze/labels chain"
+        analyzer_sha256_before: f5532f5019ea435030672c5ac6e8e4631b64277a941412e5d0bd56c2340bc1be
+        analyzer_sha256_after: 8c485eecef92517bc49082043d790b701996ddb43ba5bd92c479da42ce393731
+        execution_head: 5b1c5d277a7d923c7aed0626f238012dfc6d9f18
+        parent_freeze_sha256: 1d41c6a7829fbccdc52b0442ff529755476ebea89f61f78b16f6b46da5cb9815
+        trial_cost: "analyzer invocation 1 aborted pre-metric (ANALYZER_PRE_METRIC_STRUCTURAL_ABORT, 0 metrics, no result file); FreezeA untouched: no re-freeze, no re-processing, no oracle calls; the ONE productive canonical run follows the amendment commit"
+        scientific_design_changed: NONE
+        raw_labels_changed: NO
+        oracle_outputs_changed: NO

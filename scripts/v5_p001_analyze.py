@@ -32,6 +32,19 @@ from v5_p001_process_run import RunPaths, build_plan, code_stamp
 RECOVERABLE = "recoverable"
 CENSORED = "censored"
 
+ANALYZER_SCRIPT = "v5_p001_analyze.py"
+
+#: Amendment B (owner-approved 2026-09-27, ``analyzer_code_only``): the Phase-B
+#: labels were produced under the original execution HEAD.  Only this analyzer's
+#: report/provenance plumbing changed afterwards, so the canonical analysis
+#: references the immutable parent freeze (FreezeA) instead of pretending the
+#: labels were generated under the new HEAD.
+ANALYSIS_AMENDMENT = {
+    "kind": "analyzer_code_only",
+    "parent_execution_head": "5b1c5d277a7d923c7aed0626f238012dfc6d9f18",
+    "parent_analyzer_sha256": "f5532f5019ea435030672c5ac6e8e4631b64277a941412e5d0bd56c2340bc1be",
+}
+
 
 # --------------------------------------------------------------------------------------
 # inputs and integrity gates
@@ -40,6 +53,37 @@ CENSORED = "censored"
 
 class AnalyzerError(RuntimeError):
     """A frozen input is missing, mutated or inconsistent: stop, do not analyze."""
+
+
+def verify_execution_stamp(name: str, parent: dict[str, Any] | None, current: dict[str, Any]) -> None:
+    """The parent stamp is either current, or the pinned analyzer-only amendment.
+
+    FreezeA stays the immutable execution record.  An approved analyzer-only
+    amendment may analyze it if and only if the parent stamp is the pinned one,
+    every scientific component (all other scripts plus the surface and
+    oracle-validation manifest hashes) is byte-identical, and this analyzer's
+    own script hash is the only one that moved.
+    """
+
+    if not isinstance(parent, dict):
+        raise AnalyzerError(f"{name} code stamp differs from this analyzer's stamp")
+    if parent == current:
+        return
+    if parent.get("git_head") != ANALYSIS_AMENDMENT["parent_execution_head"]:
+        raise AnalyzerError(f"{name} does not belong to the pinned FreezeA lineage")
+    parent_scripts = parent.get("scripts", {})
+    if parent_scripts.get(ANALYZER_SCRIPT) != ANALYSIS_AMENDMENT["parent_analyzer_sha256"]:
+        raise AnalyzerError(f"{name} parent analyzer hash is not the pinned FreezeA one")
+    for key in ("historical_surface_sha256", "oracle_validation_sha256"):
+        if parent.get(key) != current.get(key):
+            raise AnalyzerError(f"{name} scientific manifest hash differs: {key}")
+    changed = sorted(
+        script
+        for script in current["scripts"]
+        if parent_scripts.get(script) != current["scripts"][script]
+    )
+    if changed != [ANALYZER_SCRIPT]:
+        raise AnalyzerError(f"{name} stamp delta is not analyzer-only: {changed}")
 
 
 def load_inputs(run_dir: Path) -> dict[str, Any]:
@@ -64,10 +108,13 @@ def load_inputs(run_dir: Path) -> dict[str, Any]:
         raise AnalyzerError("labels file changed after the freeze")
     if S.sha256_file(paths.raw_manifest) != freeze["raw"]["manifest_sha256"]:
         raise AnalyzerError("raw manifest changed after the freeze")
+    manifest = json.loads(paths.raw_manifest.read_text(encoding="utf-8"))
+    for item in manifest["files"]:
+        if S.sha256_file(paths.raw / item["file"]) != item["sha256"]:
+            raise AnalyzerError(f"raw oracle item changed after the freeze: {item['file']}")
     stamp = code_stamp()
     for name, artifact in (("freeze", freeze), ("run_meta", run_meta)):
-        if artifact.get("code_stamp") != stamp:
-            raise AnalyzerError(f"{name} code stamp differs from this analyzer's stamp")
+        verify_execution_stamp(name, artifact.get("code_stamp"), stamp)
     if run_meta.get("debug_limit") is not None:
         raise AnalyzerError("run_meta records a debug limit: refusing to analyze")
     if freeze["coverage"]["n_missing"]:
@@ -79,6 +126,10 @@ def load_inputs(run_dir: Path) -> dict[str, Any]:
             raise AnalyzerError("structural validation did not pass")
     else:
         raise AnalyzerError("structural validation artifact is missing")
+    if validation_artifact.get("freeze_sha256") != S.sha256_file(paths.freeze):
+        raise AnalyzerError("structural validation does not reference this freeze")
+    if validation_artifact.get("labels_sha256") != freeze["labels"]["sha256"]:
+        raise AnalyzerError("structural validation was not computed on these labels")
     planned = build_plan(surface)
     records = []
     seen: set[str] = set()
@@ -101,7 +152,9 @@ def load_inputs(run_dir: Path) -> dict[str, Any]:
         "surface": surface,
         "freeze": freeze,
         "run_meta": run_meta,
-        "validation": json.loads(validation_path.read_text(encoding="utf-8")),
+        "stamp": stamp,
+        "validation": validation,
+        "structural_validation": validation_artifact,
         "planned": planned,
         "records": records,
     }
@@ -558,6 +611,30 @@ def classify(
 # --------------------------------------------------------------------------------------
 
 
+def analysis_amendment_record(inputs: dict[str, Any]) -> dict[str, Any] | None:
+    """Amendment B provenance: execution HEAD vs this analysis HEAD.
+
+    ``None`` when the analyzer runs under the execution stamp itself, i.e. no
+    analyzer-only amendment is in play.
+    """
+
+    freeze = inputs["freeze"]
+    execution_stamp = freeze["code_stamp"]
+    analysis_stamp = inputs["stamp"]
+    if execution_stamp == analysis_stamp:
+        return None
+    return {
+        "kind": ANALYSIS_AMENDMENT["kind"],
+        "parent_execution_head": execution_stamp["git_head"],
+        "parent_analyzer_sha256": execution_stamp["scripts"][ANALYZER_SCRIPT],
+        "analysis_head": analysis_stamp["git_head"],
+        "analyzer_sha256": analysis_stamp["scripts"][ANALYZER_SCRIPT],
+        "parent_freeze_sha256": S.sha256_file(inputs["paths"].freeze),
+        "labels_sha256": freeze["labels"]["sha256"],
+        "raw_manifest_content_hash": freeze["raw"]["manifest_sha256"],
+    }
+
+
 def build_report(inputs: dict[str, Any]) -> dict[str, Any]:
     records = inputs["records"]
     surface = inputs["surface"]
@@ -607,7 +684,8 @@ def build_report(inputs: dict[str, Any]) -> dict[str, Any]:
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "purpose": "offline process-reward recoverability audit over the frozen V1 surface",
         "provenance": {
-            "code_stamp": freeze["code_stamp"],
+            "execution_code_stamp": freeze["code_stamp"],
+            "analysis_code_stamp": inputs["stamp"],
             "labels": {
                 "path": freeze["labels"]["path"],
                 "sha256": freeze["labels"]["sha256"],
@@ -622,9 +700,10 @@ def build_report(inputs: dict[str, Any]) -> dict[str, Any]:
             "tokenizer": inputs["run_meta"]["tokenizer_identity"],
             "fixture_set_sha256": inputs["validation"].get("fixture_set_sha256"),
         },
+        "analysis_amendment": analysis_amendment_record(inputs),
         "process_oracle": {
             "fixtures": inputs["validation"]["summary"],
-            "re_derivation": inputs["validation"]["checks"],
+            "re_derivation": inputs["structural_validation"]["checks"],
             "infrastructure": freeze["infrastructure"],
         },
         "historical_surface": {
@@ -741,7 +820,9 @@ if __name__ == "__main__":
 
 
 __all__ = [
+    "ANALYSIS_AMENDMENT",
     "AnalyzerError",
+    "analysis_amendment_record",
     "build_report",
     "candidate_class",
     "component_bootstrap",
@@ -749,4 +830,5 @@ __all__ = [
     "compute_e2",
     "load_inputs",
     "quartiles",
+    "verify_execution_stamp",
 ]
