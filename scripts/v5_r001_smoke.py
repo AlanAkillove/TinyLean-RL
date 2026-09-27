@@ -10,7 +10,7 @@ Four stages, each writing one JSON artifact under ``--out-dir`` (default
   is measured on a meta-device model; the worker-side stack and the reward-path identity are probed
   in subprocesses. No model outcome is produced or recorded.
 * **S1** - memory/OOM/wall-clock feasibility, <= 3 optimizer steps on consumed training prompts.
-  Every attempt is appended to ``s1_attempts.json`` with an explicit knob diff; a retry must change
+  Every attempt is appended to ``attempts.json`` with an explicit knob diff; a retry must change
   exactly one *allowed* memory knob (owner §12). No scientific metric may be interpreted.
 * **S2** - arm parity, <= 1 optimizer step per condition: condition ``lambda0`` (λ = 0) and
   condition ``lambda1`` (λ = 1), both with ``r001_selfcheck=True``, which proves on the *same
@@ -321,10 +321,11 @@ class VramSampler(threading.Thread):
         self.interval = interval
         self.samples: list[int] = []
         self.peak_mib: int | None = None
-        self._stop = threading.Event()
+        # Thread already defines ``_stop`` (used by join); shadowing it breaks join with a TypeError.
+        self._stop_event = threading.Event()
 
     def run(self) -> None:  # pragma: no cover - thread body
-        while not self._stop.is_set():
+        while not self._stop_event.is_set():
             out = subprocess.run(
                 ["nvidia-smi", "--query-gpu=memory.used", "--format=csv,noheader,nounits"],
                 capture_output=True,
@@ -339,10 +340,10 @@ class VramSampler(threading.Thread):
                 if used is not None:
                     self.samples.append(used)
                     self.peak_mib = used if self.peak_mib is None else max(self.peak_mib, used)
-            self._stop.wait(self.interval)
+            self._stop_event.wait(self.interval)
 
     def stop(self) -> None:
-        self._stop.set()
+        self._stop_event.set()
         self.join(timeout=10)
 
 
