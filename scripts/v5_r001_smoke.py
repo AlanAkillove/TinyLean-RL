@@ -347,22 +347,30 @@ class VramSampler(threading.Thread):
         self.join(timeout=10)
 
 
+#: Ray prefixes anything a worker process prints with ``(<worker name> pid=<n>) ``. Every R001
+#: marker except ``R001_ENTRY`` and the trainer's own ``step:`` lines are printed from inside the
+#: R001 TaskRunner actor, so both parsers must tolerate (never require) that prefix - without it
+#: the S2/S3 evidence fields silently came out empty on the 2026-09-27 smokes.
+_WORKER_PREFIX = r"(?:\([^)]* pid=\d+\)\s*)?"
+_R001_LINE = re.compile(rf"^{_WORKER_PREFIX}(R001_[A-Z_]+)\s+(.*)$")
+
+
 def parse_r001_lines(text: str) -> dict[str, list[Any]]:
     found: dict[str, list[Any]] = {}
     for line in text.splitlines():
-        line = line.strip()
-        for prefix in R001_LINE_PREFIXES:
-            if line.startswith(prefix + " "):
-                payload = line[len(prefix) + 1 :]
-                try:
-                    value = json.loads(payload)
-                except json.JSONDecodeError:
-                    value = {"_unparsed": payload}
-                found.setdefault(prefix, []).append(value)
+        match = _R001_LINE.match(line.strip())
+        if match is None or match.group(1) not in R001_LINE_PREFIXES:
+            continue
+        prefix, payload = match.group(1), match.group(2)
+        try:
+            value = json.loads(payload)
+        except json.JSONDecodeError:
+            value = {"_unparsed": payload}
+        found.setdefault(prefix, []).append(value)
     return found
 
 
-_STEP_LINE = re.compile(r"^step:(\d+)\s*-\s*(.*)$")
+_STEP_LINE = re.compile(rf"^{_WORKER_PREFIX}step:(\d+)\s*-\s*(.*)$")
 
 
 def _to_number(value: str) -> float | None:
@@ -550,6 +558,7 @@ AUDIT_KEYS = (
     "actor_rollout_ref.rollout.gpu_memory_utilization",
     "actor_rollout_ref.rollout.max_num_batched_tokens",
     "actor_rollout_ref.rollout.max_model_len",
+    "actor_rollout_ref.rollout.max_num_seqs",
     "actor_rollout_ref.rollout.tensor_model_parallel_size",
     "actor_rollout_ref.rollout.log_prob_use_dynamic_bsz",
     "actor_rollout_ref.rollout.log_prob_micro_batch_size_per_gpu",

@@ -91,3 +91,29 @@ def test_knob_override_replaces_the_baseline_value() -> None:
     )
     values = [item for item in overrides if item.startswith(KNOB + "=")]
     assert values == [f"{KNOB}=0.25"], "a knob override must replace, never duplicate"
+
+
+def test_ray_prefixed_marker_lines_are_parsed() -> None:
+    # The driver process prints R001_ENTRY itself; the rest come from Ray workers.
+    log = (
+        'R001_ENTRY {"argv": ["a=b"]}\n'
+        '(R001TaskRunner pid=293285) R001_STACK {"adv_estimator": "r001_process"}\n'
+        '(compute_reward_async pid=293571) R001_REWARD {"rows": 16, "submitted": 7}\n'
+        '(WorkerDict pid=7) R001_MEM {"max_rss_mib": 1054.9}\n'
+        '(R001TaskRunner pid=1) R001_STATS {"credit_tokens": 53}\n'
+        # Payload text is never re-interpreted as a marker, and unknown markers are ignored.
+        '(R001TaskRunner pid=1) R001_REWARD {"note": "see R001_STATS line"}\n'
+        'worker R001_MEM {"max_rss_mib": 1}\n'
+    )
+    found = smoke.parse_r001_lines(log)
+    assert found["R001_ENTRY"] == [{"argv": ["a=b"]}]
+    assert found["R001_STACK"] == [{"adv_estimator": "r001_process"}]
+    assert found["R001_REWARD"] == [{"rows": 16, "submitted": 7}, {"note": "see R001_STATS line"}]
+    assert found["R001_MEM"] == [{"max_rss_mib": 1054.9}]
+    assert found["R001_STATS"] == [{"credit_tokens": 53}]
+
+
+def test_ray_prefixed_step_lines_are_parsed() -> None:
+    log = "(R001TaskRunner pid=9) step:1 - actor/pg_loss:0.5 - perf/time_per_step:12.25\n"
+    rows = smoke.parse_step_metrics(log)
+    assert rows == [{"step": 1.0, "actor/pg_loss": 0.5, "perf/time_per_step": 12.25}]
