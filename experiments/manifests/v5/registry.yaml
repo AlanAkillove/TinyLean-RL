@@ -185,8 +185,8 @@ experiments:
 
   V5-R001:                      # 2026-09-27: DRAFT ONLY (drafting authorized by PROCESS_SIGNAL_GO)
     title: "Outcome-only RLVR vs Process-Verified RLVR"
-    status: DRAFT_FOR_OWNER_REVIEW
-    revision: "rev.3 (2026-09-27 pre-launch directive §1-§20: intervention frozen, H1 decided, S0-S3 authorized); rev.2 at 4520413, rev.1 at 020ec51"
+    status: PRELAUNCH_AUDIT_V2_DELIVERED_STOP_FOR_OWNER
+    revision: "rev.3 (2026-09-27 pre-launch directive §1-§20: intervention frozen, H1 decided, S0-S3 authorized); rev.2 at 4520413, rev.1 at 020ec51; S0-S3 engineering audit recorded in audit_v2 below"
     draft: docs/v5/V5-R001_preregistration_draft.md
     authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12 + owner review 2026-09-27 §5 ('revise the draft only') + owner pre-launch directive 2026-09-27 (engineering feasibility work only, §10)"
     evidence_base: "V5-P001 PROCESS_SIGNAL_GO: 72.2% of primary all-fail groups admit the audited first-error d1/d2 structure (offline only; no gradient claim)"
@@ -218,7 +218,16 @@ experiments:
       practical_threshold_frozen: "NO"
       recommended_N: "owner decision; N=192 planning target"
     produce: "V5_R001_PRELAUNCH_AUDIT_V2 (draft §16 field list), then STOP"
-    open_items: "owner freeze decisions after S1/S2: horizon (40 vs 60 steps), seeds (2 vs 1 per arm), holdout N (128/192/256), exact thresholds/gates (power v2 reports recommendations only), verifier REPL concurrency"
-    measured_constraints: "11.2 GiB static optimizer state vs ~9.5 GiB usable on the 10GB card (V1 peak 24.41GB allocated at the frozen shape); info-tree verification 9.85s/candidate mean serialized vs ~1.0s on the no-tree V1 training path; exact-McNemar detectable band 6.9-8.2pp at N=128 / 5.6-6.7pp at N=192 / 4.8-5.8pp at N=256 (rho .09-.13); historical V1 family-clean effect ~0 (e023_holdout.yaml); H1 capacity 4094 family components"
+    audit_v2:
+      document: docs/v5/V5-R001_prelaunch_audit_v2.md
+      executed_at: "915622e (S1 attempts + all labelled diagnostics), 616c0b5 (S0 re-run, report)"
+      s0: "PASSED - measured 596049920 params (tied embeddings), 8.88 GiB static training state; max_num_seqs=1024 now audited; artifacts experiments/results/v5_r001_smoke/s0/config_audit.json"
+      s1: "STOP condition met. 2 §12-compliant attempts FAILED_OOM at the vLLM profile run (gpu_memory_utilization inert, identical numbers 0.30 vs 0.25). Labelled diagnostics outside attempts.json: max_num_seqs=16 clears the profile run, then the update OOMs (loss.backward +1.93 GiB); with the fused/chunked lm_head the backward passes and the FIRST Adam step dies 62 MiB short (62.00 needed, 55.06 free); ppo_max_token_len_per_gpu is structurally >= 5120 (seqlen_balancing.py:277); expandable_segments is incompatible with vLLM's CuMemAllocator (cumem.py:147); enforce_eager frees only ~28 MiB"
+      s2: "blocked with S1 (offline lambda=0 parity fixtures pass bit-for-bit)"
+      s3: "stored-data variant COMPLETE (5488 candidates, 0 chain mismatches, all 7 counters); smoke-generated variant blocked"
+      pivotal_owner_decisions: "max_num_seqs (pinned 1024 at rollout.yaml:59) is outside the §10.2 allowed-knob list and is required to clear the vLLM-side OOM; a 10 GB update path additionally needs a change outside the memory-knob space (optimizer-state precision / fp32 master weights / a larger card) - identified only, none implemented, none probed"
+      outcome: STOP_FOR_OWNER
+    open_items: "owner freeze decisions after the audit: 10 GB path (amendment vs larger card), horizon (40 vs 60 steps), seeds (2 vs 1 per arm), holdout N (128/192/256), exact thresholds/gates (power v2 reports recommendations only), verifier REPL concurrency"
+    measured_constraints: "8.88 GiB measured static training state (bf16 params + grads + fp32 master + Adam m/v) on a 9.64 GiB-usable 10GB card: no optimizer step fits (dies 62 MiB short even with max_num_seqs=16 + fused/chunked lm_head); info-tree verification 9.85s/candidate mean serialized vs ~1.0s on the no-tree V1 training path; exact-McNemar detectable band 6.9-8.2pp at N=128 / 5.6-6.7pp at N=192 / 4.8-5.8pp at N=256 (rho .09-.13); historical V1 family-clean effect ~0 (e023_holdout.yaml); H1 capacity 4094 family components"
     not_authorized: "launch, training, weight updates, capability generation, holdout-selection generation, sealed-reserve use, any new process oracle/surface/parser heuristic; every step that optimizes requires its own owner authorization"
     formal_training_authorized: "NO"
