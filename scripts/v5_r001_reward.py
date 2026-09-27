@@ -169,13 +169,17 @@ def reward(
             "R001 reward needs the generated token ids; use reward_manager=r001_batch "
             "(scripts/v5_r001_manager.py) - the plain batch manager does not pass them"
         )
-    rows = len(solution_strs or [])
+    # The pinned batch manager hands these over as numpy object arrays (``non_tensor_batch``), so
+    # ``x or []`` is invalid here: ``bool(array)`` raises on any array with more than one element.
+    rows = len(solution_strs) if solution_strs is not None else 0
     if rows == 0:
         return []
-    if len(token_ids) != rows or len(extra_infos or []) != rows:
+    id_rows = len(token_ids)
+    extra_rows = len(extra_infos) if extra_infos is not None else 0
+    if id_rows != rows or extra_rows != rows:
         raise RuntimeError(
-            f"R001 reward row mismatch: {rows} responses, {len(token_ids)} id rows, "
-            f"{len(extra_infos or [])} extra_infos"
+            f"R001 reward row mismatch: {rows} responses, {id_rows} id rows, "
+            f"{extra_rows} extra_infos"
         )
 
     client = oracle_client() if endpoint is None else O.OracleClient(endpoint=endpoint)

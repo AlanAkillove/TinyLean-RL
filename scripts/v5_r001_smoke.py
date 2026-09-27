@@ -690,6 +690,7 @@ def stage_s0(args: argparse.Namespace) -> dict[str, Any]:
                         "actor_rollout_ref.rollout.max_num_batched_tokens"
                     ),
                     "max_model_len": resolved.get("actor_rollout_ref.rollout.max_model_len"),
+                    "max_num_seqs": resolved.get("actor_rollout_ref.rollout.max_num_seqs"),
                     "tensor_model_parallel_size": resolved.get(
                         "actor_rollout_ref.rollout.tensor_model_parallel_size"
                     ),

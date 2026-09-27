@@ -23,6 +23,7 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -206,6 +207,31 @@ def test_reward_rejects_row_mismatch(monkeypatch, mapper) -> None:
             extra_infos=[{"formal_statement": FORMAL}, {"formal_statement": FORMAL}],
             token_ids=[ids_of(RESPONSE, mapper)],
         )
+
+
+def test_numpy_rows_from_the_batch_manager_are_accepted(monkeypatch, mapper) -> None:
+    """``non_tensor_batch`` fields reach the reward as numpy object arrays (live 2026-09-27 fix)."""
+
+    oracle = FakeOracle(verdict_item([tactic_node(SPAN_SIMP)]))
+    monkeypatch.setattr(R, "token_mapper", lambda: mapper)
+    monkeypatch.setattr(R, "oracle_client", lambda: oracle)
+    extras = np.empty(1, dtype=object)
+    extras[0] = {
+        "formal_statement": FORMAL,
+        "index": 0,
+        "prompt": [{"role": "user", "content": "prove it"}],
+    }
+    out = R.reward(
+        data_sources=np.array(["fixture"], dtype=object),
+        solution_strs=np.array(["ignored"], dtype=object),
+        ground_truths=np.array([FORMAL], dtype=object),
+        extra_infos=extras,
+        token_ids=[ids_of(RESPONSE, mapper)],
+    )
+
+    assert oracle.calls and oracle.calls[0]["pred"] == PRED
+    assert out[0]["score"] == 1.0 and out[0]["acc"] == 1.0
+    assert out[0]["process_counters"]["contained"] == 1
 
 
 def test_sentinel_rows_never_reach_the_oracle(monkeypatch, mapper, capsys) -> None:
