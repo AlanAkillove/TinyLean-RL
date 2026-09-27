@@ -1,0 +1,53 @@
+{
+ "advantage_tensor_probe": {
+  "credit_tokens_applied": 53,
+  "dropped_by_mask": 0,
+  "expected_credit_tokens": 53,
+  "lambda0_equals_v1_bit_for_bit": true,
+  "max_abs_delta_per_row_with_credit": {
+   "0": 0.10000000149011612,
+   "1": 0.10000000149011612,
+   "2": 0.10000000149011612,
+   "3": 0.10000000149011612
+  },
+  "n_valid": 2440,
+  "n_valid_with_credit": 2097,
+  "out_of_range": 0,
+  "probe": "advantage_tensor",
+  "row_keep_identical": true,
+  "rows": 4,
+  "rows_with_credit_in_probe": 4,
+  "width": 3720
+ },
+ "artifact_type": "v5_r001_online_replay",
+ "counters": {
+  "ambiguous": 0,
+  "candidates": 5488,
+  "conflict": 56,
+  "credit_tokens": 0,
+  "infra_censored": 3048,
+  "mapped": 25197,
+  "no_code": 0,
+  "outside_response": 56,
+  "retokenization_mismatch": 0,
+  "span_not_in_response": 0,
+  "statuses": {
+   "FIRST_TACTIC_FAILURE": 322,
+   "PARSE_OR_SYNTAX_FAILURE": 247,
+   "PREFIX_BEARING_FAILURE": 1370,
+   "PROCESS_ORACLE_INFRA": 3025,
+   "SUCCESS": 501,
+   "verifier_timeout": 23
+  },
+  "unmapped": 0,
+  "valid": 2440
+ },
+ "mismatches": [],
+ "n_mismatches": 0,
+ "purpose": "online credit chain vs frozen Phase-B token_credit (CPU only, no verifier)",
+ "replayed": 5488,
+ "skipped": {
+  "no_item": 0,
+  "no_response_row": 0
+ }
+}
