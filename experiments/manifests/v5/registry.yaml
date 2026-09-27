@@ -143,3 +143,12 @@ experiments:
       consequence: >
         PROCESS_SIGNAL_GO authorizes drafting a V5-R001 preregistration only. No training, no
         weight update and no V5-R001 launch is authorized by this result.
+
+  V5-R001:                      # 2026-09-27: DRAFT ONLY (drafting authorized by PROCESS_SIGNAL_GO)
+    title: "Outcome-only RLVR vs Process-Verified RLVR"
+    status: DRAFT_FOR_OWNER_REVIEW
+    draft: docs/v5/V5-R001_preregistration_draft.md
+    authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12"
+    evidence_base: "V5-P001 PROCESS_SIGNAL_GO: 72.2% of primary all-fail groups admit the audited first-error d1/d2 structure (offline only; no gradient claim)"
+    open_items: "budget, fly122 10GB feasibility-study authorization, data/holdout, reward shape, gates and seeds, freeze mechanics (draft §3)"
+    not_authorized: "launch, training, weight updates, generation, sealed-reserve use; every step that optimizes requires its own owner authorization"
