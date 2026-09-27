@@ -156,8 +156,11 @@ experiments:
   V5-R001:                      # 2026-09-27: DRAFT ONLY (drafting authorized by PROCESS_SIGNAL_GO)
     title: "Outcome-only RLVR vs Process-Verified RLVR"
     status: DRAFT_FOR_OWNER_REVIEW
+    revision: "rev.2 (2026-09-27 owner design audit, review sections 5-22); rev.1 at 020ec51"
     draft: docs/v5/V5-R001_preregistration_draft.md
-    authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12"
+    authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12 + owner review 2026-09-27 §5 ('revise the draft only')"
     evidence_base: "V5-P001 PROCESS_SIGNAL_GO: 72.2% of primary all-fail groups admit the audited first-error d1/d2 structure (offline only; no gradient claim)"
-    open_items: "budget, fly122 10GB feasibility-study authorization, data/holdout, reward shape, gates and seeds, freeze mechanics (draft §3)"
-    not_authorized: "launch, training, weight updates, generation, sealed-reserve use; every step that optimizes requires its own owner authorization"
+    open_items: "holdout source (promptset capacity measured EXHAUSTED: 128+93=221 consumed_only components, 0 never-consumed left), fly122 10GB smoke authorization (S0-S3), lambda/normalization and the advantage-estimator plumbing gap, verifier path change shared by both arms, seeds/horizon, thresholds (draft §14.4 defers them per owner §19)"
+    measured_constraints: "11.2 GiB static optimizer state vs ~9.5 GiB usable on the 10GB card (V1 peak 24.41GB allocated at the frozen shape); info-tree verification 9.85s/candidate mean serialized vs ~1.0s on the no-tree V1 training path; exact-McNemar detectable band 7.9-8.2pp at N=128 (rho .12-.13); historical V1 family-clean effect ~0 (e023_holdout.yaml)"
+    not_authorized: "launch, training, weight updates, generation, sealed-reserve use, any new process oracle/surface/parser heuristic; every step that optimizes requires its own owner authorization"
+    formal_training_authorized: "NO"
