@@ -41,7 +41,7 @@ sealed_sets_never_used:
 experiments:
   V5-P001:
     title: "Offline process-reward recoverability audit (first-error d1/d2 credit on the frozen V1 RLVR surface)"
-    status: PREREGISTERED
+    status: PROCESS_SIGNAL_GO
     owner: fly90 (coordination/analysis) + fly122 (dedicated oracle instance)
     authorization: "owner directive 'TinyLean-RL enters V5' §1-§34, 2026-09-26"
     research_question: >
@@ -121,3 +121,25 @@ experiments:
         scientific_design_changed: NONE
         raw_labels_changed: NO
         oracle_outputs_changed: NO
+    result:
+      classification: PROCESS_SIGNAL_GO
+      failed_gates: []
+      canonical_run: "productive run #1, exactly once, fly90, under analysis_head 7d0b1398e8317ba5f98a6df6029b9c6317be7db3 (the pre-metric abort does not count)"
+      artifact: experiments/manifests/v5/V5-P001_results.json
+      artifact_sha256: ab46c12dbe098505ba8f3885fddb8af18ef2420dc0d6c66cc856a26e4d08ddd8
+      memo: docs/v5/V5-P001_result.md
+      headline:
+        E1: {rate: 1.0, threshold: 0.95, passed: true}
+        E2: {rate: 0.9854604200323102, threshold: 0.9, passed: true}
+        G1: {rate: 0.7217391304347827, ci: [0.6787003610108303, 0.7644991212653779],
+             groups: "415/575", passed: true}
+        G2: {seed1: 0.7046632124352331, seed2: 0.7055837563451777, seed3: 0.7567567567567568,
+             threshold: 0.2, passed: true}
+        G3: {quartiles_passed: "4/4",
+             rates: [0.15384615384615385, 0.8541666666666666, 0.9375, 0.9375],
+             threshold: 0.15, passed: true}
+      compute: {new_model_generation: 0, training: 0, oracle_submissions: 2476,
+                oracle_censored: 36, recoveries: 6, sealed_reserve_touched: 0}
+      consequence: >
+        PROCESS_SIGNAL_GO authorizes drafting a V5-R001 preregistration only. No training, no
+        weight update and no V5-R001 launch is authorized by this result.

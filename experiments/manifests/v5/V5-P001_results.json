@@ -1,0 +1,493 @@
+{
+ "artifact": "V5_P001_results",
+ "experiment": "V5-P001",
+ "generated_at": "2026-09-27T03:39:38Z",
+ "purpose": "offline process-reward recoverability audit over the frozen V1 surface",
+ "provenance": {
+  "execution_code_stamp": {
+   "git_head": "5b1c5d277a7d923c7aed0626f238012dfc6d9f18",
+   "scripts": {
+    "v5_p001_spec.py": "8e28edc8820562176e3209d7aab17e552dd43b7006571f6538cf3aa253fb59a0",
+    "v5_process_oracle.py": "69c8031df644570c02cbc0f225ebbd76b8683e9702d9042b19edf9c08bd05489",
+    "v5_p001_reconstruct.py": "e05e5ba9b36cf74cca14f7d0315f3f0e33cc3885f8513717b3afd3ac7d1ea9c9",
+    "v5_p001_process_run.py": "5c090e5c6549b55af0850cce49644d34aee5707066128a9330d07d694e0c1f6c",
+    "v5_p001_analyze.py": "f5532f5019ea435030672c5ac6e8e4631b64277a941412e5d0bd56c2340bc1be"
+   },
+   "historical_surface_sha256": "b3c8f472b863aaef356b97ea897e141c6206daa3b17d897aa61f64f2173c5902",
+   "oracle_validation_sha256": "9153fd2f5b578efa02f926b46ccd9909d9b6233a94c0ef872d3177195979a869"
+  },
+  "analysis_code_stamp": {
+   "git_head": "7d0b1398e8317ba5f98a6df6029b9c6317be7db3",
+   "scripts": {
+    "v5_p001_spec.py": "8e28edc8820562176e3209d7aab17e552dd43b7006571f6538cf3aa253fb59a0",
+    "v5_process_oracle.py": "69c8031df644570c02cbc0f225ebbd76b8683e9702d9042b19edf9c08bd05489",
+    "v5_p001_reconstruct.py": "e05e5ba9b36cf74cca14f7d0315f3f0e33cc3885f8513717b3afd3ac7d1ea9c9",
+    "v5_p001_process_run.py": "5c090e5c6549b55af0850cce49644d34aee5707066128a9330d07d694e0c1f6c",
+    "v5_p001_analyze.py": "8c485eecef92517bc49082043d790b701996ddb43ba5bd92c479da42ce393731"
+   },
+   "historical_surface_sha256": "b3c8f472b863aaef356b97ea897e141c6206daa3b17d897aa61f64f2173c5902",
+   "oracle_validation_sha256": "9153fd2f5b578efa02f926b46ccd9909d9b6233a94c0ef872d3177195979a869"
+  },
+  "labels": {
+   "path": "runs/v5_p001_process/v5_p001_process_labels.jsonl",
+   "sha256": "8c9f1ca604e2ff17ba06a79e568b8f97c79bcd5e290923cabefdeaaf7ee321ea",
+   "n_records": 5488
+  },
+  "raw_manifest_sha256": "e8010278b21f8e44ad326678da5d6a12c3aeb0a72a25c22649cf1df84c003d16",
+  "freeze_sha256": "1d41c6a7829fbccdc52b0442ff529755476ebea89f61f78b16f6b46da5cb9815",
+  "validation_sha256": "ea895a377d3b15f25ded05369c8a3b7b1b0e6cd1cdaa6e45b9b33c4ad06a8a6b",
+  "historical_surface_sha256": "b3c8f472b863aaef356b97ea897e141c6206daa3b17d897aa61f64f2173c5902",
+  "oracle_endpoint": "http://127.0.0.1:8020",
+  "oracle_image_digest": "sha256:588a2cbbd10da509ed13f53ac136f8463fabff02dfe4eca535e7c47ae6e3ffd9",
+  "tokenizer": {
+   "dir": "models/weights/kimina_distill_0_6b",
+   "class": "Qwen2TokenizerFast",
+   "vocab_size": 151643,
+   "len_with_added_tokens": 151669,
+   "add_special_tokens": false,
+   "tokenizer_json_sha256": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+   "tokenizer_config_sha256": "5d27a191a7ba6f93bcc2a8e78bc633764bbaaee263e9f3d9225e2c8621a5dd72"
+  },
+  "fixture_set_sha256": "2bfb0f4f25ae672144a8c2949f1c7ebcc597d34306dd132f7d1663963be237fe"
+ },
+ "analysis_amendment": {
+  "kind": "analyzer_code_only",
+  "parent_execution_head": "5b1c5d277a7d923c7aed0626f238012dfc6d9f18",
+  "parent_analyzer_sha256": "f5532f5019ea435030672c5ac6e8e4631b64277a941412e5d0bd56c2340bc1be",
+  "analysis_head": "7d0b1398e8317ba5f98a6df6029b9c6317be7db3",
+  "analyzer_sha256": "8c485eecef92517bc49082043d790b701996ddb43ba5bd92c479da42ce393731",
+  "parent_freeze_sha256": "1d41c6a7829fbccdc52b0442ff529755476ebea89f61f78b16f6b46da5cb9815",
+  "labels_sha256": "8c9f1ca604e2ff17ba06a79e568b8f97c79bcd5e290923cabefdeaaf7ee321ea",
+  "raw_manifest_content_hash": "e8010278b21f8e44ad326678da5d6a12c3aeb0a72a25c22649cf1df84c003d16"
+ },
+ "process_oracle": {
+  "fixtures": {
+   "n_fixtures": 13,
+   "n_ok": 13,
+   "n_failed": 0,
+   "all_deterministic": true,
+   "all_validated": true
+  },
+  "re_derivation": {
+   "n_planned": 5488,
+   "n_records": 5488,
+   "n_rebuilt_from_sources": 5488,
+   "all_records_reproduced": true,
+   "n_mismatches": 0,
+   "raw_manifest_bytes_match": true,
+   "raw_file_count_matches_processed_code_candidates": true,
+   "coverage_complete": true,
+   "plan_order_sha256": "d04283eeb133f94bc5ba71ed36b758210486bfe2fa88126c1da9ab18c5da0f71"
+  },
+  "infrastructure": {
+   "n_submissions": 2476,
+   "outcome_histogram": {
+    "lean_error": 1935,
+    "verified": 501,
+    "verifier_server_error": 1,
+    "verifier_timeout": 35,
+    "sorry": 4
+   },
+   "n_infra_censored": 36,
+   "n_isolated_retries": 2,
+   "n_infra_events": 39,
+   "n_recoveries": 6,
+   "n_truncated_partial_records": 0
+  }
+ },
+ "historical_surface": {
+  "n_groups": 720,
+  "n_groups_primary": 686,
+  "labels": {
+   "ALL_FAIL": 603,
+   "MIXED": 110,
+   "ALL_SUCCESS": 7
+  },
+  "primary_labels": {
+   "ALL_FAIL": 575,
+   "MIXED": 104,
+   "ALL_SUCCESS": 7
+  },
+  "contaminated_groups": 34
+ },
+ "gates": {
+  "E1": {
+   "definition": "numerator = parsed tactic nodes whose span is verbatim in the generated response and whose first token is mapped (exact or contained); denominator = parsed tactic nodes whose span is verbatim in the generated response",
+   "eligible_tactics": 25197,
+   "mapped_tactics": 25197,
+   "n_exact": 4,
+   "n_contained": 25193,
+   "n_ambiguous": 0,
+   "n_unmapped": 0,
+   "n_outside_response": 56,
+   "n_span_not_in_response": 0,
+   "n_response_only": 0,
+   "rate": 1.0,
+   "threshold": 0.95,
+   "passed": true
+  },
+  "E2": {
+   "definition": "conclusive outcomes / code-extractable primary candidates",
+   "n_code": 2476,
+   "n_conclusive": 2440,
+   "n_censored": 36,
+   "censored_share": 0.014539579967689823,
+   "rate": 0.9854604200323102,
+   "threshold": 0.9,
+   "passed": true
+  },
+  "G1": {
+   "n_clusters": 384,
+   "n_resamples": 10000,
+   "seed": 20260926,
+   "method": "percentile",
+   "point": 0.7217391304347827,
+   "ci_lower": 0.6787003610108303,
+   "ci_upper": 0.7644991212653779,
+   "mean": 0.7215322993581245,
+   "median": 0.7216117216117216,
+   "n_groups": 575,
+   "n_recoverable": 415,
+   "threshold": 0.25,
+   "ci_lower_threshold": 0.15,
+   "passed": true
+  },
+  "G2": {
+   "seed1": {
+    "n_groups": 193,
+    "n_recoverable": 136,
+    "rate": 0.7046632124352331,
+    "threshold": 0.2,
+    "passed": true
+   },
+   "seed2": {
+    "n_groups": 197,
+    "n_recoverable": 139,
+    "rate": 0.7055837563451777,
+    "threshold": 0.2,
+    "passed": true
+   },
+   "seed3": {
+    "n_groups": 185,
+    "n_recoverable": 140,
+    "rate": 0.7567567567567568,
+    "threshold": 0.2,
+    "passed": true
+   }
+  },
+  "G3": {
+   "quartiles": [
+    {
+     "bin": 1,
+     "n_groups": 143,
+     "tactic_min": 0,
+     "tactic_max": 5,
+     "n_zero_code": 96,
+     "n_recoverable": 22,
+     "rate": 0.15384615384615385,
+     "threshold": 0.15,
+     "n_guard_ok": true,
+     "passed": true
+    },
+    {
+     "bin": 2,
+     "n_groups": 144,
+     "tactic_min": 5,
+     "tactic_max": 15,
+     "n_zero_code": 0,
+     "n_recoverable": 123,
+     "rate": 0.8541666666666666,
+     "threshold": 0.15,
+     "n_guard_ok": true,
+     "passed": true
+    },
+    {
+     "bin": 3,
+     "n_groups": 144,
+     "tactic_min": 15,
+     "tactic_max": 23,
+     "n_zero_code": 0,
+     "n_recoverable": 135,
+     "rate": 0.9375,
+     "threshold": 0.15,
+     "n_guard_ok": true,
+     "passed": true
+    },
+    {
+     "bin": 4,
+     "n_groups": 144,
+     "tactic_min": 23,
+     "tactic_max": 66,
+     "n_zero_code": 0,
+     "n_recoverable": 135,
+     "rate": 0.9375,
+     "threshold": 0.15,
+     "n_guard_ok": true,
+     "passed": true
+    }
+   ],
+   "n_passed": 4
+  }
+ },
+ "primary_recovery": {
+  "unit": "primary all-fail group (existence of >=1 structured-recoverable candidate)",
+  "n_primary_all_fail_groups": 575,
+  "n_evaluable_groups": 575,
+  "n_excluded_groups_all_censored": 0,
+  "n_recoverable_groups": 415,
+  "rate": 0.7217391304347827,
+  "ci_lower": 0.6787003610108303,
+  "ci_upper": 0.7644991212653779,
+  "candidate_level_secondary": {
+   "n_code_all_fail_candidates": 1736,
+   "n_recoverable_candidates": 1133,
+   "rate": 0.6526497695852534
+  },
+  "censored_candidates_in_population": 30,
+  "no_code_candidates_in_population": 2864
+ },
+ "by_seed": {
+  "seed1": {
+   "n_groups": 193,
+   "n_recoverable": 136,
+   "rate": 0.7046632124352331,
+   "threshold": 0.2,
+   "passed": true
+  },
+  "seed2": {
+   "n_groups": 197,
+   "n_recoverable": 139,
+   "rate": 0.7055837563451777,
+   "threshold": 0.2,
+   "passed": true
+  },
+  "seed3": {
+   "n_groups": 185,
+   "n_recoverable": 140,
+   "rate": 0.7567567567567568,
+   "threshold": 0.2,
+   "passed": true
+  }
+ },
+ "length_robustness": {
+  "sort_key": "group_max_tactics then group_key, equal-count bins",
+  "quartiles": [
+   {
+    "bin": 1,
+    "n_groups": 143,
+    "tactic_min": 0,
+    "tactic_max": 5,
+    "n_zero_code": 96,
+    "n_recoverable": 22,
+    "rate": 0.15384615384615385,
+    "threshold": 0.15,
+    "n_guard_ok": true,
+    "passed": true
+   },
+   {
+    "bin": 2,
+    "n_groups": 144,
+    "tactic_min": 5,
+    "tactic_max": 15,
+    "n_zero_code": 0,
+    "n_recoverable": 123,
+    "rate": 0.8541666666666666,
+    "threshold": 0.15,
+    "n_guard_ok": true,
+    "passed": true
+   },
+   {
+    "bin": 3,
+    "n_groups": 144,
+    "tactic_min": 15,
+    "tactic_max": 23,
+    "n_zero_code": 0,
+    "n_recoverable": 135,
+    "rate": 0.9375,
+    "threshold": 0.15,
+    "n_guard_ok": true,
+    "passed": true
+   },
+   {
+    "bin": 4,
+    "n_groups": 144,
+    "tactic_min": 23,
+    "tactic_max": 66,
+    "n_zero_code": 0,
+    "n_recoverable": 135,
+    "rate": 0.9375,
+    "threshold": 0.15,
+    "n_guard_ok": true,
+    "passed": true
+   }
+  ],
+  "zero_code_groups": 96
+ },
+ "candidate_mechanism": {
+  "n_recovering_groups": 415,
+  "n_recovering_candidates": 1133,
+  "recovering_candidate_statuses": {
+   "PREFIX_BEARING_FAILURE": 1133
+  },
+  "recovering_candidate_failure_kinds": {
+   "error": 1120,
+   "sorry": 1,
+   "error+sorry": 12
+  },
+  "verified_prefix_hist_recovering_candidates": {
+   "1": 202,
+   "10": 202,
+   "2": 141,
+   "3": 148,
+   "4": 137,
+   "5": 88,
+   "6": 82,
+   "7": 54,
+   "8": 40,
+   "9": 39
+  },
+  "best_prefix_per_recovering_group": {
+   "median": 4,
+   "max": 51
+  },
+  "n_groups_with_two_or_more_verified_prefix": 371,
+  "any_active_groups": 425
+ },
+ "token_credit": {
+  "d1_tokens": {
+   "n": 7929,
+   "min": 1080,
+   "p25": 2576,
+   "median": 3027,
+   "p75": 3354,
+   "max": 4075,
+   "share_first_256": 0.0
+  },
+  "d2_tokens": {
+   "n": 12269,
+   "min": 271,
+   "p25": 2773,
+   "median": 3259,
+   "p75": 3588,
+   "max": 4093,
+   "share_first_256": 0.0
+  },
+  "success_tokens": {
+   "n": 2984,
+   "min": 689,
+   "p25": 1916,
+   "median": 2575.0,
+   "p75": 3105,
+   "max": 4072,
+   "share_first_256": 0.0
+  },
+  "n_credit_conflicts": 56,
+  "n_spans_not_in_response": 0,
+  "blamed_mappable_rate": 1.0,
+  "canonical_d1": -0.05,
+  "canonical_d2": -0.1
+ },
+ "format_decomposition": {
+  "process_status": {
+   "FORMAT_NO_CODE": 3012,
+   "PREFIX_BEARING_FAILURE": 1370,
+   "FIRST_TACTIC_FAILURE": 322,
+   "PARSE_OR_SYNTAX_FAILURE": 247,
+   "SUCCESS": 501,
+   "PROCESS_ORACLE_INFRA": 36
+  },
+  "process_status_share": {
+   "FORMAT_NO_CODE": 0.5488338192419825,
+   "PREFIX_BEARING_FAILURE": 0.24963556851311952,
+   "FIRST_TACTIC_FAILURE": 0.058673469387755105,
+   "PARSE_OR_SYNTAX_FAILURE": 0.04500728862973761,
+   "SUCCESS": 0.09129008746355685,
+   "PROCESS_ORACLE_INFRA": 0.006559766763848397
+  },
+  "failure_kind": {
+   "error": 1921,
+   "None": 501,
+   "sorry": 4,
+   "error+sorry": 14
+  },
+  "blame_kind": {
+   "contains": 1504,
+   "None": 748,
+   "range_last": 188
+  },
+  "n_candidates": 5488
+ },
+ "sensitivity": {
+  "canonical_d1_d2": {
+   "d1": -0.05,
+   "d2": -0.1,
+   "recovery_rate": 0.7217391304347827,
+   "credit_mass": {
+    "d1_tokens": 7929,
+    "d2_tokens": 12269,
+    "total_phi": -1623.3500000000001
+   },
+   "labels_identical_to_canonical": true,
+   "note": "d1/d2 are credit values, not labels: structured_recoverable only tests mappability, so every classification is invariant across settings by construction"
+  },
+  "stronger_gap": {
+   "d1": -0.05,
+   "d2": -0.5,
+   "recovery_rate": 0.7217391304347827,
+   "credit_mass": {
+    "d1_tokens": 7929,
+    "d2_tokens": 12269,
+    "total_phi": -6530.95
+   },
+   "labels_identical_to_canonical": true,
+   "note": "d1/d2 are credit values, not labels: structured_recoverable only tests mappability, so every classification is invariant across settings by construction"
+  },
+  "equal_penalty": {
+   "d1": -0.1,
+   "d2": -0.1,
+   "recovery_rate": 0.7217391304347827,
+   "credit_mass": {
+    "d1_tokens": 7929,
+    "d2_tokens": 12269,
+    "total_phi": -2019.8000000000002
+   },
+   "labels_identical_to_canonical": true,
+   "note": "d1/d2 are credit values, not labels: structured_recoverable only tests mappability, so every classification is invariant across settings by construction"
+  }
+ },
+ "FINAL_CLASSIFICATION": {
+  "classification": "PROCESS_SIGNAL_GO",
+  "failed_gates": [],
+  "inconclusive_trigger": null,
+  "n_quartiles_passed": 4,
+  "seed_min_evaluable_share": 1.0,
+  "gate_order": [
+   "E1",
+   "E2",
+   "GO",
+   "G1",
+   "G2",
+   "G3"
+  ],
+  "n_evaluable_all_fail_groups": 575
+ },
+ "permitted_claim": "Offline process-label recoverability on the frozen V1 surface only; no training, no generation, no capability or gradient claim.",
+ "limitations": [
+  "single historical surface (three GRPO seeds of one sub-billion model)",
+  "labels are single-run oracle outcomes; infra outcomes are censored, not failed",
+  "group-level RecoveryRate is an existence predicate, not a per-candidate rate",
+  "the d1/d2 credit surface was never applied to a model in V5-P001"
+ ],
+ "compute": {
+  "new_model_generation": 0,
+  "training": 0,
+  "oracle_submissions": 2476,
+  "oracle_censored": 36,
+  "container_recoveries": 6
+ },
+ "if_GO": {
+  "V5_R001_DRAFT_CREATED": "NO (drafting is a separate owner-authorized step)",
+  "V5_R001_TRAINING_LAUNCHED": "NO"
+ },
+ "SEALED_RESERVE_TOUCHED": 0
+}
