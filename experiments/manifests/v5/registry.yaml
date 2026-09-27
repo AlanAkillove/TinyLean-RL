@@ -128,6 +128,15 @@ experiments:
       artifact: experiments/manifests/v5/V5-P001_results.json
       artifact_sha256: ab46c12dbe098505ba8f3885fddb8af18ef2420dc0d6c66cc856a26e4d08ddd8
       memo: docs/v5/V5-P001_result.md
+      count_reconciliation: docs/v5/V5-P001_count_reconciliation.md  # owner §4, documentation only
+      owner_review_2026_09_27: >
+        ACCEPTED and CLOSED as PROCESS_SIGNAL_GO; no rescue and no additional process-reward
+        variant is needed. Two binding interpretation notes recorded without touching any frozen
+        artifact: (i) the permitted claim is the invisibility-to-binary-reward statement (owner §1);
+        (ii) G3 PASS is a gate outcome, NOT evidence of length-independence - the quartiles
+        (0.1538 / 0.8542 / 0.9375 / 0.9375) are read as a strong length-associated pattern, and
+        length behavior becomes a major secondary mechanism/safety endpoint in V5-R001 (owner §2).
+        The classification itself is not altered.
       headline:
         E1: {rate: 1.0, threshold: 0.95, passed: true}
         E2: {rate: 0.9854604200323102, threshold: 0.9, passed: true}
