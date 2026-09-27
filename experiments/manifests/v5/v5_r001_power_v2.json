@@ -1,0 +1,1339 @@
+{
+  "artifact_type": "v5_r001_power_v2",
+  "created_utc": "2026-09-27T08:00:19Z",
+  "git_revision": "452041315702f6cff1a8a83a2622d9173d8ab21d",
+  "owner_directive": {
+    "section": "V5-R001 pre-launch directive \u00a79 (power audit v2)",
+    "endpoints": {
+      "binary": "pass@n per theorem, paired exact one-sided McNemar",
+      "rate": "Delta_rate = mean_i[verified/n (T) - verified/n (C)], unit = theorem/component"
+    },
+    "practical_threshold_frozen": "NO (owner \u00a79: do not freeze a practical threshold here)"
+  },
+  "settings": {
+    "eval_n": 8,
+    "N_grid": [
+      128,
+      192,
+      256
+    ],
+    "delta_grid": [
+      0.0,
+      0.02,
+      0.04,
+      0.06,
+      0.08,
+      0.1
+    ],
+    "treatment_models": [
+      "additive",
+      "multiplicative"
+    ],
+    "alpha": 0.05,
+    "target_power": 0.8,
+    "mc_reps": 2000,
+    "seed_mc": 20260927,
+    "bootstrap_reps": 999,
+    "seed_bootstrap": 20260926,
+    "bootstrap_level": 0.95,
+    "jeffreys_alpha": 0.5,
+    "pool_resampling": "N theorems drawn with replacement from the pool's empirical p_hat distribution; for N above the pool size this is a mild conservatism (duplicate theorems are perfectly correlated)",
+    "families": "one theorem per family component (H1 construction), so the theorem bootstrap IS the family bootstrap"
+  },
+  "inputs": {
+    "E018_theta0_n8": "experiments/results/e018_base.json",
+    "E018_step30_n8": "experiments/results/e018_step30.json",
+    "E023_theta0_n4": "experiments/results/e023_holdout_base.json",
+    "V3R001_theta0_n8": "runs/v3_r001_rollout_archive_from_fly122/attempt2_complete_20260925T0839Z/v3_r001_raw_rollout.jsonl"
+  },
+  "input_hashes": {
+    "E018_theta0_n8": "be27a4570296aaaf534e3bd517e8b8cc2736d2683619e0e0a90f850da09016e8",
+    "E018_step30_n8": "4acb083e9d5d221a218a54d344f0e4c93e5ca9a8c25da41b5214a3c638a45730",
+    "E023_theta0_n4": "58d6d419402eda144ae7f72e87bd056a89d5b9d8680df6c29c6f1195b0d0392e",
+    "V3R001_theta0_n8": "1033b8eb23b6ea3a4fea9cf9809bd4852c560401ad5ac942b13eb8ecb754ffb5"
+  },
+  "pool_stats": {
+    "E018_theta0_n8": {
+      "theorems": 64,
+      "samples_per_theorem": 8,
+      "verified_candidates": 65,
+      "candidate_verified_rate": 0.127,
+      "theorems_solved_at_least_1": 18,
+      "pass_at_n": 0.2812,
+      "jeffreys_p_hat": {
+        "mean": 0.1684,
+        "zero_count_theorems": 46,
+        "saturated_theorems": 2
+      }
+    },
+    "E018_step30_n8": {
+      "theorems": 64,
+      "samples_per_theorem": 8,
+      "verified_candidates": 70,
+      "candidate_verified_rate": 0.1367,
+      "theorems_solved_at_least_1": 19,
+      "pass_at_n": 0.2969,
+      "jeffreys_p_hat": {
+        "mean": 0.1771,
+        "zero_count_theorems": 45,
+        "saturated_theorems": 0
+      }
+    },
+    "E023_theta0_n4": {
+      "theorems": 128,
+      "samples_per_theorem": 4,
+      "verified_candidates": 120,
+      "candidate_verified_rate": 0.2344,
+      "theorems_solved_at_least_1": 46,
+      "pass_at_n": 0.3594,
+      "jeffreys_p_hat": {
+        "mean": 0.2875,
+        "zero_count_theorems": 82,
+        "saturated_theorems": 15
+      }
+    },
+    "V3R001_theta0_n8": {
+      "theorems": 128,
+      "samples_per_theorem": 8,
+      "verified_candidates": 98,
+      "candidate_verified_rate": 0.0957,
+      "theorems_solved_at_least_1": 25,
+      "pass_at_n": 0.1953,
+      "jeffreys_p_hat": {
+        "mean": 0.1406,
+        "zero_count_theorems": 103,
+        "saturated_theorems": 0
+      }
+    }
+  },
+  "analytic_mcnemar_binary": {
+    "128": {
+      "rho_0.09": {
+        "detectable_delta_80": 0.0686,
+        "power_at_delta_0.05": 0.4916,
+        "power_at_delta_0.08": 0.9324
+      },
+      "rho_0.12": {
+        "detectable_delta_80": 0.0785,
+        "power_at_delta_0.05": 0.4062,
+        "power_at_delta_0.08": 0.8165
+      },
+      "rho_0.13": {
+        "detectable_delta_80": 0.0815,
+        "power_at_delta_0.05": 0.384,
+        "power_at_delta_0.08": 0.783
+      },
+      "rho_0.2": {
+        "detectable_delta_80": 0.1007,
+        "power_at_delta_0.05": 0.2777,
+        "power_at_delta_0.08": 0.5952
+      }
+    },
+    "192": {
+      "rho_0.09": {
+        "detectable_delta_80": 0.0556,
+        "power_at_delta_0.05": 0.7042,
+        "power_at_delta_0.08": 0.9927
+      },
+      "rho_0.12": {
+        "detectable_delta_80": 0.0641,
+        "power_at_delta_0.05": 0.5803,
+        "power_at_delta_0.08": 0.9477
+      },
+      "rho_0.13": {
+        "detectable_delta_80": 0.0667,
+        "power_at_delta_0.05": 0.5485,
+        "power_at_delta_0.08": 0.9272
+      },
+      "rho_0.2": {
+        "detectable_delta_80": 0.0819,
+        "power_at_delta_0.05": 0.4022,
+        "power_at_delta_0.08": 0.7808
+      }
+    },
+    "256": {
+      "rho_0.09": {
+        "detectable_delta_80": 0.0482,
+        "power_at_delta_0.05": 0.8302,
+        "power_at_delta_0.08": 0.9993
+      },
+      "rho_0.12": {
+        "detectable_delta_80": 0.0554,
+        "power_at_delta_0.05": 0.7133,
+        "power_at_delta_0.08": 0.9862
+      },
+      "rho_0.13": {
+        "detectable_delta_80": 0.0576,
+        "power_at_delta_0.05": 0.6808,
+        "power_at_delta_0.08": 0.9779
+      },
+      "rho_0.2": {
+        "detectable_delta_80": 0.071,
+        "power_at_delta_0.05": 0.5089,
+        "power_at_delta_0.08": 0.8856
+      }
+    }
+  },
+  "simulation": {
+    "E018_theta0_n8": {
+      "N128": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 128,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00076,
+              "mean_delta_pass_at_n": -0.0028,
+              "power_mcnemar_binary": 0.03,
+              "power_signflip_rate": 0.0315
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01941,
+              "mean_delta_pass_at_n": 0.04859,
+              "power_mcnemar_binary": 0.1815,
+              "power_signflip_rate": 0.383
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0392,
+              "mean_delta_pass_at_n": 0.098,
+              "power_mcnemar_binary": 0.5075,
+              "power_signflip_rate": 0.875
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05926,
+              "mean_delta_pass_at_n": 0.14539,
+              "power_mcnemar_binary": 0.81,
+              "power_signflip_rate": 0.996
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07925,
+              "mean_delta_pass_at_n": 0.18839,
+              "power_mcnemar_binary": 0.956,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0991,
+              "mean_delta_pass_at_n": 0.2282,
+              "power_mcnemar_binary": 0.9945,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.037,
+          "delta_pass_at_n_80pct_multiplicative": 0.0593
+        }
+      },
+      "N192": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 192,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00012,
+              "mean_delta_pass_at_n": 0.00042,
+              "power_mcnemar_binary": 0.039,
+              "power_signflip_rate": 0.0435
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01994,
+              "mean_delta_pass_at_n": 0.05218,
+              "power_mcnemar_binary": 0.2705,
+              "power_signflip_rate": 0.5505
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0398,
+              "mean_delta_pass_at_n": 0.1018,
+              "power_mcnemar_binary": 0.7065,
+              "power_signflip_rate": 0.967
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.06012,
+              "mean_delta_pass_at_n": 0.14844,
+              "power_mcnemar_binary": 0.936,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.08013,
+              "mean_delta_pass_at_n": 0.19185,
+              "power_mcnemar_binary": 0.996,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.10011,
+              "mean_delta_pass_at_n": 0.2314,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.032,
+          "delta_pass_at_n_80pct_multiplicative": 0.0481
+        },
+        "bootstrap_view": {
+          "model": "multiplicative",
+          "points": [
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02012,
+              "mean_delta_pass_at_n": 0.05219,
+              "power_mcnemar_binary": 0.275,
+              "power_signflip_rate": 0.547,
+              "power_bootstrap_ci_rate": 0.4395
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0401,
+              "mean_delta_pass_at_n": 0.1012,
+              "power_mcnemar_binary": 0.701,
+              "power_signflip_rate": 0.9655,
+              "power_bootstrap_ci_rate": 0.949
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.06007,
+              "mean_delta_pass_at_n": 0.14784,
+              "power_mcnemar_binary": 0.9345,
+              "power_signflip_rate": 0.999,
+              "power_bootstrap_ci_rate": 0.999
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07998,
+              "mean_delta_pass_at_n": 0.19116,
+              "power_mcnemar_binary": 0.9935,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.10008,
+              "mean_delta_pass_at_n": 0.23115,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            }
+          ]
+        }
+      },
+      "N256": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 256,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00037,
+              "mean_delta_pass_at_n": 0.00016,
+              "power_mcnemar_binary": 0.0375,
+              "power_signflip_rate": 0.0345
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01954,
+              "mean_delta_pass_at_n": 0.05175,
+              "power_mcnemar_binary": 0.345,
+              "power_signflip_rate": 0.634
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03957,
+              "mean_delta_pass_at_n": 0.10104,
+              "power_mcnemar_binary": 0.819,
+              "power_signflip_rate": 0.993
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05968,
+              "mean_delta_pass_at_n": 0.14736,
+              "power_mcnemar_binary": 0.9815,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07971,
+              "mean_delta_pass_at_n": 0.19042,
+              "power_mcnemar_binary": 0.9995,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09968,
+              "mean_delta_pass_at_n": 0.23031,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0292,
+          "delta_pass_at_n_80pct_multiplicative": 0.0392
+        }
+      }
+    },
+    "E018_step30_n8": {
+      "N128": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 128,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00042,
+              "mean_delta_pass_at_n": -0.00328,
+              "power_mcnemar_binary": 0.027,
+              "power_signflip_rate": 0.0355
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01948,
+              "mean_delta_pass_at_n": 0.04334,
+              "power_mcnemar_binary": 0.164,
+              "power_signflip_rate": 0.381
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03931,
+              "mean_delta_pass_at_n": 0.08864,
+              "power_mcnemar_binary": 0.447,
+              "power_signflip_rate": 0.8405
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05934,
+              "mean_delta_pass_at_n": 0.13324,
+              "power_mcnemar_binary": 0.763,
+              "power_signflip_rate": 0.9935
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07923,
+              "mean_delta_pass_at_n": 0.17446,
+              "power_mcnemar_binary": 0.9355,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09929,
+              "mean_delta_pass_at_n": 0.21298,
+              "power_mcnemar_binary": 0.987,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0382,
+          "delta_pass_at_n_80pct_multiplicative": 0.0643
+        }
+      },
+      "N192": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 192,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00014,
+              "mean_delta_pass_at_n": 0.00045,
+              "power_mcnemar_binary": 0.0405,
+              "power_signflip_rate": 0.044
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01993,
+              "mean_delta_pass_at_n": 0.04711,
+              "power_mcnemar_binary": 0.2555,
+              "power_signflip_rate": 0.5175
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03986,
+              "mean_delta_pass_at_n": 0.09274,
+              "power_mcnemar_binary": 0.6385,
+              "power_signflip_rate": 0.957
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05998,
+              "mean_delta_pass_at_n": 0.13706,
+              "power_mcnemar_binary": 0.908,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.08003,
+              "mean_delta_pass_at_n": 0.17842,
+              "power_mcnemar_binary": 0.9855,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.1,
+              "mean_delta_pass_at_n": 0.21681,
+              "power_mcnemar_binary": 0.9985,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0329,
+          "delta_pass_at_n_80pct_multiplicative": 0.052
+        },
+        "bootstrap_view": {
+          "model": "multiplicative",
+          "points": [
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02007,
+              "mean_delta_pass_at_n": 0.04679,
+              "power_mcnemar_binary": 0.2445,
+              "power_signflip_rate": 0.531,
+              "power_bootstrap_ci_rate": 0.42
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.04,
+              "mean_delta_pass_at_n": 0.09216,
+              "power_mcnemar_binary": 0.637,
+              "power_signflip_rate": 0.9565,
+              "power_bootstrap_ci_rate": 0.9265
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05993,
+              "mean_delta_pass_at_n": 0.13577,
+              "power_mcnemar_binary": 0.903,
+              "power_signflip_rate": 0.999,
+              "power_bootstrap_ci_rate": 0.9985
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07994,
+              "mean_delta_pass_at_n": 0.17697,
+              "power_mcnemar_binary": 0.985,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09997,
+              "mean_delta_pass_at_n": 0.21608,
+              "power_mcnemar_binary": 0.9995,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            }
+          ]
+        }
+      },
+      "N256": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 256,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -5e-05,
+              "mean_delta_pass_at_n": 4e-05,
+              "power_mcnemar_binary": 0.038,
+              "power_signflip_rate": 0.0425
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02002,
+              "mean_delta_pass_at_n": 0.04675,
+              "power_mcnemar_binary": 0.3035,
+              "power_signflip_rate": 0.6345
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.04007,
+              "mean_delta_pass_at_n": 0.09212,
+              "power_mcnemar_binary": 0.7615,
+              "power_signflip_rate": 0.994
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05982,
+              "mean_delta_pass_at_n": 0.13558,
+              "power_mcnemar_binary": 0.968,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07979,
+              "mean_delta_pass_at_n": 0.17661,
+              "power_mcnemar_binary": 0.999,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09981,
+              "mean_delta_pass_at_n": 0.21532,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0292,
+          "delta_pass_at_n_80pct_multiplicative": 0.0437
+        }
+      }
+    },
+    "E023_theta0_n4": {
+      "N128": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 128,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -8e-05,
+              "mean_delta_pass_at_n": -0.00046,
+              "power_mcnemar_binary": 0.037,
+              "power_signflip_rate": 0.047
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01989,
+              "mean_delta_pass_at_n": 0.03644,
+              "power_mcnemar_binary": 0.135,
+              "power_signflip_rate": 0.332
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03984,
+              "mean_delta_pass_at_n": 0.07096,
+              "power_mcnemar_binary": 0.359,
+              "power_signflip_rate": 0.7815
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05981,
+              "mean_delta_pass_at_n": 0.10258,
+              "power_mcnemar_binary": 0.6275,
+              "power_signflip_rate": 0.98
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07974,
+              "mean_delta_pass_at_n": 0.13143,
+              "power_mcnemar_binary": 0.837,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09982,
+              "mean_delta_pass_at_n": 0.15702,
+              "power_mcnemar_binary": 0.9475,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0419,
+          "delta_pass_at_n_80pct_multiplicative": 0.0765
+        }
+      },
+      "N192": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 192,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.00048,
+              "mean_delta_pass_at_n": 0.00088,
+              "power_mcnemar_binary": 0.046,
+              "power_signflip_rate": 0.049
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02042,
+              "mean_delta_pass_at_n": 0.03806,
+              "power_mcnemar_binary": 0.2035,
+              "power_signflip_rate": 0.4515
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.04021,
+              "mean_delta_pass_at_n": 0.07254,
+              "power_mcnemar_binary": 0.5125,
+              "power_signflip_rate": 0.9265
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.06026,
+              "mean_delta_pass_at_n": 0.10392,
+              "power_mcnemar_binary": 0.804,
+              "power_signflip_rate": 0.9985
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.08039,
+              "mean_delta_pass_at_n": 0.13314,
+              "power_mcnemar_binary": 0.953,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.10041,
+              "mean_delta_pass_at_n": 0.15913,
+              "power_mcnemar_binary": 0.991,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0347,
+          "delta_pass_at_n_80pct_multiplicative": 0.0597
+        },
+        "bootstrap_view": {
+          "model": "multiplicative",
+          "points": [
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01982,
+              "mean_delta_pass_at_n": 0.03724,
+              "power_mcnemar_binary": 0.202,
+              "power_signflip_rate": 0.4545,
+              "power_bootstrap_ci_rate": 0.3415
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03983,
+              "mean_delta_pass_at_n": 0.07154,
+              "power_mcnemar_binary": 0.5135,
+              "power_signflip_rate": 0.904,
+              "power_bootstrap_ci_rate": 0.8615
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05991,
+              "mean_delta_pass_at_n": 0.10365,
+              "power_mcnemar_binary": 0.809,
+              "power_signflip_rate": 0.9975,
+              "power_bootstrap_ci_rate": 0.9945
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07991,
+              "mean_delta_pass_at_n": 0.13268,
+              "power_mcnemar_binary": 0.9465,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09996,
+              "mean_delta_pass_at_n": 0.1589,
+              "power_mcnemar_binary": 0.99,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            }
+          ]
+        }
+      },
+      "N256": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 256,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -5e-05,
+              "mean_delta_pass_at_n": -0.00056,
+              "power_mcnemar_binary": 0.039,
+              "power_signflip_rate": 0.0465
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01989,
+              "mean_delta_pass_at_n": 0.03646,
+              "power_mcnemar_binary": 0.231,
+              "power_signflip_rate": 0.5365
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03982,
+              "mean_delta_pass_at_n": 0.07063,
+              "power_mcnemar_binary": 0.6165,
+              "power_signflip_rate": 0.9705
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05987,
+              "mean_delta_pass_at_n": 0.10243,
+              "power_mcnemar_binary": 0.8905,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07994,
+              "mean_delta_pass_at_n": 0.13148,
+              "power_mcnemar_binary": 0.9825,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0999,
+              "mean_delta_pass_at_n": 0.1574,
+              "power_mcnemar_binary": 0.998,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0321,
+          "delta_pass_at_n_80pct_multiplicative": 0.0534
+        }
+      }
+    },
+    "V3R001_theta0_n8": {
+      "N128": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 128,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00048,
+              "mean_delta_pass_at_n": -0.00318,
+              "power_mcnemar_binary": 0.0335,
+              "power_signflip_rate": 0.045
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01964,
+              "mean_delta_pass_at_n": 0.05665,
+              "power_mcnemar_binary": 0.233,
+              "power_signflip_rate": 0.4245
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03947,
+              "mean_delta_pass_at_n": 0.11441,
+              "power_mcnemar_binary": 0.586,
+              "power_signflip_rate": 0.887
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05951,
+              "mean_delta_pass_at_n": 0.16834,
+              "power_mcnemar_binary": 0.888,
+              "power_signflip_rate": 0.995
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.0796,
+              "mean_delta_pass_at_n": 0.21788,
+              "power_mcnemar_binary": 0.984,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 128,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09952,
+              "mean_delta_pass_at_n": 0.26291,
+              "power_mcnemar_binary": 0.9975,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0362,
+          "delta_pass_at_n_80pct_multiplicative": 0.0542
+        }
+      },
+      "N192": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 192,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": -0.00014,
+              "mean_delta_pass_at_n": -0.00025,
+              "power_mcnemar_binary": 0.039,
+              "power_signflip_rate": 0.04
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.01989,
+              "mean_delta_pass_at_n": 0.05939,
+              "power_mcnemar_binary": 0.3215,
+              "power_signflip_rate": 0.5755
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.03991,
+              "mean_delta_pass_at_n": 0.11645,
+              "power_mcnemar_binary": 0.7765,
+              "power_signflip_rate": 0.973
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.06014,
+              "mean_delta_pass_at_n": 0.17032,
+              "power_mcnemar_binary": 0.9695,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.08015,
+              "mean_delta_pass_at_n": 0.22003,
+              "power_mcnemar_binary": 0.9985,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09999,
+              "mean_delta_pass_at_n": 0.26436,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0313,
+          "delta_pass_at_n_80pct_multiplicative": 0.0424
+        },
+        "bootstrap_view": {
+          "model": "multiplicative",
+          "points": [
+            {
+              "theorems": 192,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02004,
+              "mean_delta_pass_at_n": 0.0599,
+              "power_mcnemar_binary": 0.327,
+              "power_signflip_rate": 0.5865,
+              "power_bootstrap_ci_rate": 0.481
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.04,
+              "mean_delta_pass_at_n": 0.11713,
+              "power_mcnemar_binary": 0.7825,
+              "power_signflip_rate": 0.977,
+              "power_bootstrap_ci_rate": 0.957
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.05984,
+              "mean_delta_pass_at_n": 0.1704,
+              "power_mcnemar_binary": 0.9735,
+              "power_signflip_rate": 0.9995,
+              "power_bootstrap_ci_rate": 0.9995
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07983,
+              "mean_delta_pass_at_n": 0.22049,
+              "power_mcnemar_binary": 0.9995,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            },
+            {
+              "theorems": 192,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09973,
+              "mean_delta_pass_at_n": 0.26559,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0,
+              "power_bootstrap_ci_rate": 1.0
+            }
+          ]
+        }
+      },
+      "N256": {
+        "points": {
+          "multiplicative": [
+            {
+              "theorems": 256,
+              "delta_target": 0.0,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 4e-05,
+              "mean_delta_pass_at_n": 0.00032,
+              "power_mcnemar_binary": 0.0365,
+              "power_signflip_rate": 0.0435
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.02,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.02012,
+              "mean_delta_pass_at_n": 0.05992,
+              "power_mcnemar_binary": 0.4205,
+              "power_signflip_rate": 0.6895
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.04,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.04001,
+              "mean_delta_pass_at_n": 0.11649,
+              "power_mcnemar_binary": 0.88,
+              "power_signflip_rate": 0.9965
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.06,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.06,
+              "mean_delta_pass_at_n": 0.17019,
+              "power_mcnemar_binary": 0.9945,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.08,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.07998,
+              "mean_delta_pass_at_n": 0.2195,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            },
+            {
+              "theorems": 256,
+              "delta_target": 0.1,
+              "model": "multiplicative",
+              "reps": 2000,
+              "mean_delta_rate": 0.09989,
+              "mean_delta_pass_at_n": 0.26415,
+              "power_mcnemar_binary": 1.0,
+              "power_signflip_rate": 1.0
+            }
+          ]
+        },
+        "min_detectable": {
+          "delta_rate_80pct_multiplicative": 0.0272,
+          "delta_pass_at_n_80pct_multiplicative": 0.0365
+        }
+      }
+    }
+  },
+  "minimum_detectable_delta_rate": {
+    "E018_theta0_n8": {
+      "N128": {
+        "delta_rate_80pct_multiplicative": 0.037,
+        "delta_pass_at_n_80pct_multiplicative": 0.0593
+      },
+      "N192": {
+        "delta_rate_80pct_multiplicative": 0.032,
+        "delta_pass_at_n_80pct_multiplicative": 0.0481
+      },
+      "N256": {
+        "delta_rate_80pct_multiplicative": 0.0292,
+        "delta_pass_at_n_80pct_multiplicative": 0.0392
+      }
+    },
+    "E018_step30_n8": {
+      "N128": {
+        "delta_rate_80pct_multiplicative": 0.0382,
+        "delta_pass_at_n_80pct_multiplicative": 0.0643
+      },
+      "N192": {
+        "delta_rate_80pct_multiplicative": 0.0329,
+        "delta_pass_at_n_80pct_multiplicative": 0.052
+      },
+      "N256": {
+        "delta_rate_80pct_multiplicative": 0.0292,
+        "delta_pass_at_n_80pct_multiplicative": 0.0437
+      }
+    },
+    "E023_theta0_n4": {
+      "N128": {
+        "delta_rate_80pct_multiplicative": 0.0419,
+        "delta_pass_at_n_80pct_multiplicative": 0.0765
+      },
+      "N192": {
+        "delta_rate_80pct_multiplicative": 0.0347,
+        "delta_pass_at_n_80pct_multiplicative": 0.0597
+      },
+      "N256": {
+        "delta_rate_80pct_multiplicative": 0.0321,
+        "delta_pass_at_n_80pct_multiplicative": 0.0534
+      }
+    },
+    "V3R001_theta0_n8": {
+      "N128": {
+        "delta_rate_80pct_multiplicative": 0.0362,
+        "delta_pass_at_n_80pct_multiplicative": 0.0542
+      },
+      "N192": {
+        "delta_rate_80pct_multiplicative": 0.0313,
+        "delta_pass_at_n_80pct_multiplicative": 0.0424
+      },
+      "N256": {
+        "delta_rate_80pct_multiplicative": 0.0272,
+        "delta_pass_at_n_80pct_multiplicative": 0.0365
+      }
+    }
+  },
+  "recommendation": {
+    "recommended_N": "to be set by the owner; N=192 is the planning target and N=256 buys about a 1 - sqrt(192/256) reduction in the detectable rate delta",
+    "proposed_practical_gate": "NOT FROZEN. The audit supports reporting the rate endpoint with its paired bootstrap CI and the exact sign-flip p-value, and treating the binary endpoint as the confirmatory view; a threshold choice needs S1's measured between-arm noise first (owner \u00a717).",
+    "practical_threshold_frozen": "NO"
+  },
+  "self_test": {
+    "sign_flip_vs_bruteforce": {
+      "exact": 0.4375,
+      "brute_force": 0.4375,
+      "delta": 0.0
+    },
+    "null_false_positive_rate_64": 0.04,
+    "mcnemar_known_value": 0.054688
+  }
+}

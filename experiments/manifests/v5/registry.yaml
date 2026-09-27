@@ -153,14 +153,72 @@ experiments:
         PROCESS_SIGNAL_GO authorizes drafting a V5-R001 preregistration only. No training, no
         weight update and no V5-R001 launch is authorized by this result.
 
+  V5-P002:                      # H1 external holdout construction (owner pre-launch directive §6-§8)
+    title: "H1 external family-clean holdout registry + capacity audit (NuminaMath-LEAN)"
+    status: H1_EXTERNAL_POOL_VERIFIED
+    owner: fly90 (build/merge) + fly122 (statement-only compile scan on tinylean-rl-lean-server-r001)
+    authorization: "owner pre-launch directive 2026-09-27 §6 (holdout decision H1), §7 (outcome-free construction), §8 (registry + capacity audit)"
+    outcome_free: >
+      Construction consumed no model output: source eligibility -> canonical normalization ->
+      statement-only elaboration eligibility (`by sorry`, no info tree) -> token-length gate ->
+      family components (union-find over name family / skeleton / strong NL text, contamination-closed
+      against the frozen Kimina Promptset universe) -> one theorem per component -> hash order.
+      theta0_outcomes_used: 0, sealed_reserve_touched: 0, v3_r001_128_reused: false.
+    eligibility_semantics: "statements pin `set_option autoImplicit false` after the imports (measured 15/256 = 5.9% degenerate statements under Lean's default autoImplicit); rows mentioning autoImplicit are rejected as explicit_autoimplicit"
+    artifact: experiments/manifests/v5/h1_holdout_pool.json
+    pool_hash: 1405d8e4a2bd888a7e6dcbf058a859a5a6ec77fee88bf0f20e8a9f890efc21b7
+    scan_artifact: experiments/results/v5_h1/h1_compile_scan.jsonl
+    scan_sha256: 8c54d9ddc47c148d6371bff6afb3681147b1d491a8818a892fbc89cafaaa8b31
+    measured:
+      corpus_rows: 104155
+      eligible_statements: 98353
+      components_pre_scan: 93068
+      scanned_window: 4280            # early stop at the 4096-compiled target
+      compiled: 4103
+      not_compiled: 177
+      family_components: 4094         # 4086 singletons + 7 pairs + 1 triple
+      capacity: {128: supported, 192: supported, 256: supported}
+      capacity_note: "lower bound from the scanned window; the pre-scan pool held 93068 components, so deeper scanning can only add"
+      prompt_len_tokens: {mean: 246.2, max: 956, max_prompt_length: 1024}
+    tooling: "scripts/v5_h1_build_pool.py (build/scan/merge), tests/test_v5_h1_pool.py"
+    not_authorized: "no proof generation, no capability selection by theta0, no sealed-reserve contact, no R001 launch"
+
   V5-R001:                      # 2026-09-27: DRAFT ONLY (drafting authorized by PROCESS_SIGNAL_GO)
     title: "Outcome-only RLVR vs Process-Verified RLVR"
     status: DRAFT_FOR_OWNER_REVIEW
-    revision: "rev.2 (2026-09-27 owner design audit, review sections 5-22); rev.1 at 020ec51"
+    revision: "rev.3 (2026-09-27 pre-launch directive §1-§20: intervention frozen, H1 decided, S0-S3 authorized); rev.2 at 4520413, rev.1 at 020ec51"
     draft: docs/v5/V5-R001_preregistration_draft.md
-    authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12 + owner review 2026-09-27 §5 ('revise the draft only')"
+    authorization: "V5-P001 stop_rule (PROCESS_SIGNAL_GO authorizes drafting only) + owner Analyzer-Amendment-B approval §12 + owner review 2026-09-27 §5 ('revise the draft only') + owner pre-launch directive 2026-09-27 (engineering feasibility work only, §10)"
     evidence_base: "V5-P001 PROCESS_SIGNAL_GO: 72.2% of primary all-fail groups admit the audited first-error d1/d2 structure (offline only; no gradient claim)"
-    open_items: "holdout source (promptset capacity measured EXHAUSTED: 128+93=221 consumed_only components, 0 never-consumed left), fly122 10GB smoke authorization (S0-S3), lambda/normalization and the advantage-estimator plumbing gap, verifier path change shared by both arms, seeds/horizon, thresholds (draft §14.4 defers them per owner §19)"
-    measured_constraints: "11.2 GiB static optimizer state vs ~9.5 GiB usable on the 10GB card (V1 peak 24.41GB allocated at the frozen shape); info-tree verification 9.85s/candidate mean serialized vs ~1.0s on the no-tree V1 training path; exact-McNemar detectable band 7.9-8.2pp at N=128 (rho .12-.13); historical V1 family-clean effect ~0 (e023_holdout.yaml)"
-    not_authorized: "launch, training, weight updates, generation, sealed-reserve use, any new process oracle/surface/parser heuristic; every step that optimizes requires its own owner authorization"
+    intervention_frozen:
+      semantics: "A_treatment_i,t = A_outcome_i + lambda * I[t == first_token(tactic_i,j)] * (phi_i,j - g_bar); phi = +1 / -0.05 / -0.10; lambda_primary = 1; g_bar over VALID candidates only"
+      control: "V1-equivalent outcome-only objective under the shared R001 execution stack (lambda = 0 through the same estimator; NOT 'byte-identical to V1')"
+      collision: "_CREDIT_PRECEDENCE = d2 > d1 > success, exactly one write per token position"
+      infra_censoring: "excluded from g_bar, loss masked to zero, infra counter, n_valid < 2 => GROUP_SKIPPED_INFRA, identical in both arms"
+      module: src/tinylean_rl/rl/process_credit.py
+      fixtures: tests/test_v5_r001_process_credit.py   # incl. bit-for-bit V1 parity at lambda=0 and the offline-oracle parity pin
+      prohibitions: "no lambda tuning, no phi centering, no response-level summation, no normalization search"
+    holdout:
+      decision: H1 new external family-clean holdout (NuminaMath-LEAN)
+      registry: experiments/manifests/v5/h1_holdout_pool.json
+      capacity: {128: supported, 192: supported, 256: supported}   # 4094 family components measured
+      planning_target_N: "192 (NOT frozen)"
+      forbidden: "V3-R001 128 reuse, 93-component reserve unsealing, E024/MiniF2F as primary"
+    engineering_authorization:
+      stages: "S0 static/config audit, S1 <=3 optimizer steps (memory/wall-clock), S2 <=1 step (lambda=0 parity, then lambda=1 tensor construction), S3 online info-tree/mapping dry run (stored or smoke-generated consumed-training responses)"
+      scope: "fly122, consumed training/development prompts only, blanket-authorized (owner §10) with per-stage specs §11-§14"
+      constraints: "no checkpoint kept (engineering checkpoints deleted after verification), both arms identical final settings, STOP_FOR_OWNER if the 10GB card cannot fit comparable semantics"
+      excluded: "no capability holdout, no final reserve, no formal scientific training result, no launch"
+    power_v2:
+      artifact: experiments/manifests/v5/v5_r001_power_v2.json
+      tooling: scripts/v5_r001_power_v2.py
+      endpoints: "continuous theorem-level rate delta (s_i(T) - s_i(C)) AND pass@8 McNemar; N grid 128/192/256; 4 historical pools; 2000 MC reps; exact sign-flip + exact McNemar; paired family bootstrap at N=192"
+      detectable_80pct_rate_delta_pp: {N128: "3.62-4.19", N192: "3.13-3.47", N256: "2.72-3.21"}
+      detectable_80pct_pass_at_n_pp: {N128: "5.42-7.65", N192: "4.24-5.97", N256: "3.65-5.34"}
+      practical_threshold_frozen: "NO"
+      recommended_N: "owner decision; N=192 planning target"
+    produce: "V5_R001_PRELAUNCH_AUDIT_V2 (draft §16 field list), then STOP"
+    open_items: "owner freeze decisions after S1/S2: horizon (40 vs 60 steps), seeds (2 vs 1 per arm), holdout N (128/192/256), exact thresholds/gates (power v2 reports recommendations only), verifier REPL concurrency"
+    measured_constraints: "11.2 GiB static optimizer state vs ~9.5 GiB usable on the 10GB card (V1 peak 24.41GB allocated at the frozen shape); info-tree verification 9.85s/candidate mean serialized vs ~1.0s on the no-tree V1 training path; exact-McNemar detectable band 6.9-8.2pp at N=128 / 5.6-6.7pp at N=192 / 4.8-5.8pp at N=256 (rho .09-.13); historical V1 family-clean effect ~0 (e023_holdout.yaml); H1 capacity 4094 family components"
+    not_authorized: "launch, training, weight updates, capability generation, holdout-selection generation, sealed-reserve use, any new process oracle/surface/parser heuristic; every step that optimizes requires its own owner authorization"
     formal_training_authorized: "NO"
